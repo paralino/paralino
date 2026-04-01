@@ -27,7 +27,6 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -117,6 +116,19 @@ fun MapHomeScreenElements(
     ) {
 
         val readyState = rememberUpdatedState(state.asReady()).value
+        val isTopHeaderVisible = if (readyState != null) {
+            if (readyState.mapHomeScreenFocusType.isMemberPlaceOrHistoryFocused) {
+                !readyState.isMapInFocus
+            } else {
+                if (readyState.isMapInFocus) {
+                    false
+                } else {
+                    sheetCollapsedMinimizedProgress > 0f
+                }
+            }
+        } else {
+            sheetCollapsedMinimizedProgress > 0f
+        }
 
         Box(
             modifier = Modifier
@@ -138,7 +150,7 @@ fun MapHomeScreenElements(
             )
 
             androidx.compose.animation.AnimatedVisibility(
-                visible = sheetCollapsedMinimizedProgress > 0f,
+                visible = isTopHeaderVisible,
                 enter = expandVertically(clip = false),
                 exit = shrinkVertically(clip = false)
             ) {

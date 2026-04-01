@@ -6,10 +6,8 @@ import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.base.PlanConfig
 import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.models.group.UserGroup
-import app.paralino.core.models.group.UserGroupWithMembers
 import app.paralino.core.models.location.LatLng
 import app.paralino.core.models.location.LocationSharingContract
-import app.paralino.core.models.location.UserPersonalSpaceModel
 import app.paralino.core.presentation.groups.GroupMemberItemEvent
 import app.paralino.core.presentation.groups.GroupMemberItemState
 import app.paralino.core.presentation.groups.GroupMemberItemStateWithFullStateLocations
@@ -70,6 +68,10 @@ sealed class MapHomeScreenState {
         val personalSpaceSharingContract: LocationSharingContract?,
         val selectedGroupSharingContract: LocationSharingContract?,
 
+        val isMapFocusRequested: Boolean,
+        val canAutomaticallyPutMapInFocus: Boolean,
+        val desiredMapSheetPosition: BottomSheetPosition?,
+
         val sharingEndTime: String?,
         val verified: Boolean,
         val groupPlanConfig: PlanConfig,
@@ -126,13 +128,17 @@ sealed class MapHomeScreenState {
             !mapHomeScreenFocusType.isMemberPlaceOrHistoryFocused
         }
 
+        val isMapInFocus = if (canAutomaticallyPutMapInFocus) isMapFocusRequested else false
+
         override val defaultSheetPosition = if (mapHomeScreenFocusType.isMemberPlaceOrHistoryFocused) {
             BottomSheetPosition.HIDDEN
         } else {
             if (isPersonalSpace && isFirstTimeInPersonalSpace) {
                 BottomSheetPosition.EXPANDED
+            } else if (isMapInFocus) {
+                BottomSheetPosition.COLLAPSED_MINIMISED
             } else {
-                BottomSheetPosition.HALF_EXPANDED
+                desiredMapSheetPosition ?: BottomSheetPosition.HALF_EXPANDED
             }
         }
     }
@@ -194,6 +200,7 @@ sealed interface MapHomeScreenUiEvent {
     data class OnGroupsEmptyStateEvent(val event: GroupsInitEmptyScreenUiEvent) : MapHomeScreenUiEvent
     data class OpenGroupDetails(val groupId: GroupOrSpaceId) : MapHomeScreenUiEvent
     data class SwitchViewSource(val viewSource: MapScreenViewSourceType) : MapHomeScreenUiEvent
+    data class OnMapSheetPositionChange(val position: BottomSheetPosition) : MapHomeScreenUiEvent
     data object OpenPersonalLocationHistory : MapHomeScreenUiEvent
     data object SwitchToPersonalSpace : MapHomeScreenUiEvent
     data object SwitchToGroups : MapHomeScreenUiEvent

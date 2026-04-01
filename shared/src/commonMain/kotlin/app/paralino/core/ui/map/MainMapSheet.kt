@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.dp
 import app.paralino.core.presentation.map.MapHomeScreenState
 import app.paralino.core.presentation.map.MapHomeScreenUiEvent
 import app.paralino.core.ui.CoreUiState
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.onEach
@@ -38,6 +39,11 @@ fun MainMapSheet(
                 swipeableState.animateTo(it)
             }
             .collect()
+    }
+
+    LaunchedEffect(swipeableState.state.settledValue) {
+//        delay(1500)
+        onEvent(MapHomeScreenUiEvent.OnMapSheetPositionChange(swipeableState.state.settledValue))
     }
 
     var infoHeight by remember { mutableStateOf(150f) }

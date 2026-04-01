@@ -17,6 +17,7 @@ import app.paralino.core.ui.components.AppSnackbarData
 import app.paralino.core.ui.components.SnackbarDuration
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.ui.components.onAction
+import app.paralino.core.ui.map.BottomSheetPosition
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -109,6 +110,18 @@ class MapEventHandler(
 
             is MapHomeScreenUiEvent.OnMemberItemEvent -> {
                 handleMemberItemEvent(event.event)
+            }
+
+            is MapHomeScreenUiEvent.OnMapSheetPositionChange -> {
+                updateReadyState {
+                    it.copy(
+                        isMapFocusRequested = event.position is BottomSheetPosition.COLLAPSED_MINIMISED,
+                        desiredMapSheetPosition = event.position.takeIf {
+                            // do not accept hidden, since that is handled by different state
+                            it.order < BottomSheetPosition.HIDDEN.order
+                        }
+                    )
+                }
             }
 
             MapHomeScreenUiEvent.OnGroupDetailsClick -> {

@@ -348,14 +348,10 @@ internal fun HomeScreenMapWithElements(
                 from = BottomSheetPosition.COLLAPSED,
                 to = BottomSheetPosition.EXPANDED
             ),
-            sheetCollapsedMinimizedProgress = if (uiState.asReady()?.mapHomeScreenFocusType?.isMemberPlaceOrHistoryFocused == true) {
-                1f
-            } else {
-                sheetState.progress(
-                    from = BottomSheetPosition.COLLAPSED_MINIMISED,
-                    to = BottomSheetPosition.COLLAPSED
-                )
-            },
+            sheetCollapsedMinimizedProgress = sheetState.progress(
+                from = BottomSheetPosition.COLLAPSED_MINIMISED,
+                to = BottomSheetPosition.COLLAPSED
+            ),
             onEvent = onMainEvent,
             bottomCards = { sheetPeekHeight ->
                 if (historyUiState != null) {

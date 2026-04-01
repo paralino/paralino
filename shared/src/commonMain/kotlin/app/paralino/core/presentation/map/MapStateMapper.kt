@@ -32,6 +32,7 @@ import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
+import app.paralino.core.ui.map.BottomSheetPosition
 import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.extensions.fromUTCtoInstant
 import app.paralino.core.utils.extensions.nowUTC
@@ -210,6 +211,10 @@ class MapStateMapper(
                 )
             },
             verified = isVerified,
+            isMapFocusRequested = previousState?.isMapFocusRequested ?: false,
+            // TODO read from settings and device size
+            canAutomaticallyPutMapInFocus = previousState?.canAutomaticallyPutMapInFocus ?: true,
+            desiredMapSheetPosition = previousState?.desiredMapSheetPosition,
             alertDialog = alertDialog,
             isSatelliteModeEnabled = isSatelliteModeEnabled,
             groupPlanConfig = planConfig,
