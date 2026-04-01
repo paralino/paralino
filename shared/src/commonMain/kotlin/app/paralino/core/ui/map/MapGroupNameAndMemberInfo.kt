@@ -58,6 +58,7 @@ fun MapGroupNameAndMemberInfo(
 ) {
     Box(
         modifier = modifier
+            .fillMaxWidth()
             .background(
                 color = Color.Transparent,
                 shape = RoundedCornerShape(percent = 100)
@@ -72,6 +73,7 @@ fun MapGroupNameAndMemberInfo(
             modifier = Modifier
                 .alpha(collapsedVisibilityFraction)
                 .align(Alignment.CenterStart)
+                .padding(end = 52.dp)
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.End

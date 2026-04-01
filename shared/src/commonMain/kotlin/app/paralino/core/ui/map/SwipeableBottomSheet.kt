@@ -234,8 +234,12 @@ fun SwipeableBottomSheet(
                 to = BottomSheetPosition.COLLAPSED
             ).coerceIn(0f, 1f)
 
-            val minWidth = 70.dp
-            constraintsScope.maxWidth.times(progress).coerceAtLeast(minWidth)
+            if (swipeableState.currentValue.order < BottomSheetPosition.COLLAPSED.order) {
+                constraintsScope.maxWidth
+            } else {
+                val minWidth = 70.dp
+                constraintsScope.maxWidth.times(progress).coerceAtLeast(minWidth)
+            }
         }
 
         val screenShape = RoundedCornerShape(
