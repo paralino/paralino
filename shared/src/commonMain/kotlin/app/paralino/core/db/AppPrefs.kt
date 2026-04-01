@@ -5,6 +5,7 @@ import app.paralino.core.models.base.ParalinoSocketConnectionType
 import app.paralino.core.models.places.GroupPlaceSensitivityData
 import app.paralino.core.presentation.common.FormValidation
 import app.paralino.core.presentation.settings.generic.IOSNavigationAppType
+import app.paralino.core.presentation.settings.generic.MapInteractionsType
 import app.paralino.core.presentation.settings.generic.MapsSDKProvider
 import app.paralino.core.presentation.settings.generic.NotificationGroupingType
 import app.paralino.core.provider.MeasurementSystemType
@@ -102,6 +103,7 @@ class AppPrefs(
         const val keyCurrentAppVersion = "prefs.device.appVersion.current"
         const val keyMeasurementSystem = "prefs.device.measurementSystem"
         const val keyNotificationGrouping = "prefs.device.notificationGrouping"
+        const val keyMapInteractions = "prefs.device.mapInteractions"
         const val keyNavigatioApp = "prefs.device.navigationApp"
         const val keyDeviceTheme = "prefs.device.theme"
         const val keyLocationHistoryPerformance = "prefs.location.history.performance"
@@ -510,6 +512,14 @@ class AppPrefs(
             ?: NotificationGroupingType.NONE
         set(value) {
             provider.appSettings.putString(keyNotificationGrouping, value.key)
+        }
+
+    var mapInteractions: MapInteractionsType
+        get() = provider.appSettings.getString(keyMapInteractions, "")
+            .let { MapInteractionsType.fromKey(it) }
+            ?: MapInteractionsType.DEVICE_DEFAULT
+        set(value) {
+            provider.appSettings.putString(keyMapInteractions, value.key)
         }
 
     var iosNavigationApp: IOSNavigationAppType

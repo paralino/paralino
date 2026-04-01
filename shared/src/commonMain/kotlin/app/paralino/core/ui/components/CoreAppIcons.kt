@@ -48,6 +48,7 @@ import paralino.shared.generated.resources.ic_focus_person_off
 import paralino.shared.generated.resources.ic_focus_person_on
 import paralino.shared.generated.resources.ic_group
 import paralino.shared.generated.resources.ic_groups
+import paralino.shared.generated.resources.ic_hand_swipe_touch
 import paralino.shared.generated.resources.ic_home
 import paralino.shared.generated.resources.ic_home_work
 import paralino.shared.generated.resources.ic_how_to_reg
@@ -235,6 +236,7 @@ object CoreAppIcons {
     val ZoomFocusSmall get() = Res.drawable.ic_zoom_focus_small
     val ZoomFocusLarge get() = Res.drawable.ic_zoom_focus_large
     val ZoomFocusFull get() = Res.drawable.ic_zoom_focus_full
+    val HandSwipeTouch get() = Res.drawable.ic_hand_swipe_touch
 
     val SignalWifi3 get() = Res.drawable.ic_wifi_3
     val SignalWifi2 get() = Res.drawable.ic_wifi_2

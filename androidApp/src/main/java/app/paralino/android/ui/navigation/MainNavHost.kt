@@ -54,6 +54,7 @@ import app.paralino.core.presentation.login.LoginScreenUiType
 import app.paralino.core.presentation.places.detail.PlaceSensitivityViewModel
 import app.paralino.core.presentation.rawdata.RawPresentationDataType
 import app.paralino.core.presentation.settings.generic.MapsProviderViewModel
+import app.paralino.core.presentation.settings.generic.MapInteractionsViewModel
 import app.paralino.core.presentation.settings.generic.MeasurementSystemViewModel
 import app.paralino.core.presentation.settings.generic.NotificationsGroupingViewModel
 import app.paralino.core.presentation.settings.generic.PlaceSearchSettingsViewModel
@@ -298,6 +299,12 @@ fun NavGraphBuilder.settingsGraph(appState: MainAppState) {
             GenericSettingsScreen(
                 appState = appState,
                 vm = koinViewModel<NotificationsGroupingViewModel>()
+            )
+        }
+        composable(AppScreen.Settings.MapInteractions.routeSignature) {
+            GenericSettingsScreen(
+                appState = appState,
+                vm = koinViewModel<MapInteractionsViewModel>()
             )
         }
         composable(AppScreen.Settings.PlaceSearch.routeSignature) {

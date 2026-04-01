@@ -312,6 +312,7 @@ object SettingsScreens {
         vm: AppSettingsViewModel,
         openMeasurementSystemScreen: () -> Unit,
         openNotificationGroupingScreen: () -> Unit,
+        openMapInteractionsScreen: () -> Unit,
         openNavigationAppScreen: () -> Unit,
         openPlaceSearchSettings: () -> Unit,
     ) = ComposeUIViewController {
@@ -322,6 +323,7 @@ object SettingsScreens {
                 paddingValues = PaddingValues(),
                 onMeasurementSystemClick = openMeasurementSystemScreen,
                 onNotificationGroupingClick = openNotificationGroupingScreen,
+                onMapInteractionsClick = openMapInteractionsScreen,
                 onNavigationAppClick = openNavigationAppScreen,
                 onPlaceSearchSettingsClick = openPlaceSearchSettings,
                 // not available in iOS

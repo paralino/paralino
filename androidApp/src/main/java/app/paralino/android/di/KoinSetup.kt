@@ -99,6 +99,7 @@ import app.paralino.core.presentation.settings.emailchange.ChangeEmailViewModel
 import app.paralino.core.presentation.settings.general.GeneralInfoViewModel
 import app.paralino.core.presentation.settings.generic.AppSettingsViewModel
 import app.paralino.core.presentation.settings.generic.MapsProviderViewModel
+import app.paralino.core.presentation.settings.generic.MapInteractionsViewModel
 import app.paralino.core.presentation.settings.generic.MeasurementSystemViewModel
 import app.paralino.core.presentation.settings.generic.NotificationsGroupingViewModel
 import app.paralino.core.presentation.settings.generic.PlaceSearchSettingsViewModel
@@ -273,6 +274,7 @@ object KoinSetup {
         viewModel { (groupID: String) -> BatteryNotificationsViewModel(groupID, get(), get(), get(), get(), get()) }
         viewModel { MeasurementSystemViewModel(get(), get()) }
         viewModel { NotificationsGroupingViewModel(get()) }
+        viewModel { MapInteractionsViewModel(get()) }
         viewModel { PlaceSearchSettingsViewModel(get(), get()) }
         viewModel { NotificationSocketSettingsViewModel(get(), get(), get(), get(), get(), get(), get()) }
         viewModel { MapsProviderViewModel(get(), get(), get(), get(), get()) }
