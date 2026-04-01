@@ -99,6 +99,20 @@ object MainMapScreen {
                     }
                 }
 
+                val sheetProgressTilCollapsed = sheetState.progress(
+                    from = BottomSheetPosition.COLLAPSED,
+                    to = BottomSheetPosition.HALF_EXPANDED
+                ).coerceIn(0f, 1f)
+
+                val sheetProgressTilMinimized = sheetState.progress(
+                    from = BottomSheetPosition.COLLAPSED_MINIMISED,
+                    to = BottomSheetPosition.COLLAPSED
+                ).coerceIn(0f, 1f)
+
+                val collapsedHeightDp = with(LocalDensity.current) {
+                    sheetState.collapsedInfoHeightPixel.toDp()
+                }
+
                 var cardHeight by remember { mutableStateOf(0.dp) }
 
                 LaunchedEffect(key1 = Unit) {
@@ -141,7 +155,11 @@ object MainMapScreen {
                     }
                 }
 
-                LaunchedEffect(bottomOffset, cardHeight, historyUiState != null) {
+                LaunchedEffect(
+                    bottomOffset,
+                    cardHeight,
+                    historyUiState != null
+                ) {
                     snapshotFlow { bottomOffset to cardHeight }
                         .distinctUntilChanged()
                         .collectLatest {
@@ -151,9 +169,16 @@ object MainMapScreen {
                                     maximumValue = height
                                 )
                             } else {
-                                (height - bottomOffset).coerceIn(
+                                val range = height * BottomSheetPosition.HALF_EXPANDED.screenHeightPercent
+                                val padding = if (sheetProgressTilMinimized < 1f) {
+                                    collapsedHeightDp.times(sheetProgressTilMinimized)
+                                } else {
+                                    collapsedHeightDp + (range - collapsedHeightDp).times(sheetProgressTilCollapsed)
+                                }
+
+                                padding.coerceIn(
                                     minimumValue = 0.dp,
-                                    maximumValue = height * BottomSheetPosition.HALF_EXPANDED.screenHeightPercent
+                                    maximumValue = range
                                 )
                             }
                             onSheetOffsetChange(bottomOffset.value)
@@ -207,6 +232,14 @@ object MainMapScreen {
                                 from = BottomSheetPosition.EXPANDED,
                                 to = BottomSheetPosition.COLLAPSED
                             ),
+                            sheetCollapsedMinimizedProgress = if (uiState.asReady()?.mapHomeScreenFocusType?.isMemberPlaceOrHistoryFocused == true) {
+                                1f
+                            } else {
+                                sheetState.progress(
+                                    from = BottomSheetPosition.COLLAPSED_MINIMISED,
+                                    to = BottomSheetPosition.COLLAPSED
+                                )
+                            },
                             onEvent = vm::onEvent,
                             bottomCards = { sheetPeekHeight ->
                                 if (historyUiState != null) {

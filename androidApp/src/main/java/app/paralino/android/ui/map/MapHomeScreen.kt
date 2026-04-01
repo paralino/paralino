@@ -53,6 +53,7 @@ import app.paralino.core.ui.map.MainMapSheet
 import app.paralino.core.ui.map.MapHomeElementMainCards
 import app.paralino.core.ui.map.MapHomeScreenElements
 import app.paralino.core.ui.map.SwipeableSheetState
+import app.paralino.core.ui.map.isCollapsedAndMinimised
 import app.paralino.core.ui.map.rememberSwipeableSheetState
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
@@ -233,41 +234,65 @@ internal fun HomeScreenMapWithElements(
     BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
 
         val screenAreaPadding = WindowInsets.safeDrawing.asPaddingValues()
-        val bottomPadding = WindowInsets.safeDrawing.asPaddingValues().calculateBottomPadding()
+        val screenBottomPadding = WindowInsets.safeDrawing.asPaddingValues().calculateBottomPadding()
+        val sheetProgressTilCollapsed = sheetState.progress(
+            from = BottomSheetPosition.COLLAPSED,
+            to = BottomSheetPosition.HALF_EXPANDED
+        ).coerceIn(0f, 1f)
+
+        val sheetProgressTilMinimized = sheetState.progress(
+            from = BottomSheetPosition.COLLAPSED_MINIMISED,
+            to = BottomSheetPosition.COLLAPSED
+        ).coerceIn(0f, 1f)
+
+        val collapsedHeightDp = with(LocalDensity.current) {
+            sheetState.collapsedInfoHeightPixel.toDp()
+        }
+
         val mapContentPadding by remember(
             screenAreaPadding,
-            bottomPadding,
+            screenBottomPadding,
+            sheetState.currentValue,
             readyState?.mapHomeScreenFocusType?.isMemberPlaceOrHistoryFocused,
-            bottomOffset,
+            sheetProgressTilCollapsed,
+            sheetProgressTilMinimized,
             cardHeight
         ) {
             derivedStateOf {
-                PaddingValues(
-                    top = screenAreaPadding.calculateTopPadding() + 64.dp,
-                    bottom = if (readyState?.mapHomeScreenFocusType?.isMemberPlaceOrHistoryFocused == true) {
-                        if (bottomPadding <= this.maxHeight) {
-                            (cardHeight + bottomPadding).coerceIn(
-                                minimumValue = bottomPadding,
-                                maximumValue = this.maxHeight
-                            )
-                        } else {
-                            (cardHeight + bottomPadding).coerceAtLeast(
-                                minimumValue = bottomPadding
-                            )
-                        }
+                val topPadding = if (sheetState.isCollapsedAndMinimised()) {
+                    screenAreaPadding.calculateTopPadding() + 12.dp
+                } else {
+                    screenAreaPadding.calculateTopPadding() + 64.dp
+                }
+
+                val bottomPadding = if (readyState?.mapHomeScreenFocusType?.isMemberPlaceOrHistoryFocused == true) {
+                    if (screenBottomPadding <= this.maxHeight) {
+                        (cardHeight + screenBottomPadding).coerceIn(
+                            minimumValue = screenBottomPadding,
+                            maximumValue = this.maxHeight
+                        )
                     } else {
-                        val bottomMax = this.maxHeight * BottomSheetPosition.HALF_EXPANDED.screenHeightPercent
-                        if (bottomPadding <= bottomMax) {
-                            (this.maxHeight - bottomOffset).coerceIn(
-                                minimumValue = bottomPadding,
-                                maximumValue = bottomMax
-                            )
-                        } else {
-                            (this.maxHeight - bottomOffset).coerceAtLeast(
-                                minimumValue = bottomPadding
-                            )
-                        }
+                        (cardHeight + screenBottomPadding).coerceAtLeast(
+                            minimumValue = screenBottomPadding
+                        )
                     }
+                } else {
+                    val range = this.maxHeight * BottomSheetPosition.HALF_EXPANDED.screenHeightPercent
+                    val padding = if (sheetProgressTilMinimized < 1f) {
+                        collapsedHeightDp.times(sheetProgressTilMinimized)
+                    } else {
+                        collapsedHeightDp + (range - collapsedHeightDp).times(sheetProgressTilCollapsed)
+                    }
+
+                    padding.coerceIn(
+                        minimumValue = screenBottomPadding,
+                        maximumValue = range
+                    )
+                }
+
+                PaddingValues(
+                    top = topPadding,
+                    bottom = bottomPadding
                 )
             }
         }
@@ -323,6 +348,14 @@ internal fun HomeScreenMapWithElements(
                 from = BottomSheetPosition.COLLAPSED,
                 to = BottomSheetPosition.EXPANDED
             ),
+            sheetCollapsedMinimizedProgress = if (uiState.asReady()?.mapHomeScreenFocusType?.isMemberPlaceOrHistoryFocused == true) {
+                1f
+            } else {
+                sheetState.progress(
+                    from = BottomSheetPosition.COLLAPSED_MINIMISED,
+                    to = BottomSheetPosition.COLLAPSED
+                )
+            },
             onEvent = onMainEvent,
             bottomCards = { sheetPeekHeight ->
                 if (historyUiState != null) {

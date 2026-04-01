@@ -3,6 +3,7 @@ package app.paralino.core.ui.map
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
@@ -26,6 +27,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -44,6 +46,7 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.BiasAlignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.dropShadow
 import androidx.compose.ui.graphics.Brush
@@ -84,6 +87,7 @@ fun MapHomeScreenElements(
     containerHeight: Dp,
     bottomOffset: Dp,
     sheetFullProgress: Float,
+    sheetCollapsedMinimizedProgress: Float,
     isSheetHidden: Boolean,
     onEvent: (MapHomeScreenUiEvent) -> Unit,
     bottomCards: @Composable BoxScope.(sheetPeekHeight: Dp) -> Unit
@@ -117,67 +121,82 @@ fun MapHomeScreenElements(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(screenPaddingValues.calculateTopPadding())
-                .background(
-                    Brush.verticalGradient(
-                        colors = listOf(
-                            MaterialTheme.colors.background.copy(alpha = 0.6f),
-                            MaterialTheme.colors.background.copy(alpha = 0.3f),
-                            Color.Transparent
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(screenPaddingValues.calculateTopPadding())
+                    .background(
+                        Brush.verticalGradient(
+                            colors = listOf(
+                                MaterialTheme.colors.background.copy(alpha = 0.6f),
+                                MaterialTheme.colors.background.copy(alpha = 0.3f),
+                                Color.Transparent
+                            )
                         )
                     )
-                )
-        )
-
-        Row(
-            modifier = Modifier
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween,
-        ) {
-            // group picker button
-            MapGroupOrSpacePickerTabs(
-                modifier = Modifier
-                    .padding(horizontal = 8.dp)
-                    .weight(1f, fill = false),
-                isPersonalSpace = state.isPersonalSpace,
-                groupImage = state.selectedGroupImage,
-                spaceImage = state.currentUserImage,
-                onGroupItemClick = {
-                    onEvent(MapHomeScreenUiEvent.SwitchToGroups)
-                },
-                onGroupPickerClick = {
-                    onEvent(MapHomeScreenUiEvent.OnGroupPickerClick)
-                },
-                onSpaceItemClick = {
-                    onEvent(MapHomeScreenUiEvent.SwitchToPersonalSpace)
-                }
             )
 
-            FilledButton(
-                modifier = Modifier.padding(end = 8.dp).size(42.dp),
-                onClick = { onEvent(MapHomeScreenUiEvent.OnSettingsClick) },
-                icon = null,
-                style = ButtonStyle.ICON,
-                elevation = 12.dp,
-                colors = ButtonDefaults.buttonColors(
-                    backgroundColor = MaterialTheme.colors.surface
-                ),
-                content = {
-                    Icon(
-                        painter = CoreAppIcons.Settings.asPainterResource(),
-                        contentDescription = null,
-                        tint = MaterialTheme.colors.onSurface.copy(alpha = 0.7f),
+            androidx.compose.animation.AnimatedVisibility(
+                visible = sheetCollapsedMinimizedProgress > 0f,
+                enter = expandVertically(clip = false),
+                exit = shrinkVertically(clip = false)
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = screenPaddingValues.calculateTopPadding()),
+//                    .offset(y = (-200).dp * (1f - sheetCollapsedMinimizedProgress)),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                ) {
+                    // group picker button
+                    MapGroupOrSpacePickerTabs(
                         modifier = Modifier
-                            .size(42.dp)
-                            .background(
-                                color = MaterialTheme.colors.surface,
-                                shape = CircleShape
+                            .padding(horizontal = 8.dp)
+                            .weight(1f, fill = false),
+                        isPersonalSpace = state.isPersonalSpace,
+                        groupImage = state.selectedGroupImage,
+                        spaceImage = state.currentUserImage,
+                        onGroupItemClick = {
+                            onEvent(MapHomeScreenUiEvent.SwitchToGroups)
+                        },
+                        onGroupPickerClick = {
+                            onEvent(MapHomeScreenUiEvent.OnGroupPickerClick)
+                        },
+                        onSpaceItemClick = {
+                            onEvent(MapHomeScreenUiEvent.SwitchToPersonalSpace)
+                        }
+                    )
+
+                    FilledButton(
+                        modifier = Modifier
+                            .padding(end = 8.dp)
+                            .size(42.dp),
+                        onClick = { onEvent(MapHomeScreenUiEvent.OnSettingsClick) },
+                        icon = null,
+                        style = ButtonStyle.ICON,
+                        elevation = 12.dp,
+                        colors = ButtonDefaults.buttonColors(
+                            backgroundColor = MaterialTheme.colors.surface
+                        ),
+                        content = {
+                            Icon(
+                                painter = CoreAppIcons.Settings.asPainterResource(),
+                                contentDescription = null,
+                                tint = MaterialTheme.colors.onSurface.copy(alpha = 0.7f),
+                                modifier = Modifier
+                                    .size(42.dp)
+                                    .background(
+                                        color = MaterialTheme.colors.surface,
+                                        shape = CircleShape
+                                    )
+                                    .padding(8.dp)
                             )
-                            .padding(8.dp)
+                        }
                     )
                 }
-            )
+            }
         }
 
         // map mode
@@ -192,6 +211,15 @@ fun MapHomeScreenElements(
                 },
                 contentDescription = null,
                 modifier = Modifier
+//                    .offset(
+//                        y = animateDpAsState(
+//                            if (sheetCollapsedMinimizedProgress == 0f || sheetCollapsedMinimizedProgress == 1f) {
+//                                0.dp
+//                            } else {
+//                                (-20).dp * (1f - sheetCollapsedMinimizedProgress)
+//                            }
+//                        ).value
+//                    )
                     .align(
                         when (state.deviceType) {
                             DeviceType.Android -> Alignment.End
@@ -223,6 +251,7 @@ fun MapHomeScreenElements(
             ) {
                 MapHomeElementSharingRow(
                     sheetFullProgress = sheetFullProgress,
+                    sheetCollapsedMinimizedProgress = sheetCollapsedMinimizedProgress,
                     readyState = readyState,
                     onEvent = onEvent
                 )
@@ -353,6 +382,7 @@ fun BoxScope.MapHomeElementMainCards(
 @Composable
 private fun MapHomeElementSharingRow(
     sheetFullProgress: Float,
+    sheetCollapsedMinimizedProgress: Float,
     readyState: MapHomeScreenState.Ready?,
     onEvent: (MapHomeScreenUiEvent) -> Unit,
 ) {
@@ -368,83 +398,90 @@ private fun MapHomeElementSharingRow(
     val isMemberPlaceOrHistoryFocused =
         readyState?.mapHomeScreenFocusType?.isMemberPlaceOrHistoryFocused == true
 
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .horizontalScroll(rememberScrollState())
-            .padding(horizontal = sidePadding),
-        horizontalArrangement = Arrangement.spacedBy(6.dp, Alignment.End),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        if (!isMemberPlaceOrHistoryFocused && readyState?.isPersonalSpace == true) {
-            GroupMemberActionButton(
-                modifier = Modifier
-                    .padding(bottom = 6.dp)
-                    .dropShadow(
-                        shape = RoundedCornerShape(100),
-                        shadow = Shadow(
-                            radius = 16.dp,
-                            color = MaterialTheme.colors.onBackground.copy(alpha = 0.2f),
-                        )
-                    ),
-                startIcon = CoreAppIcons.TimelinePathWithPins.asPainterResource(),
-                text = stringResource(MR.strings.group_members_item_history_button),
-                backgroundColor = MaterialTheme.colors.background,
-                onClick = {
-                    onEvent(MapHomeScreenUiEvent.OpenPersonalLocationHistory)
-                }
-            )
-        }
+    if (sheetCollapsedMinimizedProgress > 0f) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .alpha(sheetCollapsedMinimizedProgress)
+                .horizontalScroll(rememberScrollState())
+                .padding(horizontal = sidePadding),
+            horizontalArrangement = Arrangement.spacedBy(6.dp, Alignment.End),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            if (!isMemberPlaceOrHistoryFocused && readyState?.isPersonalSpace == true) {
+                GroupMemberActionButton(
+                    modifier = Modifier
+                        .padding(bottom = 6.dp)
+                        .dropShadow(
+                            shape = RoundedCornerShape(100),
+                            shadow = Shadow(
+                                radius = 16.dp,
+                                color = MaterialTheme.colors.onBackground.copy(alpha = 0.2f),
+                            )
+                        ),
+                    isEnabled = sheetCollapsedMinimizedProgress >= 1f,
+                    startIcon = CoreAppIcons.TimelinePathWithPins.asPainterResource(),
+                    text = stringResource(MR.strings.group_members_item_history_button),
+                    backgroundColor = MaterialTheme.colors.background,
+                    onClick = {
+                        onEvent(MapHomeScreenUiEvent.OpenPersonalLocationHistory)
+                    }
+                )
+            }
 
-        // sharing time info
-        if (readyState?.selectedSharingContract != null && !isMemberPlaceOrHistoryFocused) {
-            GroupMemberActionButton(
-                modifier = Modifier
-                    .padding(bottom = 6.dp)
-                    .dropShadow(
-                        shape = RoundedCornerShape(100),
-                        shadow = Shadow(
-                            radius = 16.dp,
-                            color = MaterialTheme.colors.onBackground.copy(alpha = 0.2f),
-                        )
-                    ),
-                startIcon = if (readyState.isPersonalSpace) {
-                    CoreAppIcons.ShareLocation.asPainterResource()
-                } else {
-                    CoreAppIcons.Timer.asPainterResource()
-                },
-                text = if (readyState.isPersonalSpace) {
-                    stringResource(MR.strings.group_members_item_tracking_button)
-                } else {
-                    readyState.sharingEndTime
-                        ?: stringResource(MR.strings.groups_sharing_duration_type_infinite)
-                },
-                backgroundColor = MaterialTheme.colors.background,
-                startIconColor = AppColors.accent,
-                onClick = {
-                    onEvent(MapHomeScreenUiEvent.OnSharingStartClick)
-                }
-            )
-        }
+            // sharing time info
+            if (readyState?.selectedSharingContract != null && !isMemberPlaceOrHistoryFocused) {
+                GroupMemberActionButton(
+                    modifier = Modifier
+                        .padding(bottom = 6.dp)
+                        .dropShadow(
+                            shape = RoundedCornerShape(100),
+                            shadow = Shadow(
+                                radius = 16.dp,
+                                color = MaterialTheme.colors.onBackground.copy(alpha = 0.2f),
+                            )
+                        ),
+                    isEnabled = sheetCollapsedMinimizedProgress >= 1f,
+                    startIcon = if (readyState.isPersonalSpace) {
+                        CoreAppIcons.ShareLocation.asPainterResource()
+                    } else {
+                        CoreAppIcons.Timer.asPainterResource()
+                    },
+                    text = if (readyState.isPersonalSpace) {
+                        stringResource(MR.strings.group_members_item_tracking_button)
+                    } else {
+                        readyState.sharingEndTime
+                            ?: stringResource(MR.strings.groups_sharing_duration_type_infinite)
+                    },
+                    backgroundColor = MaterialTheme.colors.background,
+                    startIconColor = AppColors.accent,
+                    onClick = {
+                        if (sheetCollapsedMinimizedProgress >= 1f)
+                            onEvent(MapHomeScreenUiEvent.OnSharingStartClick)
+                    }
+                )
+            }
 
-        // sharing start
-        if (readyState != null && readyState.selectedSharingContract == null && !isMemberPlaceOrHistoryFocused) {
-            GroupMemberActionButton(
-                modifier = Modifier
-                    .padding(bottom = 6.dp),
-                startIcon = CoreAppIcons.ShareLocation.asPainterResource(),
-                isLoading = false,
-                backgroundColor = MaterialTheme.colors.primary,
-                contentColor = MaterialTheme.colors.onPrimary,
-                text = if (readyState.isPersonalSpace) {
-                    stringResource(MR.strings.location_sharing_button_start_personal)
-                } else {
-                    stringResource(MR.strings.location_sharing_button_start_groups)
-                },
-                onClick = {
-                    onEvent(MapHomeScreenUiEvent.OnSharingStartClick)
-                }
-            )
+            // sharing start
+            if (readyState != null && readyState.selectedSharingContract == null && !isMemberPlaceOrHistoryFocused) {
+                GroupMemberActionButton(
+                    modifier = Modifier
+                        .padding(bottom = 6.dp),
+                    isEnabled = sheetCollapsedMinimizedProgress >= 1f,
+                    startIcon = CoreAppIcons.ShareLocation.asPainterResource(),
+                    isLoading = false,
+                    backgroundColor = MaterialTheme.colors.primary,
+                    contentColor = MaterialTheme.colors.onPrimary,
+                    text = if (readyState.isPersonalSpace) {
+                        stringResource(MR.strings.location_sharing_button_start_personal)
+                    } else {
+                        stringResource(MR.strings.location_sharing_button_start_groups)
+                    },
+                    onClick = {
+                        onEvent(MapHomeScreenUiEvent.OnSharingStartClick)
+                    }
+                )
+            }
         }
     }
 }

@@ -965,6 +965,7 @@ fun GroupMemberActionButton(
     text: String,
     showText: Boolean = true,
     isLoading: Boolean = false,
+    isEnabled: Boolean = true,
     startIconSize: Dp = 18.dp,
     endIcon: Painter? = CoreAppIcons.ChevronRight.asPainterResource(),
     backgroundColor: Color = MaterialTheme.colors.surface,
@@ -1024,7 +1025,7 @@ fun GroupMemberActionButton(
             }
         },
         endSection = null,
-        onClick = onClick
+        onClick = if (isEnabled) onClick else null
     )
 }
 

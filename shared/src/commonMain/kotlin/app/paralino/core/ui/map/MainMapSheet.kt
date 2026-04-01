@@ -10,6 +10,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import app.paralino.core.presentation.map.MapHomeScreenState
 import app.paralino.core.presentation.map.MapHomeScreenUiEvent
@@ -44,6 +45,16 @@ fun MainMapSheet(
         enabled = mapUiState.isSheetEnabled,
         screenPaddingValues = screenPaddingValues,
         collapsedInfoHeightPixel = infoHeight,
+        collapsedMinimizedInfoHeightPixel = with(LocalDensity.current) {
+            screenPaddingValues.calculateBottomPadding()
+                .plus(SwipeableSheetState.sheetBottomCollapsedPadding)
+                .plus(SwipeableSheetState.sheetBottomCollapsedMinimizedPadding)
+                .plus(MapHomeSheetContentSizes.dividerTopPadding.times(2) + MapHomeSheetContentSizes.dividerHeight.times(2))
+                // this one is to compensate for the padding of sheet top divider/handler
+                .plus(MapHomeSheetContentSizes.dividerHeight)
+                .plus(MapHomeSheetContentSizes.collapsedDividerTopPadding)
+                .toPx()
+        },
         swipeableState = swipeableState,
         screenContent = screenContent,
         body = {
