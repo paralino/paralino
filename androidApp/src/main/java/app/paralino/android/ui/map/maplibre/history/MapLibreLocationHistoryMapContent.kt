@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -107,8 +108,13 @@ fun rememberMapLibreLocationHistoryMapController(
         shouldAnimateMapFocus = true
     }
 
-    LaunchedEffect(stateData.selectedLocations, stateData.dataViewType, mapContentPadding) {
-        val extraPadding = 60.dp
+    LaunchedEffect(
+        stateData.selectedLocations,
+        stateData.dataViewType,
+        stateData.canCollapseMapHeader,
+        mapContentPadding
+    ) {
+        val extraPadding = if (stateData.canCollapseMapHeader) 12.dp else 60.dp
         val mapPadding = PaddingValues(
             start = mapContentPadding.calculateStartPadding(LayoutDirection.Ltr) + extraPadding,
             top = mapContentPadding.calculateTopPadding() + extraPadding,
@@ -159,8 +165,12 @@ fun rememberMapLibreLocationHistoryMapController(
             }
     }
 
-    LaunchedEffect(stateData.selectedMapPinData, stateData.focusType) {
-        val extraPadding = 100.dp
+    LaunchedEffect(
+        stateData.selectedMapPinData,
+        stateData.canCollapseMapHeader,
+        stateData.focusType
+    ) {
+        val extraPadding = if (stateData.canCollapseMapHeader) 20.dp else 100.dp
         val mapPadding = PaddingValues(
             start = mapContentPadding.calculateStartPadding(LayoutDirection.Ltr) + extraPadding,
             top = mapContentPadding.calculateTopPadding() + extraPadding,
@@ -199,6 +209,12 @@ fun rememberMapLibreLocationHistoryMapController(
                 renderOptions = RenderOptions(),
                 gestureOptions = GestureOptions(),
                 ornamentOptions = OrnamentOptions(
+                    padding = PaddingValues(
+                        top = mapContentPadding.calculateTopPadding(),
+                        bottom = 0.dp,
+                        start = mapContentPadding.calculateStartPadding(LayoutDirection.Ltr),
+                        end = mapContentPadding.calculateEndPadding(LayoutDirection.Ltr),
+                    ),
                     isCompassEnabled = true,
                     compassAlignment = Alignment.TopStart,
                     attributionAlignment = Alignment.BottomEnd,

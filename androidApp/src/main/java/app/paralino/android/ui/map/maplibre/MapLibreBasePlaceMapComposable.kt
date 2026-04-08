@@ -6,6 +6,8 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.CircularProgressIndicator
@@ -22,6 +24,7 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInteropFilter
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import app.paralino.core.models.location.LatLng
 import app.paralino.core.presentation.map.MapPinData
@@ -215,6 +218,12 @@ private fun rememberPlaceMapController(
                 renderOptions = RenderOptions(),
                 gestureOptions = GestureOptions(),
                 ornamentOptions = OrnamentOptions(
+                    padding = PaddingValues(
+                        top = mapContentPadding.calculateTopPadding(),
+                        bottom = 0.dp,
+                        start = mapContentPadding.calculateStartPadding(LayoutDirection.Ltr),
+                        end = mapContentPadding.calculateEndPadding(LayoutDirection.Ltr),
+                    ),
                     isCompassEnabled = true,
                     compassAlignment = Alignment.TopStart,
                     attributionAlignment = Alignment.BottomEnd,
