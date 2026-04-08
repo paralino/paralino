@@ -126,6 +126,7 @@ fun LocationHistoryDetailCard(
                 .clip(RoundedCornerShape(cornerShape))
                 .background(MaterialTheme.colors.background)
         ) {
+            // devices and view switcher
             AnimatedVisibility(visible = !isCollapsed) {
                 Row(
                     modifier = Modifier
@@ -341,7 +342,7 @@ fun LocationHistoryDetailCard(
 
                 AnimatedVisibility(visible = uiState.dataViewType == LocationHistoryDataViewType.LocationPoint) {
                     Column {
-                        AnimatedVisibility(uiState.selectedPoint?.statusTime != null) {
+                        AnimatedVisibility(uiState.selectedPoint?.statusTime != null && !isCollapsed) {
                             FlowRow(
                                 modifier = Modifier
                                     .padding(horizontal = 10.dp)
@@ -370,23 +371,25 @@ fun LocationHistoryDetailCard(
                         ) {
                             when (uiState.selectedPoint) {
                                 is LocationHistoryPointState.Cluster -> {
-                                    GroupMemberActionButton(
-                                        modifier = Modifier.padding(start = 2.dp, bottom = 2.dp),
-                                        startIcon = CoreAppIcons.TargetCircles.asPainterResource(),
-                                        endIcon = CoreAppIcons.ChevronRight.asPainterResource(),
-                                        text = stringResource(
-                                            MR.strings.history_entry_clustered_count,
-                                            "${uiState.selectedPoint.points.size}"
-                                        ),
-                                        backgroundColor = if (isSystemInDarkTheme()) {
-                                            AppColors.accentLight.copy(alpha = 0.2f)
-                                        } else {
-                                            AppColors.accent.copy(alpha = 0.2f)
-                                        },
-                                        onClick = {
-                                            handleEvent(LocationHistoryUiEvent.ExpandCluster(uiState.selectedPoint))
-                                        }
-                                    )
+                                    AnimatedVisibility(!isCollapsed) {
+                                        GroupMemberActionButton(
+                                            modifier = Modifier.padding(start = 2.dp, bottom = 2.dp),
+                                            startIcon = CoreAppIcons.TargetCircles.asPainterResource(),
+                                            endIcon = CoreAppIcons.ChevronRight.asPainterResource(),
+                                            text = stringResource(
+                                                MR.strings.history_entry_clustered_count,
+                                                "${uiState.selectedPoint.points.size}"
+                                            ),
+                                            backgroundColor = if (isSystemInDarkTheme()) {
+                                                AppColors.accentLight.copy(alpha = 0.2f)
+                                            } else {
+                                                AppColors.accent.copy(alpha = 0.2f)
+                                            },
+                                            onClick = {
+                                                handleEvent(LocationHistoryUiEvent.ExpandCluster(uiState.selectedPoint))
+                                            }
+                                        )
+                                    }
                                 }
 
                                 is LocationHistoryPointState.Point -> {
@@ -410,7 +413,7 @@ fun LocationHistoryDetailCard(
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End),
                             ) {
-                                if (uiState.rawDataAction != null) {
+                                if (uiState.rawDataAction != null && !isCollapsed) {
                                     GroupMemberActionButton(
                                         modifier = Modifier,
                                         startIcon = CoreAppIcons.Security.asPainterResource(),
@@ -454,7 +457,7 @@ fun LocationHistoryDetailCard(
                     }
                 }
 
-                AnimatedVisibility(visible = uiState.selectedLocations.isEmpty()) {
+                AnimatedVisibility(visible = uiState.selectedLocations.isEmpty() && !isCollapsed) {
                     CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
                         Text(
                             modifier = Modifier
