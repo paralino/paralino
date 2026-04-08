@@ -489,6 +489,14 @@ class MapHomeViewModel constructor(
     }
 
     fun onEvent(event: MapHomeScreenUiEvent) {
+        if (event is MapHomeScreenUiEvent.OnMapClick) {
+            if (locationHistoryController.value != null) {
+                locationHistoryController.value?.onEvent(
+                    LocationHistoryUiEvent.OnMapClick(event.location)
+                )
+            }
+        }
+
         mapEventHandler.onEvent(event)
     }
 

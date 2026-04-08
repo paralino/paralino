@@ -178,6 +178,14 @@ class LocationHistoryViewModelController(
                 }
             }
 
+            is LocationHistoryUiEvent.OnMapClick -> {
+                if (_uiState.value.focusType == LocationHistoryScreenFocusType.NONE) {
+                    onEvent(LocationHistoryUiEvent.OnSelectFocusType(uiState.value.previousFocusType))
+                } else {
+                    onEvent(LocationHistoryUiEvent.OnMapTouch)
+                }
+            }
+
             LocationHistoryUiEvent.ToggleMapFilter -> {
                 _uiState.update { it.copy(isFilterOpened = !it.isFilterOpened) }
             }

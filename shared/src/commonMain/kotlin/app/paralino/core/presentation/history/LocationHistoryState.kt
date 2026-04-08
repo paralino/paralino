@@ -594,6 +594,7 @@ sealed interface LocationHistoryUiEvent {
     data object OnDeleteSelectedLocationRequest : LocationHistoryUiEvent
     data class OnSelectFocusType(val type: LocationHistoryScreenFocusType) : LocationHistoryUiEvent
     data object OnMapTouch : LocationHistoryUiEvent
+    data class OnMapClick(val location: LatLng) : LocationHistoryUiEvent
     data object ToggleMapFilter : LocationHistoryUiEvent
     data class OnDateSelectorAction(val action: LocationHistoryDateSelectionAction) : LocationHistoryUiEvent
     data class OnSelectDay(val day: LocalDate) : LocationHistoryUiEvent
