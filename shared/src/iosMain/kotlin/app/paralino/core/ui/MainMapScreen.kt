@@ -115,6 +115,11 @@ object MainMapScreen {
 
                 var cardHeight by remember { mutableStateOf(0.dp) }
 
+                LaunchedEffect(this.maxHeight, this.maxWidth, readyState?.mapHomeScreenFocusType?.asLocationHistory) {
+                    vm.onEvent(MapHomeScreenUiEvent.OnScreenDensityChange(maxWidthDp = maxWidth, maxHeightDp = maxHeight))
+                    vm.onEvent(LocationHistoryUiEvent.OnScreenDensityChange(maxWidthDp = maxWidth, maxHeightDp = maxHeight))
+                }
+
                 LaunchedEffect(key1 = Unit) {
                     vm.events.collectLatest { event ->
                         when (event) {
@@ -186,7 +191,7 @@ object MainMapScreen {
                 }
 
                 val isTopHeaderVisible = if (historyUiState != null) {
-                    true
+                    !historyUiState.canCollapseMapHeader
                 } else {
                     !uiState.canCollapseMapHeader
                 }

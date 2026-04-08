@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -233,6 +234,11 @@ internal fun HomeScreenMapWithElements(
     var cardHeight by remember { mutableStateOf(0.dp) }
     BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
 
+        LaunchedEffect(this.maxHeight, this.maxWidth, readyState?.mapHomeScreenFocusType?.asLocationHistory) {
+            onMainEvent(MapHomeScreenUiEvent.OnScreenDensityChange(maxWidthDp = maxWidth, maxHeightDp = maxHeight))
+            onHistoryEvent(LocationHistoryUiEvent.OnScreenDensityChange(maxWidthDp = maxWidth, maxHeightDp = maxHeight))
+        }
+
         val screenAreaPadding = WindowInsets.safeDrawing.asPaddingValues()
         val screenBottomPadding = WindowInsets.safeDrawing.asPaddingValues().calculateBottomPadding()
         val sheetProgressTilCollapsed = sheetState.progress(
@@ -338,7 +344,7 @@ internal fun HomeScreenMapWithElements(
         }
 
         val isTopHeaderVisible = if (historyUiState != null) {
-            true
+            !historyUiState.canCollapseMapHeader
         } else {
             !uiState.canCollapseMapHeader
         }

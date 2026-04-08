@@ -153,27 +153,13 @@ class MapEventHandler(
 
             is MapHomeScreenUiEvent.OnScreenDensityChange -> {
                 updateReadyState { state ->
-                    val interaction = when (val interaction = appPrefs.mapInteractions) {
-                        MapInteractionsType.DEVICE_DEFAULT -> {
-                            when {
-                                event.maxHeightDp.value < 460 -> {
-                                    MapInteractionsType.COLLAPSED
-                                }
-
-                                event.maxHeightDp.value < 720 -> {
-                                    MapInteractionsType.MINIMIZE
-                                }
-
-                                else -> {
-                                    MapInteractionsType.NONE
-                                }
-                            }
-                        }
-
-                        else -> interaction
-                    }
-
-                    state.copy(mapInteractionType = interaction)
+                    state.copy(
+                        mapInteractionType = MapInteractionsType.forScreenSize(
+                            defaultType = appPrefs.mapInteractions,
+                            maxWidthDp = event.maxWidthDp,
+                            maxHeightDp = event.maxHeightDp
+                        )
+                    )
                 }
             }
 

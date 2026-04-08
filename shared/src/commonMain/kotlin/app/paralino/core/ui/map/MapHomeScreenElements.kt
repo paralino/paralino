@@ -40,7 +40,6 @@ import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
@@ -118,10 +117,6 @@ fun MapHomeScreenElements(
         modifier = modifier
             .fillMaxSize()
     ) {
-        LaunchedEffect(this.maxHeight, this.maxWidth) {
-            onEvent(MapHomeScreenUiEvent.OnScreenDensityChange(maxWidthDp = maxWidth, maxHeightDp = maxHeight))
-        }
-
         Column(
             modifier = Modifier
                 .fillMaxSize()

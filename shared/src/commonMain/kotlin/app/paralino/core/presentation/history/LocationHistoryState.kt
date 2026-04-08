@@ -1,5 +1,6 @@
 package app.paralino.core.presentation.history
 
+import androidx.compose.ui.unit.Dp
 import app.paralino.core.models.base.DeviceType
 import app.paralino.core.models.base.GroupOrSpaceId
 import app.paralino.core.models.base.ImageModel
@@ -21,6 +22,7 @@ import app.paralino.core.provider.NetworkType
 import app.paralino.core.provider.current
 import app.paralino.core.ui.components.dialogs.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
+import app.paralino.core.ui.map.BottomSheetPosition
 import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.LocalDate
@@ -358,6 +360,11 @@ data class LocationHistoryScreenUiState(
     val rawDataAction: RawPresentationDataType.LocationHistoryPointPresentation?,
     val locationsToDeleteSize: Int
 ) {
+    val canCollapseMapHeader = when (mapInteractionType) {
+        MapInteractionsType.MINIMIZE -> focusType != LocationHistoryScreenFocusType.NONE
+        MapInteractionsType.COLLAPSED -> true
+        else -> false
+    }
     companion object {
         fun fromScreenState(screenState: LocationHistoryScreenState): LocationHistoryScreenUiState {
             return LocationHistoryScreenUiState(
@@ -577,6 +584,7 @@ sealed interface LocationHistoryUiEvent {
     data class ChangeMapDataViewType(val type: LocationHistoryDataViewType) : LocationHistoryUiEvent
     data class OnDirectionsRequest(val action: MemberNavigateItemState) : LocationHistoryUiEvent
     data class OnRawDataPointClicked(val action: RawPresentationDataType.LocationHistoryPointPresentation) : LocationHistoryUiEvent
+    data class OnScreenDensityChange(val maxWidthDp: Dp, val maxHeightDp: Dp) : LocationHistoryUiEvent
     data object NavigateHistoryNext : LocationHistoryUiEvent
     data object NavigateHistoryPrevious : LocationHistoryUiEvent
     data object ToggleClusterLocations : LocationHistoryUiEvent

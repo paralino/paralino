@@ -1,5 +1,6 @@
 package app.paralino.core.presentation.settings.generic
 
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import app.paralino.core.MR
 import app.paralino.core.db.AppPrefs
@@ -103,5 +104,31 @@ enum class MapInteractionsType(val key: String) {
 
     companion object {
         fun fromKey(key: String) = entries.firstOrNull { it.key == key }
+
+        fun forScreenSize(
+            defaultType: MapInteractionsType,
+            maxWidthDp: Dp,
+            maxHeightDp: Dp
+        ): MapInteractionsType {
+            return when (defaultType) {
+                MapInteractionsType.DEVICE_DEFAULT -> {
+                    when {
+                        maxHeightDp.value < 460 -> {
+                            MapInteractionsType.COLLAPSED
+                        }
+
+                        maxHeightDp.value < 720 -> {
+                            MapInteractionsType.MINIMIZE
+                        }
+
+                        else -> {
+                            MapInteractionsType.NONE
+                        }
+                    }
+                }
+
+                else -> defaultType
+            }
+        }
     }
 }
