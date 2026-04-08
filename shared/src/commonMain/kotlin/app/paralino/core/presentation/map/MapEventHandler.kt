@@ -105,6 +105,32 @@ class MapEventHandler(
                 mapStateManager.onMapTouch(uiState, updateReadyState)
             }
 
+            is MapHomeScreenUiEvent.OnMapClick -> {
+                val readyState = uiState.value.asReady()
+                if (readyState?.isMapFocusRequested == true) {
+                    if (readyState.trackingMarker != null) {
+                        // refocus back to same marker
+                        mapStateManager.trackMarker(
+                            uiState = uiState,
+                            updateState = updateReadyState,
+                            markerData = readyState.trackingMarker
+                        )
+                    } else if (readyState.mapHomeScreenFocusType.isMemberPlaceOrHistoryFocused) {
+                        updateReadyState { state ->
+                            state.copy(isMapFocusRequested = false)
+                        }
+                    }
+                } else {
+                    mapStateManager.onMapTouch(uiState, updateReadyState)
+                }
+            }
+
+            MapHomeScreenUiEvent.OnRefocusSelectedDeviceItem -> {
+                updateReadyState { state ->
+                    state.copy(isMapFocusRequested = false)
+                }
+            }
+
             is MapHomeScreenUiEvent.OnMarkerClick -> {
                 mapStateManager.trackMarker(uiState, updateReadyState, event.pin.asFocusedMarker())
             }

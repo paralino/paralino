@@ -149,24 +149,36 @@ sealed class MapHomeScreenState {
             }
         }
 
+        val canCollapseFocusedMemberItem = when (mapInteractionType) {
+            MapInteractionsType.MINIMIZE,
+            MapInteractionsType.COLLAPSED -> isMapFocusRequested
+            else -> false
+        }
+
         override val canCollapseMapHeader = when (defaultSheetPosition) {
             BottomSheetPosition.EXPANDED -> false
             else -> when (mapInteractionType) {
-                MapInteractionsType.COLLAPSED -> isMapFocusRequested
+                MapInteractionsType.MINIMIZE -> {
+                    if (mapHomeScreenFocusType.isMemberPlaceOrHistoryFocused) {
+                        canCollapseFocusedMemberItem
+                    } else {
+                        false
+                    }
+                }
+                MapInteractionsType.COLLAPSED -> isMapFocusRequested || mapHomeScreenFocusType.isMemberPlaceOrHistoryFocused
                 else -> false
             }
         }
 
-        val focusedPlace: PlaceListItemData? =
-            (mapHomeScreenFocusType as? MapHomeScreenFocusType.PLACE)?.let { item ->
-                places.firstOrNull { it.id == item.placeId }
-            }
+        val focusedPlace: PlaceListItemData? = mapHomeScreenFocusType.asPlace?.let { item ->
+            places.firstOrNull { it.id == item.placeId }
+        }
 
-        val focusedMember: GroupMemberItemStateWithOneLocation? =
-            (mapHomeScreenFocusType as? MapHomeScreenFocusType.MEMBER)?.let { item ->
+        val focusedMember: GroupMemberItemStateWithOneLocation? = mapHomeScreenFocusType.asMember
+            ?.let { item ->
                 allMembersOrDevices.firstOrNull { it.keyId == item.memberKeyId }
             }?.copy(
-                isCollapsedOrMinimized = canCollapseMapHeader
+                isCollapsedOrMinimized = canCollapseFocusedMemberItem
             )
     }
 
@@ -240,6 +252,8 @@ sealed interface MapHomeScreenUiEvent {
     data object OnOpenMemberInviteScreen : MapHomeScreenUiEvent
     data class OnOpenCreatePlaceScreen(val location: LatLng?) : MapHomeScreenUiEvent
     data object OnMapTouch : MapHomeScreenUiEvent
+    data class OnMapClick(val location: LatLng) : MapHomeScreenUiEvent
+    data object OnRefocusSelectedDeviceItem : MapHomeScreenUiEvent
     data object OnGroupPickerClick : MapHomeScreenUiEvent
     data object OnGroupDetailsClick : MapHomeScreenUiEvent
     data object OnSharingStartClick : MapHomeScreenUiEvent
@@ -282,6 +296,7 @@ sealed interface MapHomeScreenFocusType {
     val arePlacesFocused: Boolean get() = this == ALL_PLACES
     val asLocationHistory: LOCATION_HISTORY? get() = this as? LOCATION_HISTORY
     val asMember: MEMBER? get() = this as? MEMBER
+    val asPlace: PLACE? get() = this as? PLACE
     val isLocationHistoryFocused: Boolean get() = this is LOCATION_HISTORY
     val isMemberOrPlaceFocused: Boolean get() = this is MEMBER || this is PLACE
     val isMemberPlaceOrHistoryFocused: Boolean get() = isMemberOrPlaceFocused || isLocationHistoryFocused

@@ -338,7 +338,7 @@ fun GroupMemberWithLocations(
 
         // action item
         AnimatedVisibility(
-            visible = expanded
+            visible = expanded && !state.isCollapsedOrMinimized
         ) {
             Column(
                 modifier = Modifier
@@ -454,7 +454,12 @@ fun GroupMemberWithLocations(
             }
         }
 
-        if (state.lastStatusPing != null && state.lastStatusPing != state.filteredLastPing && canShowOldLocation) {
+        if (
+            state.lastStatusPing != null &&
+            state.lastStatusPing != state.filteredLastPing &&
+            canShowOldLocation &&
+            !state.isCollapsedOrMinimized
+        ) {
             FlowRow(
                 modifier = Modifier
                     .padding(horizontal = 10.dp)

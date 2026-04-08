@@ -5,6 +5,7 @@ import app.paralino.core.models.base.GroupOrSpaceId
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.base.PlanConfig
 import app.paralino.core.models.base.asGroupOrSpaceId
+import app.paralino.core.models.location.LatLng
 import app.paralino.core.models.location.LocationHistoryPointId
 import app.paralino.core.models.location.LocationHistoryPointModel
 import app.paralino.core.models.location.MemberDeviceStatusType
@@ -14,6 +15,7 @@ import app.paralino.core.presentation.groups.MemberNavigateItemState
 import app.paralino.core.presentation.map.MapHomeScreenEvent
 import app.paralino.core.presentation.map.MapPinData
 import app.paralino.core.presentation.rawdata.RawPresentationDataType
+import app.paralino.core.presentation.settings.generic.MapInteractionsType
 import app.paralino.core.provider.NetworkSignalStrength
 import app.paralino.core.provider.NetworkType
 import app.paralino.core.provider.current
@@ -49,6 +51,7 @@ data class LocationHistoryScreenState(
     val clusteringPinsMode: LocationHistoryClusteringPinsViewMode,
     val clusteringPointsMode: LocationHistoryClusteringPointsViewMode,
     val isFilterOpened: Boolean,
+    val mapInteractionType: MapInteractionsType,
     private val devices: List<UserActiveLocationDeviceState>,
     val locations: List<LocationHistoryPointState>,
     val stats: LocationHistoryStats?,
@@ -299,6 +302,7 @@ data class LocationHistoryScreenState(
                 locations = emptyList(),
                 devices = emptyList(),
                 stats = null,
+                mapInteractionType = MapInteractionsType.MINIMIZE,
                 clusteringPointsMode = LocationHistoryClusteringPointsViewMode.DEFAULT_CLUSTERING,
                 dataViewType = LocationHistoryDataViewType.Stats,
                 focusType = LocationHistoryScreenFocusType.OVERVIEW,
@@ -340,6 +344,7 @@ data class LocationHistoryScreenUiState(
     val alertDialog: MainAlertDialog? = null,
     
     // Computed properties from LocationHistoryScreenState
+    val mapInteractionType: MapInteractionsType,
     val deviceType: DeviceType,
     val selectedLocations: List<LocationHistoryPointState>,
     val activeDevices: List<UserActiveLocationDeviceState>,
@@ -383,6 +388,7 @@ data class LocationHistoryScreenUiState(
                 alertDialog = screenState.alertDialog,
                 
                 // Computed properties
+                mapInteractionType = screenState.mapInteractionType,
                 deviceType = screenState.deviceType,
                 selectedLocations = screenState.selectedLocations,
                 activeDevices = screenState.activeDevices,

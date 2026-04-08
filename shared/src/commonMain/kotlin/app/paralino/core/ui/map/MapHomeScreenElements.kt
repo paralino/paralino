@@ -74,6 +74,7 @@ import app.paralino.core.ui.components.ImageModelImage
 import app.paralino.core.ui.components.NoticeInfoChip
 import app.paralino.core.ui.groups.components.GroupMember
 import app.paralino.core.ui.groups.components.GroupMemberActionButton
+import app.paralino.core.ui.history.MapCardSmallActionIcon
 import app.paralino.core.ui.places.PlaceListItem
 import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.ui.theme.ButtonStyle
@@ -327,7 +328,7 @@ fun BoxScope.MapHomeElementMainCards(
                         hasEndArrow = true,
                         onClick = { onEvent(MapHomeScreenUiEvent.OnPlaceClick(placeState)) }
                     )
-                    CloseFocusButton(
+                    MapCardCloseIconButton(
                         modifier = Modifier
                             .align(Alignment.TopEnd)
                             .padding(end = 8.dp),
@@ -373,7 +374,7 @@ fun BoxScope.MapHomeElementMainCards(
                             modifier = Modifier
                                 .padding(end = 8.dp)
                                 .rotate(90f),
-                            isVisible = readyState.canCollapseMapHeader,
+                            isVisible = readyState.canCollapseFocusedMemberItem,
                             icon = CoreAppIcons.ChevronLeft.asPainterResource(),
                             onClick = {
                                 onEvent(MapHomeScreenUiEvent.OnRefocusSelectedDeviceItem)
@@ -400,14 +401,6 @@ fun BoxScope.MapHomeElementMainCards(
                         canShowOldLocation = true,
                         onEvent = { event ->
                             onEvent(MapHomeScreenUiEvent.OnMemberItemEvent(event = event))
-                        }
-                    )
-                    CloseFocusButton(
-                        modifier = Modifier
-                            .align(Alignment.TopEnd)
-                            .padding(end = 12.dp),
-                        onClick = {
-                            onEvent(MapHomeScreenUiEvent.OnCloseFocusedItemClick)
                         }
                     )
                 }
@@ -524,7 +517,7 @@ private fun MapHomeElementSharingRow(
 }
 
 @Composable
-fun CloseFocusButton(
+fun MapCardCloseIconButton(
     modifier: Modifier = Modifier,
     onClick: () -> Unit
 ) {

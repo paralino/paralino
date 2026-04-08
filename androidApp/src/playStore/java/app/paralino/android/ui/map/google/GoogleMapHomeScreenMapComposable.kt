@@ -61,7 +61,7 @@ fun GoogleMapHomeScreenMapComposable(
             if (historyUiState != null) {
                 onHistoryEvent(LocationHistoryUiEvent.OnMapTouch)
             } else {
-                onMainEvent(MapHomeScreenUiEvent.OnMapTouch)
+                onMainEvent(MapHomeScreenUiEvent.OnMapClick(it))
             }
         },
         onMapLongClick = {

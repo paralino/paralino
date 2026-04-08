@@ -119,6 +119,8 @@ class MapStateMapper(
             }
         }
 
+        val mapInteractionsType = previousState?.mapInteractionType ?: appPrefs.mapInteractions
+
         val membersData = buildMembersData(
             groupOrSpace = groupOrSpace,
             groupPlanConfig = planConfig,
@@ -211,7 +213,7 @@ class MapStateMapper(
             },
             verified = isVerified,
             isMapFocusRequested = previousState?.isMapFocusRequested ?: false,
-            mapInteractionType = previousState?.mapInteractionType ?: appPrefs.mapInteractions,
+            mapInteractionType = mapInteractionsType,
             desiredMapSheetPosition = previousState?.desiredMapSheetPosition,
             alertDialog = alertDialog,
             isSatelliteModeEnabled = isSatelliteModeEnabled,
@@ -271,7 +273,8 @@ class MapStateMapper(
                         ),
                         singleLocation = null,
                         deviceId = null,
-                        isHighlighted = memberState.isCurrentUser
+                        isHighlighted = memberState.isCurrentUser,
+                        isCollapsedOrMinimized = false
                     )
                 )
             } else {
@@ -309,7 +312,8 @@ class MapStateMapper(
                             visibility = locationVisibility,
                             formatter = valueFormatter
                         ),
-                        isHighlighted = memberState.isCurrentUser
+                        isHighlighted = memberState.isCurrentUser,
+                        isCollapsedOrMinimized = false
                     )
                 }
             }
@@ -383,7 +387,8 @@ class MapStateMapper(
                         formatter = valueFormatter
                     )
                 },
-                isHighlighted = device.deviceId == appPrefs.deviceId
+                isHighlighted = device.deviceId == appPrefs.deviceId,
+                isCollapsedOrMinimized = false
             )
         }
             .sortedByDescending { it.singleLocation?.deviceStatus == MemberDeviceStatusType.ACTIVE }
