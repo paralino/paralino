@@ -337,9 +337,17 @@ internal fun HomeScreenMapWithElements(
             )
         }
 
+        val isTopHeaderVisible = if (historyUiState != null) {
+            true
+        } else {
+            !uiState.canCollapseMapHeader
+        }
+
         MapHomeScreenElements(
             modifier = Modifier,
             state = uiState,
+            isTopHeaderControlVisible = isTopHeaderVisible,
+            isActionRowControlVisible = sheetState.currentValue.order <= BottomSheetPosition.COLLAPSED.order,
             screenPaddingValues = screenPaddingValues,
             containerHeight = this.maxHeight,
             bottomOffset = bottomOffset,
@@ -347,10 +355,6 @@ internal fun HomeScreenMapWithElements(
             sheetFullProgress = sheetState.progress(
                 from = BottomSheetPosition.COLLAPSED,
                 to = BottomSheetPosition.EXPANDED
-            ),
-            sheetCollapsedMinimizedProgress = sheetState.progress(
-                from = BottomSheetPosition.COLLAPSED_MINIMISED,
-                to = BottomSheetPosition.COLLAPSED
             ),
             onEvent = onMainEvent,
             bottomCards = { sheetPeekHeight ->

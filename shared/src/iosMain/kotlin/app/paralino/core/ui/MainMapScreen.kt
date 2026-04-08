@@ -185,6 +185,12 @@ object MainMapScreen {
                         }
                 }
 
+                val isTopHeaderVisible = if (historyUiState != null) {
+                    true
+                } else {
+                    !uiState.canCollapseMapHeader
+                }
+
                 val mainDialog = uiState.alertDialog
                 val historyDialog = historyUiState?.alertDialog
                 mainDialog?.Show {
@@ -224,16 +230,14 @@ object MainMapScreen {
                         MapHomeScreenElements(
                             modifier = Modifier,
                             state = uiState,
+                            isTopHeaderControlVisible = isTopHeaderVisible,
+                            isActionRowControlVisible = sheetState.currentValue.order <= BottomSheetPosition.COLLAPSED.order,
                             screenPaddingValues = paddingValues.toComposePaddingValues(),
                             containerHeight = this.maxHeight,
                             bottomOffset = bottomOffset,
                             isSheetHidden = sheetState.currentValue == BottomSheetPosition.HIDDEN,
                             sheetFullProgress = sheetState.progress(
                                 from = BottomSheetPosition.EXPANDED,
-                                to = BottomSheetPosition.COLLAPSED
-                            ),
-                            sheetCollapsedMinimizedProgress = sheetState.progress(
-                                from = BottomSheetPosition.COLLAPSED_MINIMISED,
                                 to = BottomSheetPosition.COLLAPSED
                             ),
                             onEvent = vm::onEvent,

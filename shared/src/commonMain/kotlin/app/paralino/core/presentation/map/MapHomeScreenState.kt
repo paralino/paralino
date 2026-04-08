@@ -35,6 +35,7 @@ sealed class MapHomeScreenState {
     abstract val isSheetEnabled: Boolean
     abstract val defaultSheetPosition: BottomSheetPosition
     abstract val androidMapSDKProvider: MapsSDKProvider?
+    abstract val canCollapseMapHeader: Boolean
 
     val deviceType: DeviceType = DeviceType.current
     val hasSatelliteMode: Boolean get() = when (deviceType) {
@@ -112,29 +113,12 @@ sealed class MapHomeScreenState {
         val allMembersVerified: Boolean get() = allMembersOrDevices.all { it.memberState.isVerified }
         val inactiveUserCount: Int get() = userCount - activeUserCount - idleUserCount
 
-        val focusedPlace: PlaceListItemData? =
-            (mapHomeScreenFocusType as? MapHomeScreenFocusType.PLACE)?.let { item ->
-                places.firstOrNull { it.id == item.placeId }
-            }
-
-        val focusedMember: GroupMemberItemState? =
-            (mapHomeScreenFocusType as? MapHomeScreenFocusType.MEMBER)?.let { item ->
-                allMembersOrDevices.firstOrNull { it.keyId == item.memberKeyId }
-            }
-
         val locationHistoryMode: MapHomeScreenFocusType.LOCATION_HISTORY? = mapHomeScreenFocusType.asLocationHistory
 
         override val isSheetEnabled: Boolean = if (isPersonalSpace) {
             !isFirstTimeInPersonalSpace && !mapHomeScreenFocusType.isMemberPlaceOrHistoryFocused
         } else {
             !mapHomeScreenFocusType.isMemberPlaceOrHistoryFocused
-        }
-
-        val canCollapseMapHeader = when (mapInteractionType) {
-            MapInteractionsType.DEVICE_DEFAULT -> false
-            MapInteractionsType.NONE -> false
-            MapInteractionsType.MINIMIZE -> false
-            MapInteractionsType.COLLAPSED -> isMapFocusRequested
         }
 
         override val defaultSheetPosition = if (mapHomeScreenFocusType.isMemberPlaceOrHistoryFocused) {
@@ -164,6 +148,26 @@ sealed class MapHomeScreenState {
                 }
             }
         }
+
+        override val canCollapseMapHeader = when (defaultSheetPosition) {
+            BottomSheetPosition.EXPANDED -> false
+            else -> when (mapInteractionType) {
+                MapInteractionsType.COLLAPSED -> isMapFocusRequested
+                else -> false
+            }
+        }
+
+        val focusedPlace: PlaceListItemData? =
+            (mapHomeScreenFocusType as? MapHomeScreenFocusType.PLACE)?.let { item ->
+                places.firstOrNull { it.id == item.placeId }
+            }
+
+        val focusedMember: GroupMemberItemStateWithOneLocation? =
+            (mapHomeScreenFocusType as? MapHomeScreenFocusType.MEMBER)?.let { item ->
+                allMembersOrDevices.firstOrNull { it.keyId == item.memberKeyId }
+            }?.copy(
+                isCollapsedOrMinimized = canCollapseMapHeader
+            )
     }
 
     data class Empty(
@@ -184,6 +188,7 @@ sealed class MapHomeScreenState {
         } else {
             BottomSheetPosition.HIDDEN
         }
+        override val canCollapseMapHeader = false
     }
 }
 

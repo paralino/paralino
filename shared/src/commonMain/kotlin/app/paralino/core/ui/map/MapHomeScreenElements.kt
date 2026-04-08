@@ -47,9 +47,9 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.BiasAlignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.dropShadow
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.shadow.Shadow
@@ -84,11 +84,12 @@ import dev.icerock.moko.resources.compose.stringResource
 fun MapHomeScreenElements(
     modifier: Modifier = Modifier,
     state: MapHomeScreenState,
+    isTopHeaderControlVisible: Boolean,
+    isActionRowControlVisible: Boolean,
     screenPaddingValues: PaddingValues,
     containerHeight: Dp,
     bottomOffset: Dp,
     sheetFullProgress: Float,
-    sheetCollapsedMinimizedProgress: Float,
     isSheetHidden: Boolean,
     onEvent: (MapHomeScreenUiEvent) -> Unit,
     bottomCards: @Composable BoxScope.(sheetPeekHeight: Dp) -> Unit
@@ -125,19 +126,7 @@ fun MapHomeScreenElements(
                 .fillMaxSize()
         ) {
             val readyState = rememberUpdatedState(state.asReady()).value
-            val isTopHeaderVisible = if (readyState != null) {
-                if (readyState.mapHomeScreenFocusType.isMemberPlaceOrHistoryFocused) {
-                    !readyState.canCollapseMapHeader
-                } else {
-                    if (readyState.canCollapseMapHeader) {
-                        false
-                    } else {
-                        sheetCollapsedMinimizedProgress > 0f
-                    }
-                }
-            } else {
-                sheetCollapsedMinimizedProgress > 0f
-            }
+
 
             Box(
                 modifier = Modifier
@@ -159,7 +148,7 @@ fun MapHomeScreenElements(
                 )
 
                 androidx.compose.animation.AnimatedVisibility(
-                    visible = isTopHeaderVisible,
+                    visible = isTopHeaderControlVisible,
                     enter = expandVertically(clip = false),
                     exit = shrinkVertically(clip = false)
                 ) {
@@ -272,7 +261,7 @@ fun MapHomeScreenElements(
                 ) {
                     MapHomeElementSharingRow(
                         sheetFullProgress = sheetFullProgress,
-                        sheetCollapsedMinimizedProgress = sheetCollapsedMinimizedProgress,
+                        isActionRowControlVisible = isActionRowControlVisible,
                         readyState = readyState,
                         onEvent = onEvent
                     )
@@ -359,7 +348,7 @@ fun BoxScope.MapHomeElementMainCards(
             exit = shrinkVertically() + fadeOut()
         ) {
             readyState?.focusedMember?.let { memberState ->
-                Box(
+                Column (
                     modifier = Modifier.padding(
                         bottom = when (DeviceType.current) {
                             DeviceType.Android -> 8.dp
@@ -373,9 +362,35 @@ fun BoxScope.MapHomeElementMainCards(
                         }
                     )
                 ) {
-                    GroupMember(
+                    Row(
                         modifier = Modifier
-                            .padding(top = 38.dp),
+                            .fillMaxWidth()
+                            .padding(bottom = 8.dp),
+                        horizontalArrangement = Arrangement.End,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        MapCardSmallActionIcon(
+                            modifier = Modifier
+                                .padding(end = 8.dp)
+                                .rotate(90f),
+                            isVisible = readyState.canCollapseMapHeader,
+                            icon = CoreAppIcons.ChevronLeft.asPainterResource(),
+                            onClick = {
+                                onEvent(MapHomeScreenUiEvent.OnRefocusSelectedDeviceItem)
+                            }
+                        )
+
+                        MapCardCloseIconButton(
+                            modifier = Modifier
+                                .padding(end = 12.dp),
+                            onClick = {
+                                onEvent(MapHomeScreenUiEvent.OnCloseFocusedItemClick)
+                            }
+                        )
+                    }
+
+                    GroupMember(
+                        modifier = Modifier,
                         state = memberState,
                         backgroundColor = MaterialTheme.colors.background,
                         shape = RoundedCornerShape(16.dp),
@@ -404,7 +419,7 @@ fun BoxScope.MapHomeElementMainCards(
 @Composable
 private fun MapHomeElementSharingRow(
     sheetFullProgress: Float,
-    sheetCollapsedMinimizedProgress: Float,
+    isActionRowControlVisible: Boolean,
     readyState: MapHomeScreenState.Ready?,
     onEvent: (MapHomeScreenUiEvent) -> Unit,
 ) {
@@ -420,11 +435,11 @@ private fun MapHomeElementSharingRow(
     val isMemberPlaceOrHistoryFocused =
         readyState?.mapHomeScreenFocusType?.isMemberPlaceOrHistoryFocused == true
 
-    if (sheetCollapsedMinimizedProgress > 0f) {
+    AnimatedVisibility (isActionRowControlVisible) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .alpha(sheetCollapsedMinimizedProgress)
+//                .alpha(sheetCollapsedMinimizedProgress)
                 .horizontalScroll(rememberScrollState())
                 .padding(horizontal = sidePadding),
             horizontalArrangement = Arrangement.spacedBy(6.dp, Alignment.End),
@@ -441,7 +456,7 @@ private fun MapHomeElementSharingRow(
                                 color = MaterialTheme.colors.onBackground.copy(alpha = 0.2f),
                             )
                         ),
-                    isEnabled = sheetCollapsedMinimizedProgress >= 1f,
+                    isEnabled = isActionRowControlVisible,
                     startIcon = CoreAppIcons.TimelinePathWithPins.asPainterResource(),
                     text = stringResource(MR.strings.group_members_item_history_button),
                     backgroundColor = MaterialTheme.colors.background,
@@ -463,7 +478,7 @@ private fun MapHomeElementSharingRow(
                                 color = MaterialTheme.colors.onBackground.copy(alpha = 0.2f),
                             )
                         ),
-                    isEnabled = sheetCollapsedMinimizedProgress >= 1f,
+                    isEnabled = isActionRowControlVisible,
                     startIcon = if (readyState.isPersonalSpace) {
                         CoreAppIcons.ShareLocation.asPainterResource()
                     } else {
@@ -478,7 +493,7 @@ private fun MapHomeElementSharingRow(
                     backgroundColor = MaterialTheme.colors.background,
                     startIconColor = AppColors.accent,
                     onClick = {
-                        if (sheetCollapsedMinimizedProgress >= 1f)
+                        if (isActionRowControlVisible)
                             onEvent(MapHomeScreenUiEvent.OnSharingStartClick)
                     }
                 )
@@ -489,7 +504,7 @@ private fun MapHomeElementSharingRow(
                 GroupMemberActionButton(
                     modifier = Modifier
                         .padding(bottom = 6.dp),
-                    isEnabled = sheetCollapsedMinimizedProgress >= 1f,
+                    isEnabled = isActionRowControlVisible,
                     startIcon = CoreAppIcons.ShareLocation.asPainterResource(),
                     isLoading = false,
                     backgroundColor = MaterialTheme.colors.primary,

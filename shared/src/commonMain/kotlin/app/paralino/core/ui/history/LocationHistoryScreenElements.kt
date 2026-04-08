@@ -123,11 +123,13 @@ fun LocationHistoryMapCardUi(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.End
         ) {
-            FocusTypeIcon(
+            MapCardSmallActionIcon(
+                modifier = Modifier.padding(end = 8.dp),
                 isVisible = uiState.focusType != LocationHistoryScreenFocusType.OVERVIEW && uiState.dataViewType == LocationHistoryDataViewType.LocationPoint,
-                type = LocationHistoryScreenFocusType.OVERVIEW,
                 icon = CoreAppIcons.ZoomOutFocusMap.asPainterResource(),
-                onEvent = onEvent
+                onClick = {
+                    onEvent(LocationHistoryUiEvent.OnSelectFocusType(LocationHistoryScreenFocusType.OVERVIEW))
+                }
             )
 
 //                FocusTypeIcon(
@@ -137,11 +139,13 @@ fun LocationHistoryMapCardUi(
 //                    onEvent = onEvent
 //                )
 
-            FocusTypeIcon(
+            MapCardSmallActionIcon(
+                modifier = Modifier.padding(end = 8.dp),
                 isVisible = uiState.dataViewType == LocationHistoryDataViewType.LocationPoint && (uiState.focusType == LocationHistoryScreenFocusType.MEMBER_DEFAULT || uiState.focusType == LocationHistoryScreenFocusType.OVERVIEW),
-                type = LocationHistoryScreenFocusType.MEMBER_FOCUSED,
                 icon = CoreAppIcons.ZoomFocusFull.asPainterResource(),
-                onEvent = onEvent
+                onClick = {
+                    onEvent(LocationHistoryUiEvent.OnSelectFocusType(LocationHistoryScreenFocusType.MEMBER_FOCUSED))
+                }
             )
 
             Box(
@@ -243,24 +247,19 @@ fun LocationHistoryMapCardUi(
 }
 
 @Composable
-private fun RowScope.FocusTypeIcon(
+fun RowScope.MapCardSmallActionIcon(
     modifier: Modifier = Modifier,
     isVisible: Boolean,
-    type: LocationHistoryScreenFocusType,
     icon: Painter,
-    onEvent: (LocationHistoryUiEvent) -> Unit
+    onClick: () -> Unit
 ) {
     AnimatedVisibility(
-        modifier = modifier,
         visible = isVisible
     ) {
         Icon(
-            modifier = Modifier
-                .padding(end = 8.dp)
+            modifier = modifier
                 .size(32.dp)
-                .clickable(onClick = {
-                    onEvent(LocationHistoryUiEvent.OnSelectFocusType(type))
-                })
+                .clickable(onClick = onClick)
                 .dropShadow(
                     shape = RoundedCornerShape(8.dp),
                     shadow = Shadow(
