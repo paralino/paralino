@@ -64,7 +64,7 @@ fun GoogleMapMarkerComposable(
 @Composable
 private fun mapMarkerIcon(
     state: MapPinData,
-): BitmapDescriptor {
+): BitmapDescriptor? {
     val keys = listOfNotNull(
         state.active,
         state.focused,
@@ -81,7 +81,7 @@ private fun mapMarkerIcon(
 internal fun rememberComposeBitmapDescriptor(
     vararg keys: Any,
     content: @Composable () -> Unit,
-): BitmapDescriptor {
+): BitmapDescriptor? {
     val parent = LocalView.current as ViewGroup
     val compositionContext = rememberCompositionContext()
     val currentContent by rememberUpdatedState(content)
@@ -95,15 +95,14 @@ private fun renderComposableToBitmapDescriptor(
     parent: ViewGroup,
     compositionContext: CompositionContext,
     content: @Composable () -> Unit,
-): BitmapDescriptor {
+): BitmapDescriptor? {
     val fakeCanvas = Canvas()
-    val composeView =
-        ComposeView(parent.context)
-            .apply {
-                setParentCompositionContext(compositionContext)
-                setContent(content)
-            }
-            .also(parent::addView)
+    val composeView = ComposeView(parent.context)
+        .apply {
+            setParentCompositionContext(compositionContext)
+            setContent(content)
+        }
+        .also(parent::addView)
 
     composeView.draw(fakeCanvas)
 
@@ -114,12 +113,17 @@ private fun renderComposableToBitmapDescriptor(
 
     composeView.layout(0, 0, composeView.measuredWidth, composeView.measuredHeight)
 
-    val bitmap = Bitmap
-        .createBitmap(
-            composeView.measuredWidth,
-            composeView.measuredHeight,
-            Bitmap.Config.ARGB_8888,
-        )
+    if (composeView.measuredWidth == 0 || composeView.measuredHeight == 0) {
+        // view not ready
+        parent.removeView(composeView)
+        return null
+    }
+
+    val bitmap = Bitmap.createBitmap(
+        composeView.measuredWidth,
+        composeView.measuredHeight,
+        Bitmap.Config.ARGB_8888,
+    )
 
     bitmap.applyCanvas { composeView.draw(this) }
 
