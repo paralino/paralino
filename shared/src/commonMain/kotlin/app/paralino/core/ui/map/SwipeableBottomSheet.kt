@@ -10,6 +10,7 @@ import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.anchoredDraggable
 import androidx.compose.foundation.gestures.animateTo
 import androidx.compose.foundation.gestures.animateToWithDecay
+import androidx.compose.foundation.gestures.snapTo
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -554,7 +555,19 @@ class SwipeableSheetState internal constructor(
     }
 
     suspend fun animateTo(position: BottomSheetPosition) {
-        state.animateTo(position)
+        try {
+            state.animateTo(position)
+        } catch (e: Exception) {
+            // ignore
+        }
+    }
+
+    suspend fun snapTo(position: BottomSheetPosition) {
+        try {
+            state.snapTo(position)
+        } catch (e: Exception) {
+            // ignore
+        }
     }
 
     companion object {

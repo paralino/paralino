@@ -17,6 +17,7 @@ import app.paralino.core.presentation.map.MapHomeScreenUiEvent
 import app.paralino.core.ui.CoreUiState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -35,8 +36,12 @@ fun MainMapSheet(
     LaunchedEffect(mapUiState.defaultSheetPosition) {
         snapshotFlow { mapUiState.defaultSheetPosition }
             .distinctUntilChanged()
-            .onEach {
-                swipeableState.animateTo(it)
+            .onEach { position ->
+                if (position == BottomSheetPosition.HIDDEN) {
+                    swipeableState.snapTo(position)
+                } else {
+                    swipeableState.animateTo(position)
+                }
             }
             .collect()
     }
