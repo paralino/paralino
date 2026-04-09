@@ -5,8 +5,10 @@ import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -186,8 +188,9 @@ fun PersonalCodeItem(
 
                 Spacer(modifier = Modifier.size(10.dp))
 
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
+                FlowRow(
+                    verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.Start),
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     FilledButton(
@@ -210,7 +213,9 @@ fun PersonalCodeItem(
                     ) {
                         Text(text = stringResource(MR.strings.invite_code_button_share))
                     }
+
                     Spacer(modifier = Modifier.weight(1f))
+
                     if (hasDelete) {
                         IconButton(
                             onClick = { if (!deleteLoading) onDelete() }
