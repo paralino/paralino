@@ -8,14 +8,18 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.LocalContentColor
@@ -70,42 +74,61 @@ fun MainAlertDialog(
     onAction: (buttonId: String?) -> Unit,
 ) {
     AppTheme {
-        AlertDialog(
-            properties = DialogProperties(
-                dismissOnBackPress = canDismiss,
-                dismissOnClickOutside = canDismiss
-            ),
-            onDismissRequest = { onAction(null) },
-            title = {
-                Text(
-                    title,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.fillMaxWidth()
-                )
-            },
-            text = {
-                Text(
-                    text = message.annotatedBoldCompose(),
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.fillMaxWidth()
-                )
-            },
-            buttons = {
-                Column(
-                    modifier = Modifier
-                        .padding(horizontal = 10.dp)
-                        .padding(bottom = 10.dp)
-                ) {
-                    buttons.forEach { buttonData ->
-                        MainAlertDialogActionButton(
-                            dialogId = dialogId,
-                            buttonData = buttonData,
-                            onAction = onAction
-                        )
+        BoxWithConstraints {
+            val maxHeight = this.maxHeight
+            AlertDialog(
+                properties = DialogProperties(
+                    dismissOnBackPress = canDismiss,
+                    dismissOnClickOutside = canDismiss
+                ),
+                onDismissRequest = { onAction(null) },
+                title = {
+                    Text(
+                        text = title,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                },
+                text = {
+                    Text(
+                        text = message.annotatedBoldCompose(),
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    // ignore for now since lineHeight is not scaled so we don't gain much
+//                    BasicText(
+//                        modifier = Modifier.fillMaxWidth(),
+//                        text = message.plus(message).annotatedBoldCompose(),
+//                        style = LocalTextStyle.current.copy(
+//                            lineHeight = 18.sp,
+//                            textAlign = TextAlign.Center,
+//                            color = LocalTextStyle.current.color.copy(alpha = LocalContentAlpha.current)
+//                        ),
+//                        autoSize = TextAutoSize.StepBased(
+//                            minFontSize = 10.sp,
+//                            maxFontSize = 14.sp
+//                        )
+//                    )
+                },
+                buttons = {
+                    Column(
+                        modifier = Modifier
+                            .padding(horizontal = 10.dp)
+                            .padding(bottom = 10.dp)
+                            .heightIn(max = maxHeight * 0.45f)
+                            .verticalScroll(rememberScrollState())
+                    ) {
+                        buttons.forEach { buttonData ->
+                            MainAlertDialogActionButton(
+                                dialogId = dialogId,
+                                buttonData = buttonData,
+                                onAction = onAction
+                            )
+                        }
                     }
                 }
-            }
-        )
+            )
+        }
     }
 }
 
