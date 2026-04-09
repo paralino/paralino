@@ -105,7 +105,12 @@ fun CameraPositionState.refocus(
             result
         )
 
-        var cameraUpdate = CameraUpdateFactory.newLatLngBounds(bounds, padding)
+        var cameraUpdate = try {
+            CameraUpdateFactory.newLatLngBounds(bounds, padding)
+        } catch (e: Exception) {
+            // can sometimes be not initialized for various ui config changes
+            return@launch
+        }
 
         val currentBounds = this@refocus.projection?.visibleRegion?.latLngBounds
         currentBounds?.let {
