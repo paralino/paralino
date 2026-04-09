@@ -10,7 +10,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.FractionalThreshold
 import androidx.compose.material.MaterialTheme
@@ -194,6 +196,7 @@ fun AppSnackbar(
                             )
                             .clip(RoundedCornerShape(20.dp))
                             .background(MaterialTheme.colors.surface)
+                            .verticalScroll(rememberScrollState())
                             .padding(20.dp),
                     ) {
                         if (payload.title != null) {
