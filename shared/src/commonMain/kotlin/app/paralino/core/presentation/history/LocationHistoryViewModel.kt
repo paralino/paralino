@@ -168,8 +168,10 @@ class LocationHistoryViewModelController(
                 _uiState.update {
                     it.copy(
                         isFilterOpened = false,
-                        focusType = LocationHistoryScreenFocusType.NONE,
-                        previousFocusType = if (it.focusType == LocationHistoryScreenFocusType.NONE) {
+                        focusType = LocationHistoryScreenFocusType.NONE_COLLAPSED(
+                            isForceCollapsedRequested = it.focusType.isForceCollapsedRequested
+                        ),
+                        previousFocusType = if (it.focusType.isCollapsed) {
                             it.previousFocusType
                         } else {
                             it.focusType
@@ -179,11 +181,7 @@ class LocationHistoryViewModelController(
             }
 
             is LocationHistoryUiEvent.OnMapClick -> {
-                if (_uiState.value.focusType == LocationHistoryScreenFocusType.NONE) {
-                    onEvent(LocationHistoryUiEvent.OnSelectFocusType(uiState.value.previousFocusType))
-                } else {
-                    onEvent(LocationHistoryUiEvent.OnMapTouch)
-                }
+                // do nothing
             }
 
             LocationHistoryUiEvent.ToggleMapFilter -> {
@@ -194,11 +192,11 @@ class LocationHistoryViewModelController(
                 _uiState.update {
                     it.copy(
                         isFilterOpened = false,
-                        focusType = if (it.focusType == LocationHistoryScreenFocusType.MEMBER_DEFAULT) {
-                            LocationHistoryScreenFocusType.MEMBER_FOCUSED
-                        } else {
-                            LocationHistoryScreenFocusType.MEMBER_DEFAULT
-                        },
+                        focusType = LocationHistoryScreenFocusType.MEMBER(
+                            isFocused = it.focusType.isMemberNotFocused,
+                            isCollapsed = false,
+                            isForceCollapsedRequested = false
+                        ),
                         previousFocusType = it.focusType
                     )
                 }
@@ -216,12 +214,17 @@ class LocationHistoryViewModelController(
                 _uiState.update {
                     it.copy(
                         dataViewType = LocationHistoryDataViewType.LocationPoint,
-                        focusType = if (it.focusType == LocationHistoryScreenFocusType.NONE) {
-                            LocationHistoryScreenFocusType.MEMBER_DEFAULT
+                        focusType = if (it.focusType is LocationHistoryScreenFocusType.NONE_COLLAPSED) {
+                            LocationHistoryScreenFocusType.MEMBER(
+                                isFocused = false,
+                                isCollapsed = true,
+                                isForceCollapsedRequested = it.focusType.isForceCollapsedRequested
+                            )
                         } else {
                             it.focusType
                         },
-                        previousFocusType = it.focusType,
+//                        focusType = it.focusType,
+                        previousFocusType = it.previousFocusType,
                         selectedLocationId = event.point.pointId,
                         isFilterOpened = false
                     )
@@ -235,6 +238,78 @@ class LocationHistoryViewModelController(
                         previousFocusType = it.focusType,
                         isFilterOpened = false
                     )
+                }
+            }
+
+            LocationHistoryUiEvent.ToggleExpandedCollapseFocusType -> {
+                when (uiState.value.dataViewType) {
+                    LocationHistoryDataViewType.LocationPoint -> {
+                        when (val focus = uiState.value.focusType) {
+                            is LocationHistoryScreenFocusType.MEMBER -> {
+                                onEvent(
+                                    LocationHistoryUiEvent.OnSelectFocusType(
+                                        LocationHistoryScreenFocusType.MEMBER(
+                                            isCollapsed = !focus.isCollapsed,
+                                            isFocused = focus.isFocused,
+                                            isForceCollapsedRequested = !focus.isCollapsed
+                                        )
+                                    )
+                                )
+                            }
+
+                            is LocationHistoryScreenFocusType.NONE_COLLAPSED,
+                            is LocationHistoryScreenFocusType.OVERVIEW -> {
+                                onEvent(
+                                    LocationHistoryUiEvent.OnSelectFocusType(
+                                        LocationHistoryScreenFocusType.MEMBER(
+                                            isCollapsed = !uiState.value.isCardCollapsed,
+                                            isFocused = false,
+                                            isForceCollapsedRequested = !uiState.value.isCardCollapsed
+                                        )
+                                    )
+                                )
+                            }
+                        }
+                    }
+
+                    LocationHistoryDataViewType.Stats -> {
+                        onEvent(
+                            LocationHistoryUiEvent.OnSelectFocusType(
+                                LocationHistoryScreenFocusType.OVERVIEW(
+                                    isCollapsed = !uiState.value.focusType.isCollapsed,
+                                    isForceCollapsedRequested = !uiState.value.focusType.isCollapsed
+                                )
+                            )
+                        )
+                    }
+                }
+            }
+
+            LocationHistoryUiEvent.OnFocusOnMemberClick -> {
+                when (val focus = uiState.value.focusType) {
+                    is LocationHistoryScreenFocusType.MEMBER -> {
+                        onEvent(
+                            LocationHistoryUiEvent.OnSelectFocusType(
+                                LocationHistoryScreenFocusType.MEMBER(
+                                    isCollapsed = false,
+                                    isFocused = true,
+                                    isForceCollapsedRequested = false
+                                )
+                            )
+                        )
+                    }
+
+                    else -> {
+                        onEvent(
+                            LocationHistoryUiEvent.OnSelectFocusType(
+                                LocationHistoryScreenFocusType.MEMBER(
+                                    isCollapsed = focus.isCollapsed,
+                                    isFocused = false,
+                                    isForceCollapsedRequested = focus.isForceCollapsedRequested
+                                )
+                            )
+                        )
+                    }
                 }
             }
 
@@ -302,10 +377,10 @@ class LocationHistoryViewModelController(
                 _uiState.update {
                     it.copy(
                         dataViewType = event.type,
-                        focusType = when (event.type) {
-                            LocationHistoryDataViewType.LocationPoint -> LocationHistoryScreenFocusType.OVERVIEW
-                            LocationHistoryDataViewType.Stats -> LocationHistoryScreenFocusType.OVERVIEW
-                        },
+                        focusType = LocationHistoryScreenFocusType.OVERVIEW(
+                            isCollapsed = false,
+                            isForceCollapsedRequested = false
+                        ),
                         previousFocusType = it.focusType,
                         isFilterOpened = false
                     )
@@ -387,12 +462,15 @@ class LocationHistoryViewModelController(
                                 data = AppSnackbarData(
                                     payload = AppSnackbarPayload(
                                         text = if (_uiState.value.isPersonalHistory) {
-                                            val days = _uiState.value.planConfig?.personalHistoryDaysLimit ?: 0
+                                            val days =
+                                                _uiState.value.planConfig?.personalHistoryDaysLimit
+                                                    ?: 0
                                             if (days == 0) {
                                                 MR.strings.history_map_plan_limit_message_personal_free.localizedString()
                                             } else {
                                                 MR.strings.history_map_plan_limit_message_personal_count.localizedString(
-                                                    _uiState.value.planConfig?.personalHistoryDaysLimit ?: 1
+                                                    _uiState.value.planConfig?.personalHistoryDaysLimit
+                                                        ?: 1
                                                 )
                                             }
                                         } else {
@@ -455,6 +533,7 @@ class LocationHistoryViewModelController(
                         clusteringPointsMode = when (it.clusteringPointsMode) {
                             LocationHistoryClusteringPointsViewMode.DEFAULT_CLUSTERING,
                             LocationHistoryClusteringPointsViewMode.CLUSTERING -> LocationHistoryClusteringPointsViewMode.DETAILED
+
                             LocationHistoryClusteringPointsViewMode.DEFAULT_DETAILED,
                             LocationHistoryClusteringPointsViewMode.DETAILED -> LocationHistoryClusteringPointsViewMode.CLUSTERING
                         }
@@ -468,6 +547,7 @@ class LocationHistoryViewModelController(
                         clusteringPinsMode = when (it.clusteringPinsMode) {
                             LocationHistoryClusteringPinsViewMode.DEFAULT_CLUSTERING,
                             LocationHistoryClusteringPinsViewMode.CLUSTERING -> LocationHistoryClusteringPinsViewMode.DETAILED
+
                             LocationHistoryClusteringPinsViewMode.DEFAULT_DETAILED,
                             LocationHistoryClusteringPinsViewMode.DETAILED -> LocationHistoryClusteringPinsViewMode.CLUSTERING
                         }
@@ -507,6 +587,7 @@ class LocationHistoryViewModelController(
                                         it
                                     }
                                 }
+
                                 is LocationHistoryPointState.Point -> it
                             }
                         }

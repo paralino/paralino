@@ -117,7 +117,7 @@ enum class MapInteractionsType(val key: String) {
                             MapInteractionsType.COLLAPSED
                         }
 
-                        maxHeightDp.value < 720 -> {
+                        maxHeightDp.value < 800 -> {
                             MapInteractionsType.MINIMIZE
                         }
 

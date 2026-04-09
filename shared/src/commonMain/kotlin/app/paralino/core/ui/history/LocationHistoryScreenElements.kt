@@ -23,7 +23,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -51,6 +53,7 @@ import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.DataInfoChip
 import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.utils.extensions.annotatedBoldCompose
+import app.paralino.core.utils.extensions.conditional
 import dev.icerock.moko.resources.compose.stringResource
 
 
@@ -58,12 +61,14 @@ import dev.icerock.moko.resources.compose.stringResource
 fun LocationHistoryMapCardUi(
     modifier: Modifier = Modifier,
     uiState: LocationHistoryScreenUiState,
+    isSmallScreenSize: Boolean,
     cardHeight: (Dp) -> Unit,
     onEvent: (LocationHistoryUiEvent) -> Unit,
 ){
     val density = LocalDensity.current
     Column(
         modifier = modifier.padding(
+            top = if (isSmallScreenSize) 48.dp else 32.dp,
             bottom = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
         ),
         verticalArrangement = Arrangement.Bottom
@@ -119,16 +124,17 @@ fun LocationHistoryMapCardUi(
             modifier = Modifier
                 .align(Alignment.End)
                 .fillMaxWidth()
-                .padding(end = 16.dp, bottom = 6.dp),
+                .padding(end = 16.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.End
         ) {
+
             MapCardSmallActionIcon(
                 modifier = Modifier.padding(end = 8.dp),
-                isVisible = uiState.focusType != LocationHistoryScreenFocusType.OVERVIEW && uiState.dataViewType == LocationHistoryDataViewType.LocationPoint,
+                isVisible = !uiState.focusType.isInOverview && uiState.dataViewType == LocationHistoryDataViewType.LocationPoint,
                 icon = CoreAppIcons.ZoomOutFocusMap.asPainterResource(),
                 onClick = {
-                    onEvent(LocationHistoryUiEvent.OnSelectFocusType(LocationHistoryScreenFocusType.OVERVIEW))
+                    onEvent(LocationHistoryUiEvent.OnSelectFocusType(LocationHistoryScreenFocusType.OVERVIEW(isCollapsed = false, isForceCollapsedRequested = false)))
                 }
             )
 
@@ -141,10 +147,10 @@ fun LocationHistoryMapCardUi(
 
             MapCardSmallActionIcon(
                 modifier = Modifier.padding(end = 8.dp),
-                isVisible = uiState.dataViewType == LocationHistoryDataViewType.LocationPoint && (uiState.focusType == LocationHistoryScreenFocusType.MEMBER_DEFAULT || uiState.focusType == LocationHistoryScreenFocusType.OVERVIEW),
+                isVisible = uiState.dataViewType == LocationHistoryDataViewType.LocationPoint && (!uiState.focusType.isMemberFocused),
                 icon = CoreAppIcons.ZoomFocusFull.asPainterResource(),
                 onClick = {
-                    onEvent(LocationHistoryUiEvent.OnSelectFocusType(LocationHistoryScreenFocusType.MEMBER_FOCUSED))
+                    onEvent(LocationHistoryUiEvent.OnFocusOnMemberClick)
                 }
             )
 
@@ -211,7 +217,11 @@ fun LocationHistoryMapCardUi(
         Column(
             modifier = Modifier
                 .onGloballyPositioned { coordinates ->
-                    cardHeight(with(density) { coordinates.size.height.toDp() })
+                    // -8dp to compensate for top padding of LocationHistoryDetailCard
+                    cardHeight(with(density) { coordinates.size.height.toDp() - 8.dp })
+                }
+                .conditional(!isSmallScreenSize) {
+                    verticalScroll(rememberScrollState())
                 }
         ) {
             AnimatedVisibility(
@@ -222,14 +232,15 @@ fun LocationHistoryMapCardUi(
                 LocationHistoryDetailCard(
                     modifier = Modifier
                         .padding(horizontal = 8.dp)
-                        .padding(bottom = 8.dp),
+                        .padding(vertical = 8.dp),
                     uiState = uiState,
+                    isCompactUiMode = isSmallScreenSize,
                     onEvent = onEvent
                 )
             }
 
             AnimatedVisibility(
-                visible = uiState.daySelectorState.displayedDays.isNotEmpty() && uiState.focusType != LocationHistoryScreenFocusType.NONE,
+                visible = uiState.daySelectorState.displayedDays.isNotEmpty() && !uiState.isCardCollapsed && !isSmallScreenSize,
                 enter = fadeIn() + expandVertically(),
                 exit = fadeOut() + shrinkVertically()
             ) {
@@ -237,7 +248,9 @@ fun LocationHistoryMapCardUi(
                     modifier = Modifier
                         .padding(horizontal = 8.dp)
                         .padding(bottom = 8.dp),
+                    backgroundColor = MaterialTheme.colors.background,
                     elevation = 12.dp,
+                    cornerRadiusDp = 12.dp,
                     state = uiState.daySelectorState,
                     onEvent = onEvent
                 )

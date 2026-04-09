@@ -22,7 +22,6 @@ import app.paralino.core.provider.NetworkType
 import app.paralino.core.provider.current
 import app.paralino.core.ui.components.dialogs.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
-import app.paralino.core.ui.map.BottomSheetPosition
 import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.LocalDate
@@ -307,8 +306,8 @@ data class LocationHistoryScreenState(
                 mapInteractionType = MapInteractionsType.MINIMIZE,
                 clusteringPointsMode = LocationHistoryClusteringPointsViewMode.DEFAULT_CLUSTERING,
                 dataViewType = LocationHistoryDataViewType.Stats,
-                focusType = LocationHistoryScreenFocusType.OVERVIEW,
-                previousFocusType = LocationHistoryScreenFocusType.OVERVIEW,
+                focusType = LocationHistoryScreenFocusType.OVERVIEW(isCollapsed = false, isForceCollapsedRequested = false),
+                previousFocusType = LocationHistoryScreenFocusType.OVERVIEW(isCollapsed = false, isForceCollapsedRequested = false),
                 selectedLocationId = null,
                 daySelectorState = LocationHistoryDateSelectorState(maxDateRangeDays = null),
                 planConfig = null,
@@ -361,10 +360,19 @@ data class LocationHistoryScreenUiState(
     val locationsToDeleteSize: Int
 ) {
     val canCollapseMapHeader = when (mapInteractionType) {
-        MapInteractionsType.MINIMIZE -> focusType != LocationHistoryScreenFocusType.NONE
+        MapInteractionsType.MINIMIZE -> focusType.isCollapsed
         MapInteractionsType.COLLAPSED -> true
         else -> false
     }
+
+    val canCollapseMapCards = when (mapInteractionType) {
+        MapInteractionsType.MINIMIZE,
+        MapInteractionsType.COLLAPSED -> true
+        else -> focusType.isForceCollapsedRequested
+    }
+
+    val isCardCollapsed: Boolean = focusType.isCollapsed && canCollapseMapCards
+
     companion object {
         fun fromScreenState(screenState: LocationHistoryScreenState): LocationHistoryScreenUiState {
             return LocationHistoryScreenUiState(
@@ -514,13 +522,30 @@ enum class LocationHistoryClusteringPinsViewMode {
 }
 
 sealed interface LocationHistoryScreenFocusType {
-    data object NONE : LocationHistoryScreenFocusType
-    data object OVERVIEW : LocationHistoryScreenFocusType
-    data object MEMBER_DEFAULT : LocationHistoryScreenFocusType
-    data object MEMBER_FOCUSED : LocationHistoryScreenFocusType
+    val isCollapsed: Boolean
+    val isForceCollapsedRequested: Boolean
 
-    val isMember: Boolean get() = this is MEMBER_DEFAULT || this is MEMBER_FOCUSED
-    val isInOverview: Boolean get() = this == OVERVIEW
+    data class NONE_COLLAPSED(
+        override val isForceCollapsedRequested: Boolean
+    ) : LocationHistoryScreenFocusType {
+        override val isCollapsed: Boolean = true
+    }
+
+    data class OVERVIEW(
+        override val isForceCollapsedRequested: Boolean,
+        override val isCollapsed: Boolean
+    ) : LocationHistoryScreenFocusType
+
+    data class MEMBER(
+        override val isCollapsed: Boolean,
+        override val isForceCollapsedRequested: Boolean,
+        val isFocused: Boolean,
+    ) : LocationHistoryScreenFocusType
+
+    val isMember: Boolean get() = this is MEMBER
+    val isMemberFocused: Boolean get() = this is MEMBER && this.isFocused
+    val isMemberNotFocused: Boolean get() = this is MEMBER && !this.isFocused
+    val isInOverview: Boolean get() = this is OVERVIEW
 }
 
 data class LocationHistoryDateSelectorState(
@@ -593,6 +618,8 @@ sealed interface LocationHistoryUiEvent {
     data object ToggleClusterPins : LocationHistoryUiEvent
     data object OnDeleteSelectedLocationRequest : LocationHistoryUiEvent
     data class OnSelectFocusType(val type: LocationHistoryScreenFocusType) : LocationHistoryUiEvent
+    data object OnFocusOnMemberClick: LocationHistoryUiEvent
+    data object ToggleExpandedCollapseFocusType : LocationHistoryUiEvent
     data object OnMapTouch : LocationHistoryUiEvent
     data class OnMapClick(val location: LatLng) : LocationHistoryUiEvent
     data object ToggleMapFilter : LocationHistoryUiEvent

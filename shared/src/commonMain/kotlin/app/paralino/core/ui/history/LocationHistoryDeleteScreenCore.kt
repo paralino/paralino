@@ -424,7 +424,9 @@ private fun DatePickerSection(
         LocationHistoryDateSelector(
             modifier = Modifier.fillMaxWidth(),
             state = dateState.selectorState,
+            backgroundColor = MaterialTheme.colors.background,
             elevation = 0.dp,
+            cornerRadiusDp = 12.dp,
             onEvent = { event ->
                 when (event) {
                     is LocationHistoryUiEvent.OnSelectDay -> onSelectDay(event.day)

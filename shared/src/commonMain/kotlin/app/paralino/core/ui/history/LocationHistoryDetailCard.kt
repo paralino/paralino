@@ -5,6 +5,10 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -32,8 +36,10 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Icon
 import androidx.compose.material.LocalContentAlpha
@@ -92,13 +98,14 @@ private val innerCornerShape = 15.dp
 @Composable
 fun LocationHistoryDetailCard(
     modifier: Modifier = Modifier,
+    isCompactUiMode: Boolean,
     uiState: LocationHistoryScreenUiState,
     onEvent: (LocationHistoryUiEvent) -> Unit
 ) {
 
     val handleEvent = onEvent
 
-    val isCollapsed = uiState.focusType == LocationHistoryScreenFocusType.NONE
+    val isCollapsed = uiState.isCardCollapsed
 
     Column(
         modifier = modifier
@@ -111,20 +118,21 @@ fun LocationHistoryDetailCard(
                     interactionSource = remember { MutableInteractionSource() },
                     indication = null,
                     onClick = {
-                        if (isCollapsed) {
-                            handleEvent(LocationHistoryUiEvent.OnSelectFocusType(uiState.previousFocusType))
-                        }
+                        handleEvent(LocationHistoryUiEvent.ToggleExpandedCollapseFocusType)
                     }
                 )
                 .dropShadow(
                     shape = RoundedCornerShape(cornerShape),
                     shadow = Shadow(
-                        radius = 12.dp,
+                        radius = 8.dp,
                         color = MaterialTheme.colors.onBackground.copy(alpha = 0.2f),
                     )
                 )
                 .clip(RoundedCornerShape(cornerShape))
                 .background(MaterialTheme.colors.background)
+                .conditional(isCompactUiMode) {
+                    verticalScroll(rememberScrollState())
+                }
         ) {
             // devices and view switcher
             AnimatedVisibility(visible = !isCollapsed) {
@@ -631,6 +639,26 @@ fun LocationHistoryDetailCard(
                         }
                     }
                 }
+            }
+
+            AnimatedVisibility(
+                visible = uiState.daySelectorState.displayedDays.isNotEmpty() && !isCollapsed && isCompactUiMode,
+                enter = fadeIn() + expandVertically(),
+                exit = fadeOut() + shrinkVertically()
+            ) {
+                LocationHistoryDateSelector(
+                    modifier = Modifier
+                        .padding(
+                            top = if (uiState.dataViewType == LocationHistoryDataViewType.LocationPoint) 6.dp else 0.dp,
+                            bottom = 6.dp
+                        )
+                        .padding(horizontal = 6.dp),
+                    backgroundColor = MaterialTheme.colors.surface,
+                    elevation = 0.dp,
+                    cornerRadiusDp = innerCornerShape,
+                    state = uiState.daySelectorState,
+                    onEvent = onEvent
+                )
             }
         }
     }

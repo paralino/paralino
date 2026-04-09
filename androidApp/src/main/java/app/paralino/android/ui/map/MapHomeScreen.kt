@@ -54,7 +54,6 @@ import app.paralino.core.ui.map.MainMapSheet
 import app.paralino.core.ui.map.MapHomeElementMainCards
 import app.paralino.core.ui.map.MapHomeScreenElements
 import app.paralino.core.ui.map.SwipeableSheetState
-import app.paralino.core.ui.map.isCollapsedAndMinimised
 import app.paralino.core.ui.map.rememberSwipeableSheetState
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
@@ -260,12 +259,14 @@ internal fun HomeScreenMapWithElements(
             screenBottomPadding,
             sheetState.currentValue,
             readyState?.mapHomeScreenFocusType?.isMemberPlaceOrHistoryFocused,
+            uiState.canCollapseMapHeader,
+            historyUiState?.canCollapseMapHeader,
             sheetProgressTilCollapsed,
             sheetProgressTilMinimized,
             cardHeight
         ) {
             derivedStateOf {
-                val topPadding = if (sheetState.isCollapsedAndMinimised()) {
+                val topPadding = if (uiState.canCollapseMapHeader || historyUiState?.canCollapseMapHeader == true) {
                     screenAreaPadding.calculateTopPadding() + 12.dp
                 } else {
                     screenAreaPadding.calculateTopPadding() + 64.dp
@@ -367,6 +368,7 @@ internal fun HomeScreenMapWithElements(
                 if (historyUiState != null) {
                     LocationHistoryMapCardUi(
                         uiState = historyUiState,
+                        isSmallScreenSize = this@BoxWithConstraints.maxHeight.value < 500,
                         cardHeight = { cardHeight = it },
                         onEvent = onHistoryEvent
                     )

@@ -17,8 +17,11 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentWidth
@@ -43,6 +46,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.dropShadow
+import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.shadow.Shadow
@@ -69,7 +73,9 @@ import kotlinx.datetime.LocalDate
 @Composable
 fun LocationHistoryDateSelector(
     modifier: Modifier = Modifier,
+    backgroundColor: Color,
     elevation: Dp,
+    cornerRadiusDp: Dp,
     state: LocationHistoryDateSelectorState,
     onEvent: (LocationHistoryUiEvent) -> Unit,
 ) {
@@ -85,14 +91,14 @@ fun LocationHistoryDateSelector(
                 .weight(1f, fill = state.isLimitedHistoryPlanMode)
                 .wrapContentWidth()
                 .dropShadow(
-                    shape = RoundedCornerShape(12.dp),
+                    shape = RoundedCornerShape(cornerRadiusDp),
                     shadow = Shadow(
                         radius = elevation,
                         color = MaterialTheme.colors.onBackground.copy(alpha = 0.2f),
                     )
                 )
-                .clip(RoundedCornerShape(12.dp))
-                .background(MaterialTheme.colors.background)
+                .clip(RoundedCornerShape(cornerRadiusDp))
+                .background(backgroundColor)
         ) {
             val scrollState = rememberLazyListState(0)
             val scope = rememberCoroutineScope()
@@ -128,6 +134,7 @@ fun LocationHistoryDateSelector(
                 ) { index, dayState ->
                     DayCell(
                         dayState = dayState,
+                        cornerRadiusDp = remember(cornerRadiusDp) { cornerRadiusDp.value.times(0.666667f).toInt().dp },
                         onDaySelected = {
                             scope.launch {
                                 scrollState.animateScrollToItem(
@@ -157,8 +164,7 @@ fun LocationHistoryDateSelector(
             if (state.isLimitedHistoryPlanMode) {
                 Box(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .height(48.dp)
+                        .matchParentSize()
                         .clickable(
                             interactionSource = remember { MutableInteractionSource() },
                             indication = null,
@@ -191,14 +197,14 @@ fun LocationHistoryDateSelector(
                     .size(width = 50.dp, height = 48.dp)
                     .clickable { onEvent(LocationHistoryUiEvent.ToggleDayRange) }
                     .dropShadow(
-                        shape = RoundedCornerShape(12.dp),
+                        shape = RoundedCornerShape(cornerRadiusDp),
                         shadow = Shadow(
                             radius = elevation,
                             color = MaterialTheme.colors.onBackground.copy(alpha = 0.2f),
                         )
                     )
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(MaterialTheme.colors.background),
+                    .clip(RoundedCornerShape(cornerRadiusDp))
+                    .background(backgroundColor),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
@@ -291,16 +297,15 @@ private fun DateSelectorActionButton(
 @Composable
 private fun DayCell(
     dayState: LocationHistoryDayState,
+    cornerRadiusDp: Dp,
     onDaySelected: (LocalDate) -> Unit,
     onDayLongClick: (LocalDate) -> Unit,
 ) {
     // Animate corner radius based on position
-    val cornerRadius = 8.dp
-
     val shape = when (dayState.position) {
         LocationHistorySelectedDayPosition.START -> RoundedCornerShape(
-            topStart = cornerRadius,
-            bottomStart = cornerRadius,
+            topStart = cornerRadiusDp,
+            bottomStart = cornerRadiusDp,
             topEnd = 0.dp,
             bottomEnd = 0.dp
         )
@@ -309,11 +314,11 @@ private fun DayCell(
         LocationHistorySelectedDayPosition.END -> RoundedCornerShape(
             topStart = 0.dp,
             bottomStart = 0.dp,
-            topEnd = cornerRadius,
-            bottomEnd = cornerRadius
+            topEnd = cornerRadiusDp,
+            bottomEnd = cornerRadiusDp
         )
 
-        LocationHistorySelectedDayPosition.SOLO -> RoundedCornerShape(cornerRadius)
+        LocationHistorySelectedDayPosition.SOLO -> RoundedCornerShape(cornerRadiusDp)
     }
 
     Box(

@@ -114,16 +114,17 @@ fun rememberMapLibreLocationHistoryMapController(
         stateData.canCollapseMapHeader,
         mapContentPadding
     ) {
-        val extraPadding = if (stateData.canCollapseMapHeader) 12.dp else 60.dp
+        val extraVerticalPadding = if (stateData.canCollapseMapHeader) 12.dp else 60.dp
+        val extraHorizontalPadding = if (stateData.canCollapseMapHeader) 40.dp else 60.dp
         val mapPadding = PaddingValues(
-            start = mapContentPadding.calculateStartPadding(LayoutDirection.Ltr) + extraPadding,
-            top = mapContentPadding.calculateTopPadding() + extraPadding,
-            end = mapContentPadding.calculateStartPadding(LayoutDirection.Ltr) + extraPadding,
-            bottom = mapContentPadding.calculateBottomPadding() + extraPadding
+            start = mapContentPadding.calculateStartPadding(LayoutDirection.Ltr) + extraHorizontalPadding,
+            top = mapContentPadding.calculateTopPadding() + extraVerticalPadding,
+            end = mapContentPadding.calculateStartPadding(LayoutDirection.Ltr) + extraHorizontalPadding,
+            bottom = mapContentPadding.calculateBottomPadding() + extraVerticalPadding
         )
         snapshotFlow { stateData.focusType }
             .distinctUntilChanged()
-            .filter { it == LocationHistoryScreenFocusType.OVERVIEW }
+            .filter { it.isInOverview }
             .collectLatest {
 //                if (!canAnimateMapFocus && shouldAnimateMapFocus) {
 //                    delay(20)
@@ -168,7 +169,8 @@ fun rememberMapLibreLocationHistoryMapController(
     LaunchedEffect(
         stateData.selectedMapPinData,
         stateData.canCollapseMapHeader,
-        stateData.focusType
+        stateData.focusType,
+        mapContentPadding
     ) {
         val extraPadding = if (stateData.canCollapseMapHeader) 20.dp else 100.dp
         val mapPadding = PaddingValues(
@@ -184,13 +186,16 @@ fun rememberMapLibreLocationHistoryMapController(
             .collectLatest {
                 if (!canAnimateMapFocus && shouldAnimateMapFocus) {
                     delay(20)
+                } else {
+                    delay(50)
                 }
+
                 cameraState.refocus(
                     scope = scope,
                     markers = listOfNotNull(stateData.selectedMapPinData),
                     ignoreAccuracy = false,
                     durationMs = if (canAnimateMapFocus) 300 else 0,
-                    forceZoom = it == LocationHistoryScreenFocusType.MEMBER_FOCUSED,
+                    forceZoom = it.isMemberFocused,
                     padding = mapPadding
                 )
             }
