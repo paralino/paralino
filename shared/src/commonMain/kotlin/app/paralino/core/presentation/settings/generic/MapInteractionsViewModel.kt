@@ -41,7 +41,8 @@ class MapInteractionsViewModel(
                                 isSelected = it == currentOption
                             )
                         }
-                    )
+                    ),
+                    GenericSettingListItem.Spacer(spacing = 40.dp, keyId = "bottom_space")
                 )
             )
         )

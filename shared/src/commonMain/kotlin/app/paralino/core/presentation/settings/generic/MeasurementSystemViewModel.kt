@@ -62,7 +62,8 @@ class MeasurementSystemViewModel(
                                 isSelected = currentOption == MeasurementSystemType.IMPERIAL
                             )
                         )
-                    )
+                    ),
+                    GenericSettingListItem.Spacer(spacing = 40.dp, keyId = "bottom_space")
                 )
             )
         )
