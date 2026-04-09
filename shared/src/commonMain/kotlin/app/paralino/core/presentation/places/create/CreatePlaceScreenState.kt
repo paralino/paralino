@@ -13,6 +13,7 @@ import app.paralino.core.provider.localizedString
 import app.paralino.core.ui.components.dialogs.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.ui.groups.components.SuggestionSectionChipData
+import app.paralino.core.ui.theme.ScreenDimensionType
 import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.extensions.annotatedBold
 
@@ -162,6 +163,7 @@ sealed class CreatePlaceScreenEvent() {
 
 sealed interface CreatePlaceScreenUiEvent {
     data object CreatePlace : CreatePlaceScreenUiEvent
+    data class OnUiReady(val size: ScreenDimensionType) : CreatePlaceScreenUiEvent
     data class OnMapPositionChanged(val position: LatLng) : CreatePlaceScreenUiEvent
     data class OnNameChanged(val name: String) : CreatePlaceScreenUiEvent
     data class OnRadiusChanged(val radiusMeters: Int) : CreatePlaceScreenUiEvent

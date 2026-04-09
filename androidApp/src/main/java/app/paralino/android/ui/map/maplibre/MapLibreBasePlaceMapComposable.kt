@@ -30,6 +30,7 @@ import app.paralino.core.models.location.LatLng
 import app.paralino.core.presentation.map.MapPinData
 import app.paralino.core.presentation.places.create.PlaceMapFallbackLatLng
 import app.paralino.core.presentation.settings.generic.MapsSDKProvider
+import app.paralino.core.ui.theme.LocalScreenDimensionType
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import org.maplibre.compose.camera.CameraState
@@ -70,8 +71,15 @@ fun MapLibreBasePlaceMapComposable(
         mapsSDKProvider = mapsSDKProvider
     )
 
+    val isSmallScreenSize = LocalScreenDimensionType.current.isSmall
+    val screenPadding = remember(isSmallScreenSize) {
+        PaddingValues(
+            if (isSmallScreenSize) 12.dp else 50.dp
+        )
+    }
+
     if (mapLoaded) {
-        LaunchedEffect(Unit) {
+        LaunchedEffect(screenPadding) {
             if (markers.isEmpty() && fallbackCenterLatLng != null) {
                 cameraPositionState.position = cameraPositionState.position.copy(
                     target = Position(
@@ -84,7 +92,7 @@ fun MapLibreBasePlaceMapComposable(
                 cameraPositionState.refocus(
                     scope = scope,
                     markers = markers,
-                    padding = PaddingValues(50.dp),
+                    padding = screenPadding,
                     durationMs = 0
                 )
             }
@@ -93,7 +101,7 @@ fun MapLibreBasePlaceMapComposable(
 
     LaunchedEffect(key1 = markers) {
         if (mapLoaded) {
-            cameraPositionState.refocus(scope = scope, markers = markers)
+            cameraPositionState.refocus(scope = scope, markers = markers, padding = screenPadding)
         }
     }
 
@@ -176,7 +184,11 @@ fun MapLibreBasePlaceMapComposable(
                             isFocused = model.focused,
                             isSatelliteMode = isSatelliteMode,
                             onClick = {
-                                cameraPositionState.refocus(scope = scope, markers = markers)
+                                cameraPositionState.refocus(
+                                    scope = scope,
+                                    markers = markers,
+                                    padding = screenPadding
+                                )
                             }
                         )
                     }
@@ -196,7 +208,11 @@ fun MapLibreBasePlaceMapComposable(
                         canTapOnMarker = true,
                         zIndex = 20f,
                         onClick = {
-                            cameraPositionState.refocus(scope = scope, markers = markers)
+                            cameraPositionState.refocus(
+                                scope = scope,
+                                markers = markers,
+                                padding = screenPadding
+                            )
                         }
                     )
                 }

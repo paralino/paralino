@@ -31,6 +31,7 @@ import app.paralino.core.presentation.map.MapPinData
 import app.paralino.core.presentation.places.create.CreatePlaceScreenState
 import app.paralino.core.presentation.places.create.PlaceMapFallbackLatLng
 import app.paralino.core.presentation.places.detail.PlaceDetailScreenState
+import app.paralino.core.ui.theme.LocalScreenDimensionType
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.Circle
@@ -63,6 +64,11 @@ fun GoogleMapBasePlaceMapComposable(
         isSatelliteMode = isSatelliteMode
     )
 
+    val isSmallScreenSize = LocalScreenDimensionType.current.isSmall
+    val screenPadding = remember(isSmallScreenSize) {
+        if (isSmallScreenSize) 50 else 150
+    }
+
     if (mapLoaded) {
         LaunchedEffect(Unit) {
             if (markers.isEmpty() && fallbackCenterLatLng != null) {
@@ -79,7 +85,7 @@ fun GoogleMapBasePlaceMapComposable(
                 cameraPositionState.refocus(
                     scope = scope,
                     markers = markers,
-                    padding = 150,
+                    padding = screenPadding,
                     durationMs = 0
                 )
             }
@@ -88,7 +94,7 @@ fun GoogleMapBasePlaceMapComposable(
 
     LaunchedEffect(key1 = markers) {
         if (mapLoaded) {
-            cameraPositionState.refocus(scope = scope, markers = markers)
+            cameraPositionState.refocus(scope = scope, markers = markers, padding = screenPadding)
         }
     }
 
@@ -172,7 +178,11 @@ fun GoogleMapBasePlaceMapComposable(
                             tag = model.markerId,
                             zIndex = 10f,
                             onClick = {
-                                cameraPositionState.refocus(scope = scope, markers = markers)
+                                cameraPositionState.refocus(
+                                    scope = scope,
+                                    markers = markers,
+                                    padding = screenPadding
+                                )
                             }
                         )
                     }
@@ -182,7 +192,11 @@ fun GoogleMapBasePlaceMapComposable(
                         canTapOnMarker = canTapOnCircles,
                         zIndex = 20f,
                         onClick = {
-                            cameraPositionState.refocus(scope = scope, markers = markers)
+                            cameraPositionState.refocus(
+                                scope = scope,
+                                markers = markers,
+                                padding = screenPadding
+                            )
                         }
                     )
                 }
