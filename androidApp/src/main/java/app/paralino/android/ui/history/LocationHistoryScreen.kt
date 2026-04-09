@@ -210,7 +210,10 @@ fun LocationHistoryStatsTablePreview() {
                 .background(MaterialTheme.colors.background)
                 .padding(12.dp)
         ) {
-            LocationHistoryStatsTable(stats = sampleStats)
+            LocationHistoryStatsTable(
+                isCompactMode = true,
+                stats = sampleStats
+            )
         }
     }
 }

@@ -368,7 +368,7 @@ internal fun HomeScreenMapWithElements(
                 if (historyUiState != null) {
                     LocationHistoryMapCardUi(
                         uiState = historyUiState,
-                        isSmallScreenSize = this@BoxWithConstraints.maxHeight.value < 500,
+                        isSmallScreenSize = this@BoxWithConstraints.maxHeight.value < 850,
                         cardHeight = { cardHeight = it },
                         onEvent = onHistoryEvent
                     )

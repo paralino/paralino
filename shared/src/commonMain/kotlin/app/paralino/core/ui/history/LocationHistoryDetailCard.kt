@@ -490,6 +490,7 @@ fun LocationHistoryDetailCard(
                                 pulsate(pulseAmount = 0.98f)
                             }
                             .alpha(animateFloatAsState(if (uiState.isLoadingLocations) 0.5f else 1f).value),
+                        isCompactMode = isCompactUiMode,
                         stats = it
                     )
                 }
