@@ -38,6 +38,7 @@ import app.paralino.core.ui.map.MainMapSheet
 import app.paralino.core.ui.map.MapHomeElementMainCards
 import app.paralino.core.ui.map.MapHomeScreenElements
 import app.paralino.core.ui.map.rememberSwipeableSheetState
+import app.paralino.core.ui.theme.LocalScreenDimensionType
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import platform.UIKit.UIViewController
@@ -250,7 +251,7 @@ object MainMapScreen {
                                 if (historyUiState != null) {
                                     LocationHistoryMapCardUi(
                                         uiState = historyUiState,
-                                        isSmallScreenSize = this@BoxWithConstraints.maxHeight.value < 850,
+                                        isSmallScreenSize = LocalScreenDimensionType.current.maxHeightDp.value < 850,
                                         cardHeight = { cardHeight = it },
                                         onEvent = vm::onEvent
                                     )
