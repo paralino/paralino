@@ -7,7 +7,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import app.paralino.core.models.location.LatLng
 import app.paralino.core.presentation.map.MapPinData
-import app.paralino.core.presentation.places.create.PlaceMapFallbackLatLng
 
 
 /**
@@ -17,7 +16,8 @@ import app.paralino.core.presentation.places.create.PlaceMapFallbackLatLng
 fun GoogleMapSimpleMapComposable(
     modifier: Modifier = Modifier,
     markers: List<MapPinData>,
-    fallbackCenterLatLng: PlaceMapFallbackLatLng?,
+    fallbackCenterLatLng: LatLng?,
+    zoomLevel: Float,
     canTapOnCircles: Boolean,
     isSatelliteMode: Boolean,
     onMapCameraSettled: (LatLng) -> Unit,
