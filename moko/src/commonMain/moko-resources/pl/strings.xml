@@ -939,4 +939,14 @@
     <string name="onboarding_step_options_second_title">Udostępnianie bez presji</string>
     <string name="onboarding_step_options_second_info">Zawsze masz kontrolę nad tym, co udostępniasz, i nad sposobem, w jaki to robisz.</string>
     <string name="app_version_alert_message_updateInstalled">Nowa wersja Paralino została zainstalowana.</string>
+    <string name="setting_mapInteractions_title">Interakcje z mapą</string>
+    <string name="setting_mapInteractions_info">Wybierz, co ma się stać z kontrolkami mapy podczas przesuwania mapy lub zmiany jej powiększenia.</string>
+    <string name="setting_mapInteractions_deviceDefault_title">Domyślne ustawienie urządzenia</string>
+    <string name="setting_mapInteractions_deviceDefault_info">Kontrolki mapy automatycznie dostosowują się do rozmiaru ekranu.</string>
+    <string name="setting_mapInteractions_none_title">Brak</string>
+    <string name="setting_mapInteractions_none_info">Kontrolki mapy pozostają bez zmian podczas interakcji z mapą.</string>
+    <string name="setting_mapInteractions_minimize_title">Minimalizuj</string>
+    <string name="setting_mapInteractions_minimize_info">Kontrolki mapy zmniejszają się, aby zapewnić więcej miejsca.</string>
+    <string name="setting_mapInteractions_collapsed_title">Zwinięte</string>
+    <string name="setting_mapInteractions_collapsed_info">Kontrolki mapy zwijają się lub ukrywają, aby zmaksymalizować przestrzeń mapy.</string>
 </resources>

@@ -296,7 +296,7 @@
     <string name="setting_placeSearch_info">Да бисте пружили прецизније резултате претраге места, можете да изаберете да укључите приближну локацију одабраног подручја мапе у вашу претраге. Ови подаци се користе само привремено у сврху претраге и не чувају се ни на који начин.\nАко то онемогућите, ваша претрага неће користити подручје мапе и може бити мање прецизна.</string>
     <string name="setting_placeSearch_location_title">Тренутно подручје мапе</string>
     <string name="setting_placeSearch_location_info">Када је укључено, приближна локација тренутно одабраног подручја мапе ће бити послата серверу ради пружања локализованих резултата претраге.</string>
-    <string name="setting_mapsProvider_title">Провајдер мапа</string>
+    <string name="setting_mapsProvider_title">Добављач мапа</string>
     <string name="setting_mapsProvider_info">Изаберите свог препорученог провајдера услуга за мапе које се користе у апликацији. Стил мапе, анимације и перформансе ће се разликовати код различитих провајдера.</string>
     <string name="setting_mapsProvider_googleMaps_title">Google Mape</string>
     <string name="setting_mapsProvider_googleMaps_info">Подразумевани Google Maps SDK са мапама улица и сателита.</string>
@@ -939,4 +939,14 @@
     <string name="onboarding_step_options_second_title">Дељење без притиска</string>
     <string name="onboarding_step_options_second_info">Ви увек имате контролу над тим шта делите и како то делите.</string>
     <string name="app_version_alert_message_updateInstalled">Нова верзија Paralino је инсталирана.</string>
+    <string name="setting_mapInteractions_title">Интеракције са мапом</string>
+    <string name="setting_mapInteractions_info">Изаберите шта ће се десити са контролама мапе када померате или увећавате/умањујете мапу.</string>
+    <string name="setting_mapInteractions_deviceDefault_title">Подразумевано за уређај</string>
+    <string name="setting_mapInteractions_deviceDefault_info">Контроле мапе се аутоматски прилагођавају у зависности од величине вашег екрана.</string>
+    <string name="setting_mapInteractions_none_title">Ниједно</string>
+    <string name="setting_mapInteractions_none_info">Контроле мапе остају непромењене док користите мапу.</string>
+    <string name="setting_mapInteractions_minimize_title">Минимизирај</string>
+    <string name="setting_mapInteractions_minimize_info">Контроле мапе се умањују како би вам оставиле више простора.</string>
+    <string name="setting_mapInteractions_collapsed_title">Сажето</string>
+    <string name="setting_mapInteractions_collapsed_info">Контроле мапе се склапају или сакривају како би се максимизовао простор за мапу.</string>
 </resources>

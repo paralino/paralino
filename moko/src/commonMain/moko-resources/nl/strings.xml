@@ -296,7 +296,7 @@
     <string name="setting_placeSearch_info">Om nauwkeurigere zoekresultaten voor plaatsen te bieden, kunt u ervoor kiezen om de geschatte locatie van het geselecteerde kaartgebied in uw zoekopdracht op te nemen. Deze gegevens worden alleen tijdelijk voor zoekdoeleinden gebruikt en worden nergens opgeslagen of gelogd. Als u dit uitschakelt, zal uw zoekopdracht het kaartgebied niet gebruiken en mogelijk minder nauwkeurig zijn.</string>
     <string name="setting_placeSearch_location_title">Huidig kaartgebied</string>
     <string name="setting_placeSearch_location_info">Wanneer ingeschakeld, wordt de geschatte locatie van het momenteel geselecteerde kaartgebied naar de server gestuurd om gelokaliseerde zoekresultaten te bieden.</string>
-    <string name="setting_mapsProvider_title">Kaartenprovider</string>
+    <string name="setting_mapsProvider_title">Kaartprovider</string>
     <string name="setting_mapsProvider_info">Kies uw favoriete serviceprovider voor kaarten die in de app worden gebruikt. De stijl van de kaart, animaties en prestaties zullen verschillen tussen de verschillende providers.</string>
     <string name="setting_mapsProvider_googleMaps_title">Google Maps</string>
     <string name="setting_mapsProvider_googleMaps_info">Standaard Google Maps SDK met straat- en satellietkaarten.</string>
@@ -939,4 +939,14 @@
     <string name="onboarding_step_options_second_title">Delen zonder druk</string>
     <string name="onboarding_step_options_second_info">U behoudt te allen tijde de controle over wat u deelt en hoe u dat doet.</string>
     <string name="app_version_alert_message_updateInstalled">Nieuwe Paralino-versie is geïnstalleerd.</string>
+    <string name="setting_mapInteractions_title">Kaartinteracties</string>
+    <string name="setting_mapInteractions_info">Kies wat er met de kaartbedieningselementen gebeurt wanneer u de kaart verplaatst of in-/uitzoomt.</string>
+    <string name="setting_mapInteractions_deviceDefault_title">Apparaatstandaard</string>
+    <string name="setting_mapInteractions_deviceDefault_info">De kaartbedieningselementen passen zich automatisch aan op basis van uw schermgrootte.</string>
+    <string name="setting_mapInteractions_none_title">Geen</string>
+    <string name="setting_mapInteractions_none_info">De kaartbedieningselementen blijven ongewijzigd terwijl u met de kaart interacteert.</string>
+    <string name="setting_mapInteractions_minimize_title">Minimaliseren</string>
+    <string name="setting_mapInteractions_minimize_info">De kaartbedieningselementen verkleinen om u meer ruimte te geven.</string>
+    <string name="setting_mapInteractions_collapsed_title">Ingeklapt</string>
+    <string name="setting_mapInteractions_collapsed_info">De kaartbedieningselementen klappen in of verbergen zich om de kaartruimte te maximaliseren.</string>
 </resources>

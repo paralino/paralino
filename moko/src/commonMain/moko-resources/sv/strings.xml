@@ -296,7 +296,7 @@
     <string name="setting_placeSearch_info">För att ge mer exakta platsökningsresultat kan du välja att inkludera den ungefärliga platsen för det valda kartaområdet i din sökning. Dessa data används endast tillfälligt för sökändamål och lagras eller loggas inte någonstans. \nOm du inaktiverar detta kommer din sökning inte att använda kartaområdet och kan vara mindre exakt.</string>
     <string name="setting_placeSearch_location_title">Aktuellt kartaområde</string>
     <string name="setting_placeSearch_location_info">När denna funktion är aktiverad kommer den ungefärliga platsen för det för närvarande valda kartaområdet att skickas till servern för att ge lokaliserade sökresultat.</string>
-    <string name="setting_mapsProvider_title">Kartsleverantör</string>
+    <string name="setting_mapsProvider_title">Kartleverantör</string>
     <string name="setting_mapsProvider_info">Välj din föredragna tjänsteleverantör för kartor som används i appen. Kartstil, animationer och prestanda kommer att skilja sig åt mellan olika leverantörer.</string>
     <string name="setting_mapsProvider_googleMaps_title">Google Maps</string>
     <string name="setting_mapsProvider_googleMaps_info">Standard Google Maps SDK med gatu- och satellitkartor.</string>
@@ -939,4 +939,14 @@
     <string name="onboarding_step_options_second_title">Dela utan påtryckningar</string>
     <string name="onboarding_step_options_second_info">Du har alltid kontroll över vad du delar och hur du delar det.</string>
     <string name="app_version_alert_message_updateInstalled">En ny version av Paralino har installerats.</string>
+    <string name="setting_mapInteractions_title">Kartinteraktioner</string>
+    <string name="setting_mapInteractions_info">Välj vad som händer med kartkontrollerna när du flyttar eller zoomar kartan.</string>
+    <string name="setting_mapInteractions_deviceDefault_title">Enhetens standardinställning</string>
+    <string name="setting_mapInteractions_deviceDefault_info">Kartkontrollerna anpassas automatiskt efter din skärmstorlek.</string>
+    <string name="setting_mapInteractions_none_title">Ingen</string>
+    <string name="setting_mapInteractions_none_info">Kartkontrollerna förblir oförändrade medan du interagerar med kartan.</string>
+    <string name="setting_mapInteractions_minimize_title">Minimera</string>
+    <string name="setting_mapInteractions_minimize_info">Kartkontrollerna krymper för att ge dig mer utrymme.</string>
+    <string name="setting_mapInteractions_collapsed_title">Hopfälld</string>
+    <string name="setting_mapInteractions_collapsed_info">Kartkontrollerna kollapsar eller döljs för att frigöra mer utrymme åt kartan.</string>
 </resources>

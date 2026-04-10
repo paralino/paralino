@@ -296,7 +296,7 @@
     <string name="setting_placeSearch_info">Kako bismo pružili preciznije rezultate pretraživanja lokacija, možete odabrati uključivanje približne lokacije odabranog područja na karti u vaše pretraživanje. Ovi podaci se koriste samo privremeno u svrhu pretraživanja i ne pohranjuju se niti se bilježe nigdje. \nAko onemogućite ovu opciju, vaše pretraživanje neće koristiti područje karte i moglo bi biti manje precizno.</string>
     <string name="setting_placeSearch_location_title">Trenutno područje karte</string>
     <string name="setting_placeSearch_location_info">Kada je omogućeno, približna lokacija trenutno odabranog područja na karti će se slati poslužitelju kako bi se pružili lokalizirani rezultati pretraživanja.</string>
-    <string name="setting_mapsProvider_title">Provajder mapa</string>
+    <string name="setting_mapsProvider_title">Pružatelj karata</string>
     <string name="setting_mapsProvider_info">Izaberite svog omiljenog provajdera usluga za mape koje se koriste u aplikaciji. Stil mape, animacije i performanse će se razlikovati među različitim provajderima.</string>
     <string name="setting_mapsProvider_googleMaps_title">Google Mape</string>
     <string name="setting_mapsProvider_googleMaps_info">Zadani Google Maps SDK sa uličnim i satelitskim mapama.</string>
@@ -939,4 +939,14 @@
     <string name="onboarding_step_options_second_title">Dijeljenje bez pritiska</string>
     <string name="onboarding_step_options_second_info">Uvijek imate kontrolu nad time što dijelite i kako to dijelite.</string>
     <string name="app_version_alert_message_updateInstalled">Nova verzija aplikacije Paralino je instalirana.</string>
+    <string name="setting_mapInteractions_title">Interakcije s kartom</string>
+    <string name="setting_mapInteractions_info">Odaberite što će se dogoditi s kontrolama karte kada pomičete ili zumirate kartu.</string>
+    <string name="setting_mapInteractions_deviceDefault_title">Zadano za uređaj</string>
+    <string name="setting_mapInteractions_deviceDefault_info">Kontrole karte automatski se prilagođavaju veličini zaslona.</string>
+    <string name="setting_mapInteractions_none_title">Nijedno</string>
+    <string name="setting_mapInteractions_none_info">Kontrole karte ostaju nepromijenjene dok koristite kartu.</string>
+    <string name="setting_mapInteractions_minimize_title">Smanji</string>
+    <string name="setting_mapInteractions_minimize_info">Kontrole karte se smanjuju kako bi vam ostavile više prostora.</string>
+    <string name="setting_mapInteractions_collapsed_title">Sažeto</string>
+    <string name="setting_mapInteractions_collapsed_info">Kontrole karte se sklapaju ili skrivaju kako bi vam omogućile maksimalan prostor za kartu.</string>
 </resources>

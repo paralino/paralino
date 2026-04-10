@@ -939,4 +939,14 @@
     <string name="onboarding_step_options_second_title">Κοινοποίηση χωρίς πίεση</string>
     <string name="onboarding_step_options_second_info">Έχετε πάντα τον έλεγχο του τι μοιράζεστε και του πώς το μοιράζεστε.</string>
     <string name="app_version_alert_message_updateInstalled">Η νέα έκδοση του Paralino έχει εγκατασταθεί.</string>
+    <string name="setting_mapInteractions_title">Αλληλεπιδράσεις χάρτη</string>
+    <string name="setting_mapInteractions_info">Επιλέξτε τι συμβαίνει στα στοιχεία ελέγχου του χάρτη όταν μετακινείτε ή μεγεθύνετε/σμικρύνετε τον χάρτη.</string>
+    <string name="setting_mapInteractions_deviceDefault_title">Προεπιλογή συσκευής</string>
+    <string name="setting_mapInteractions_deviceDefault_info">Τα στοιχεία ελέγχου του χάρτη προσαρμόζονται αυτόματα ανάλογα με το μέγεθος της οθόνης σας.</string>
+    <string name="setting_mapInteractions_none_title">Καμία</string>
+    <string name="setting_mapInteractions_none_info">Τα στοιχεία ελέγχου του χάρτη παραμένουν ως έχουν ενώ αλληλεπιδράτε με τον χάρτη.</string>
+    <string name="setting_mapInteractions_minimize_title">Ελαχιστοποίηση</string>
+    <string name="setting_mapInteractions_minimize_info">Τα στοιχεία ελέγχου του χάρτη συρρικνώνονται για να σας προσφέρουν περισσότερο χώρο.</string>
+    <string name="setting_mapInteractions_collapsed_title">Συμπτυγμένα</string>
+    <string name="setting_mapInteractions_collapsed_info">Τα στοιχεία ελέγχου του χάρτη συμπτύσσονται ή αποκρύπτονται για να μεγιστοποιηθεί ο χώρος του χάρτη.</string>
 </resources>

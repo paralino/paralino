@@ -939,4 +939,14 @@
     <string name="onboarding_step_options_second_title">Partager sans pression</string>
     <string name="onboarding_step_options_second_info">Vous avez toujours le contrôle sur ce que vous partagez et sur la façon dont vous le partagez.</string>
     <string name="app_version_alert_message_updateInstalled">La nouvelle version de Paralino a été installée.</string>
+    <string name="setting_mapInteractions_title">Interactions avec la carte</string>
+    <string name="setting_mapInteractions_info">Choisissez ce qui arrive aux contrôles de la carte lorsque vous déplacez ou zoomez la carte.</string>
+    <string name="setting_mapInteractions_deviceDefault_title">Par défaut de l\'appareil</string>
+    <string name="setting_mapInteractions_deviceDefault_info">Les contrôles de la carte s\'ajustent automatiquement en fonction de la taille de votre écran.</string>
+    <string name="setting_mapInteractions_none_title">Aucun</string>
+    <string name="setting_mapInteractions_none_info">Les contrôles de la carte restent inchangés pendant que vous interagissez avec la carte.</string>
+    <string name="setting_mapInteractions_minimize_title">Réduire</string>
+    <string name="setting_mapInteractions_minimize_info">Les contrôles de la carte se réduisent pour vous laisser plus d\'espace.</string>
+    <string name="setting_mapInteractions_collapsed_title">Repliés</string>
+    <string name="setting_mapInteractions_collapsed_info">Les contrôles de la carte se replient ou se masquent pour maximiser l\'espace consacré à la carte.</string>
 </resources>

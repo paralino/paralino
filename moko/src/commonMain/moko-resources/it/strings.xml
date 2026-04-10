@@ -939,4 +939,14 @@
     <string name="onboarding_step_options_second_title">Condividere senza pressioni</string>
     <string name="onboarding_step_options_second_info">Lei ha sempre il controllo su ciò che condivide e sul modo in cui lo condivide.</string>
     <string name="app_version_alert_message_updateInstalled">È stata installata una nuova versione di Paralino.</string>
+    <string name="setting_mapInteractions_title">Interazioni della mappa</string>
+    <string name="setting_mapInteractions_info">Scegli cosa succede ai controlli della mappa quando la si sposta o si effettua lo zoom.</string>
+    <string name="setting_mapInteractions_deviceDefault_title">Predefinito del dispositivo</string>
+    <string name="setting_mapInteractions_deviceDefault_info">I controlli della mappa si adattano automaticamente in base alle dimensioni dello schermo.</string>
+    <string name="setting_mapInteractions_none_title">Nessuno</string>
+    <string name="setting_mapInteractions_none_info">I controlli della mappa rimangono invariati mentre si interagisce con la mappa.</string>
+    <string name="setting_mapInteractions_minimize_title">Riduci</string>
+    <string name="setting_mapInteractions_minimize_info">I controlli della mappa si riducono per fornire più spazio.</string>
+    <string name="setting_mapInteractions_collapsed_title">Collassati</string>
+    <string name="setting_mapInteractions_collapsed_info">I controlli della mappa si comprimono o si nascondono per massimizzare lo spazio della mappa.</string>
 </resources>

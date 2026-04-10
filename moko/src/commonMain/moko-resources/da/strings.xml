@@ -939,4 +939,14 @@
     <string name="onboarding_step_options_second_title">Deling uden pres</string>
     <string name="onboarding_step_options_second_info">De har altid kontrol over, hvad De deler, og hvordan De deler det.</string>
     <string name="app_version_alert_message_updateInstalled">En ny version af Paralino er installeret.</string>
+    <string name="setting_mapInteractions_title">Kortinteraktioner</string>
+    <string name="setting_mapInteractions_info">Vælg, hvad der skal ske med kortkontrollerne, når kortet flyttes eller zoomes.</string>
+    <string name="setting_mapInteractions_deviceDefault_title">Enhedens standard</string>
+    <string name="setting_mapInteractions_deviceDefault_info">Kortkontrollerne justeres automatisk ud fra skærmstørrelsen.</string>
+    <string name="setting_mapInteractions_none_title">Ingen</string>
+    <string name="setting_mapInteractions_none_info">Kortkontrollerne forbliver uændrede, mens der interageres med kortet.</string>
+    <string name="setting_mapInteractions_minimize_title">Minimer</string>
+    <string name="setting_mapInteractions_minimize_info">Kortkontrollerne formindskes for at give mere plads.</string>
+    <string name="setting_mapInteractions_collapsed_title">Sammenklappet</string>
+    <string name="setting_mapInteractions_collapsed_info">Kortkontrollerne foldes sammen eller skjules for at maksimere kortpladsen.</string>
 </resources>
