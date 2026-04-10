@@ -129,7 +129,7 @@ class MapsProviderViewModel(
                         )
                         add(
                             GenericSettingListItem.Map(
-                                keyId = "lightMap_${currentOption.key}",
+                                keyId = "lightMap_${currentOption.lightStyle.key}",
                                 mapSDKProvider = currentOption,
                                 isDarkMode = false,
                                 height = 150.dp,
@@ -178,7 +178,7 @@ class MapsProviderViewModel(
                         )
                         add(
                             GenericSettingListItem.Map(
-                                keyId = "darkMap_${currentOption.key}",
+                                keyId = "darkMap_${currentOption.darkStyle.key}",
                                 mapSDKProvider = currentOption,
                                 isDarkMode = true,
                                 height = 150.dp,
