@@ -116,7 +116,7 @@ class MapHomeState : BaseMapObservableObject {
                         self?.pendingFocusedMarker = PendingFocusedMarkerData(
                             marker: pin.asFocusedMarker(),
                             animate: true,
-                            forceZoom: state.focusType is LocationHistoryScreenFocusTypeMEMBER_FOCUSED
+                            forceZoom: state.focusType.isMemberFocused
                         )
                     }
                 }
