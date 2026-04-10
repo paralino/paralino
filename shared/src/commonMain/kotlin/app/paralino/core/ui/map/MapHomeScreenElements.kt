@@ -12,6 +12,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.indication
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -234,7 +235,14 @@ fun MapHomeScreenElements(
                         )
                         .padding(top = 14.dp, end = 8.dp, start = 8.dp)
                         .size(40.dp)
-                        .clickable { onEvent(MapHomeScreenUiEvent.OnMapModeSwitch) }
+                        .combinedClickable(
+                            onClick = {
+                                onEvent(MapHomeScreenUiEvent.OnMapModeClick)
+                            },
+                            onLongClick = {
+                                onEvent(MapHomeScreenUiEvent.OnMapModeLongClick)
+                            }
+                        )
                         .background(
                             color = AppColors.accentDark,
                             shape = RoundedCornerShape(12.dp)

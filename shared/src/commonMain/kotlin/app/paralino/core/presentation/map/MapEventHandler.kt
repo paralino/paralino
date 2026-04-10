@@ -2,6 +2,7 @@ package app.paralino.core.presentation.map
 
 import app.paralino.core.MR
 import app.paralino.core.db.AppPrefs
+import app.paralino.core.models.base.DeviceType
 import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.models.data
 import app.paralino.core.models.group.UserGroup
@@ -95,9 +96,18 @@ class MapEventHandler(
                 )
             }
 
-            MapHomeScreenUiEvent.OnMapModeSwitch -> {
+            MapHomeScreenUiEvent.OnMapModeClick -> {
                 mapStateManager.switchMapMode(uiState) { transform ->
                     updateUiState(transform(uiState.value))
+                }
+            }
+
+            MapHomeScreenUiEvent.OnMapModeLongClick -> {
+                when (uiState.value.deviceType) {
+                    DeviceType.Android -> {
+                        eventChannel.trySend(MapHomeScreenEvent.OpenMapProviderSettings)
+                    }
+                    DeviceType.iOS -> {}
                 }
             }
 

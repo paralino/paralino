@@ -258,7 +258,8 @@ sealed interface MapHomeScreenUiEvent {
     data object OnGroupDetailsClick : MapHomeScreenUiEvent
     data object OnSharingStartClick : MapHomeScreenUiEvent
     data object OnSettingsClick : MapHomeScreenUiEvent
-    data object OnMapModeSwitch : MapHomeScreenUiEvent
+    data object OnMapModeClick : MapHomeScreenUiEvent
+    data object OnMapModeLongClick : MapHomeScreenUiEvent
     data object OnCloseFocusedItemClick : MapHomeScreenUiEvent
     data object OnBackClicked : MapHomeScreenUiEvent
     data object ConfirmPersonalSpaceIntro : MapHomeScreenUiEvent
