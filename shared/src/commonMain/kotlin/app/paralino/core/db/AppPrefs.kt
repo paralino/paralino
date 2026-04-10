@@ -1,11 +1,12 @@
 package app.paralino.core.db
 
-import app.paralino.core.models.base.PushProvider
 import app.paralino.core.models.base.ParalinoSocketConnectionType
+import app.paralino.core.models.base.PushProvider
 import app.paralino.core.models.places.GroupPlaceSensitivityData
 import app.paralino.core.presentation.common.FormValidation
 import app.paralino.core.presentation.settings.generic.IOSNavigationAppType
 import app.paralino.core.presentation.settings.generic.MapInteractionsType
+import app.paralino.core.presentation.settings.generic.MapStyle
 import app.paralino.core.presentation.settings.generic.MapsSDKProvider
 import app.paralino.core.presentation.settings.generic.NotificationGroupingType
 import app.paralino.core.provider.MeasurementSystemType
@@ -592,15 +593,15 @@ class AppPrefs(
         val lightStyleKey = provider.userSettings.getString(keyMapSDKProviderLightStyle, "")
         val darkStyleKey = provider.userSettings.getString(keyMapSDKProviderDarkStyle, "")
 
-        val lightStyle = MapsSDKProvider.MapStyle.fromKey(lightStyleKey)
-        val darkStyle = MapsSDKProvider.MapStyle.fromKey(darkStyleKey)
+        val lightStyle = MapStyle.lightStyleFromKey(lightStyleKey)
+        val darkStyle = MapStyle.darkStyleFromKey(darkStyleKey)
 
         val default = if (hasGoogleMaps) {
             MapsSDKProvider.GOOGLE
         } else if (isPremiumPlan && !mapTilerToken.isNullOrBlank()) {
-            MapsSDKProvider.MAPLIBRE_PREMIUM(mapTilerToken = mapTilerToken)
+            MapsSDKProvider.MAPLIBRE.MAPLIBRE_PREMIUM(mapTilerToken = mapTilerToken)
         } else {
-            MapsSDKProvider.MAPLIBRE_FREE
+            MapsSDKProvider.MAPLIBRE.MAPLIBRE_FREE()
         }
 
         val setting = MapsSDKProvider.fromKey(
@@ -611,9 +612,15 @@ class AppPrefs(
         ) ?: default
 
         return if (!isPremiumPlan && setting.isPremium) {
-            MapsSDKProvider.MAPLIBRE_FREE
-        } else if (setting is MapsSDKProvider.MAPLIBRE_PREMIUM && mapTilerToken.isNullOrBlank()) {
-            MapsSDKProvider.MAPLIBRE_FREE
+            MapsSDKProvider.MAPLIBRE.MAPLIBRE_FREE(
+                lightStyle = lightStyle,
+                darkStyle = darkStyle
+            )
+        } else if (setting is MapsSDKProvider.MAPLIBRE.MAPLIBRE_PREMIUM && mapTilerToken.isNullOrBlank()) {
+            MapsSDKProvider.MAPLIBRE.MAPLIBRE_FREE(
+                lightStyle = lightStyle,
+                darkStyle = darkStyle
+            )
         } else if (!hasGoogleMaps && setting == MapsSDKProvider.GOOGLE) {
             default
         } else {
@@ -623,7 +630,7 @@ class AppPrefs(
 
     fun setAndroidMapSDKProvider(maps: MapsSDKProvider) {
         provider.userSettings.putString(keyMapSDKProviderLocation, maps.key)
-        if (maps is MapsSDKProvider.MAPLIBRE_PREMIUM) {
+        if (maps is MapsSDKProvider.MAPLIBRE) {
             provider.userSettings.putString(keyMapSDKProviderLightStyle, maps.lightStyle.key)
             provider.userSettings.putString(keyMapSDKProviderDarkStyle, maps.darkStyle.key)
         }

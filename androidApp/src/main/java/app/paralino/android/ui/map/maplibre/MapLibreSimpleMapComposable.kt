@@ -28,7 +28,6 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import app.paralino.core.models.location.LatLng
 import app.paralino.core.presentation.map.MapPinData
-import app.paralino.core.presentation.places.create.PlaceMapFallbackLatLng
 import app.paralino.core.presentation.settings.generic.MapsSDKProvider
 import app.paralino.core.ui.theme.LocalScreenDimensionType
 import kotlinx.coroutines.flow.collectLatest
@@ -47,13 +46,15 @@ import org.maplibre.spatialk.geojson.Position
 
 
 @Composable
-fun MapLibreBasePlaceMapComposable(
+fun MapLibreSimpleMapComposable(
     modifier: Modifier = Modifier,
     mapsSDKProvider: MapsSDKProvider,
     markers: List<MapPinData>,
-    fallbackCenterLatLng: PlaceMapFallbackLatLng?,
+    fallbackCenterLatLng: LatLng?,
+    zoomLevel: Double,
     canTapOnCircles: Boolean,
     isSatelliteMode: Boolean,
+    isSystemInDarkTheme: Boolean,
     onMapCameraSettled: (LatLng) -> Unit,
     onMapInteraction: (Boolean) -> Unit,
     onMapTap: (lat: Double, lng: Double) -> Unit,
@@ -64,7 +65,7 @@ fun MapLibreBasePlaceMapComposable(
     var mapLoaded by remember { mutableStateOf(false) }
 
     val cameraPositionState = rememberCameraState()
-    val mapController = rememberPlaceMapController(
+    val mapController = rememberMapLibreSimpleMapController(
         mapContentPadding = remember { PaddingValues() },
         cameraState = cameraPositionState,
         isSatelliteMode = isSatelliteMode,
@@ -83,10 +84,10 @@ fun MapLibreBasePlaceMapComposable(
             if (markers.isEmpty() && fallbackCenterLatLng != null) {
                 cameraPositionState.position = cameraPositionState.position.copy(
                     target = Position(
-                        latitude = fallbackCenterLatLng.location.lat,
-                        longitude = fallbackCenterLatLng.location.lng,
+                        latitude = fallbackCenterLatLng.lat,
+                        longitude = fallbackCenterLatLng.lng,
                     ),
-                    zoom = if (fallbackCenterLatLng.isRegion) 4.0 else 10.0
+                    zoom = zoomLevel
                 )
             } else {
                 cameraPositionState.refocus(
@@ -139,6 +140,7 @@ fun MapLibreBasePlaceMapComposable(
         GenericMapLibreMapWrapper(
             modifier = Modifier.fillMaxSize(),
             mapData = mapController,
+            isSystemInDarkTheme = isSystemInDarkTheme,
             onMapLongClick = {
                 onMapLongPress(it.lat, it.lng)
             },
@@ -222,7 +224,7 @@ fun MapLibreBasePlaceMapComposable(
 }
 
 @Composable
-private fun rememberPlaceMapController(
+private fun rememberMapLibreSimpleMapController(
     mapContentPadding: PaddingValues,
     cameraState: CameraState,
     isSatelliteMode: Boolean,

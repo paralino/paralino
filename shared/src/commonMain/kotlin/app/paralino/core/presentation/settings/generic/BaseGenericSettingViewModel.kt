@@ -55,6 +55,7 @@ abstract class BaseGenericSettingViewModel(
             is GenericSettingsScreenUiEvent.GlobalEmptyStateActionClick -> handleUiEvent(event)
             is GenericSettingsScreenUiEvent.EmbeddedEmptyStateActionClick -> handleUiEvent(event)
             is GenericSettingsScreenUiEvent.ConditionErrorItemClick -> handleUiEvent(event)
+            is GenericSettingsScreenUiEvent.OnMapInteraction -> handleUiEvent(event)
         }
     }
 

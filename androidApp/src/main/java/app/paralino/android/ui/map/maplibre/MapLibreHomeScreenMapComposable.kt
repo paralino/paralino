@@ -1,5 +1,6 @@
 package app.paralino.android.ui.map.maplibre
 
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -59,6 +60,7 @@ fun HomeScreenMapLibreMapComposable(
     GenericMapLibreMapWrapper(
         modifier = modifier,
         mapData = mapController,
+        isSystemInDarkTheme = isSystemInDarkTheme(),
         onMapClick = {
             onMainEvent(MapHomeScreenUiEvent.OnMapClick(it))
         },

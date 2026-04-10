@@ -346,6 +346,7 @@ object SettingsScreens {
                 vm = vm,
                 openPaywall = openPaywall,
                 // not available in iOS
+                mapContent = {},
                 openNotificationSocketChannelSettings = {},
                 askNotificationPermission = askNotificationPermission,
                 askBackgroundAccessPermission = askBackgroundAccessPermission,

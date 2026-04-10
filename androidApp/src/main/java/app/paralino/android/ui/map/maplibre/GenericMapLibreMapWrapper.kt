@@ -6,7 +6,6 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.PaddingValues
@@ -35,6 +34,7 @@ import org.maplibre.compose.util.MaplibreComposable
 fun GenericMapLibreMapWrapper(
     modifier: Modifier = Modifier,
     mapData: MapLibreMapUiControlledData,
+    isSystemInDarkTheme: Boolean,
     onMapClick: (LatLng) -> Unit,
     onMapLongClick: (LatLng) -> Unit,
     onMapLoaded: () -> Unit,
@@ -44,40 +44,15 @@ fun GenericMapLibreMapWrapper(
     content: @Composable () -> Unit,
 ) {
     var mapOverlayShown by rememberSaveable { mutableStateOf(true) }
-    val mapStyle = when (mapData.mapsSDKProvider) {
-        is MapsSDKProvider.MAPLIBRE_PREMIUM -> {
-            if (mapData.isSatelliteMode) {
-                BaseStyle.Uri("https://api.maptiler.com/maps/hybrid-v4/style.json?key=${mapData.mapsSDKProvider.mapTilerToken}")
-            } else if (isSystemInDarkTheme()) {
-                when (mapData.mapsSDKProvider.darkStyle) {
-                    MapsSDKProvider.MapStyle.OPEN_FREE_MAP -> {
-                        BaseStyle.Uri("https://tiles.openfreemap.org/styles/dark")
-                    }
 
-                    MapsSDKProvider.MapStyle.MAPTILER -> {
-                        BaseStyle.Uri("https://api.maptiler.com/maps/streets-v4-dark/style.json?key=${mapData.mapsSDKProvider.mapTilerToken}")
-                    }
-                }
-            } else {
-                when (mapData.mapsSDKProvider.lightStyle) {
-                    MapsSDKProvider.MapStyle.OPEN_FREE_MAP -> {
-                        BaseStyle.Uri("https://tiles.openfreemap.org/styles/liberty")
-                    }
+    val mapProvider = remember(mapData.mapsSDKProvider) {
+        (mapData.mapsSDKProvider as? MapsSDKProvider.MAPLIBRE) ?: MapsSDKProvider.MAPLIBRE.MAPLIBRE_FREE()
+    }
 
-                    MapsSDKProvider.MapStyle.MAPTILER -> {
-                        BaseStyle.Uri("https://api.maptiler.com/maps/streets-v4/style.json?key=${mapData.mapsSDKProvider.mapTilerToken}")
-                    }
-                }
-            }
-        }
-
-        else -> {
-            if (isSystemInDarkTheme()) {
-                BaseStyle.Uri("https://tiles.openfreemap.org/styles/dark")
-            } else {
-                BaseStyle.Uri("https://tiles.openfreemap.org/styles/liberty")
-            }
-        }
+    val mapStyle = if (isSystemInDarkTheme) {
+        BaseStyle.Uri(mapProvider.darkStyleUri(isSatelliteMaps = mapData.isSatelliteMode))
+    } else {
+        BaseStyle.Uri(mapProvider.lightStyleUri(isSatelliteMaps = mapData.isSatelliteMode))
     }
 
     MaplibreMap(

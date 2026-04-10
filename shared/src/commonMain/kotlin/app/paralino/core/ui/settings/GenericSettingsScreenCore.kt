@@ -15,6 +15,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import app.paralino.core.presentation.settings.generic.BaseGenericSettingViewModel
+import app.paralino.core.presentation.settings.generic.GenericSettingListItem
 import app.paralino.core.presentation.settings.generic.GenericSettingsScreenEvent
 import app.paralino.core.presentation.settings.generic.GenericSettingsScreenStateContent
 import app.paralino.core.presentation.settings.generic.GenericSettingsScreenUiEvent
@@ -32,6 +33,7 @@ fun GenericSettingsScreenCore(
     coreUiState: CoreUiState,
     vm: BaseGenericSettingViewModel,
     paddingValues: PaddingValues,
+    mapContent: @Composable (GenericSettingListItem.Map) -> Unit,
     openPaywall: () -> Unit,
     openNotificationSocketChannelSettings: () -> Unit,
     askNotificationPermission: () -> Unit,
@@ -109,6 +111,7 @@ fun GenericSettingsScreenCore(
                     coreUiState = coreUiState,
                     paddingValues = paddingValues,
                     state = finalState,
+                    mapContent = mapContent,
                     onEvent = { vm.onEvent(it) }
                 )
             }

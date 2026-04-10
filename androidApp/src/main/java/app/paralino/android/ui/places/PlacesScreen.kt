@@ -3,6 +3,7 @@ package app.paralino.android.ui.places
 import android.annotation.SuppressLint
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.material.MaterialTheme
@@ -16,7 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import app.paralino.android.notification.rememberNotificationsPermissionHandler
 import app.paralino.android.ui.main.MainAppState
-import app.paralino.android.ui.map.MapPlaceComposable
+import app.paralino.android.ui.map.SimpleGenericMapComposable
 import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.core.MR
 import app.paralino.core.models.base.ImageModel
@@ -100,10 +101,12 @@ fun PlacesScreen(
                 appState.navController.navigate(AppScreen.MainHome.BillingPaywall.route())
             },
             mapContent = { state ->
-                MapPlaceComposable(
+                SimpleGenericMapComposable(
                     mapsSDKProvider = state.androidMapSDKProvider,
                     markers = state.markers,
+                    isSystemInDarkTheme = isSystemInDarkTheme(),
                     fallbackCenterLatLng = null,
+                    zoomLevel = 4f,
                     isSatelliteMode = false,
                     canTapOnCircles = true,
                     onMapCameraSettled = {},

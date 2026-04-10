@@ -14,7 +14,7 @@ import app.paralino.core.presentation.places.create.PlaceMapFallbackLatLng
  * No-op Google Map composable wrapper to satisfy compiler
  */
 @Composable
-fun GoogleMapBasePlaceMapComposable(
+fun GoogleMapSimpleMapComposable(
     modifier: Modifier = Modifier,
     markers: List<MapPinData>,
     fallbackCenterLatLng: PlaceMapFallbackLatLng?,

@@ -2,6 +2,7 @@ package app.paralino.android.ui.places
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,7 +17,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import app.paralino.android.ui.main.MainAppState
-import app.paralino.android.ui.map.MapPlaceComposable
+import app.paralino.android.ui.map.SimpleGenericMapComposable
 import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.presentation.map.MapPinData
@@ -120,11 +121,13 @@ private fun PlaceDetailMapComposable(
             MapPinData(state)
         else null
     }
-    MapPlaceComposable(
+    SimpleGenericMapComposable(
         modifier = modifier,
         mapsSDKProvider = state.androidMapSDKProvider,
+        isSystemInDarkTheme = isSystemInDarkTheme(),
         markers = listOfNotNull(pin),
         fallbackCenterLatLng = null,
+        zoomLevel = 4f,
         isSatelliteMode = false,
         canTapOnCircles = true,
         onMapCameraSettled = {},

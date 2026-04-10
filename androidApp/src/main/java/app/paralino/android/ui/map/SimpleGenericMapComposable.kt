@@ -2,22 +2,23 @@ package app.paralino.android.ui.map
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import app.paralino.android.ui.map.google.GoogleMapBasePlaceMapComposable
-import app.paralino.android.ui.map.maplibre.MapLibreBasePlaceMapComposable
+import app.paralino.android.ui.map.google.GoogleMapSimpleMapComposable
+import app.paralino.android.ui.map.maplibre.MapLibreSimpleMapComposable
 import app.paralino.core.models.location.LatLng
 import app.paralino.core.presentation.map.MapPinData
-import app.paralino.core.presentation.places.create.PlaceMapFallbackLatLng
 import app.paralino.core.presentation.settings.generic.MapsSDKProvider
 
 
 @Composable
-fun MapPlaceComposable(
+fun SimpleGenericMapComposable(
     modifier: Modifier = Modifier,
     mapsSDKProvider: MapsSDKProvider?,
     markers: List<MapPinData>,
-    fallbackCenterLatLng: PlaceMapFallbackLatLng?,
+    fallbackCenterLatLng: LatLng?,
+    zoomLevel: Float,
     canTapOnCircles: Boolean,
     isSatelliteMode: Boolean,
+    isSystemInDarkTheme: Boolean,
     onMapCameraSettled: (LatLng) -> Unit,
     onMapInteraction: (Boolean) -> Unit,
     onMapTap: (lat: Double, lng: Double) -> Unit,
@@ -25,10 +26,11 @@ fun MapPlaceComposable(
 ) {
     when (mapsSDKProvider) {
         MapsSDKProvider.GOOGLE -> {
-            GoogleMapBasePlaceMapComposable(
+            GoogleMapSimpleMapComposable(
                 modifier = modifier,
                 markers = markers,
                 fallbackCenterLatLng = fallbackCenterLatLng,
+                zoomLevel = zoomLevel,
                 isSatelliteMode = isSatelliteMode,
                 canTapOnCircles = canTapOnCircles,
                 onMapCameraSettled = onMapCameraSettled,
@@ -38,13 +40,14 @@ fun MapPlaceComposable(
             )
         }
 
-        MapsSDKProvider.MAPLIBRE_FREE,
-        is MapsSDKProvider.MAPLIBRE_PREMIUM -> {
-            MapLibreBasePlaceMapComposable(
+        is MapsSDKProvider.MAPLIBRE -> {
+            MapLibreSimpleMapComposable(
                 modifier = modifier,
                 mapsSDKProvider = mapsSDKProvider,
+                isSystemInDarkTheme = isSystemInDarkTheme,
                 markers = markers,
                 fallbackCenterLatLng = fallbackCenterLatLng,
+                zoomLevel = zoomLevel.toDouble(),
                 isSatelliteMode = isSatelliteMode,
                 canTapOnCircles = canTapOnCircles,
                 onMapCameraSettled = onMapCameraSettled,

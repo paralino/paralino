@@ -58,11 +58,6 @@ fun AppSettingsScreenCore(
             icon = CoreAppIcons.Search.asPainterResource(),
             onClick = onPlaceSearchSettingsClick
         )
-        SettingsActionItem(
-            name = stringResource(MR.strings.setting_mapInteractions_title),
-            icon = CoreAppIcons.HandSwipeTouch.asPainterResource(),
-            onClick = onMapInteractionsClick
-        )
 
         if (uiState.showMapsProvider) {
             SettingsActionItem(
@@ -71,6 +66,12 @@ fun AppSettingsScreenCore(
                 onClick = onMapSourceSettingsClick
             )
         }
+
+        SettingsActionItem(
+            name = stringResource(MR.strings.setting_mapInteractions_title),
+            icon = CoreAppIcons.HandSwipeTouch.asPainterResource(),
+            onClick = onMapInteractionsClick
+        )
 
         if (uiState.showNotificationSocket) {
             SettingsActionItem(

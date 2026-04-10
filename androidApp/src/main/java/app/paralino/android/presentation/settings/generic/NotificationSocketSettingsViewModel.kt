@@ -416,6 +416,8 @@ class NotificationSocketSettingsViewModel(
             is GenericSettingsScreenUiEvent.ConditionErrorItemClick -> {
                 _eventChannel.trySend(GenericSettingsScreenEvent.AskForBackgroundAccessPermission)
             }
+
+            else -> {}
         }
     }
 

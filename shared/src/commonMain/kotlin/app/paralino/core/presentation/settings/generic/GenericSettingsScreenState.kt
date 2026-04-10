@@ -2,6 +2,7 @@ package app.paralino.core.presentation.settings.generic
 
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import app.paralino.core.models.location.LatLng
 import app.paralino.core.ui.components.dialogs.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.ui.settings.SettingsActionItemType
@@ -35,6 +36,7 @@ sealed interface GenericSettingsScreenStateContent {
     data class ListItems(
         val isFullScreenLoading: Boolean = false,
         val loadingText: String? = null,
+        val isUserScrollEnabled: Boolean = true,
         val items: List<GenericSettingListItem>
     ): GenericSettingsScreenStateContent
 }
@@ -110,6 +112,17 @@ sealed interface GenericSettingListItem {
         val description: String?,
         override val keyId: String = text
     ): GenericSettingListItem
+
+
+    data class Map(
+        override val keyId: String,
+        val mapSDKProvider: MapsSDKProvider,
+        val height: Dp,
+        val isDarkMode: Boolean?,
+        val centerLocation: LatLng,
+        val zoomLevel: Float,
+        val isVisible: Boolean,
+    ): GenericSettingListItem
 }
 
 data class GroupOptionItem(
@@ -139,5 +152,6 @@ sealed interface GenericSettingsScreenUiEvent {
     data class SelectActionItem(val item: GenericSettingListItem.SettingsActionItem) : GenericSettingsScreenUiEvent
     data class DialogAction(val action: AlertDialogAction) : GenericSettingsScreenUiEvent
     data object GlobalEmptyStateActionClick : GenericSettingsScreenUiEvent
+    data class OnMapInteraction(val isTouchingMap: Boolean) : GenericSettingsScreenUiEvent
     data class EmbeddedEmptyStateActionClick(val item: GenericSettingListItem.EmptyState) : GenericSettingsScreenUiEvent
 }

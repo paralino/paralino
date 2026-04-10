@@ -5,8 +5,10 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -16,6 +18,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -37,7 +40,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.draw.dropShadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -73,18 +79,22 @@ fun GenericSettingsListScreen(
     coreUiState: CoreUiState,
     paddingValues: PaddingValues,
     state: GenericSettingsScreenStateContent.ListItems,
+    mapContent: @Composable (GenericSettingListItem.Map) -> Unit,
     onEvent: (GenericSettingsScreenUiEvent) -> Unit
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
-        contentPadding = paddingValues
+        contentPadding = paddingValues,
+        userScrollEnabled = state.isUserScrollEnabled
     ) {
         state.items.forEachIndexed { index, item ->
             when (item) {
                 is GenericSettingListItem.GroupOptions -> {
                     this.item(key = item.keyId) {
                         GenericSettingsOptions(
-                            modifier = Modifier.padding(horizontal = 20.dp).fillMaxWidth()
+                            modifier = Modifier
+                                .padding(horizontal = 20.dp)
+                                .fillMaxWidth()
                                 .animateItem(),
                             items = item.visibleItems,
                             onOptionSelected = { option ->
@@ -102,7 +112,9 @@ fun GenericSettingsListScreen(
                 is GenericSettingListItem.Notice -> {
                     this.item(key = item.keyId) {
                         NoticeInfoChip(
-                            modifier = Modifier.padding(horizontal = 20.dp).fillMaxWidth()
+                            modifier = Modifier
+                                .padding(horizontal = 20.dp)
+                                .fillMaxWidth()
                                 .animateItem(),
                             icon = item.icon.asPainterResource(),
                             text = item.content
@@ -228,6 +240,17 @@ fun GenericSettingsListScreen(
                                 buttonText = item.buttonText,
                                 buttonState = AppButtonState.loadingStateWithCheck(item.buttonLoading),
                                 onClick = { onEvent(GenericSettingsScreenUiEvent.GlobalEmptyStateActionClick) }
+                            )
+                        }
+                    }
+                }
+
+                is GenericSettingListItem.Map -> {
+                    if (item.isVisible) {
+                        this.item(key = item.keyId) {
+                            GenericSettingMapItem(
+                                state = item,
+                                mapContent = mapContent
                             )
                         }
                     }
@@ -412,6 +435,51 @@ fun GenericSettingsOptionItem(
                     )
                     .padding(4.dp)
             )
+        }
+    }
+}
+
+@Composable
+fun GenericSettingMapItem(
+    state: GenericSettingListItem.Map,
+    mapContent: @Composable (GenericSettingListItem.Map) -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .zIndex(10f)
+            .fillMaxWidth()
+            .height(state.height)
+            .padding(horizontal = 20.dp)
+            .padding(top = 8.dp)
+            .background(
+                color = MaterialTheme.colors.background,
+                shape = RoundedCornerShape(20.dp)
+            )
+            .border(
+                border = BorderStroke(6.dp, MaterialTheme.colors.surface),
+                shape = RoundedCornerShape(20.dp)
+            )
+            .dropShadow(
+                shape = RoundedCornerShape(20.dp),
+                shadow = Shadow(
+                    radius = 12.dp,
+                    color = MaterialTheme.colors.onBackground.copy(alpha = 0.2f),
+                )
+            )
+            .clip(RoundedCornerShape(20.dp)),
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    color = MaterialTheme.colors.background,
+                    shape = RoundedCornerShape(20.dp)
+                )
+                .padding(4.dp)
+                .clip(RoundedCornerShape(18.dp))
+                .clipToBounds(),
+        ) {
+            mapContent(state)
         }
     }
 }
