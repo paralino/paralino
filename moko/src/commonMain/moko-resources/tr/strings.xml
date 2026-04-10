@@ -939,4 +939,14 @@
     <string name="onboarding_step_options_second_title">Baskı olmadan paylaşma</string>
     <string name="onboarding_step_options_second_info">Ne paylaştığınız ve nasıl paylaştığınızın kontrolü her zaman sizdedir.</string>
     <string name="app_version_alert_message_updateInstalled">Yeni Paralino sürümü yüklendi.</string>
+    <string name="setting_mapInteractions_title">Harita etkileşimleri</string>
+    <string name="setting_mapInteractions_info">Haritayı taşıdığınızda veya yakınlaştırdığınızda harita kontrollerinin ne olacağını seçin.</string>
+    <string name="setting_mapInteractions_deviceDefault_title">Cihaz varsayılanı</string>
+    <string name="setting_mapInteractions_deviceDefault_info">Harita kontrolleri ekran boyutunuza göre otomatik olarak ayarlanır.</string>
+    <string name="setting_mapInteractions_none_title">Hiçbiri</string>
+    <string name="setting_mapInteractions_none_info">Harita ile etkileşimde bulunduğunuz sürece harita kontrolleri olduğu gibi kalır.</string>
+    <string name="setting_mapInteractions_minimize_title">Küçült</string>
+    <string name="setting_mapInteractions_minimize_info">Harita kontrolleri daha fazla alan sağlamak için küçülür.</string>
+    <string name="setting_mapInteractions_collapsed_title">Daraltılmış</string>
+    <string name="setting_mapInteractions_collapsed_info">Harita kontrolleri harita alanını en üst düzeye çıkarmak için daraltılır veya gizlenir.</string>
 </resources>

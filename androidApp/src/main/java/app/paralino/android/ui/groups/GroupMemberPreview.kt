@@ -46,7 +46,8 @@ fun GroupMemberPreview() {
                                 MemberActionType.DELETE_MEMBER
                             )
                         ),
-                        isHighlighted = true
+                        isHighlighted = true,
+                        isCollapsedOrMinimized = true
                     )
                 ) { }
                 Spacer(modifier = Modifier.size(8.dp))
@@ -60,7 +61,8 @@ fun GroupMemberPreview() {
                                 MemberActionType.DELETE_MEMBER
                             )
                         ),
-                        isHighlighted = true
+                        isHighlighted = true,
+                        isCollapsedOrMinimized = false
                     )
                 ) { }
                 Spacer(modifier = Modifier.size(8.dp))

@@ -939,4 +939,14 @@
     <string name="onboarding_step_options_second_title">Jakaminen ilman painostusta</string>
     <string name="onboarding_step_options_second_info">Päätät aina itse, mitä jaat ja miten jaat sen.</string>
     <string name="app_version_alert_message_updateInstalled">Uusi Paralino-versio on asennettu.</string>
+    <string name="setting_mapInteractions_title">Kartan vuorovaikutus</string>
+    <string name="setting_mapInteractions_info">Valitse, mitä kartan ohjaimille tapahtuu, kun siirrät tai zoomaat karttaa.</string>
+    <string name="setting_mapInteractions_deviceDefault_title">Laitteen oletus</string>
+    <string name="setting_mapInteractions_deviceDefault_info">Kartan ohjaimet mukautuvat automaattisesti näytön koon mukaan.</string>
+    <string name="setting_mapInteractions_none_title">Ei muutoksia</string>
+    <string name="setting_mapInteractions_none_info">Kartan ohjaimet pysyvät ennallaan, kun käytät karttaa.</string>
+    <string name="setting_mapInteractions_minimize_title">Pienennä</string>
+    <string name="setting_mapInteractions_minimize_info">Kartan ohjaimet pienenevät, jotta saat enemmän tilaa.</string>
+    <string name="setting_mapInteractions_collapsed_title">Piilotettu</string>
+    <string name="setting_mapInteractions_collapsed_info">Kartan ohjaimet supistetaan tai piilotetaan, jotta kartalle jää enemmän tilaa.</string>
 </resources>

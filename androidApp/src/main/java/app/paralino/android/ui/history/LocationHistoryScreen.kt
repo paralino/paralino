@@ -170,7 +170,9 @@ private fun LocationHistoryDateSelectorPreview() {
         Surface {
             LocationHistoryDateSelector(
                 modifier = Modifier.padding(16.dp),
+                backgroundColor = MaterialTheme.colors.background,
                 elevation = 8.dp,
+                cornerRadiusDp = 12.dp,
                 state = LocationHistoryDateSelectorState(
                     days = sampleDays.reversed(),
                     dateRangeDays = 7,
@@ -208,7 +210,10 @@ fun LocationHistoryStatsTablePreview() {
                 .background(MaterialTheme.colors.background)
                 .padding(12.dp)
         ) {
-            LocationHistoryStatsTable(stats = sampleStats)
+            LocationHistoryStatsTable(
+                isCompactMode = true,
+                stats = sampleStats
+            )
         }
     }
 }

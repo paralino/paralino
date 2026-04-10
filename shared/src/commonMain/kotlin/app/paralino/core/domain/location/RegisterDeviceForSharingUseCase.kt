@@ -99,7 +99,10 @@ class RegisterDeviceForSharingUseCase constructor(
             triggerRemoteOnly {
                 // refresh all group data before sharing starts
                 logg.tag("sharing_start").d("Start location register, refresh group data")
-                val result1 = personalSpaceRefreshUseCase.refreshPersonalSpace(cacheTimeMillis = 10.seconds.inWholeMilliseconds)
+                val result1 = personalSpaceRefreshUseCase.refreshPersonalSpace(
+                    cacheTimeMillis = 10.seconds.inWholeMilliseconds,
+                    throwOnError = true
+                )
                 logg.tag("sharing_start").d("Group refreshed ($result1), fetch group")
                 val space = personalSpaceRepo.getPersonalSpaceWithDevices().firstOrNull()
                     ?: throw IllegalStateException("Personal space not valid")

@@ -44,7 +44,7 @@ fun GoogleMapHistoryMapPin(
 private fun mapMarkerIcon(
     isAccurate: Boolean,
     isClustered: Boolean
-): BitmapDescriptor {
+): BitmapDescriptor? {
     return rememberComposeBitmapDescriptor(
         isAccurate, isClustered
     ) {

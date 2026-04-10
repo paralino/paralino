@@ -126,7 +126,7 @@ sealed interface LocationPerformanceSettingsType {
 
         data object Level4 : Balanced {
             override val updateInterval: Duration = 20.minutes
-            override val minUpdateInterval: Duration = 5.minutes
+            override val minUpdateInterval: Duration = 3.minutes
             override val minUpdateDistanceMeters: Int = 70
             override val isPremiumFeature: Boolean = true
             override val key: String = "balanced_level_400"

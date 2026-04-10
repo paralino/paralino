@@ -2,6 +2,7 @@ package app.paralino.core.presentation.map
 
 import app.paralino.core.MR
 import app.paralino.core.db.AppPrefs
+import app.paralino.core.models.base.DeviceType
 import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.models.data
 import app.paralino.core.models.group.UserGroup
@@ -11,12 +12,14 @@ import app.paralino.core.presentation.groups.GroupMemberItemStateWithFullStateLo
 import app.paralino.core.presentation.groups.GroupMemberItemStateWithLocations
 import app.paralino.core.presentation.groups.GroupMemberItemStateWithOneLocation
 import app.paralino.core.presentation.map.MapScreenViewSourceType.DefaultGroup
+import app.paralino.core.presentation.settings.generic.maps.MapInteractionsType
 import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.ui.components.AppSnackbarData
 import app.paralino.core.ui.components.SnackbarDuration
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.ui.components.onAction
+import app.paralino.core.ui.map.BottomSheetPosition
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -93,14 +96,49 @@ class MapEventHandler(
                 )
             }
 
-            MapHomeScreenUiEvent.OnMapModeSwitch -> {
+            MapHomeScreenUiEvent.OnMapModeClick -> {
                 mapStateManager.switchMapMode(uiState) { transform ->
                     updateUiState(transform(uiState.value))
                 }
             }
 
+            MapHomeScreenUiEvent.OnMapModeLongClick -> {
+                when (uiState.value.deviceType) {
+                    DeviceType.Android -> {
+                        eventChannel.trySend(MapHomeScreenEvent.OpenMapProviderSettings)
+                    }
+                    DeviceType.iOS -> {}
+                }
+            }
+
             MapHomeScreenUiEvent.OnMapTouch -> {
                 mapStateManager.onMapTouch(uiState, updateReadyState)
+            }
+
+            is MapHomeScreenUiEvent.OnMapClick -> {
+                val readyState = uiState.value.asReady()
+                if (readyState?.isMapFocusRequested == true) {
+                    if (readyState.trackingMarker != null) {
+                        // refocus back to same marker
+                        mapStateManager.trackMarker(
+                            uiState = uiState,
+                            updateState = updateReadyState,
+                            markerData = readyState.trackingMarker
+                        )
+                    } else if (readyState.mapHomeScreenFocusType.isMemberPlaceOrHistoryFocused) {
+                        updateReadyState { state ->
+                            state.copy(isMapFocusRequested = false)
+                        }
+                    }
+                } else {
+                    mapStateManager.onMapTouch(uiState, updateReadyState)
+                }
+            }
+
+            MapHomeScreenUiEvent.OnRefocusSelectedDeviceItem -> {
+                updateReadyState { state ->
+                    state.copy(isMapFocusRequested = false)
+                }
             }
 
             is MapHomeScreenUiEvent.OnMarkerClick -> {
@@ -109,6 +147,30 @@ class MapEventHandler(
 
             is MapHomeScreenUiEvent.OnMemberItemEvent -> {
                 handleMemberItemEvent(event.event)
+            }
+
+            is MapHomeScreenUiEvent.OnMapSheetPositionChange -> {
+                updateReadyState {
+                    it.copy(
+                        isMapFocusRequested = event.position is BottomSheetPosition.COLLAPSED_MINIMISED,
+                        desiredMapSheetPosition = event.position.takeIf {
+                            // do not accept hidden, since that is handled by different state
+                            it.order < BottomSheetPosition.HIDDEN.order
+                        }
+                    )
+                }
+            }
+
+            is MapHomeScreenUiEvent.OnScreenDensityChange -> {
+                updateReadyState { state ->
+                    state.copy(
+                        mapInteractionType = MapInteractionsType.forScreenSize(
+                            defaultType = appPrefs.mapInteractions,
+                            maxWidthDp = event.maxWidthDp,
+                            maxHeightDp = event.maxHeightDp
+                        )
+                    )
+                }
             }
 
             MapHomeScreenUiEvent.OnGroupDetailsClick -> {

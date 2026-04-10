@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -39,11 +40,10 @@ import app.paralino.android.ui.map.maplibre.refocus
 import app.paralino.android.ui.map.maplibre.rememberComposeImageBitmap
 import app.paralino.core.presentation.history.LocationHistoryDataViewType
 import app.paralino.core.presentation.history.LocationHistoryPointState
-import app.paralino.core.presentation.history.LocationHistoryScreenFocusType
 import app.paralino.core.presentation.history.LocationHistoryScreenUiState
 import app.paralino.core.presentation.history.LocationHistoryUiEvent
 import app.paralino.core.presentation.map.MapPinData
-import app.paralino.core.presentation.settings.generic.MapsSDKProvider
+import app.paralino.core.presentation.settings.generic.maps.MapsSDKProvider
 import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.utils.extensions.isLocationInaccurate
 import kotlinx.coroutines.delay
@@ -107,17 +107,23 @@ fun rememberMapLibreLocationHistoryMapController(
         shouldAnimateMapFocus = true
     }
 
-    LaunchedEffect(stateData.selectedLocations, stateData.dataViewType, mapContentPadding) {
-        val extraPadding = 60.dp
+    LaunchedEffect(
+        stateData.selectedLocations,
+        stateData.dataViewType,
+        stateData.canCollapseMapHeader,
+        mapContentPadding
+    ) {
+        val extraVerticalPadding = if (stateData.canCollapseMapHeader) 12.dp else 60.dp
+        val extraHorizontalPadding = if (stateData.canCollapseMapHeader) 40.dp else 60.dp
         val mapPadding = PaddingValues(
-            start = mapContentPadding.calculateStartPadding(LayoutDirection.Ltr) + extraPadding,
-            top = mapContentPadding.calculateTopPadding() + extraPadding,
-            end = mapContentPadding.calculateStartPadding(LayoutDirection.Ltr) + extraPadding,
-            bottom = mapContentPadding.calculateBottomPadding() + extraPadding
+            start = mapContentPadding.calculateStartPadding(LayoutDirection.Ltr) + extraHorizontalPadding,
+            top = mapContentPadding.calculateTopPadding() + extraVerticalPadding,
+            end = mapContentPadding.calculateStartPadding(LayoutDirection.Ltr) + extraHorizontalPadding,
+            bottom = mapContentPadding.calculateBottomPadding() + extraVerticalPadding
         )
         snapshotFlow { stateData.focusType }
             .distinctUntilChanged()
-            .filter { it == LocationHistoryScreenFocusType.OVERVIEW }
+            .filter { it.isInOverview }
             .collectLatest {
 //                if (!canAnimateMapFocus && shouldAnimateMapFocus) {
 //                    delay(20)
@@ -159,8 +165,13 @@ fun rememberMapLibreLocationHistoryMapController(
             }
     }
 
-    LaunchedEffect(stateData.selectedMapPinData, stateData.focusType) {
-        val extraPadding = 100.dp
+    LaunchedEffect(
+        stateData.selectedMapPinData,
+        stateData.canCollapseMapHeader,
+        stateData.focusType,
+        mapContentPadding
+    ) {
+        val extraPadding = if (stateData.canCollapseMapHeader) 20.dp else 100.dp
         val mapPadding = PaddingValues(
             start = mapContentPadding.calculateStartPadding(LayoutDirection.Ltr) + extraPadding,
             top = mapContentPadding.calculateTopPadding() + extraPadding,
@@ -174,13 +185,16 @@ fun rememberMapLibreLocationHistoryMapController(
             .collectLatest {
                 if (!canAnimateMapFocus && shouldAnimateMapFocus) {
                     delay(20)
+                } else {
+                    delay(50)
                 }
+
                 cameraState.refocus(
                     scope = scope,
                     markers = listOfNotNull(stateData.selectedMapPinData),
                     ignoreAccuracy = false,
                     durationMs = if (canAnimateMapFocus) 300 else 0,
-                    forceZoom = it == LocationHistoryScreenFocusType.MEMBER_FOCUSED,
+                    forceZoom = it.isMemberFocused,
                     padding = mapPadding
                 )
             }
@@ -199,6 +213,12 @@ fun rememberMapLibreLocationHistoryMapController(
                 renderOptions = RenderOptions(),
                 gestureOptions = GestureOptions(),
                 ornamentOptions = OrnamentOptions(
+                    padding = PaddingValues(
+                        top = mapContentPadding.calculateTopPadding(),
+                        bottom = 0.dp,
+                        start = mapContentPadding.calculateStartPadding(LayoutDirection.Ltr),
+                        end = mapContentPadding.calculateEndPadding(LayoutDirection.Ltr),
+                    ),
                     isCompassEnabled = true,
                     compassAlignment = Alignment.TopStart,
                     attributionAlignment = Alignment.BottomEnd,

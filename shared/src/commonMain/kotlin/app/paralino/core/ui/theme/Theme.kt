@@ -2,6 +2,7 @@ package app.paralino.core.ui.theme
 
 import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.CornerBasedShape
@@ -134,11 +135,14 @@ fun AppTheme(
 			typography = AppTypography,
 			shapes = shapes
 		){
-			CompositionLocalProvider(
-				LocalIndication provides ScaleIndication,
-				ComposeLocalUriHandler provides remember { ComposeUriHandler() },
-				content = content
-			)
+			BoxWithConstraints {
+				CompositionLocalProvider(
+					LocalIndication provides ScaleIndication,
+					ComposeLocalUriHandler provides remember { ComposeUriHandler() },
+					LocalScreenDimensionType provides screenDimensionFromScope(),
+					content = content
+				)
+			}
 		}
 	}
 }

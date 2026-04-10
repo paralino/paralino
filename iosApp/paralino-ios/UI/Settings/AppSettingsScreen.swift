@@ -25,6 +25,9 @@ struct AppSettingsScreen: View {
                     openNotificationGroupingScreen: {
                         path.append(.settings(.notificationGroupingSettings))
                     },
+                    openMapInteractionsScreen: {
+                        path.append(.settings(.mapInteractionsSettings))
+                    },
                     openNavigationAppScreen: {
                         path.append(.settings(.navigationAppSettings))
                     },

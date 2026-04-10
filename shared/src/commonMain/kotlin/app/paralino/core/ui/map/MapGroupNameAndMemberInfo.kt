@@ -52,11 +52,13 @@ fun MapGroupNameAndMemberInfo(
     inactiveUserCount: Int,
     verified: Boolean,
     interactionVisibilityFraction: Float,
+    collapsedVisibilityFraction: Float,
     onGroupDetailButtonClick: () -> Unit,
     onGroupContentClick: () -> Unit,
 ) {
-    Row(
+    Box(
         modifier = modifier
+            .fillMaxWidth()
             .background(
                 color = Color.Transparent,
                 shape = RoundedCornerShape(percent = 100)
@@ -65,126 +67,137 @@ fun MapGroupNameAndMemberInfo(
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = null
-            ) { onGroupContentClick() },
-        verticalAlignment = Alignment.CenterVertically
+            ) { onGroupContentClick() }
     ) {
-        ImageModelImage(
-            imageModel = groupImage,
-            useBackgroundForEmoji = false,
-            clipShape = CircleShape,
-            modifier = Modifier.size(56.dp)
-                .border(
-                    width = if (isPersonalSpace) 2.dp else 0.5.dp,
-                    color = if (isPersonalSpace) {
-                        AppColors.accentDark.copy(0.3f)
-                    } else {
-                        Color.Transparent
-                    },
-                    CircleShape
-                )
-        )
-
-        Column(
+        Row(
             modifier = Modifier
-                .weight(1f)
-                .padding(vertical = 2.dp)
-                .padding(start = 12.dp, end = 8.dp),
-            verticalArrangement = Arrangement.Center
+                .alpha(collapsedVisibilityFraction)
+                .align(Alignment.CenterStart)
+                .padding(end = 52.dp)
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.End
         ) {
-            Text(
-                text = groupName,
-                style = MaterialTheme.typography.subtitle1.copy(
-                    fontWeight = FontWeight.Medium,
-                    lineHeight = 14.sp,
-                ),
-                maxLines = 2,
-                modifier = Modifier
+            ImageModelImage(
+                imageModel = groupImage,
+                useBackgroundForEmoji = false,
+                clipShape = CircleShape,
+                modifier = Modifier.size(56.dp)
+                    .border(
+                        width = if (isPersonalSpace) 2.dp else 0.5.dp,
+                        color = if (isPersonalSpace) {
+                            AppColors.accentDark.copy(0.3f)
+                        } else {
+                            Color.Transparent
+                        },
+                        CircleShape
+                    )
             )
 
-            Row(
-                verticalAlignment = Alignment.CenterVertically
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(vertical = 2.dp)
+                    .padding(start = 12.dp, end = 8.dp),
+                verticalArrangement = Arrangement.Center
             ) {
-                CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.disabled) {
-                    if (isPersonalSpace) {
-                        Icon(
-                            painter = CoreAppIcons.PhoneAndroid.asPainterResource(),
-                            modifier = Modifier.size(14.dp),
-                            contentDescription = null
-                        )
-                    } else {
-                        Icon(
-                            painter = CoreAppIcons.Group.asPainterResource(),
-                            modifier = Modifier.size(14.dp),
-                            contentDescription = null
-                        )
-                    }
-                    Spacer(Modifier.size(2.dp))
-                    Text(
-                        text = "$userCount",
-                        style = MaterialTheme.typography.caption.copy(
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.Bold
-                        ),
-                        modifier = Modifier
-                    )
-                }
+                Text(
+                    text = groupName,
+                    style = MaterialTheme.typography.subtitle1.copy(
+                        fontWeight = FontWeight.Medium,
+                        lineHeight = 14.sp,
+                    ),
+                    maxLines = 2,
+                    modifier = Modifier
+                )
 
-                if (idleUserCount > 0 || inactiveUserCount > 0) {
-                    Row(
-                        modifier = Modifier
-                            .padding(start = 4.dp)
-                            .background(
-                                color = MaterialTheme.colors.primary.copy(alpha = 0.1f),
-                                shape = MaterialTheme.shapes.medium
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.disabled) {
+                        if (isPersonalSpace) {
+                            Icon(
+                                painter = CoreAppIcons.PhoneAndroid.asPainterResource(),
+                                modifier = Modifier.size(14.dp),
+                                contentDescription = null
                             )
-                            .padding(start = 4.dp, end = 6.dp)
-                            .padding(vertical = 1.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        MapUserCountElement(
-                            count = activeUserCount,
-                            color = AppColors.accent
-                        )
-
-                        if (idleUserCount > 0) {
-                            Spacer(Modifier.size(8.dp))
-                            MapUserCountElement(
-                                count = idleUserCount,
-                                color = AppColors.highlightGold
+                        } else {
+                            Icon(
+                                painter = CoreAppIcons.Group.asPainterResource(),
+                                modifier = Modifier.size(14.dp),
+                                contentDescription = null
                             )
                         }
+                        Spacer(Modifier.size(2.dp))
+                        Text(
+                            text = "$userCount",
+                            style = MaterialTheme.typography.caption.copy(
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Bold
+                            ),
+                            modifier = Modifier
+                        )
+                    }
 
-                        if (inactiveUserCount > 0) {
-                            Spacer(Modifier.size(8.dp))
+                    if (idleUserCount > 0 || inactiveUserCount > 0) {
+                        Row(
+                            modifier = Modifier
+                                .padding(start = 4.dp)
+                                .background(
+                                    color = MaterialTheme.colors.primary.copy(alpha = 0.1f),
+                                    shape = MaterialTheme.shapes.medium
+                                )
+                                .padding(start = 4.dp, end = 6.dp)
+                                .padding(vertical = 1.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
                             MapUserCountElement(
-                                count = inactiveUserCount,
-                                color = AppColors.redMain
+                                count = activeUserCount,
+                                color = AppColors.accent
                             )
+
+                            if (idleUserCount > 0) {
+                                Spacer(Modifier.size(8.dp))
+                                MapUserCountElement(
+                                    count = idleUserCount,
+                                    color = AppColors.highlightGold
+                                )
+                            }
+
+                            if (inactiveUserCount > 0) {
+                                Spacer(Modifier.size(8.dp))
+                                MapUserCountElement(
+                                    count = inactiveUserCount,
+                                    color = AppColors.redMain
+                                )
+                            }
                         }
                     }
-                }
 
-                Spacer(Modifier.size(10.dp))
+                    Spacer(Modifier.size(10.dp))
 
-                CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.disabled) {
-                    Icon(
-                        painter = CoreAppIcons.MapsHomeWork.asPainterResource(),
-                        modifier = Modifier.size(16.dp),
-                        contentDescription = null
-                    )
-                    Spacer(Modifier.size(2.dp))
-                    Text(
-                        text = "$placesCount",
-                        style = MaterialTheme.typography.caption.copy(fontWeight = FontWeight.Bold),
-                        modifier = Modifier
-                    )
+                    CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.disabled) {
+                        Icon(
+                            painter = CoreAppIcons.MapsHomeWork.asPainterResource(),
+                            modifier = Modifier.size(16.dp),
+                            contentDescription = null
+                        )
+                        Spacer(Modifier.size(2.dp))
+                        Text(
+                            text = "$placesCount",
+                            style = MaterialTheme.typography.caption.copy(fontWeight = FontWeight.Bold),
+                            modifier = Modifier
+                        )
+                    }
                 }
             }
         }
 
         Box(
             modifier = Modifier
+                .align(Alignment.CenterEnd)
                 .size(52.dp)
+                .alpha(collapsedVisibilityFraction)
                 .clickable(
                     interactionSource = remember { MutableInteractionSource() },
                     indication = if (interactionVisibilityFraction == 1f) LocalIndication.current else null

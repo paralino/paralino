@@ -98,6 +98,7 @@ import app.paralino.core.ui.components.dialogs.Show
 import app.paralino.core.ui.groups.ShakeEffect
 import app.paralino.core.ui.groups.components.ChipsSuggestionsSection
 import app.paralino.core.ui.theme.AppColors
+import app.paralino.core.ui.theme.LocalScreenDimensionType
 import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.extensions.conditional
 import dev.icerock.moko.resources.compose.stringResource
@@ -115,6 +116,11 @@ fun CreatePlaceScreenCore(
 ) {
 
     MessageDispatcherEffect(vm, appState)
+    val screenDimensionType = LocalScreenDimensionType.current
+    LaunchedEffect(key1 = screenDimensionType.isReady) {
+        vm.onEvent(CreatePlaceScreenUiEvent.OnUiReady(size = screenDimensionType))
+    }
+
     val uiState by vm.uiState.collectAsState()
     val focusRequester = remember { FocusRequester() }
     val inputMethod = LocalSoftwareKeyboardController.current
@@ -166,24 +172,30 @@ fun CreatePlaceScreenCore(
                 is Payload.Error -> {}
                 Payload.Loading -> {}
                 is Payload.Success -> {
-                    ScaffoldBottomBarButton(
-                        buttonState = AppButtonState.loadingStateWithCheck(finalState.data.actionLoading),
-                        buttonText = when (finalState.data.screenStep) {
-                            CreatePlaceScreenStep.NAME_SUGGESTION -> {
-                                stringResource(MR.strings.button_next)
-                            }
-
-                            CreatePlaceScreenStep.FULL -> {
-                                if (finalState.data.isNewPlace) {
-                                    stringResource(MR.strings.places_create_button_create)
-                                } else {
-                                    stringResource(MR.strings.button_save)
+                    AnimatedVisibility (
+                        !screenDimensionType.isSmall ||
+                        finalState.data.screenStep == CreatePlaceScreenStep.NAME_SUGGESTION ||
+                        finalState.data.addressUiMode == CreatePlaceAddressSearchUiMode.HIDDEN
+                    ) {
+                        ScaffoldBottomBarButton(
+                            buttonState = AppButtonState.loadingStateWithCheck(finalState.data.actionLoading),
+                            buttonText = when (finalState.data.screenStep) {
+                                CreatePlaceScreenStep.NAME_SUGGESTION -> {
+                                    stringResource(MR.strings.button_next)
                                 }
-                            }
-                        },
-                        buttonIcon = null,
-                        onClick = { vm.onEvent(CreatePlaceScreenUiEvent.CreatePlace) }
-                    )
+
+                                CreatePlaceScreenStep.FULL -> {
+                                    if (finalState.data.isNewPlace) {
+                                        stringResource(MR.strings.places_create_button_create)
+                                    } else {
+                                        stringResource(MR.strings.button_save)
+                                    }
+                                }
+                            },
+                            buttonIcon = null,
+                            onClick = { vm.onEvent(CreatePlaceScreenUiEvent.CreatePlace) }
+                        )
+                    }
                 }
             }
         }
@@ -299,24 +311,28 @@ private fun CreatePlaceNameSuggestionStep(
         }
     }
 
+    val scrollState = rememberScrollState()
+    val scope = rememberCoroutineScope()
+
     Column(
         modifier = modifier
             .fillMaxSize()
-            .verticalScroll(rememberScrollState())
+            .verticalScroll(scrollState)
             .padding(vertical = 20.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Spacer(modifier = Modifier.weight(1f))
+        val isSmallScreen = LocalScreenDimensionType.current.isSmall
 
         Box(
-            modifier = Modifier.size(120.dp),
+            modifier = Modifier.size(if (isSmallScreen) 80.dp else 120.dp),
             contentAlignment = Alignment.Center
         ) {
             ImageModelImage(
                 imageModel = state.image,
                 modifier = Modifier
-                    .size(100.dp)
+                    .size(if (isSmallScreen) 70.dp else 100.dp)
                     .rotate(rotation)
                     .clickable(onClick = onImageClick)
             )
@@ -327,7 +343,7 @@ private fun CreatePlaceNameSuggestionStep(
             )
         }
 
-        Spacer(modifier = Modifier.size(20.dp))
+        Spacer(modifier = Modifier.size(if (isSmallScreen) 10.dp else 20.dp))
 
         MainInputField(
             modifier = Modifier.height(70.dp),
@@ -348,6 +364,9 @@ private fun CreatePlaceNameSuggestionStep(
                 suggestions = state.nameSuggestions,
                 onSuggestionClick = {
                     onEvent(CreatePlaceScreenUiEvent.OnNameSuggestionSelected(it))
+                    scope.launch {
+                        scrollState.animateScrollTo(0)
+                    }
                 }
             )
         }
@@ -366,11 +385,14 @@ private fun CreatePlaceMapStep(
     onEvent: (CreatePlaceScreenUiEvent) -> Unit,
     mapContent: @Composable (CreatePlaceScreenState) -> Unit,
 ) {
+    val isSmallScreen = LocalScreenDimensionType.current.isSmall
     Column(
         modifier = modifier
             .fillMaxSize()
     ) {
-        AnimatedVisibility(visible = state.addressUiMode == CreatePlaceAddressSearchUiMode.HIDDEN) {
+        AnimatedVisibility(
+            visible = state.addressUiMode == CreatePlaceAddressSearchUiMode.HIDDEN && !isSmallScreen
+        ) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -409,7 +431,9 @@ private fun CreatePlaceMapStep(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 20.dp)
+                .padding(
+                    top = if (isSmallScreen) 12.dp else 20.dp
+                )
                 .weight(1f)
                 .background(
                     color = MaterialTheme.colors.background,
@@ -517,18 +541,23 @@ private fun CreatePlaceMapStep(
             )
         }
 
-        Text(
-            modifier = Modifier
-                .padding(top = 8.dp)
-                .fillMaxWidth(),
-            style = MaterialTheme.typography.caption.copy(
-                textAlign = TextAlign.Center,
-                lineHeight = 14.sp
-            ),
-            text = state.hintText
-        )
+        if (!isSmallScreen) {
+            Text(
+                modifier = Modifier
+                    .padding(top = 8.dp)
+                    .fillMaxWidth(),
+                style = MaterialTheme.typography.caption.copy(
+                    textAlign = TextAlign.Center,
+                    lineHeight = 14.sp
+                ),
+                text = state.hintText
+            )
 
-        Spacer(modifier = Modifier.size(12.dp))
+            Spacer(modifier = Modifier.size(12.dp))
+        } else {
+            Spacer(modifier = Modifier.size(8.dp))
+        }
+
     }
 }
 

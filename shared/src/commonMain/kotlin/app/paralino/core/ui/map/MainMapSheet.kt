@@ -10,11 +10,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import app.paralino.core.presentation.map.MapHomeScreenState
 import app.paralino.core.presentation.map.MapHomeScreenUiEvent
 import app.paralino.core.ui.CoreUiState
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -33,10 +36,19 @@ fun MainMapSheet(
     LaunchedEffect(mapUiState.defaultSheetPosition) {
         snapshotFlow { mapUiState.defaultSheetPosition }
             .distinctUntilChanged()
-            .onEach {
-                swipeableState.animateTo(it)
+            .onEach { position ->
+                if (position == BottomSheetPosition.HIDDEN) {
+                    swipeableState.snapTo(position)
+                } else {
+                    swipeableState.animateTo(position)
+                }
             }
             .collect()
+    }
+
+    LaunchedEffect(swipeableState.state.settledValue) {
+//        delay(1500)
+        onEvent(MapHomeScreenUiEvent.OnMapSheetPositionChange(swipeableState.state.settledValue))
     }
 
     var infoHeight by remember { mutableStateOf(150f) }
@@ -44,6 +56,16 @@ fun MainMapSheet(
         enabled = mapUiState.isSheetEnabled,
         screenPaddingValues = screenPaddingValues,
         collapsedInfoHeightPixel = infoHeight,
+        collapsedMinimizedInfoHeightPixel = with(LocalDensity.current) {
+            screenPaddingValues.calculateBottomPadding()
+                .plus(SwipeableSheetState.sheetBottomCollapsedPadding)
+                .plus(SwipeableSheetState.sheetBottomCollapsedMinimizedPadding)
+                .plus(MapHomeSheetContentSizes.dividerTopPadding.times(2) + MapHomeSheetContentSizes.dividerHeight.times(2))
+                // this one is to compensate for the padding of sheet top divider/handler
+                .plus(MapHomeSheetContentSizes.dividerHeight)
+                .plus(MapHomeSheetContentSizes.collapsedDividerTopPadding)
+                .toPx()
+        },
         swipeableState = swipeableState,
         screenContent = screenContent,
         body = {

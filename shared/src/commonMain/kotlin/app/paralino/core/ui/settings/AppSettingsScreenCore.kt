@@ -26,6 +26,7 @@ fun AppSettingsScreenCore(
     paddingValues: PaddingValues,
     onMeasurementSystemClick: () -> Unit,
     onNotificationGroupingClick: () -> Unit,
+    onMapInteractionsClick: () -> Unit,
     onNavigationAppClick: () -> Unit,
     onPlaceSearchSettingsClick: () -> Unit,
     onNotificationSocketSettingsClick: () -> Unit,
@@ -65,6 +66,12 @@ fun AppSettingsScreenCore(
                 onClick = onMapSourceSettingsClick
             )
         }
+
+        SettingsActionItem(
+            name = stringResource(MR.strings.setting_mapInteractions_title),
+            icon = CoreAppIcons.HandSwipeTouch.asPainterResource(),
+            onClick = onMapInteractionsClick
+        )
 
         if (uiState.showNotificationSocket) {
             SettingsActionItem(

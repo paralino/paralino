@@ -24,6 +24,7 @@ import app.paralino.core.repo.places.PlacesLocalDataSource
 import app.paralino.core.repo.places.PlacesRepository
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.ui.groups.components.SuggestionSectionChipData
+import app.paralino.core.ui.theme.ScreenDimensionType
 import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.exceptions.asRemoteException
 import app.paralino.core.utils.extensions.errorString
@@ -36,7 +37,11 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
@@ -63,6 +68,8 @@ class CreatePlaceViewModel(
 
     private val _eventChannel = Channel<CreatePlaceScreenEvent?>()
     val events = _eventChannel.receiveAsFlow()
+
+    private val uiSizeState = MutableStateFlow<ScreenDimensionType?>(null)
     private var addressSearchJob: Job? = null
     private var mapPosition: LatLng? = null
     val isNewPlace: Boolean = placeId.isNullOrBlank()
@@ -110,13 +117,26 @@ class CreatePlaceViewModel(
                     )
 
                     else -> value.mapSuccess { place ->
+                        val screenStep = uiSizeState
+                            .filterNotNull()
+                            .distinctUntilChanged()
+                            .map { uiSize ->
+                                if (uiSize.isSmall) {
+                                    CreatePlaceScreenStep.NAME_SUGGESTION
+                                } else {
+                                    CreatePlaceScreenStep.FULL
+                                }
+                            }
+                            .firstOrNull()
+                            ?: CreatePlaceScreenStep.NAME_SUGGESTION
+
                         CreatePlaceScreenState(
                             groupId = groupId.asGroupOrSpaceId(),
                             isNewPlace = false,
-                            screenStep = CreatePlaceScreenStep.FULL,
+                            screenStep = screenStep,
                             name = place.data.data?.name ?: "---",
                             image = place.data.data?.image ?: ImageModel.emoji(Emojis.lock),
-                            nameSuggestions = getNameSuggestions(),
+                            nameSuggestions = emptyList(),
                             address = TextFieldValue(text = ""),
                             addressUiMode = CreatePlaceAddressSearchUiMode.HIDDEN,
                             addressSuggestions = emptyList(),
@@ -145,6 +165,10 @@ class CreatePlaceViewModel(
 
     fun onEvent(event: CreatePlaceScreenUiEvent) {
         when (event) {
+            is CreatePlaceScreenUiEvent.OnUiReady -> {
+                uiSizeState.update { event.size }
+            }
+
             CreatePlaceScreenUiEvent.CreatePlace -> {
                 when (uiState.value.data?.screenStep) {
                     CreatePlaceScreenStep.NAME_SUGGESTION -> goToFinalCreateStep()

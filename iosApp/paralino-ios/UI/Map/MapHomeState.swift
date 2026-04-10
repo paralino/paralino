@@ -17,6 +17,8 @@ class MapHomeState : BaseMapObservableObject {
     @Published var uiState: MapHomeScreenState = MapHomeScreenState.Empty(
         groupsEmptyState: nil,
         selectedGroupId: nil,
+        selectedGroupOwnerId: nil,
+        isCurrentUserOwnerOfSelectedGroup: false,
         selectedGroupImage: nil,
         currentUserImage: ImageModel.companion.placeholder(),
         isPersonalSpace: true,
@@ -114,7 +116,7 @@ class MapHomeState : BaseMapObservableObject {
                         self?.pendingFocusedMarker = PendingFocusedMarkerData(
                             marker: pin.asFocusedMarker(),
                             animate: true,
-                            forceZoom: state.focusType is LocationHistoryScreenFocusTypeMEMBER_FOCUSED
+                            forceZoom: state.focusType.isMemberFocused
                         )
                     }
                 }

@@ -939,4 +939,14 @@
     <string name="onboarding_step_options_second_title">Partajare fără presiune</string>
     <string name="onboarding_step_options_second_info">Aveți întotdeauna controlul asupra a ceea ce partajați și asupra modului în care o faceți.</string>
     <string name="app_version_alert_message_updateInstalled">Noua versiune a Paralino a fost instalată.</string>
+    <string name="setting_mapInteractions_collapsed_info">Controalele hărții se restrâng sau se ascund pentru a maximiza spațiul hărții.</string>
+    <string name="setting_mapInteractions_title">Interacțiuni cu harta</string>
+    <string name="setting_mapInteractions_info">Alegeți ce se întâmplă cu controalele hărții atunci când o mutați sau când schimbați nivelul de zoom.</string>
+    <string name="setting_mapInteractions_deviceDefault_title">Setare implicită a dispozitivului</string>
+    <string name="setting_mapInteractions_deviceDefault_info">Controalele hărții se ajustează automat în funcție de dimensiunea ecranului.</string>
+    <string name="setting_mapInteractions_none_title">Niciunul</string>
+    <string name="setting_mapInteractions_none_info">Controalele hărții rămân neschimbate în timp ce interacționați cu harta.</string>
+    <string name="setting_mapInteractions_minimize_title">Minimizare</string>
+    <string name="setting_mapInteractions_minimize_info">Controalele hărții se reduc pentru a vă oferi mai mult spațiu.</string>
+    <string name="setting_mapInteractions_collapsed_title">Restrâns</string>
 </resources>

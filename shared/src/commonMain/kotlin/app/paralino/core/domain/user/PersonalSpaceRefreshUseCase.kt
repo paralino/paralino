@@ -22,7 +22,30 @@ class PersonalSpaceRefreshUseCase(
     private val appPrefs: AppPrefs,
 ): LimitedExecutionRepository() {
 
-    suspend fun refreshPersonalSpace(cacheTimeMillis: Long): UserDevicesWithLocationsAndPlacesRaw? {
+    suspend fun refreshPersonalSpace(cacheTimeMillis: Long, throwOnError: Boolean = false): Boolean {
+        try {
+            startProcessing("personal_space")
+        } catch (e: Exception) {
+            logg.tag("group_actions").v("Processing, can't refresh personal space")
+            return false
+        }
+
+        logg.tag("personal_space").v("Not processing, can refresh personal space")
+
+        try {
+            val result = refreshAndGetPersonalSpace(cacheTimeMillis = cacheTimeMillis)
+            return result != null
+        } catch (e: Exception) {
+            logg.tag("personal_space")
+                .w("Stop processing refresh for personal space - ${e.message}")
+            if (throwOnError) throw e
+            else return false
+        } finally {
+            stopProcessing("personal_space")
+        }
+    }
+
+    suspend fun refreshAndGetPersonalSpace(cacheTimeMillis: Long): UserDevicesWithLocationsAndPlacesRaw? {
         return triggerRemoteMaybe(
             remotePreference = RemotePreference.CACHE(key = "personal_space_refresh", timeMillis = cacheTimeMillis),
             remote = {

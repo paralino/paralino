@@ -59,6 +59,7 @@ class LocationHistoryDataFetchController(
             val selectedDate = nowUTC().toLocalDateTime(TimeZone.currentSystemDefault()).date
             val isPersonalHistory = groupId == UserGroup.groupPersonalDevicesId
             val isCurrentUser = memberUserId.isBlank() || memberUserId == appPrefs.userId
+            val mapInteractionsType = appPrefs.mapInteractions
 
             val newState = _uiState.value.copy(
                 groupOrSpaceId = groupId.asGroupOrSpaceId(),
@@ -82,6 +83,7 @@ class LocationHistoryDataFetchController(
                     daysInLoading = listOf(selectedDate)
                 ),
                 selectedLocationId = null,
+                mapInteractionType = mapInteractionsType
             )
 
             _uiState.value = newState

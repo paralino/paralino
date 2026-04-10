@@ -338,7 +338,7 @@ fun GroupMemberWithLocations(
 
         // action item
         AnimatedVisibility(
-            visible = expanded
+            visible = expanded && !state.isCollapsedOrMinimized
         ) {
             Column(
                 modifier = Modifier
@@ -454,7 +454,12 @@ fun GroupMemberWithLocations(
             }
         }
 
-        if (state.lastStatusPing != null && state.lastStatusPing != state.filteredLastPing && canShowOldLocation) {
+        if (
+            state.lastStatusPing != null &&
+            state.lastStatusPing != state.filteredLastPing &&
+            canShowOldLocation &&
+            !state.isCollapsedOrMinimized
+        ) {
             FlowRow(
                 modifier = Modifier
                     .padding(horizontal = 10.dp)
@@ -965,6 +970,7 @@ fun GroupMemberActionButton(
     text: String,
     showText: Boolean = true,
     isLoading: Boolean = false,
+    isEnabled: Boolean = true,
     startIconSize: Dp = 18.dp,
     endIcon: Painter? = CoreAppIcons.ChevronRight.asPainterResource(),
     backgroundColor: Color = MaterialTheme.colors.surface,
@@ -1024,7 +1030,7 @@ fun GroupMemberActionButton(
             }
         },
         endSection = null,
-        onClick = onClick
+        onClick = if (isEnabled) onClick else null
     )
 }
 

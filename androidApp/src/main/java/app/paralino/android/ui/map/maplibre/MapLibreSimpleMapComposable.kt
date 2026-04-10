@@ -6,6 +6,8 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.CircularProgressIndicator
@@ -22,11 +24,12 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInteropFilter
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import app.paralino.core.models.location.LatLng
 import app.paralino.core.presentation.map.MapPinData
-import app.paralino.core.presentation.places.create.PlaceMapFallbackLatLng
-import app.paralino.core.presentation.settings.generic.MapsSDKProvider
+import app.paralino.core.presentation.settings.generic.maps.MapsSDKProvider
+import app.paralino.core.ui.theme.LocalScreenDimensionType
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import org.maplibre.compose.camera.CameraState
@@ -43,13 +46,15 @@ import org.maplibre.spatialk.geojson.Position
 
 
 @Composable
-fun MapLibreBasePlaceMapComposable(
+fun MapLibreSimpleMapComposable(
     modifier: Modifier = Modifier,
     mapsSDKProvider: MapsSDKProvider,
     markers: List<MapPinData>,
-    fallbackCenterLatLng: PlaceMapFallbackLatLng?,
+    fallbackCenterLatLng: LatLng?,
+    zoomLevel: Double,
     canTapOnCircles: Boolean,
     isSatelliteMode: Boolean,
+    isSystemInDarkTheme: Boolean,
     onMapCameraSettled: (LatLng) -> Unit,
     onMapInteraction: (Boolean) -> Unit,
     onMapTap: (lat: Double, lng: Double) -> Unit,
@@ -60,28 +65,35 @@ fun MapLibreBasePlaceMapComposable(
     var mapLoaded by remember { mutableStateOf(false) }
 
     val cameraPositionState = rememberCameraState()
-    val mapController = rememberPlaceMapController(
+    val mapController = rememberMapLibreSimpleMapController(
         mapContentPadding = remember { PaddingValues() },
         cameraState = cameraPositionState,
         isSatelliteMode = isSatelliteMode,
         mapsSDKProvider = mapsSDKProvider
     )
 
+    val isSmallScreenSize = LocalScreenDimensionType.current.isSmall
+    val screenPadding = remember(isSmallScreenSize) {
+        PaddingValues(
+            if (isSmallScreenSize) 12.dp else 50.dp
+        )
+    }
+
     if (mapLoaded) {
-        LaunchedEffect(Unit) {
+        LaunchedEffect(screenPadding) {
             if (markers.isEmpty() && fallbackCenterLatLng != null) {
                 cameraPositionState.position = cameraPositionState.position.copy(
                     target = Position(
-                        latitude = fallbackCenterLatLng.location.lat,
-                        longitude = fallbackCenterLatLng.location.lng,
+                        latitude = fallbackCenterLatLng.lat,
+                        longitude = fallbackCenterLatLng.lng,
                     ),
-                    zoom = if (fallbackCenterLatLng.isRegion) 4.0 else 10.0
+                    zoom = zoomLevel
                 )
             } else {
                 cameraPositionState.refocus(
                     scope = scope,
                     markers = markers,
-                    padding = PaddingValues(50.dp),
+                    padding = screenPadding,
                     durationMs = 0
                 )
             }
@@ -90,7 +102,7 @@ fun MapLibreBasePlaceMapComposable(
 
     LaunchedEffect(key1 = markers) {
         if (mapLoaded) {
-            cameraPositionState.refocus(scope = scope, markers = markers)
+            cameraPositionState.refocus(scope = scope, markers = markers, padding = screenPadding)
         }
     }
 
@@ -128,6 +140,7 @@ fun MapLibreBasePlaceMapComposable(
         GenericMapLibreMapWrapper(
             modifier = Modifier.fillMaxSize(),
             mapData = mapController,
+            isSystemInDarkTheme = isSystemInDarkTheme,
             onMapLongClick = {
                 onMapLongPress(it.lat, it.lng)
             },
@@ -173,7 +186,11 @@ fun MapLibreBasePlaceMapComposable(
                             isFocused = model.focused,
                             isSatelliteMode = isSatelliteMode,
                             onClick = {
-                                cameraPositionState.refocus(scope = scope, markers = markers)
+                                cameraPositionState.refocus(
+                                    scope = scope,
+                                    markers = markers,
+                                    padding = screenPadding
+                                )
                             }
                         )
                     }
@@ -193,7 +210,11 @@ fun MapLibreBasePlaceMapComposable(
                         canTapOnMarker = true,
                         zIndex = 20f,
                         onClick = {
-                            cameraPositionState.refocus(scope = scope, markers = markers)
+                            cameraPositionState.refocus(
+                                scope = scope,
+                                markers = markers,
+                                padding = screenPadding
+                            )
                         }
                     )
                 }
@@ -203,7 +224,7 @@ fun MapLibreBasePlaceMapComposable(
 }
 
 @Composable
-private fun rememberPlaceMapController(
+private fun rememberMapLibreSimpleMapController(
     mapContentPadding: PaddingValues,
     cameraState: CameraState,
     isSatelliteMode: Boolean,
@@ -215,6 +236,12 @@ private fun rememberPlaceMapController(
                 renderOptions = RenderOptions(),
                 gestureOptions = GestureOptions(),
                 ornamentOptions = OrnamentOptions(
+                    padding = PaddingValues(
+                        top = mapContentPadding.calculateTopPadding(),
+                        bottom = 0.dp,
+                        start = mapContentPadding.calculateStartPadding(LayoutDirection.Ltr),
+                        end = mapContentPadding.calculateEndPadding(LayoutDirection.Ltr),
+                    ),
                     isCompassEnabled = true,
                     compassAlignment = Alignment.TopStart,
                     attributionAlignment = Alignment.BottomEnd,

@@ -939,4 +939,14 @@
     <string name="onboarding_step_options_second_title">Обмен без давления</string>
     <string name="onboarding_step_options_second_info">Вы всегда контролируете, что и каким образом вы делитесь.</string>
     <string name="app_version_alert_message_updateInstalled">Установлена новая версия Paralino.</string>
+    <string name="setting_mapInteractions_title">Взаимодействие с картой</string>
+    <string name="setting_mapInteractions_info">Выберите, что происходит с элементами управления картой при перемещении или масштабировании карты.</string>
+    <string name="setting_mapInteractions_deviceDefault_title">По умолчанию устройства</string>
+    <string name="setting_mapInteractions_deviceDefault_info">Элементы управления картой автоматически подстраиваются в зависимости от размера экрана.</string>
+    <string name="setting_mapInteractions_none_title">Нет</string>
+    <string name="setting_mapInteractions_none_info">Элементы управления картой остаются без изменений, пока вы взаимодействуете с картой.</string>
+    <string name="setting_mapInteractions_minimize_title">Минимизировать</string>
+    <string name="setting_mapInteractions_minimize_info">Элементы управления картой уменьшаются, чтобы дать вам больше места.</string>
+    <string name="setting_mapInteractions_collapsed_title">Свернуть</string>
+    <string name="setting_mapInteractions_collapsed_info">Элементы управления картой сворачиваются или скрываются, чтобы максимально расширить пространство для карты.</string>
 </resources>

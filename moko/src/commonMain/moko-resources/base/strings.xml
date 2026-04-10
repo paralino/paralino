@@ -282,6 +282,16 @@
     <string name="setting_notificationGrouping_byGroup_info">All notifications related to a single Paralino group will be grouped together.\nAll other notifications will be grouped by type.</string>
     <string name="setting_notificationGrouping_byPerson_title">By person</string>
     <string name="setting_notificationGrouping_byPerson_info">All notifications related to a specific person will be grouped together.\nAll other notifications will be grouped by type.</string>
+    <string name="setting_mapInteractions_title">Map interactions</string>
+    <string name="setting_mapInteractions_info">Choose what happens to map controls when you move or zoom the map.</string>
+    <string name="setting_mapInteractions_deviceDefault_title">Device default</string>
+    <string name="setting_mapInteractions_deviceDefault_info">Map controls automatically adjust based on your screen size.</string>
+    <string name="setting_mapInteractions_none_title">None</string>
+    <string name="setting_mapInteractions_none_info">Map controls stay as-is while you interact with the map.</string>
+    <string name="setting_mapInteractions_minimize_title">Minimize</string>
+    <string name="setting_mapInteractions_minimize_info">Map controls shrink to give you more space.</string>
+    <string name="setting_mapInteractions_collapsed_title">Collapsed</string>
+    <string name="setting_mapInteractions_collapsed_info">Map controls collapse or hide to maximize map space.</string>
     <string name="setting_navigationApp_settings_title">Default navigation app</string>
     <string name="setting_navigationApp_title">Navigation app</string>
     <string name="setting_navigationApp_info">Choose default navigation app to use for directions.</string>
@@ -298,7 +308,7 @@
     <string name="setting_placeSearch_info">To provide more accurate place search results, you can choose to include the approximate location of the selected map area in your search. This data is used only temporarily for search purposes and is not stored or logged anywhere.\nIf you disable this, your search will not use the map area and may be less accurate.</string>
     <string name="setting_placeSearch_location_title">Current map area</string>
     <string name="setting_placeSearch_location_info">When enabled, the approximate location of the currently selected map area will be sent to the server to provide localized search results.</string>
-    <string name="setting_mapsProvider_title">Maps provider</string>
+    <string name="setting_mapsProvider_title">Map provider</string>
     <string name="setting_mapsProvider_info">Choose your preferred service provider for maps used in the app. Map style, animations and performance will be different across different providers.</string>
     <string name="setting_mapsProvider_googleMaps_title">Google Maps</string>
     <string name="setting_mapsProvider_googleMaps_info">Default Google Maps SDK with street and satellite maps.</string>

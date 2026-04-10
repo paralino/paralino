@@ -939,4 +939,14 @@
     <string name="onboarding_step_options_second_title">Compartir sense pressió</string>
     <string name="onboarding_step_options_second_info">Vostè té sempre el control del que comparteix i de la manera en què ho comparteix.</string>
     <string name="app_version_alert_message_updateInstalled">S\'ha instal·lat una nova versió de Paralino.</string>
+    <string name="setting_mapInteractions_title">Interaccions amb el mapa</string>
+    <string name="setting_mapInteractions_info">Trieu què passa amb els controls del mapa quan desplaceu o feu zoom al mapa.</string>
+    <string name="setting_mapInteractions_deviceDefault_title">Predeterminat del dispositiu</string>
+    <string name="setting_mapInteractions_deviceDefault_info">Els controls del mapa s\'ajusten automàticament segons la mida de la pantalla.</string>
+    <string name="setting_mapInteractions_none_title">Cap</string>
+    <string name="setting_mapInteractions_none_info">Els controls del mapa es mantenen tal com són mentre interactueu amb el mapa.</string>
+    <string name="setting_mapInteractions_minimize_title">Minimitzar</string>
+    <string name="setting_mapInteractions_minimize_info">Els controls del mapa es redueixen per oferir-vos més espai.</string>
+    <string name="setting_mapInteractions_collapsed_title">Plegat</string>
+    <string name="setting_mapInteractions_collapsed_info">Els controls del mapa es pleguen o s\'amaguen per maximitzar l\'espai del mapa.</string>
 </resources>

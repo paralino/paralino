@@ -105,6 +105,22 @@ class MapStateMapper(
             }
         }
 
+        val selectedGroupOwnerId: String? = when (groupOrSpace) {
+            is GroupWithMembersOrUserSpace.Group -> groupOrSpace.group.ownerUserId
+            is GroupWithMembersOrUserSpace.PersonalSpace -> {
+                userGroupLocal.allGroupsState.value.data?.firstOrNull { it.id == selectedGroupId }?.group?.ownerUserId
+            }
+        }
+
+        val isCurrentUserOwnerOfSelectedGroup: Boolean = when (groupOrSpace) {
+            is GroupWithMembersOrUserSpace.Group -> groupOrSpace.group.isCurrentUserOwner
+            is GroupWithMembersOrUserSpace.PersonalSpace -> {
+                userGroupLocal.allGroupsState.value.data?.firstOrNull { it.id == selectedGroupId }?.group?.isCurrentUserOwner == true
+            }
+        }
+
+        val mapInteractionsType = previousState?.mapInteractionType ?: appPrefs.mapInteractions
+
         val membersData = buildMembersData(
             groupOrSpace = groupOrSpace,
             groupPlanConfig = planConfig,
@@ -173,6 +189,8 @@ class MapStateMapper(
             groupOrSpaceName = groupName,
             groupOrSpaceImage = groupImage,
             selectedGroupId = selectedGroupId,
+            selectedGroupOwnerId = selectedGroupOwnerId,
+            isCurrentUserOwnerOfSelectedGroup = isCurrentUserOwnerOfSelectedGroup,
             selectedGroupImage = selectedGroupImage,
             isFirstTimeInPersonalSpace = isFirstTimeInPersonalSpace,
             userCount = userCount,
@@ -194,6 +212,9 @@ class MapStateMapper(
                 )
             },
             verified = isVerified,
+            isMapFocusRequested = previousState?.isMapFocusRequested ?: false,
+            mapInteractionType = mapInteractionsType,
+            desiredMapSheetPosition = previousState?.desiredMapSheetPosition,
             alertDialog = alertDialog,
             isSatelliteModeEnabled = isSatelliteModeEnabled,
             groupPlanConfig = planConfig,
@@ -252,7 +273,8 @@ class MapStateMapper(
                         ),
                         singleLocation = null,
                         deviceId = null,
-                        isHighlighted = memberState.isCurrentUser
+                        isHighlighted = memberState.isCurrentUser,
+                        isCollapsedOrMinimized = false
                     )
                 )
             } else {
@@ -290,7 +312,8 @@ class MapStateMapper(
                             visibility = locationVisibility,
                             formatter = valueFormatter
                         ),
-                        isHighlighted = memberState.isCurrentUser
+                        isHighlighted = memberState.isCurrentUser,
+                        isCollapsedOrMinimized = false
                     )
                 }
             }
@@ -364,7 +387,8 @@ class MapStateMapper(
                         formatter = valueFormatter
                     )
                 },
-                isHighlighted = device.deviceId == appPrefs.deviceId
+                isHighlighted = device.deviceId == appPrefs.deviceId,
+                isCollapsedOrMinimized = false
             )
         }
             .sortedByDescending { it.singleLocation?.deviceStatus == MemberDeviceStatusType.ACTIVE }

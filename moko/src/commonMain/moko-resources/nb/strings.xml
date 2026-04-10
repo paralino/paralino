@@ -939,4 +939,14 @@
     <string name="onboarding_step_options_second_title">Deling uten press</string>
     <string name="onboarding_step_options_second_info">Du har alltid kontroll over hva du deler og hvordan du deler det.</string>
     <string name="app_version_alert_message_updateInstalled">Ny versjon av Paralino er installert.</string>
+    <string name="setting_mapInteractions_title">Kartinteraksjoner</string>
+    <string name="setting_mapInteractions_info">Velg hva som skal skje med kartkontrollene når du flytter eller zoomer kartet.</string>
+    <string name="setting_mapInteractions_deviceDefault_title">Enhetsstandard</string>
+    <string name="setting_mapInteractions_deviceDefault_info">Kartkontrollene justeres automatisk basert på skjermstørrelsen.</string>
+    <string name="setting_mapInteractions_none_title">Ingen</string>
+    <string name="setting_mapInteractions_none_info">Kartkontrollene forblir uendret mens du bruker kartet.</string>
+    <string name="setting_mapInteractions_minimize_title">Minimer</string>
+    <string name="setting_mapInteractions_minimize_info">Kartkontrollene krymper for å gi deg mer plass.</string>
+    <string name="setting_mapInteractions_collapsed_title">Sammenfoldet</string>
+    <string name="setting_mapInteractions_collapsed_info">Kartkontrollene kollapser eller skjules for å gi mest mulig plass til kartet.</string>
 </resources>

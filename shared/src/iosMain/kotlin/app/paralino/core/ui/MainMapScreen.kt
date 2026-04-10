@@ -38,6 +38,7 @@ import app.paralino.core.ui.map.MainMapSheet
 import app.paralino.core.ui.map.MapHomeElementMainCards
 import app.paralino.core.ui.map.MapHomeScreenElements
 import app.paralino.core.ui.map.rememberSwipeableSheetState
+import app.paralino.core.ui.theme.LocalScreenDimensionType
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import platform.UIKit.UIViewController
@@ -99,7 +100,26 @@ object MainMapScreen {
                     }
                 }
 
+                val sheetProgressTilCollapsed = sheetState.progress(
+                    from = BottomSheetPosition.COLLAPSED,
+                    to = BottomSheetPosition.HALF_EXPANDED
+                ).coerceIn(0f, 1f)
+
+                val sheetProgressTilMinimized = sheetState.progress(
+                    from = BottomSheetPosition.COLLAPSED_MINIMISED,
+                    to = BottomSheetPosition.COLLAPSED
+                ).coerceIn(0f, 1f)
+
+                val collapsedHeightDp = with(LocalDensity.current) {
+                    sheetState.collapsedInfoHeightPixel.toDp()
+                }
+
                 var cardHeight by remember { mutableStateOf(0.dp) }
+
+                LaunchedEffect(this.maxHeight, this.maxWidth, readyState?.mapHomeScreenFocusType?.asLocationHistory) {
+                    vm.onEvent(MapHomeScreenUiEvent.OnScreenDensityChange(maxWidthDp = maxWidth, maxHeightDp = maxHeight))
+                    vm.onEvent(LocationHistoryUiEvent.OnScreenDensityChange(maxWidthDp = maxWidth, maxHeightDp = maxHeight))
+                }
 
                 LaunchedEffect(key1 = Unit) {
                     vm.events.collectLatest { event ->
@@ -141,7 +161,11 @@ object MainMapScreen {
                     }
                 }
 
-                LaunchedEffect(bottomOffset, cardHeight, historyUiState != null) {
+                LaunchedEffect(
+                    bottomOffset,
+                    cardHeight,
+                    historyUiState != null
+                ) {
                     snapshotFlow { bottomOffset to cardHeight }
                         .distinctUntilChanged()
                         .collectLatest {
@@ -151,13 +175,26 @@ object MainMapScreen {
                                     maximumValue = height
                                 )
                             } else {
-                                (height - bottomOffset).coerceIn(
+                                val range = height * BottomSheetPosition.HALF_EXPANDED.screenHeightPercent
+                                val padding = if (sheetProgressTilMinimized < 1f) {
+                                    collapsedHeightDp.times(sheetProgressTilMinimized)
+                                } else {
+                                    collapsedHeightDp + (range - collapsedHeightDp).times(sheetProgressTilCollapsed)
+                                }
+
+                                padding.coerceIn(
                                     minimumValue = 0.dp,
-                                    maximumValue = height * BottomSheetPosition.HALF_EXPANDED.screenHeightPercent
+                                    maximumValue = range
                                 )
                             }
                             onSheetOffsetChange(bottomOffset.value)
                         }
+                }
+
+                val isTopHeaderVisible = if (historyUiState != null) {
+                    !historyUiState.canCollapseMapHeader
+                } else {
+                    !uiState.canCollapseMapHeader
                 }
 
                 val mainDialog = uiState.alertDialog
@@ -199,6 +236,8 @@ object MainMapScreen {
                         MapHomeScreenElements(
                             modifier = Modifier,
                             state = uiState,
+                            isTopHeaderControlVisible = isTopHeaderVisible,
+                            isActionRowControlVisible = sheetState.currentValue.order <= BottomSheetPosition.COLLAPSED.order,
                             screenPaddingValues = paddingValues.toComposePaddingValues(),
                             containerHeight = this.maxHeight,
                             bottomOffset = bottomOffset,
@@ -212,6 +251,7 @@ object MainMapScreen {
                                 if (historyUiState != null) {
                                     LocationHistoryMapCardUi(
                                         uiState = historyUiState,
+                                        isSmallScreenSize = LocalScreenDimensionType.current.maxHeightDp.value < 850,
                                         cardHeight = { cardHeight = it },
                                         onEvent = vm::onEvent
                                     )

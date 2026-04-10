@@ -1,12 +1,15 @@
 package app.paralino.core.ui.history
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowColumn
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -35,6 +38,7 @@ private data class StatInfo(
 @Composable
 fun LocationHistoryStatsTable(
     modifier: Modifier = Modifier,
+    isCompactMode: Boolean,
     stats: LocationHistoryStats?
 ) {
     val statsList = remember(stats) {
@@ -83,18 +87,41 @@ fun LocationHistoryStatsTable(
         )
     }
 
-    Column(modifier = modifier) {
-        LazyVerticalGrid(
-            modifier = Modifier
-                .clip(RoundedCornerShape(15.dp))
-                .background(MaterialTheme.colors.surface),
-            columns = GridCells.Fixed(2),
-            userScrollEnabled = false,
-            verticalArrangement = Arrangement.spacedBy(2.dp, Alignment.CenterVertically),
-            horizontalArrangement = Arrangement.spacedBy(2.dp)
-        ) {
-            items(statsList) { stat ->
-                StatItem(label = stat.label, value = stat.value)
+    BoxWithConstraints(modifier = modifier) {
+        if (isCompactMode) {
+            FlowColumn(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(15.dp))
+                    .background(MaterialTheme.colors.surface)
+                    .horizontalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(2.dp, Alignment.CenterVertically),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                maxItemsInEachColumn = 2
+            ) {
+                statsList.forEach { stat ->
+                    StatItem(
+                        modifier = Modifier.weight(1f).widthIn(min = this@BoxWithConstraints.maxWidth * 0.25f),
+                        label = stat.label,
+                        value = stat.value
+                    )
+                }
+            }
+        } else {
+            FlowRow(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(15.dp))
+                    .background(MaterialTheme.colors.surface),
+                verticalArrangement = Arrangement.spacedBy(2.dp, Alignment.CenterVertically),
+                horizontalArrangement = Arrangement.spacedBy(2.dp),
+                maxItemsInEachRow = 2
+            ) {
+                statsList.forEach { stat ->
+                    StatItem(
+                        modifier = Modifier.weight(1f),
+                        label = stat.label,
+                        value = stat.value
+                    )
+                }
             }
         }
     }

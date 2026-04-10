@@ -31,6 +31,7 @@ class MapStateManager(
 
         updateState { readyState ->
             readyState.copy(
+                isMapFocusRequested = false,
                 trackingMarker = markerData.takeIf { marker?.hidden == false },
                 markers = readyState.markers.map {
                     it.copy(focused = it.markerId == markerData.markerId)
@@ -72,6 +73,7 @@ class MapStateManager(
                 // de-init focused marker so it is not tracked
                 // and reset zoom enforcing for member focus
                 currentState.copy(
+                    isMapFocusRequested = true,
                     trackingMarker = null,
                     mapHomeScreenFocusType = when (currentState.mapHomeScreenFocusType) {
                         is MapHomeScreenFocusType.MEMBER -> currentState.mapHomeScreenFocusType.copy(forceZoom = false)
@@ -80,6 +82,7 @@ class MapStateManager(
                 )
             } else {
                 currentState.copy(
+                    isMapFocusRequested = true,
                     trackingMarker = null,
                     markers = currentState.markers.map { it.copy(focused = false, hidden = it.obsolete) },
                     mapHomeScreenFocusType = MapHomeScreenFocusType.NONE
@@ -93,6 +96,7 @@ class MapStateManager(
     ) {
         updateState {
             it.copy(
+                isMapFocusRequested = false,
                 trackingMarker = null,
                 markers = it.markers.map { it.copy(focused = false, hidden = it.obsolete) },
                 allMembersOrDevices = it.allMembersOrDevices.map {
@@ -109,6 +113,7 @@ class MapStateManager(
     ) {
         updateState { currentState ->
             currentState.copy(
+                isMapFocusRequested = false,
                 trackingMarker = null,
                 markers = currentState.markers.map { it.copy(focused = false, hidden = it.obsolete) },
                 mapHomeScreenFocusType = if (currentState.mapSheetSelectedContentType == selectedContentType) {

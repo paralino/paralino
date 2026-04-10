@@ -939,4 +939,14 @@
     <string name="onboarding_step_options_second_title">Sdílení bez nátlaku</string>
     <string name="onboarding_step_options_second_info">Vždy máte pod kontrolou, co sdílíte, a způsob, jakým to sdílíte.</string>
     <string name="app_version_alert_message_updateInstalled">Nová verze Paralino byla nainstalována.</string>
+    <string name="setting_mapInteractions_title">Interakce s mapou</string>
+    <string name="setting_mapInteractions_info">Vyberte, co se stane s ovládacími prvky mapy při posouvání nebo přibližování mapy.</string>
+    <string name="setting_mapInteractions_deviceDefault_title">Výchozí nastavení zařízení</string>
+    <string name="setting_mapInteractions_deviceDefault_info">Ovládací prvky mapy se automaticky přizpůsobí velikosti obrazovky.</string>
+    <string name="setting_mapInteractions_none_title">Žádné</string>
+    <string name="setting_mapInteractions_none_info">Ovládací prvky mapy zůstanou beze změny během interakce s mapou.</string>
+    <string name="setting_mapInteractions_minimize_title">Minimalizovat</string>
+    <string name="setting_mapInteractions_minimize_info">Ovládací prvky mapy se zmenší, aby vám poskytly více prostoru.</string>
+    <string name="setting_mapInteractions_collapsed_title">Sbalené</string>
+    <string name="setting_mapInteractions_collapsed_info">Ovládací prvky mapy se sbalí nebo skryjí, aby maximalizovaly prostor pro mapu.</string>
 </resources>

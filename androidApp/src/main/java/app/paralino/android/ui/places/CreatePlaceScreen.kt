@@ -2,19 +2,17 @@ package app.paralino.android.ui.places
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import app.paralino.android.ui.main.MainAppState
-import app.paralino.android.ui.map.MapPlaceComposable
+import app.paralino.android.ui.map.SimpleGenericMapComposable
 import app.paralino.core.MR
-import app.paralino.core.models.data
 import app.paralino.core.models.location.LatLng
 import app.paralino.core.presentation.map.MapPinData
 import app.paralino.core.presentation.places.create.CreatePlaceScreenState
@@ -26,7 +24,6 @@ import app.paralino.core.ui.components.ToolbarButtons
 import app.paralino.core.ui.components.rememberEmojiBottomSheetPickerState
 import app.paralino.core.ui.places.CreatePlaceScreenCore
 import dev.icerock.moko.resources.compose.stringResource
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -100,11 +97,13 @@ private fun PlaceCreateMapComposable(
             MapPinData(state)
         else null
     }
-    MapPlaceComposable(
+    SimpleGenericMapComposable(
         modifier = modifier,
         mapsSDKProvider = state.androidMapSDKProvider,
+        isSystemInDarkTheme = isSystemInDarkTheme(),
         markers = listOfNotNull(pin),
-        fallbackCenterLatLng = state.fallbackCenterLatLng,
+        fallbackCenterLatLng = state.fallbackCenterLatLng?.location,
+        zoomLevel = if (state.fallbackCenterLatLng?.isRegion == true) 4f else 10f,
         isSatelliteMode = state.isSatelliteModeActive,
         canTapOnCircles = false,
         onMapCameraSettled = onMapCameraSettled,

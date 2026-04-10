@@ -296,7 +296,7 @@
     <string name="setting_placeSearch_info">Para fornecer resultados de busca de locais mais precisos, você pode optar por incluir a localização aproximada da área do mapa selecionada em sua busca. Esses dados são usados apenas temporariamente para fins de busca e não são armazenados ou registrados em nenhum lugar. \nSe você desabilitar isso, sua busca não utilizará a área do mapa e pode ser menos precisa.</string>
     <string name="setting_placeSearch_location_title">Área do mapa atual</string>
     <string name="setting_placeSearch_location_info">Quando habilitado, a localização aproximada da área do mapa atualmente selecionada será enviada ao servidor para fornecer resultados de busca localizados.</string>
-    <string name="setting_mapsProvider_title">Fornecedor de mapas</string>
+    <string name="setting_mapsProvider_title">Provedor de mapas</string>
     <string name="setting_mapsProvider_info">Escolha seu provedor de serviços preferido para mapas usados no aplicativo. O estilo do mapa, animações e desempenho serão diferentes entre os diferentes provedores.</string>
     <string name="setting_mapsProvider_googleMaps_title">Google Maps</string>
     <string name="setting_mapsProvider_googleMaps_info">SDK padrão do Google Maps com mapas de ruas e satélites.</string>
@@ -939,4 +939,14 @@
     <string name="onboarding_step_options_second_title">Partilha sem pressão</string>
     <string name="onboarding_step_options_second_info">Está sempre no controlo do que partilha e de como o partilha.</string>
     <string name="app_version_alert_message_updateInstalled">A nova versão do Paralino está instalada.</string>
+    <string name="setting_mapInteractions_title">Interações do mapa</string>
+    <string name="setting_mapInteractions_info">Escolha o que acontece aos controlos do mapa quando mover ou ampliar/reduzir o mapa.</string>
+    <string name="setting_mapInteractions_deviceDefault_title">Padrão do dispositivo</string>
+    <string name="setting_mapInteractions_deviceDefault_info">Os controlos do mapa ajustam-se automaticamente com base no tamanho do ecrã.</string>
+    <string name="setting_mapInteractions_none_title">Nenhum</string>
+    <string name="setting_mapInteractions_none_info">Os controlos do mapa mantêm-se como estão enquanto interage com o mapa.</string>
+    <string name="setting_mapInteractions_minimize_title">Minimizar</string>
+    <string name="setting_mapInteractions_minimize_info">Os controlos do mapa reduzem-se para lhe dar mais espaço.</string>
+    <string name="setting_mapInteractions_collapsed_title">Colapsados</string>
+    <string name="setting_mapInteractions_collapsed_info">Os controlos do mapa colapsam ou ocultam-se para maximizar o espaço do mapa.</string>
 </resources>

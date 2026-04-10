@@ -83,10 +83,15 @@ fun rememberGoogleMapLocationHistoryMapController(
             shouldAnimateMapFocus = true
         }
 
-        LaunchedEffect(stateData.selectedLocations, stateData.dataViewType, mapContentPadding) {
+        LaunchedEffect(
+            stateData.selectedLocations,
+            stateData.dataViewType,
+            stateData.canCollapseMapHeader,
+            mapContentPadding
+        ) {
             snapshotFlow { stateData.focusType }
                 .distinctUntilChanged()
-                .filter { it == LocationHistoryScreenFocusType.OVERVIEW }
+                .filter { it.isInOverview }
                 .collectLatest {
 //                if (!canAnimateMapFocus && shouldAnimateMapFocus) {
 //                    delay(20)
@@ -123,12 +128,16 @@ fun rememberGoogleMapLocationHistoryMapController(
                         forceZoom = true,
                         ignoreAccuracy = false,
                         durationMs = if (canAnimateMapFocus) 600 else 0,
-                        padding = 200
+                        padding = if (stateData.canCollapseMapHeader) 40 else 200
                     )
                 }
         }
 
-        LaunchedEffect(uiState.selectedMapPinData, uiState.focusType) {
+        LaunchedEffect(
+            uiState.selectedMapPinData,
+            uiState.canCollapseMapHeader,
+            uiState.focusType
+        ) {
             snapshotFlow { stateData.focusType }
                 .filterNotNull()
                 .distinctUntilChanged()
@@ -136,14 +145,17 @@ fun rememberGoogleMapLocationHistoryMapController(
                 .collectLatest {
                     if (!canAnimateMapFocus && shouldAnimateMapFocus) {
                         delay(20)
+                    } else {
+                        delay(200)
                     }
+
                     cameraPositionState.refocus(
                         scope = scope,
                         markers = listOfNotNull(uiState.selectedMapPinData),
                         ignoreAccuracy = false,
                         durationMs = if (canAnimateMapFocus) 300 else 0,
-                        forceZoom = it == LocationHistoryScreenFocusType.MEMBER_FOCUSED,
-                        padding = 60
+                        forceZoom = it.isMemberFocused,
+                        padding = if (stateData.canCollapseMapHeader) 12 else 60
                     )
                 }
         }

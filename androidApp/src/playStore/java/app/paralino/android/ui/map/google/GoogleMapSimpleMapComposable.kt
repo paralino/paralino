@@ -28,9 +28,7 @@ import androidx.compose.ui.input.pointer.pointerInteropFilter
 import androidx.compose.ui.unit.dp
 import app.paralino.core.models.location.LatLng
 import app.paralino.core.presentation.map.MapPinData
-import app.paralino.core.presentation.places.create.CreatePlaceScreenState
-import app.paralino.core.presentation.places.create.PlaceMapFallbackLatLng
-import app.paralino.core.presentation.places.detail.PlaceDetailScreenState
+import app.paralino.core.ui.theme.LocalScreenDimensionType
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.Circle
@@ -41,10 +39,11 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun GoogleMapBasePlaceMapComposable(
+fun GoogleMapSimpleMapComposable(
     modifier: Modifier = Modifier,
     markers: List<MapPinData>,
-    fallbackCenterLatLng: PlaceMapFallbackLatLng?,
+    fallbackCenterLatLng: LatLng?,
+    zoomLevel: Float,
     canTapOnCircles: Boolean,
     isSatelliteMode: Boolean,
     onMapCameraSettled: (LatLng) -> Unit,
@@ -57,11 +56,16 @@ fun GoogleMapBasePlaceMapComposable(
     var mapLoaded by remember { mutableStateOf(false) }
 
     val cameraPositionState = rememberCameraPositionState()
-    val mapController = rememberPlaceMapController(
+    val mapController = rememberGoogleMapSimpleMapController(
         mapContentPadding = remember { PaddingValues() },
         cameraPositionState = cameraPositionState,
         isSatelliteMode = isSatelliteMode
     )
+
+    val isSmallScreenSize = LocalScreenDimensionType.current.isSmall
+    val screenPadding = remember(isSmallScreenSize) {
+        if (isSmallScreenSize) 50 else 150
+    }
 
     if (mapLoaded) {
         LaunchedEffect(Unit) {
@@ -69,17 +73,17 @@ fun GoogleMapBasePlaceMapComposable(
                 cameraPositionState.move(
                     CameraUpdateFactory.newLatLngZoom(
                         com.google.android.gms.maps.model.LatLng(
-                            fallbackCenterLatLng.location.lat,
-                            fallbackCenterLatLng.location.lng
+                            fallbackCenterLatLng.lat,
+                            fallbackCenterLatLng.lng
                         ),
-                        if (fallbackCenterLatLng.isRegion) 4f else 10f
+                        zoomLevel
                     )
                 )
             } else {
                 cameraPositionState.refocus(
                     scope = scope,
                     markers = markers,
-                    padding = 150,
+                    padding = screenPadding,
                     durationMs = 0
                 )
             }
@@ -88,7 +92,7 @@ fun GoogleMapBasePlaceMapComposable(
 
     LaunchedEffect(key1 = markers) {
         if (mapLoaded) {
-            cameraPositionState.refocus(scope = scope, markers = markers)
+            cameraPositionState.refocus(scope = scope, markers = markers, padding = screenPadding)
         }
     }
 
@@ -172,7 +176,11 @@ fun GoogleMapBasePlaceMapComposable(
                             tag = model.markerId,
                             zIndex = 10f,
                             onClick = {
-                                cameraPositionState.refocus(scope = scope, markers = markers)
+                                cameraPositionState.refocus(
+                                    scope = scope,
+                                    markers = markers,
+                                    padding = screenPadding
+                                )
                             }
                         )
                     }
@@ -182,7 +190,11 @@ fun GoogleMapBasePlaceMapComposable(
                         canTapOnMarker = canTapOnCircles,
                         zIndex = 20f,
                         onClick = {
-                            cameraPositionState.refocus(scope = scope, markers = markers)
+                            cameraPositionState.refocus(
+                                scope = scope,
+                                markers = markers,
+                                padding = screenPadding
+                            )
                         }
                     )
                 }
@@ -192,7 +204,7 @@ fun GoogleMapBasePlaceMapComposable(
 }
 
 @Composable
-private fun rememberPlaceMapController(
+private fun rememberGoogleMapSimpleMapController(
     mapContentPadding: PaddingValues,
     cameraPositionState: CameraPositionState,
     isSatelliteMode: Boolean

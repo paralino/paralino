@@ -939,4 +939,14 @@
     <string name="onboarding_step_options_second_title">Kényszertől mentes megosztás</string>
     <string name="onboarding_step_options_second_info">Ön mindig irányítja, hogy mit és hogyan oszt meg.</string>
     <string name="app_version_alert_message_updateInstalled">Az új Paralino verzió telepítve van.</string>
+    <string name="setting_mapInteractions_title">Térképinterakciók</string>
+    <string name="setting_mapInteractions_info">Válassza ki, mi történjen a térkép vezérlőelemeivel, amikor elmozgatja vagy nagyítja/kicsinyíti a térképet.</string>
+    <string name="setting_mapInteractions_deviceDefault_title">Eszköz alapértelmezett</string>
+    <string name="setting_mapInteractions_deviceDefault_info">A térkép vezérlőelemei automatikusan igazodnak a képernyő méretéhez.</string>
+    <string name="setting_mapInteractions_none_title">Nincs</string>
+    <string name="setting_mapInteractions_none_info">A térkép vezérlőelemei változatlanok maradnak, miközben a térképpel interakcióba lép.</string>
+    <string name="setting_mapInteractions_minimize_title">Kicsinyítés</string>
+    <string name="setting_mapInteractions_minimize_info">A térkép vezérlőelemei összezsugorodnak, hogy több helyet biztosítsanak.</string>
+    <string name="setting_mapInteractions_collapsed_title">Összecsukott</string>
+    <string name="setting_mapInteractions_collapsed_info">A térkép vezérlőelemei összecsukódnak vagy elrejtődnek, így maximalizálják a térkép megjelenítésére szolgáló területet.</string>
 </resources>

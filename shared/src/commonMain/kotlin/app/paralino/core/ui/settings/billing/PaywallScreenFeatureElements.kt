@@ -230,7 +230,8 @@ private fun MemberItem(
             singleLocation = location,
             deviceId = "",
             actions = memberActions,
-            isHighlighted = true
+            isHighlighted = true,
+            isCollapsedOrMinimized = false
         ),
         forceExpandAction = true,
         collapseOnActionClick = false,

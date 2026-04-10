@@ -38,7 +38,8 @@ class PlaceSearchSettingsViewModel(
                         isEnabled = true,
                         isLoading = false,
                         isVisible = true
-                    )
+                    ),
+                    GenericSettingListItem.Spacer(spacing = 40.dp, keyId = "bottom_space")
                 )
             )
         )

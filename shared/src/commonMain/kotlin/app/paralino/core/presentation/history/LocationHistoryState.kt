@@ -1,10 +1,12 @@
 package app.paralino.core.presentation.history
 
+import androidx.compose.ui.unit.Dp
 import app.paralino.core.models.base.DeviceType
 import app.paralino.core.models.base.GroupOrSpaceId
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.base.PlanConfig
 import app.paralino.core.models.base.asGroupOrSpaceId
+import app.paralino.core.models.location.LatLng
 import app.paralino.core.models.location.LocationHistoryPointId
 import app.paralino.core.models.location.LocationHistoryPointModel
 import app.paralino.core.models.location.MemberDeviceStatusType
@@ -14,6 +16,7 @@ import app.paralino.core.presentation.groups.MemberNavigateItemState
 import app.paralino.core.presentation.map.MapHomeScreenEvent
 import app.paralino.core.presentation.map.MapPinData
 import app.paralino.core.presentation.rawdata.RawPresentationDataType
+import app.paralino.core.presentation.settings.generic.maps.MapInteractionsType
 import app.paralino.core.provider.NetworkSignalStrength
 import app.paralino.core.provider.NetworkType
 import app.paralino.core.provider.current
@@ -49,6 +52,7 @@ data class LocationHistoryScreenState(
     val clusteringPinsMode: LocationHistoryClusteringPinsViewMode,
     val clusteringPointsMode: LocationHistoryClusteringPointsViewMode,
     val isFilterOpened: Boolean,
+    val mapInteractionType: MapInteractionsType,
     private val devices: List<UserActiveLocationDeviceState>,
     val locations: List<LocationHistoryPointState>,
     val stats: LocationHistoryStats?,
@@ -299,10 +303,11 @@ data class LocationHistoryScreenState(
                 locations = emptyList(),
                 devices = emptyList(),
                 stats = null,
+                mapInteractionType = MapInteractionsType.MINIMIZE,
                 clusteringPointsMode = LocationHistoryClusteringPointsViewMode.DEFAULT_CLUSTERING,
                 dataViewType = LocationHistoryDataViewType.Stats,
-                focusType = LocationHistoryScreenFocusType.OVERVIEW,
-                previousFocusType = LocationHistoryScreenFocusType.OVERVIEW,
+                focusType = LocationHistoryScreenFocusType.OVERVIEW(isCollapsed = false, isForceCollapsedRequested = false),
+                previousFocusType = LocationHistoryScreenFocusType.OVERVIEW(isCollapsed = false, isForceCollapsedRequested = false),
                 selectedLocationId = null,
                 daySelectorState = LocationHistoryDateSelectorState(maxDateRangeDays = null),
                 planConfig = null,
@@ -340,6 +345,7 @@ data class LocationHistoryScreenUiState(
     val alertDialog: MainAlertDialog? = null,
     
     // Computed properties from LocationHistoryScreenState
+    val mapInteractionType: MapInteractionsType,
     val deviceType: DeviceType,
     val selectedLocations: List<LocationHistoryPointState>,
     val activeDevices: List<UserActiveLocationDeviceState>,
@@ -353,6 +359,20 @@ data class LocationHistoryScreenUiState(
     val rawDataAction: RawPresentationDataType.LocationHistoryPointPresentation?,
     val locationsToDeleteSize: Int
 ) {
+    val canCollapseMapHeader = when (mapInteractionType) {
+        MapInteractionsType.MINIMIZE -> focusType.isCollapsed
+        MapInteractionsType.COLLAPSED -> true
+        else -> false
+    }
+
+    val canCollapseMapCards = when (mapInteractionType) {
+        MapInteractionsType.MINIMIZE,
+        MapInteractionsType.COLLAPSED -> true
+        else -> focusType.isForceCollapsedRequested
+    }
+
+    val isCardCollapsed: Boolean = focusType.isCollapsed && canCollapseMapCards
+
     companion object {
         fun fromScreenState(screenState: LocationHistoryScreenState): LocationHistoryScreenUiState {
             return LocationHistoryScreenUiState(
@@ -383,6 +403,7 @@ data class LocationHistoryScreenUiState(
                 alertDialog = screenState.alertDialog,
                 
                 // Computed properties
+                mapInteractionType = screenState.mapInteractionType,
                 deviceType = screenState.deviceType,
                 selectedLocations = screenState.selectedLocations,
                 activeDevices = screenState.activeDevices,
@@ -501,13 +522,30 @@ enum class LocationHistoryClusteringPinsViewMode {
 }
 
 sealed interface LocationHistoryScreenFocusType {
-    data object NONE : LocationHistoryScreenFocusType
-    data object OVERVIEW : LocationHistoryScreenFocusType
-    data object MEMBER_DEFAULT : LocationHistoryScreenFocusType
-    data object MEMBER_FOCUSED : LocationHistoryScreenFocusType
+    val isCollapsed: Boolean
+    val isForceCollapsedRequested: Boolean
 
-    val isMember: Boolean get() = this is MEMBER_DEFAULT || this is MEMBER_FOCUSED
-    val isInOverview: Boolean get() = this == OVERVIEW
+    data class NONE_COLLAPSED(
+        override val isForceCollapsedRequested: Boolean
+    ) : LocationHistoryScreenFocusType {
+        override val isCollapsed: Boolean = true
+    }
+
+    data class OVERVIEW(
+        override val isForceCollapsedRequested: Boolean,
+        override val isCollapsed: Boolean
+    ) : LocationHistoryScreenFocusType
+
+    data class MEMBER(
+        override val isCollapsed: Boolean,
+        override val isForceCollapsedRequested: Boolean,
+        val isFocused: Boolean,
+    ) : LocationHistoryScreenFocusType
+
+    val isMember: Boolean get() = this is MEMBER
+    val isMemberFocused: Boolean get() = this is MEMBER && this.isFocused
+    val isMemberNotFocused: Boolean get() = this is MEMBER && !this.isFocused
+    val isInOverview: Boolean get() = this is OVERVIEW
 }
 
 data class LocationHistoryDateSelectorState(
@@ -571,6 +609,7 @@ sealed interface LocationHistoryUiEvent {
     data class ChangeMapDataViewType(val type: LocationHistoryDataViewType) : LocationHistoryUiEvent
     data class OnDirectionsRequest(val action: MemberNavigateItemState) : LocationHistoryUiEvent
     data class OnRawDataPointClicked(val action: RawPresentationDataType.LocationHistoryPointPresentation) : LocationHistoryUiEvent
+    data class OnScreenDensityChange(val maxWidthDp: Dp, val maxHeightDp: Dp) : LocationHistoryUiEvent
     data object NavigateHistoryNext : LocationHistoryUiEvent
     data object NavigateHistoryPrevious : LocationHistoryUiEvent
     data object ToggleClusterLocations : LocationHistoryUiEvent
@@ -579,7 +618,10 @@ sealed interface LocationHistoryUiEvent {
     data object ToggleClusterPins : LocationHistoryUiEvent
     data object OnDeleteSelectedLocationRequest : LocationHistoryUiEvent
     data class OnSelectFocusType(val type: LocationHistoryScreenFocusType) : LocationHistoryUiEvent
+    data object OnFocusOnMemberClick: LocationHistoryUiEvent
+    data object ToggleExpandedCollapseFocusType : LocationHistoryUiEvent
     data object OnMapTouch : LocationHistoryUiEvent
+    data class OnMapClick(val location: LatLng) : LocationHistoryUiEvent
     data object ToggleMapFilter : LocationHistoryUiEvent
     data class OnDateSelectorAction(val action: LocationHistoryDateSelectionAction) : LocationHistoryUiEvent
     data class OnSelectDay(val day: LocalDate) : LocationHistoryUiEvent

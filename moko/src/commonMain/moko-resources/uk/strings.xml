@@ -939,4 +939,14 @@
     <string name="onboarding_step_options_second_title">Обмін без тиску</string>
     <string name="onboarding_step_options_second_info">Ви завжди контролюєте, що саме ви поширюєте, і як це робите.</string>
     <string name="app_version_alert_message_updateInstalled">Встановлено нову версію Paralino.</string>
+    <string name="setting_mapInteractions_title">Взаємодії з картою</string>
+    <string name="setting_mapInteractions_info">Виберіть, що відбувається з елементами керування на карті під час її переміщення або масштабування.</string>
+    <string name="setting_mapInteractions_deviceDefault_title">За замовчуванням пристрою</string>
+    <string name="setting_mapInteractions_deviceDefault_info">Елементи керування картою автоматично підлаштовуються відповідно до розміру вашого екрана.</string>
+    <string name="setting_mapInteractions_none_title">Немає</string>
+    <string name="setting_mapInteractions_none_info">Елементи керування картою залишаються без змін під час взаємодії з картою.</string>
+    <string name="setting_mapInteractions_minimize_title">Згорнути</string>
+    <string name="setting_mapInteractions_minimize_info">Елементи керування картою зменшуються, щоб надати вам більше місця.</string>
+    <string name="setting_mapInteractions_collapsed_title">Згорнуто</string>
+    <string name="setting_mapInteractions_collapsed_info">Елементи керування картою згортаються або приховуються, щоб максимально звільнити простір для карти.</string>
 </resources>

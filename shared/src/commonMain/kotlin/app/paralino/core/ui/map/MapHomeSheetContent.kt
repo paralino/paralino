@@ -68,9 +68,12 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 
-private val dividerHeight = 6.dp
-private val dividerTopPadding = 8.dp
-private val dividerBottomPadding = 6.dp
+object MapHomeSheetContentSizes {
+    val dividerHeight = 6.dp
+    val dividerTopPadding = 8.dp
+    val collapsedDividerTopPadding = 12.dp
+    val dividerBottomPadding = 6.dp
+}
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -92,7 +95,7 @@ fun MapHomeSheetContent(
         snapshotFlow { swipeableState.settledValue }
             .distinctUntilChanged()
             .collectLatest {
-                if (it >= BottomSheetPosition.HALF_EXPANDED) {
+                if (it.order >= BottomSheetPosition.HALF_EXPANDED.order) {
                     scope.launch {
                         swipeableState.mapContentListState.scrollToItem(0, 0)
                     }
@@ -120,6 +123,14 @@ fun MapHomeSheetContent(
             }
         }
 
+        val contentCollapsedFraction by remember {
+            derivedStateOf {
+                swipeableState
+                    .progress(from = BottomSheetPosition.COLLAPSED_MINIMISED, to = BottomSheetPosition.COLLAPSED)
+                    .coerceIn(0f, 1f)
+            }
+        }
+
         if (readyState.hasPersonalSpaceIntroBanner) {
             PersonalSpaceFeatureIntroContent(
                 modifier = modifier,
@@ -131,13 +142,13 @@ fun MapHomeSheetContent(
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
                 .padding(
-                    top = dividerTopPadding,
+                    top = MapHomeSheetContentSizes.dividerTopPadding + MapHomeSheetContentSizes.collapsedDividerTopPadding.times(1f - contentCollapsedFraction),
                     bottom = 0.dp //animateDpAsState(dividerBottomPadding.value.minus((1f - contentAlpha) * dividerBottomPadding.value).dp).value
                 )
 //                .padding(top = 8.dp, bottom = 8.dp)
                 .clip(RoundedCornerShape(percent = 50))
                 .width(30.dp),
-            thickness = dividerHeight
+            thickness = MapHomeSheetContentSizes.dividerHeight
         )
 
         if (readyState != null) {
@@ -145,13 +156,14 @@ fun MapHomeSheetContent(
                 modifier = Modifier
                     .padding(start = 14.dp, end = 16.dp)
                     .onGloballyPositioned { coordinates ->
-                        val height = with(density) {
-                            screenPaddingValues.calculateBottomPadding()
-                                .plus(SwipeableSheetState.sheetBottomCollapsedPadding)
-                                .plus(dividerTopPadding.times(2) + dividerHeight.times(2))
-                                .toPx()
+                        val extraHeightDp = screenPaddingValues.calculateBottomPadding()
+                            .plus(SwipeableSheetState.sheetBottomCollapsedPadding)
+                            .plus(MapHomeSheetContentSizes.dividerTopPadding.times(2) + MapHomeSheetContentSizes.dividerHeight.times(2))
+
+                        val extraHeightPx = with(density) {
+                            extraHeightDp.toPx()
                         }
-                        onMapGroupInfoHeightChange(coordinates.size.height.plus(height))
+                        onMapGroupInfoHeightChange(coordinates.size.height.plus(extraHeightPx))
                     },
                 isPersonalSpace = readyState.isPersonalSpace,
                 groupName = readyState.groupOrSpaceName,
@@ -163,9 +175,10 @@ fun MapHomeSheetContent(
                 idleUserCount = readyState.idleUserCount,
                 verified = readyState.allMembersVerified,
                 interactionVisibilityFraction = contentAlpha,
+                collapsedVisibilityFraction = contentCollapsedFraction,
                 onGroupContentClick = onWholeContentClick,
                 onGroupDetailButtonClick = {
-                    if (swipeableState.isCollapsed()) {
+                    if (swipeableState.isCollapsed() || swipeableState.isCollapsedAndMinimised()) {
                         onWholeContentClick()
                     } else {
                         onEvent(MapHomeScreenUiEvent.OnGroupDetailsClick)
@@ -268,7 +281,7 @@ fun MapHomeSheetContent(
 
                 MapSheetSelectedContentType.MEMBERS -> {
                     membersList(
-                        isPersonalSpace = readyState.isPersonalSpace,
+                        canAddNewMember = !readyState.isPersonalSpace && readyState.isCurrentUserOwnerOfSelectedGroup,
                         members = members,
                         onEvent = {
                             onEvent(MapHomeScreenUiEvent.OnMemberItemEvent(it))
@@ -286,7 +299,7 @@ fun MapHomeSheetContent(
 }
 
 private fun LazyListScope.membersList(
-    isPersonalSpace: Boolean,
+    canAddNewMember: Boolean,
     members: List<GroupMemberItemState>,
     onEvent: (GroupMemberItemEvent) -> Unit,
     onAddNewMember: () -> Unit
@@ -305,7 +318,7 @@ private fun LazyListScope.membersList(
         )
     }
 
-    if (!isPersonalSpace) {
+    if (canAddNewMember) {
         this.item(key = "add_new_member") {
             AddNewActionButton(
                 modifier = Modifier,
