@@ -11,7 +11,7 @@ import app.paralino.core.presentation.groups.GroupMemberItemStateWithFullStateLo
 import app.paralino.core.presentation.groups.GroupMemberItemStateWithLocations
 import app.paralino.core.presentation.groups.GroupMemberItemStateWithOneLocation
 import app.paralino.core.presentation.map.MapScreenViewSourceType.DefaultGroup
-import app.paralino.core.presentation.settings.generic.MapInteractionsType
+import app.paralino.core.presentation.settings.generic.maps.MapInteractionsType
 import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.ui.components.AppSnackbarData

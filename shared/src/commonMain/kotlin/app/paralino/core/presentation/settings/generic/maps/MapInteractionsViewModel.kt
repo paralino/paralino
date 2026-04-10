@@ -1,9 +1,15 @@
-package app.paralino.core.presentation.settings.generic
+package app.paralino.core.presentation.settings.generic.maps
 
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import app.paralino.core.MR
 import app.paralino.core.db.AppPrefs
+import app.paralino.core.presentation.settings.generic.BaseGenericSettingViewModel
+import app.paralino.core.presentation.settings.generic.GenericSettingListItem
+import app.paralino.core.presentation.settings.generic.GenericSettingsScreenState
+import app.paralino.core.presentation.settings.generic.GenericSettingsScreenStateContent
+import app.paralino.core.presentation.settings.generic.GenericSettingsScreenUiEvent
+import app.paralino.core.presentation.settings.generic.GroupOptionItem
 import app.paralino.core.provider.localizedString
 import kotlinx.coroutines.flow.update
 

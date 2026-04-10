@@ -5,9 +5,9 @@ import app.paralino.core.models.base.PushProvider
 import app.paralino.core.models.places.GroupPlaceSensitivityData
 import app.paralino.core.presentation.common.FormValidation
 import app.paralino.core.presentation.settings.generic.IOSNavigationAppType
-import app.paralino.core.presentation.settings.generic.MapInteractionsType
-import app.paralino.core.presentation.settings.generic.MapStyle
-import app.paralino.core.presentation.settings.generic.MapsSDKProvider
+import app.paralino.core.presentation.settings.generic.maps.MapInteractionsType
+import app.paralino.core.presentation.settings.generic.maps.MapStyle
+import app.paralino.core.presentation.settings.generic.maps.MapsSDKProvider
 import app.paralino.core.presentation.settings.generic.NotificationGroupingType
 import app.paralino.core.provider.MeasurementSystemType
 import app.paralino.core.utils.BaseRemoteModule

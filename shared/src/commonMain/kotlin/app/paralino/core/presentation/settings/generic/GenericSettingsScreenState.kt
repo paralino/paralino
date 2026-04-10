@@ -3,6 +3,7 @@ package app.paralino.core.presentation.settings.generic
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import app.paralino.core.models.location.LatLng
+import app.paralino.core.presentation.settings.generic.maps.MapsSDKProvider
 import app.paralino.core.ui.components.dialogs.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.ui.settings.SettingsActionItemType

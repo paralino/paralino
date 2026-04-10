@@ -53,8 +53,8 @@ import app.paralino.core.presentation.login.LoginScreenState
 import app.paralino.core.presentation.login.LoginScreenUiType
 import app.paralino.core.presentation.places.detail.PlaceSensitivityViewModel
 import app.paralino.core.presentation.rawdata.RawPresentationDataType
-import app.paralino.core.presentation.settings.generic.MapsProviderViewModel
-import app.paralino.core.presentation.settings.generic.MapInteractionsViewModel
+import app.paralino.core.presentation.settings.generic.maps.MapsProviderViewModel
+import app.paralino.core.presentation.settings.generic.maps.MapInteractionsViewModel
 import app.paralino.core.presentation.settings.generic.MeasurementSystemViewModel
 import app.paralino.core.presentation.settings.generic.NotificationsGroupingViewModel
 import app.paralino.core.presentation.settings.generic.PlaceSearchSettingsViewModel

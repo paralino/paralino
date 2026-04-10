@@ -8,7 +8,7 @@ import app.paralino.core.domain.location.history.RefreshLocationHistoryUseCase
 import app.paralino.core.presentation.common.ICoreMessageDispatcher
 import app.paralino.core.presentation.history.LocationHistoryScreenEvent.OpenNavigation
 import app.paralino.core.presentation.map.MapHomeScreenEvent.OpenExternalNavigation
-import app.paralino.core.presentation.settings.generic.MapInteractionsType
+import app.paralino.core.presentation.settings.generic.maps.MapInteractionsType
 import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.base.RemoteConfigRepository

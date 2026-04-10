@@ -16,7 +16,7 @@ import app.paralino.core.presentation.groups.MemberNavigateItemState
 import app.paralino.core.presentation.map.MapHomeScreenEvent
 import app.paralino.core.presentation.map.MapPinData
 import app.paralino.core.presentation.rawdata.RawPresentationDataType
-import app.paralino.core.presentation.settings.generic.MapInteractionsType
+import app.paralino.core.presentation.settings.generic.maps.MapInteractionsType
 import app.paralino.core.provider.NetworkSignalStrength
 import app.paralino.core.provider.NetworkType
 import app.paralino.core.provider.current
