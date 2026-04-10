@@ -323,15 +323,16 @@ private fun CreatePlaceNameSuggestionStep(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Spacer(modifier = Modifier.weight(1f))
+        val isSmallScreen = LocalScreenDimensionType.current.isSmall
 
         Box(
-            modifier = Modifier.size(120.dp),
+            modifier = Modifier.size(if (isSmallScreen) 80.dp else 120.dp),
             contentAlignment = Alignment.Center
         ) {
             ImageModelImage(
                 imageModel = state.image,
                 modifier = Modifier
-                    .size(100.dp)
+                    .size(if (isSmallScreen) 70.dp else 100.dp)
                     .rotate(rotation)
                     .clickable(onClick = onImageClick)
             )
@@ -342,7 +343,7 @@ private fun CreatePlaceNameSuggestionStep(
             )
         }
 
-        Spacer(modifier = Modifier.size(20.dp))
+        Spacer(modifier = Modifier.size(if (isSmallScreen) 10.dp else 20.dp))
 
         MainInputField(
             modifier = Modifier.height(70.dp),
