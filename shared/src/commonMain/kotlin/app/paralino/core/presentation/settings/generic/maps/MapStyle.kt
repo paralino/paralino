@@ -2,116 +2,143 @@ package app.paralino.core.presentation.settings.generic.maps
 
 sealed class MapStyle {
     abstract val key: String
+    abstract val title: String
     open val themeAlias: List<String> = emptyList()
     abstract val isPremium: Boolean
 
     sealed class Light : MapStyle() {
         data object OPEN_FREE_MAP_LIBERTY : Light() {
             override val key: String = "ofm_liberty"
+            override val title: String = "OpenFreeMap Liberty"
             override val themeAlias: List<String> = listOf("openfreemap")
             override val isPremium: Boolean = false
         }
 
         data object OPEN_FREE_MAP_BRIGHT : Light() {
             override val key: String = "ofm_bright"
+            override val title: String = "OpenFreeMap Bright"
             override val isPremium: Boolean = false
         }
 
         data object OPEN_FREE_MAP_POSITRON : Light() {
             override val key: String = "ofm_positron"
+            override val title: String = "OpenFreeMap Positron"
             override val isPremium: Boolean = false
         }
 
         data object MAPTILER_STREET_LIGHT : Light() {
             override val key: String = "maptiler_street_light"
+            override val title: String = "MapTiler Street"
             override val themeAlias: List<String> = listOf("maptiler")
             override val isPremium: Boolean = true
         }
 
         data object MAPTILER_OUTDOOR_LIGHT : Light() {
             override val key: String = "maptiler_outdoor_light"
+            override val title: String = "MapTiler Outdoor"
             override val isPremium: Boolean = true
         }
 
         data object MAPTILER_DATAVIZ_LIGHT : Light() {
             override val key: String = "maptiler_dataviz_light"
+            override val title: String = "MapTiler Dataviz"
             override val isPremium: Boolean = true
+        }
+
+        data object MAPTILER_BASE_LIGHT : Light() {
+            override val key: String = "maptiler_base_light"
+            override val title: String = "MapTiler Base"
+            override val isPremium: Boolean = true
+        }
+
+        data object MAPTILER_BACKDROP_LIGHT : Light() {
+            override val key: String = "maptiler_backdrop_light"
+            override val title: String = "MapTiler Backdrop"
+            override val isPremium: Boolean = true
+        }
+
+        companion object {
+            val allLightStyles: List<MapStyle.Light> = listOf(
+                MapStyle.Light.OPEN_FREE_MAP_LIBERTY,
+                MapStyle.Light.OPEN_FREE_MAP_BRIGHT,
+                MapStyle.Light.OPEN_FREE_MAP_POSITRON,
+                MapStyle.Light.MAPTILER_BASE_LIGHT,
+                MapStyle.Light.MAPTILER_STREET_LIGHT,
+                MapStyle.Light.MAPTILER_DATAVIZ_LIGHT,
+                MapStyle.Light.MAPTILER_BACKDROP_LIGHT,
+                MapStyle.Light.MAPTILER_OUTDOOR_LIGHT,
+            )
         }
     }
 
     sealed class Dark : MapStyle() {
         data object OPEN_FREE_MAP_DARK : Dark() {
             override val key: String = "ofm_dark"
+            override val title: String = "OpenFreeMap Dark"
             override val themeAlias: List<String> = listOf("openfreemap")
             override val isPremium: Boolean = false
         }
 
         data object OPEN_FREE_MAP_FIORD : Dark() {
             override val key: String = "ofm_fiord"
+            override val title: String = "OpenFreeMap Fiord"
             override val isPremium: Boolean = false
         }
 
         data object MAPTILER_STREET_DARK : Dark() {
             override val key: String = "maptiler_street_dark"
+            override val title: String = "MapTiler Street"
             override val themeAlias: List<String> = listOf("maptiler")
             override val isPremium: Boolean = true
         }
 
         data object MAPTILER_OUTDOOR_DARK : Dark() {
             override val key: String = "maptiler_outdoor_dark"
+            override val title: String = "MapTiler Outdoor"
             override val isPremium: Boolean = true
         }
 
         data object MAPTILER_DATAVIZ_DARK : Dark() {
             override val key: String = "maptiler_dataviz_dark"
+            override val title: String = "MapTiler Dataviz"
             override val isPremium: Boolean = true
+        }
+
+        data object MAPTILER_BASE_DARK : Dark() {
+            override val key: String = "maptiler_base_dark"
+            override val title: String = "MapTiler Base"
+            override val isPremium: Boolean = true
+        }
+
+        data object MAPTILER_BACKDROP_DARK : Dark() {
+            override val key: String = "maptiler_backdrop_dark"
+            override val title: String = "MapTiler Backdrop"
+            override val isPremium: Boolean = true
+        }
+
+        companion object {
+            val allDarkStyles: List<MapStyle.Dark> = listOf(
+                MapStyle.Dark.OPEN_FREE_MAP_DARK,
+                MapStyle.Dark.OPEN_FREE_MAP_FIORD,
+                MapStyle.Dark.MAPTILER_BASE_DARK,
+                MapStyle.Dark.MAPTILER_STREET_DARK,
+                MapStyle.Dark.MAPTILER_DATAVIZ_DARK,
+                MapStyle.Dark.MAPTILER_BACKDROP_DARK,
+                MapStyle.Dark.MAPTILER_OUTDOOR_DARK,
+            )
         }
     }
 
     val allKeys get() = listOf(key).plus(themeAlias)
 
-    val title: String
-        get() = when (this) {
-            is Light.OPEN_FREE_MAP_LIBERTY -> "OpenFreeMap Liberty"
-            is Light.OPEN_FREE_MAP_BRIGHT -> "OpenFreeMap Bright"
-            is Light.OPEN_FREE_MAP_POSITRON -> "OpenFreeMap Positron"
-            is Dark.OPEN_FREE_MAP_DARK -> "OpenFreeMap Dark"
-            is Dark.OPEN_FREE_MAP_FIORD -> "OpenFreeMap Fiord"
-            is Light.MAPTILER_STREET_LIGHT -> "MapTiler Street"
-            is Dark.MAPTILER_STREET_DARK -> "MapTiler Street"
-            is Light.MAPTILER_OUTDOOR_LIGHT -> "MapTiler Outdoor"
-            is Dark.MAPTILER_OUTDOOR_DARK -> "MapTiler Outdoor"
-            is Light.MAPTILER_DATAVIZ_LIGHT -> "MapTiler Dataviz"
-            is Dark.MAPTILER_DATAVIZ_DARK -> "MapTiler Dataviz"
-        }
-
     companion object {
-
-        val allLightStyles = listOf(
-            Light.OPEN_FREE_MAP_LIBERTY,
-            Light.OPEN_FREE_MAP_BRIGHT,
-            Light.OPEN_FREE_MAP_POSITRON,
-            Light.MAPTILER_STREET_LIGHT,
-            Light.MAPTILER_DATAVIZ_LIGHT,
-            Light.MAPTILER_OUTDOOR_LIGHT,
-        )
-
-        val allDarkStyles = listOf(
-            Dark.OPEN_FREE_MAP_DARK,
-            Dark.OPEN_FREE_MAP_FIORD,
-            Dark.MAPTILER_STREET_DARK,
-            Dark.MAPTILER_DATAVIZ_DARK,
-            Dark.MAPTILER_OUTDOOR_DARK,
-        )
-
-
         fun lightStyleFromKey(key: String): Light {
-            return allLightStyles.firstOrNull { it.allKeys.contains(key) }
+            return MapStyle.Light.allLightStyles.firstOrNull { it.allKeys.contains(key) }
                 ?: Light.OPEN_FREE_MAP_LIBERTY
         }
 
         fun darkStyleFromKey(key: String): Dark {
-            return allDarkStyles.firstOrNull { it.allKeys.contains(key) } ?: Dark.OPEN_FREE_MAP_DARK
+            return MapStyle.Dark.allDarkStyles.firstOrNull { it.allKeys.contains(key) } ?: Dark.OPEN_FREE_MAP_DARK
         }
     }
 }

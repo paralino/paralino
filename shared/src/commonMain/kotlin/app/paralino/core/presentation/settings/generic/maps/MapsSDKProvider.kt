@@ -24,9 +24,6 @@ sealed interface MapsSDKProvider {
         val lightStyle: MapStyle.Light
         val darkStyle: MapStyle.Dark
 
-        val allLightStyles: List<MapStyle.Light>
-        val allDarkStyles: List<MapStyle.Dark>
-
         fun lightStyleUri(isSatelliteMaps: Boolean): String
         fun darkStyleUri(isSatelliteMaps: Boolean): String
 
@@ -41,24 +38,14 @@ sealed interface MapsSDKProvider {
             override val hasSatelliteMaps = false
             override val isPremium = false
 
-            override val allLightStyles: List<MapStyle.Light> = listOf(
-                MapStyle.Light.OPEN_FREE_MAP_LIBERTY,
-                MapStyle.Light.OPEN_FREE_MAP_BRIGHT,
-                MapStyle.Light.OPEN_FREE_MAP_POSITRON
-            )
-
-            override val allDarkStyles: List<MapStyle.Dark> = listOf(
-                MapStyle.Dark.OPEN_FREE_MAP_DARK,
-                MapStyle.Dark.OPEN_FREE_MAP_FIORD,
-            )
-
             override fun lightStyleUri(isSatelliteMaps: Boolean): String {
                 return when (lightStyle) {
                     MapStyle.Light.MAPTILER_DATAVIZ_LIGHT,
                     MapStyle.Light.MAPTILER_OUTDOOR_LIGHT,
                     MapStyle.Light.MAPTILER_STREET_LIGHT,
+                    MapStyle.Light.MAPTILER_BACKDROP_LIGHT,
+                    MapStyle.Light.MAPTILER_BASE_LIGHT,
                     MapStyle.Light.OPEN_FREE_MAP_LIBERTY -> "https://tiles.openfreemap.org/styles/liberty"
-
                     MapStyle.Light.OPEN_FREE_MAP_BRIGHT -> "https://tiles.openfreemap.org/styles/bright"
                     MapStyle.Light.OPEN_FREE_MAP_POSITRON -> "https://tiles.openfreemap.org/styles/positron"
                 }
@@ -69,8 +56,9 @@ sealed interface MapsSDKProvider {
                     MapStyle.Dark.MAPTILER_DATAVIZ_DARK,
                     MapStyle.Dark.MAPTILER_OUTDOOR_DARK,
                     MapStyle.Dark.MAPTILER_STREET_DARK,
+                    MapStyle.Dark.MAPTILER_BACKDROP_DARK,
+                    MapStyle.Dark.MAPTILER_BASE_DARK,
                     MapStyle.Dark.OPEN_FREE_MAP_DARK -> "https://tiles.openfreemap.org/styles/dark"
-
                     MapStyle.Dark.OPEN_FREE_MAP_FIORD -> "https://tiles.openfreemap.org/styles/fiord"
                 }
             }
@@ -88,23 +76,6 @@ sealed interface MapsSDKProvider {
             override val hasSatelliteMaps = true
             override val isPremium = true
 
-            override val allLightStyles: List<MapStyle.Light> = listOf(
-                MapStyle.Light.OPEN_FREE_MAP_LIBERTY,
-                MapStyle.Light.OPEN_FREE_MAP_BRIGHT,
-                MapStyle.Light.OPEN_FREE_MAP_POSITRON,
-                MapStyle.Light.MAPTILER_STREET_LIGHT,
-                MapStyle.Light.MAPTILER_DATAVIZ_LIGHT,
-                MapStyle.Light.MAPTILER_OUTDOOR_LIGHT,
-            )
-
-            override val allDarkStyles: List<MapStyle.Dark> = listOf(
-                MapStyle.Dark.OPEN_FREE_MAP_DARK,
-                MapStyle.Dark.OPEN_FREE_MAP_FIORD,
-                MapStyle.Dark.MAPTILER_STREET_DARK,
-                MapStyle.Dark.MAPTILER_DATAVIZ_DARK,
-                MapStyle.Dark.MAPTILER_OUTDOOR_DARK,
-            )
-
             override fun lightStyleUri(isSatelliteMaps: Boolean): String {
                 if (isSatelliteMaps) {
                     return "https://api.maptiler.com/maps/hybrid-v4/style.json?key=${mapTilerToken}"
@@ -117,6 +88,8 @@ sealed interface MapsSDKProvider {
                     MapStyle.Light.OPEN_FREE_MAP_LIBERTY -> "https://tiles.openfreemap.org/styles/liberty"
                     MapStyle.Light.OPEN_FREE_MAP_BRIGHT -> "https://tiles.openfreemap.org/styles/bright"
                     MapStyle.Light.OPEN_FREE_MAP_POSITRON -> "https://tiles.openfreemap.org/styles/positron"
+                    MapStyle.Light.MAPTILER_BACKDROP_LIGHT -> "https://api.maptiler.com/maps/backdrop-v4-light/style.json?key=${mapTilerToken}"
+                    MapStyle.Light.MAPTILER_BASE_LIGHT -> "https://api.maptiler.com/maps/base-v4-light/style.json?key=${mapTilerToken}"
                 }
             }
 
@@ -131,6 +104,8 @@ sealed interface MapsSDKProvider {
                     MapStyle.Dark.MAPTILER_STREET_DARK -> "https://api.maptiler.com/maps/streets-v4-dark/style.json?key=${mapTilerToken}"
                     MapStyle.Dark.OPEN_FREE_MAP_DARK -> "https://tiles.openfreemap.org/styles/dark"
                     MapStyle.Dark.OPEN_FREE_MAP_FIORD -> "https://tiles.openfreemap.org/styles/fiord"
+                    MapStyle.Dark.MAPTILER_BACKDROP_DARK -> "https://api.maptiler.com/maps/backdrop-v4-dark/style.json?key=${mapTilerToken}"
+                    MapStyle.Dark.MAPTILER_BASE_DARK -> "https://api.maptiler.com/maps/base-v4-dark/style.json?key=${mapTilerToken}"
                 }
             }
         }
