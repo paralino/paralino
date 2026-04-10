@@ -105,18 +105,26 @@ class MapsProviderViewModel(
                             GenericSettingListItem.GroupOptions(
                                 defaultId = currentOption.lightStyle.key,
                                 keyId = "mapStyleLight",
-                                items = currentOption.allLightStyles.map {
-                                    GroupOptionItem(
-                                        key = it,
-                                        id = "light_${it.key}",
-                                        title = it.title,
-                                        description = null,
-                                        isSelected = it == currentOption.lightStyle,
-                                        tag = null,
-                                        isTagWarning = false,
-                                        isPremiumFeatureEnabled = !it.isPremium || canUserHavePremiumMaps(),
-                                    )
-                                }
+                                items = MapStyle.Light.allLightStyles
+                                    .filter {
+                                        if (canUserHavePremiumMaps()) {
+                                            !it.isPremium || currentOption.isPremium
+                                        } else {
+                                            true
+                                        }
+                                    }
+                                    .map {
+                                        GroupOptionItem(
+                                            key = it,
+                                            id = "light_${it.key}",
+                                            title = it.title,
+                                            description = null,
+                                            isSelected = it == currentOption.lightStyle,
+                                            tag = null,
+                                            isTagWarning = false,
+                                            isPremiumFeatureEnabled = !it.isPremium || canUserHavePremiumMaps(),
+                                        )
+                                    }
                             )
                         )
                         add(
@@ -146,18 +154,26 @@ class MapsProviderViewModel(
                             GenericSettingListItem.GroupOptions(
                                 defaultId = currentOption.darkStyle.key,
                                 keyId = "mapStyleDark",
-                                items = currentOption.allDarkStyles.map {
-                                    GroupOptionItem(
-                                        key = it,
-                                        id = "dark_${it.key}",
-                                        title = it.title,
-                                        description = null,
-                                        isSelected = it == currentOption.darkStyle,
-                                        tag = null,
-                                        isTagWarning = false,
-                                        isPremiumFeatureEnabled = !it.isPremium || canUserHavePremiumMaps(),
-                                    )
-                                }
+                                items = MapStyle.Dark.allDarkStyles
+                                    .filter {
+                                        if (canUserHavePremiumMaps()) {
+                                            !it.isPremium || currentOption.isPremium
+                                        } else {
+                                            true
+                                        }
+                                    }
+                                    .map {
+                                        GroupOptionItem(
+                                            key = it,
+                                            id = "dark_${it.key}",
+                                            title = it.title,
+                                            description = null,
+                                            isSelected = it == currentOption.darkStyle,
+                                            tag = null,
+                                            isTagWarning = false,
+                                            isPremiumFeatureEnabled = !it.isPremium || canUserHavePremiumMaps(),
+                                        )
+                                    }
                             )
                         )
                         add(
