@@ -63,6 +63,7 @@ import app.paralino.core.ui.groups.components.GroupMember
 import app.paralino.core.ui.places.PlaceListItem
 import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.ui.theme.ButtonStyle
+import app.paralino.core.ui.theme.LocalScreenDimensionType
 import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -151,86 +152,59 @@ fun MapHomeSheetContent(
             thickness = MapHomeSheetContentSizes.dividerHeight
         )
 
-        if (readyState != null) {
-            MapGroupNameAndMemberInfo(
-                modifier = Modifier
-                    .padding(start = 14.dp, end = 16.dp)
-                    .onGloballyPositioned { coordinates ->
-                        val extraHeightDp = screenPaddingValues.calculateBottomPadding()
-                            .plus(SwipeableSheetState.sheetBottomCollapsedPadding)
-                            .plus(MapHomeSheetContentSizes.dividerTopPadding.times(2) + MapHomeSheetContentSizes.dividerHeight.times(2))
+        MapGroupNameAndMemberInfo(
+            modifier = Modifier
+                .padding(start = 14.dp, end = 16.dp)
+                .onGloballyPositioned { coordinates ->
+                    val extraHeightDp = screenPaddingValues.calculateBottomPadding()
+                        .plus(SwipeableSheetState.sheetBottomCollapsedPadding)
+                        .plus(MapHomeSheetContentSizes.dividerTopPadding.times(2) + MapHomeSheetContentSizes.dividerHeight.times(2))
 
-                        val extraHeightPx = with(density) {
-                            extraHeightDp.toPx()
-                        }
-                        onMapGroupInfoHeightChange(coordinates.size.height.plus(extraHeightPx))
-                    },
-                isPersonalSpace = readyState.isPersonalSpace,
-                groupName = readyState.groupOrSpaceName,
-                groupImage = readyState.groupOrSpaceImage,
-                userCount = readyState.userCount,
-                placesCount = places.size,
-                activeUserCount = readyState.activeUserCount,
-                inactiveUserCount = readyState.inactiveUserCount,
-                idleUserCount = readyState.idleUserCount,
-                verified = readyState.allMembersVerified,
-                interactionVisibilityFraction = contentAlpha,
-                collapsedVisibilityFraction = contentCollapsedFraction,
-                onGroupContentClick = onWholeContentClick,
-                onGroupDetailButtonClick = {
-                    if (swipeableState.isCollapsed() || swipeableState.isCollapsedAndMinimised()) {
-                        onWholeContentClick()
-                    } else {
-                        onEvent(MapHomeScreenUiEvent.OnGroupDetailsClick)
+                    val extraHeightPx = with(density) {
+                        extraHeightDp.toPx()
                     }
-                }
-            )
-
-            Spacer(modifier = Modifier.size(8.dp))
-
-            Row(
-                modifier = Modifier
-                    .horizontalScroll(rememberScrollState())
-                    .padding(horizontal = 20.dp)
-                    .alpha(contentAlpha)
-                    .align(Alignment.Start),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                if (readyState.isPersonalSpace) {
-                    MapBottomSheetTab(
-                        modifier = Modifier,
-                        selected = readyState?.mapSheetSelectedContentType == MapSheetSelectedContentType.MEMBERS,
-                        focused = readyState?.mapHomeScreenFocusType?.areMembersFocused == true,
-                        text = MR.strings.group_member_devices_section_title.localizedString(),
-                        icon = CoreAppIcons.PhoneAndroid.asPainterResource(),
-                        onClick = {
-                            onEvent(MapHomeScreenUiEvent.OnFocusOnMembersClick)
-                        }
-                    )
+                    onMapGroupInfoHeightChange(coordinates.size.height.plus(extraHeightPx))
+                },
+            isPersonalSpace = readyState.isPersonalSpace,
+            groupName = readyState.groupOrSpaceName,
+            groupImage = readyState.groupOrSpaceImage,
+            userCount = readyState.userCount,
+            placesCount = places.size,
+            activeUserCount = readyState.activeUserCount,
+            inactiveUserCount = readyState.inactiveUserCount,
+            idleUserCount = readyState.idleUserCount,
+            verified = readyState.allMembersVerified,
+            interactionVisibilityFraction = contentAlpha,
+            collapsedVisibilityFraction = contentCollapsedFraction,
+            onGroupContentClick = onWholeContentClick,
+            onGroupDetailButtonClick = {
+                if (swipeableState.isCollapsed() || swipeableState.isCollapsedAndMinimised()) {
+                    onWholeContentClick()
                 } else {
-                    MapBottomSheetTab(
-                        modifier = Modifier,
-                        selected = readyState?.mapSheetSelectedContentType == MapSheetSelectedContentType.MEMBERS,
-                        focused = readyState?.mapHomeScreenFocusType?.areMembersFocused == true,
-                        text = MR.strings.group_details_section_members_title.localizedString(),
-                        icon = CoreAppIcons.Group.asPainterResource(),
-                        onClick = {
-                            onEvent(MapHomeScreenUiEvent.OnFocusOnMembersClick)
-                        }
-                    )
+                    onEvent(MapHomeScreenUiEvent.OnGroupDetailsClick)
                 }
-                Spacer(modifier = Modifier.size(8.dp))
-                MapBottomSheetTab(
-                    modifier = Modifier,
-                    selected = readyState?.mapSheetSelectedContentType == MapSheetSelectedContentType.PLACES,
-                    focused = readyState?.mapHomeScreenFocusType?.arePlacesFocused == true,
-                    text = MR.strings.places_list_screen_title.localizedString(),
-                    icon = CoreAppIcons.MapsHomeWork.asPainterResource(),
-                    onClick = {
-                        onEvent(MapHomeScreenUiEvent.OnFocusOnPlacesClick)
-                    }
-                )
             }
+        )
+
+        val screenSize = LocalScreenDimensionType.current
+        val bottomContentPadding = remember(screenSize, screenPaddingValues) {
+            if (screenSize.isSmall) {
+                (screenSize.maxHeightDp * 0.2f) + screenPaddingValues.calculateBottomPadding() + screenPaddingValues.calculateTopPadding()
+            } else {
+                (screenSize.maxHeightDp * 0.17f) + screenPaddingValues.calculateBottomPadding()
+            }
+        }
+
+        if (!screenSize.isSmall) {
+            SheetTabs(
+                modifier = Modifier
+                    .padding(top = 6.dp)
+                    .padding(horizontal = 20.dp)
+                    .align(Alignment.Start),
+                readyState = readyState,
+                contentAlpha = contentAlpha,
+                onEvent = onEvent
+            )
         }
 
         LazyColumn(
@@ -243,14 +217,14 @@ fun MapHomeSheetContent(
                 start = 20.dp,
                 end = 20.dp,
                 top = 0.dp,
-                bottom = swipeableState.contentBottomPadding
+                bottom = bottomContentPadding
             )
         ) {
             this.stickyHeader(key = "top_gradient") {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(10.dp)
+                        .height(if (screenSize.isSmall) 8.dp else 10.dp)
                         .background(
                             Brush.verticalGradient(
                                 colors = listOf(
@@ -262,6 +236,20 @@ fun MapHomeSheetContent(
                         )
                 )
             }
+
+            if (screenSize.isSmall) {
+                this.item(key = "sheet_tabs") {
+                    SheetTabs(
+                        modifier = Modifier
+                            .padding(bottom = 10.dp)
+                            .align(Alignment.Start),
+                        readyState = readyState,
+                        contentAlpha = contentAlpha,
+                        onEvent = onEvent
+                    )
+                }
+            }
+
             when (readyState?.mapSheetSelectedContentType) {
                 MapSheetSelectedContentType.PLACES -> {
                     placesList(
@@ -281,7 +269,7 @@ fun MapHomeSheetContent(
 
                 MapSheetSelectedContentType.MEMBERS -> {
                     membersList(
-                        canAddNewMember = !readyState.isPersonalSpace && readyState.isCurrentUserOwnerOfSelectedGroup,
+                        canAddNewMember = true,//!readyState.isPersonalSpace && readyState.isCurrentUserOwnerOfSelectedGroup,
                         members = members,
                         onEvent = {
                             onEvent(MapHomeScreenUiEvent.OnMemberItemEvent(it))
@@ -295,6 +283,56 @@ fun MapHomeSheetContent(
                 null -> {}
             }
         }
+    }
+}
+
+@Composable
+private fun SheetTabs(
+    modifier: Modifier = Modifier,
+    readyState: MapHomeScreenState.Ready,
+    contentAlpha: Float,
+    onEvent: (MapHomeScreenUiEvent) -> Unit
+) {
+    Row(
+        modifier = modifier
+            .horizontalScroll(rememberScrollState())
+            .alpha(contentAlpha),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        if (readyState.isPersonalSpace) {
+            MapBottomSheetTab(
+                modifier = Modifier,
+                selected = readyState?.mapSheetSelectedContentType == MapSheetSelectedContentType.MEMBERS,
+                focused = readyState?.mapHomeScreenFocusType?.areMembersFocused == true,
+                text = MR.strings.group_member_devices_section_title.localizedString(),
+                icon = CoreAppIcons.PhoneAndroid.asPainterResource(),
+                onClick = {
+                    onEvent(MapHomeScreenUiEvent.OnFocusOnMembersClick)
+                }
+            )
+        } else {
+            MapBottomSheetTab(
+                modifier = Modifier,
+                selected = readyState?.mapSheetSelectedContentType == MapSheetSelectedContentType.MEMBERS,
+                focused = readyState?.mapHomeScreenFocusType?.areMembersFocused == true,
+                text = MR.strings.group_details_section_members_title.localizedString(),
+                icon = CoreAppIcons.Group.asPainterResource(),
+                onClick = {
+                    onEvent(MapHomeScreenUiEvent.OnFocusOnMembersClick)
+                }
+            )
+        }
+        Spacer(modifier = Modifier.size(8.dp))
+        MapBottomSheetTab(
+            modifier = Modifier,
+            selected = readyState?.mapSheetSelectedContentType == MapSheetSelectedContentType.PLACES,
+            focused = readyState?.mapHomeScreenFocusType?.arePlacesFocused == true,
+            text = MR.strings.places_list_screen_title.localizedString(),
+            icon = CoreAppIcons.MapsHomeWork.asPainterResource(),
+            onClick = {
+                onEvent(MapHomeScreenUiEvent.OnFocusOnPlacesClick)
+            }
+        )
     }
 }
 

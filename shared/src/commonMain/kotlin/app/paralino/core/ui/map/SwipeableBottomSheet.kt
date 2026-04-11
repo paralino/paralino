@@ -414,7 +414,6 @@ class SwipeableSheetState internal constructor(
     private val confirmValueChange: (BottomSheetPosition) -> Boolean
 ) {
 
-    val maxSheetContentSizePercent = 0.95f
     private var anchors: Map<BottomSheetPosition, Float> = emptyMap()
         private set
 
@@ -444,16 +443,6 @@ class SwipeableSheetState internal constructor(
     val offset: Float get() = state.offset.let { if (it.isFinite()) it else 0f }
     val currentValue: BottomSheetPosition get() = state.targetValue
     val settledValue: BottomSheetPosition get() = state.settledValue
-    val isPastCollapsed: Boolean
-        get() {
-            return offset > state.anchors.positionOf(BottomSheetPosition.COLLAPSED)
-        }
-
-    val contentBottomPadding: Dp
-        get() {
-            val fixedPadding = ((1f - maxSheetContentSizePercent) * screenHeightPixels).dp
-            return fixedPadding
-        }
 
     fun progress(from: BottomSheetPosition, to: BottomSheetPosition): Float {
         return state.progress(from, to)
