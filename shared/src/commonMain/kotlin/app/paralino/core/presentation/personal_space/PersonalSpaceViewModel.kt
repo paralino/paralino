@@ -281,8 +281,7 @@ class PersonalSpaceViewModel(
                             } else {
                                 null
                             },
-                            // if the device has session, user should first log out and then delete the device
-                            deleteAction = if (device.location == null && session == null) {
+                            deleteAction = if (device.location == null && !device.isCurrentDevice) {
                                 previousDeviceState?.device?.deleteAction
                                     ?: UserDeviceAction.DeleteDevice()
                             } else {
@@ -492,8 +491,33 @@ class PersonalSpaceViewModel(
     }
 
     private fun logout(sessionId: String) {
+        logoutOrDeleteAction(
+            logoutAction = {
+                userRepo.remoteLogout(sessionId = sessionId)
+            },
+            deleteDeviceAction = {}
+        )
+    }
+
+    private fun deleteDevice(device: UserDeviceModel) {
+        logoutOrDeleteAction(
+            logoutAction = {
+                if (!device.sessionId.isNullOrBlank()) {
+                    userRepo.remoteLogout(sessionId = device.sessionId)
+                }
+            },
+            deleteDeviceAction = {
+                deletePersonalDevice.deletePersonalDevice(deviceId = device.deviceId)
+            }
+        )
+    }
+
+    private fun logoutOrDeleteAction(
+        logoutAction: suspend () -> Unit,
+        deleteDeviceAction: suspend () -> Unit,
+    ) {
         flow {
-            userRepo.remoteLogout(sessionId = sessionId)
+            logoutAction()
             emit(Unit)
         }
             .mapToPayload { Unit }
@@ -506,24 +530,10 @@ class PersonalSpaceViewModel(
 
                 if (state is Payload.Success) {
                     updateSessions()
+                    deleteDeviceAction()
                 }
             }
             .launchIn(coroutineScope)
-    }
-
-    private fun deleteDevice(device: UserDeviceModel) {
-        coroutineScope.launch {
-            try {
-                _uiState.update { it.copy(loadingAction = true) }
-                deletePersonalDevice.deletePersonalDevice(deviceId = device.deviceId)
-                _uiState.update { it.copy(loadingAction = false) }
-//                showSnackbar(MR.strings.group_members_item_clear_location_success.localizedString())
-            } catch (e: Exception) {
-                _uiState.update { it.copy(loadingAction = false) }
-                logg.e("Error deleting device", e)
-                showSnackbar(e.errorString())
-            }
-        }
     }
 
     private fun deactivateDevice(device: UserDeviceModel) {
