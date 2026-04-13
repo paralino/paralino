@@ -6,8 +6,6 @@ import android.content.Intent
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.net.toUri
-import app.paralino.core.presentation.map.MapHomeScreenEvent
-
 
 fun Context.share(data: String) {
     val intent = Intent(Intent.ACTION_SEND)
@@ -25,12 +23,6 @@ fun Context.openUri(uri: Uri) {
 
 fun Context.openUri(uri: String) {
     openUri(uri.toUri())
-}
-
-fun Context.openNavigation(event: MapHomeScreenEvent.OpenExternalNavigation) {
-    openUri(
-        uri = "geo:${event.lat},${event.lng}?q=${event.lat},${event.lng}${event.name?.let { "(${it})" } ?: ""}"
-    )
 }
 
 fun Context.getActivity(): AppCompatActivity? = when (this) {

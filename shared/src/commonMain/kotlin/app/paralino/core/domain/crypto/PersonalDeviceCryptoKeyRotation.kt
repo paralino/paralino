@@ -5,15 +5,12 @@ import app.paralino.core.crypto.group.CryptoKEKLocalRepository
 import app.paralino.core.crypto.user.CryptoUserKeysLocalSource
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.LimitedExecution
-import app.paralino.core.domain.crypto.MemberDeviceKeyRotation.GroupDeviceSenderKeyData
 import app.paralino.core.domain.location.MemberDeviceStatusProvider
 import app.paralino.core.logg
 import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.models.data
 import app.paralino.core.models.group.GroupIntegrity
 import app.paralino.core.models.group.UserGroup
-import app.paralino.core.models.group.UserGroupWithMembers
-import app.paralino.core.models.location.LocationSharingContract
 import app.paralino.core.models.location.UserDeviceModel
 import app.paralino.core.models.raw.PersonalDeviceKeyUpdatePayload
 import app.paralino.core.repo.LocationSharingManager
@@ -21,7 +18,6 @@ import app.paralino.core.repo.api.IFunctionsApi
 import app.paralino.core.repo.api.ServerFunction
 import app.paralino.core.repo.api.runAndWait
 import app.paralino.core.utils.BaseRemoteModule
-import app.paralino.core.utils.exceptions.BaseRemoteException
 import app.paralino.core.utils.extensions.nowUTC
 
 abstract class IPersonalDeviceCryptoKeyRotation : LimitedExecution() {
@@ -169,10 +165,7 @@ class PersonalDeviceCryptoKeyRotation(
         )
 
         if (!response.isSuccess) {
-            throw BaseRemoteException.fromRemote(
-                code = response.statusCode,
-                error = response.errorResponse
-            )
+            response.remoteException
         } else {
             val groupDeviceIntegrity = GroupIntegrity(
                 timeUtc = nowUTC().toString(),

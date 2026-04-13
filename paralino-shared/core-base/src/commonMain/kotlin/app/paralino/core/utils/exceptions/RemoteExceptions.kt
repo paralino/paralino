@@ -1,7 +1,5 @@
 package app.paralino.core.utils.exceptions
 
-import app.paralino.core.domain.user.UserSessionMonitor
-import app.paralino.core.models.raw.FunctionErrorBody
 import app.paralino.core.provider.NetworkConnectionInfo
 
 open class BaseRemoteException constructor(
@@ -13,18 +11,6 @@ open class BaseRemoteException constructor(
     companion object {
 
         const val typeUserInvalidToken = "user_invalid_token"
-
-        fun fromRemote(
-            code: Int?,
-            error: FunctionErrorBody?,
-        ): BaseRemoteException {
-            return fromCode(
-                code = code,
-                message = error?.message,
-                cause = null,
-                type = error?.type
-            )
-        }
 
         fun fromCode(
             code: Int?,
@@ -85,9 +71,7 @@ open class UnauthorizedException(code: Int?, type: String?, message: String?, ca
     message = message,
     cause = cause,
     type = type
-) {
-    val isUserBlocked: Boolean = type == UserSessionMonitor.userBlocked
-}
+)
 
 class InvalidRequestException(
     code: Int?,

@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.android.multiplatformLibrary)
     alias(libs.plugins.moko.resources)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 kotlin {
@@ -20,5 +21,13 @@ kotlin {
             api(libs.moko.resources)
             api(libs.moko.resources.compose)
         }
+
+        androidMain.dependencies {
+            api(libs.appcompat)
+            api(libs.androidx.core.ktx)
+            api(libs.kotlinx.coroutines.android)
+        }
+
+        iosMain.get().dependsOn(commonMain.get())
     }
 }

@@ -19,11 +19,9 @@ import app.paralino.core.repo.api.IFunctionsApi
 import app.paralino.core.repo.api.ServerFunction
 import app.paralino.core.repo.api.runAndWait
 import app.paralino.core.utils.BaseRemoteModule
-import app.paralino.core.utils.exceptions.BaseRemoteException
 import app.paralino.core.utils.exceptions.MissingMemberKeyException
 import app.paralino.core.utils.extensions.blocking
 import app.paralino.core.utils.extensions.nowUTC
-import kotlinx.serialization.encodeToString
 
 class GroupCryptoKeyRotation constructor(
     private val functionsApi: IFunctionsApi,
@@ -218,10 +216,7 @@ class GroupCryptoKeyRotation constructor(
             )
 
             if (!response.isSuccess) {
-                throw BaseRemoteException.fromRemote(
-                    code = response.statusCode,
-                    error = response.errorResponse
-                )
+                response.remoteException
             } else {
                 logg.tag("tag_crypto_key_group_rotation")
                     .w("Finished rotating group key for: ${group.id}")

@@ -19,7 +19,6 @@ import app.paralino.core.repo.base.BaseRepository
 import app.paralino.core.repo.base.RemotePreference
 import app.paralino.core.repo.location.LocationPerformanceManager
 import app.paralino.core.repo.user.UserPersonalSpaceLocalDataSource
-import app.paralino.core.utils.exceptions.BaseRemoteException
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -232,10 +231,7 @@ class LocationRequestUseCase constructor(
                 }
 
                 if (!responseOne.isSuccess) {
-                    throw BaseRemoteException.fromRemote(
-                        code = response.statusCode,
-                        error = response.errorResponse
-                    )
+                    response.remoteException
                 }
             }
         }
