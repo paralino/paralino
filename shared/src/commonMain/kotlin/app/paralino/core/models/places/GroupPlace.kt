@@ -25,7 +25,7 @@ data class GroupPlace constructor(
     val eventKeys: List<String>
 ) {
     val nameOrNull: String? get() = data.data?.name
-    val groupOrSpaceId: GroupOrSpaceId = if (isInPersonalSpace) {
+    val groupOrSpaceId: GroupOrSpaceId get() = if (isInPersonalSpace) {
         UserGroup.groupPersonalDevicesId.asGroupOrSpaceId()
     } else {
         groupOrOwnerUserId.asGroupOrSpaceId()

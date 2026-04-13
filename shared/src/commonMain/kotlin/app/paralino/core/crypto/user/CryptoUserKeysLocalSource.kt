@@ -143,7 +143,11 @@ class CryptoUserKeysLocalSource(
 
     suspend fun getDeviceSenderKeyForDevice(device: UserDeviceEntity): PersonalSpaceDeviceKey {
 
-        if (!device.hasValidLocation || device.locationId.isNullOrBlank() || device.userKeyVersion == null || device.encryptedSenderKey.isNullOrBlank()) {
+        // extracting here to satisfy compiler
+        val locationId = device.locationId
+        val encryptedSenderKey = device.encryptedSenderKey
+
+        if (!device.hasValidLocation || locationId.isNullOrBlank() || device.userKeyVersion == null || encryptedSenderKey.isNullOrBlank()) {
             return PersonalSpaceDeviceKey.Error.Missing
         }
 
@@ -160,7 +164,7 @@ class CryptoUserKeysLocalSource(
         return try {
             PersonalSpaceDeviceKey.Valid(
                 key = userKeyMapper.unwrapDeviceSenderKey(
-                    encryptedSenderKey = device.encryptedSenderKey,
+                    encryptedSenderKey = encryptedSenderKey,
                     userKey = personalKey.key
                 )
             )

@@ -20,7 +20,7 @@ class AppConfigRepository(
     val endpoint: String get() = appBuildConfig.endpoint
     val projectId: String get() = appBuildConfig.projectId
     val appHost: AppHost get() = appBuildConfig.appHost
-    val resourceIds: BackendResourceIDs get() = appBuildConfig.resourceIds
+    val resourceIds: BackendResourceIDs get() = BackendResourceIDs
     val hasGoogleMaps: Boolean get() = appBuildConfig.hasGoogleMaps
     val hasNotificationSocketService: Boolean get() = appBuildConfig.hasNotificationSocketService
     val appFlavor: AppFlavor get() = appBuildConfig.appFlavor

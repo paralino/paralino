@@ -91,7 +91,7 @@ class DeleteLocationHistoryEntryUseCase(
                             groupId = UserGroup.groupPersonalDevicesId,
                             memberUserId = appPrefs.userId,
                             historyKey = key,
-                            entry = databaseEntry.toReadModel()
+                            entry = historyMapper.local2RemotePersonal(databaseEntry)
                         )
 
                         val newHistory = history.history.mapSuccess {
@@ -169,7 +169,7 @@ class DeleteLocationHistoryEntryUseCase(
                             groupId = groupId,
                             memberUserId = memberUserId,
                             historyKey = key,
-                            entry = databaseEntry.toReadModel()
+                            entry = historyMapper.local2RemoteGroup(databaseEntry)
                         )
 
                         val newHistory = history.history.mapSuccess {

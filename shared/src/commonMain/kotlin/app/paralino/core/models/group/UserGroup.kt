@@ -6,9 +6,9 @@ import app.paralino.core.domain.crypto.VerificationResult
 import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.CryptoResource
 import app.paralino.core.models.base.ConfigData
+import app.paralino.core.models.base.GroupOrSpaceId
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.base.PlanConfig
-import app.paralino.core.models.base.PlanType
 import app.paralino.core.models.data
 import app.paralino.core.models.location.MemberLocation
 import app.paralino.core.models.location.MemberModel
@@ -16,12 +16,11 @@ import app.paralino.core.models.location.MemberModelWithLocations
 import app.paralino.core.models.places.GroupPlaceWithSettings
 import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.extensions.nowUTC
-import kotlin.time.Instant
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
-import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
+import kotlin.time.Instant
 
 @Serializable
 data class UserGroup constructor(
@@ -106,9 +105,9 @@ data class UserGroup constructor(
     }
 
     companion object {
-        const val groupPublicSharingId = "public_sharing"
-        const val groupPersonalDevicesId = "personal_devices"
-        const val groupPrivateGroupId = "privateGroup"
+        const val groupPublicSharingId = GroupOrSpaceId.groupPublicSharingId
+        const val groupPersonalDevicesId = GroupOrSpaceId.groupPersonalDevicesId
+        const val groupPrivateGroupId = GroupOrSpaceId.groupPrivateGroupId
     }
 }
 

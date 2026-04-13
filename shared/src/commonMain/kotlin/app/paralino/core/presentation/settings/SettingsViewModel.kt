@@ -139,15 +139,16 @@ class SettingsViewModel(
         return when (userState) {
             Resource.NotInitialized -> Payload.Loading
             is Resource.Ready -> {
-                if (userState.data != null) {
+                val userStateData = userState.data
+                if (userStateData != null) {
                     Payload.Success(
                         AccountScreenState(
                             userState = UserState(
-                                name = userState.data.name,
-                                image = userState.data.data?.userImage,
-                                email = userState.data.email,
+                                name = userStateData.name,
+                                image = userStateData.data?.userImage,
+                                email = userStateData.email,
                                 personalCode = personalCode?.formattedCode,
-                                isGuestUser = userState.data.isGuestUser
+                                isGuestUser = userStateData.isGuestUser
                             ),
                             canUseEmail = remoteConfig?.isEmailEnabled ?: false,
                             logoutState = null,
@@ -168,8 +169,8 @@ class SettingsViewModel(
                                 AppFlavor.ANDROID_DIRECT -> false
                             },
                             errors = buildList {
-                                if (userState.data.canVerifyEmail) {
-                                    add(ConditionErrorType.EmailVerification(userState.data.email))
+                                if (userStateData.canVerifyEmail) {
+                                    add(ConditionErrorType.EmailVerification(userStateData.email))
                                 }
 
                                 if (!deviceStatus.notificationStatus.isNotificationPermissionAllowed) {

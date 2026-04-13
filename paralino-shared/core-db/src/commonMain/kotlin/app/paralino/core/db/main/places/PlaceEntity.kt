@@ -6,7 +6,6 @@ import androidx.room.Ignore
 import androidx.room.PrimaryKey
 import app.paralino.core.models.base.GroupOrSpaceId
 import app.paralino.core.models.base.asGroupOrSpaceId
-import app.paralino.core.models.group.UserGroup
 
 @Entity(tableName = "placeEntity")
 data class PlaceEntity(
@@ -22,7 +21,7 @@ data class PlaceEntity(
 ) {
     @Ignore
     val groupOrSpaceId: GroupOrSpaceId = if (isInPersonalSpace) {
-        UserGroup.groupPersonalDevicesId.asGroupOrSpaceId()
+        GroupOrSpaceId.groupPersonalDevicesId.asGroupOrSpaceId()
     } else {
         groupId.asGroupOrSpaceId()
     }

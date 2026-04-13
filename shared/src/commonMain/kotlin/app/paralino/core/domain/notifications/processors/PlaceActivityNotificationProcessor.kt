@@ -67,7 +67,7 @@ class PlaceActivityNotificationProcessor(
                     userId = payload.memberUserId
                 )
             }
-            eventSeed = place.eventSeed
+            eventSeed = place?.eventSeed
         } catch (_: Exception) {
         }
 

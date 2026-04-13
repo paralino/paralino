@@ -271,7 +271,7 @@ class MemberMapperCore constructor(
 
             MemberLocation(
                 id = location.id,
-                groupOrSpaceId = model.member.groupId.asGroupOrSpaceId(),
+                groupOrSpaceIdString = model.member.groupId,
                 memberId = model.member.id,
                 userId = model.member.ownerUserId,
                 deviceId = location.deviceId,

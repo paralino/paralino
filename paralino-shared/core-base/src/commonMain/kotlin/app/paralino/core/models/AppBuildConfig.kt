@@ -1,7 +1,5 @@
 package app.paralino.core.models
 
-import app.paralino.core.models.base.BackendResourceIDs
-
 data class AppBuildConfig constructor(
     val serverUrl: String,
     val projectId: String,
@@ -20,7 +18,6 @@ data class AppBuildConfig constructor(
     val appFlavor: AppFlavor
 ) {
     val endpoint = "$serverUrl/v1"
-    val resourceIds = BackendResourceIDs
 
     companion object {
         lateinit var instance: AppBuildConfig

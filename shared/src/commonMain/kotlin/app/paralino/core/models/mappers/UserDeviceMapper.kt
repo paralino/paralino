@@ -70,15 +70,14 @@ class UserDeviceMapper(
                 pushProviderConfig = entity.pushProviderConfig,
                 pushProvider = entity.pushProvider,
             ),
-            location = if (entity.locationId != null) {
+            location = entity.locationId?.let { locationId ->
+                // only checking if locationId is valid to satisify compiler
                 UserDeviceLocationRaw(
-                    id = entity.locationId,
+                    id = locationId,
                     locationData = entity.locationData,
                     status = entity.status,
                     locationHistory = entity.locationHistory
                 )
-            } else {
-                null
             }
         )
     }
@@ -106,7 +105,7 @@ class UserDeviceMapper(
 
                 MemberLocation(
                     id = entity.id,
-                    groupOrSpaceId = UserGroup.groupPersonalDevicesId.asGroupOrSpaceId(),
+                    groupOrSpaceIdString = UserGroup.groupPersonalDevicesId,
                     memberId = "", // User devices don't have a member ID
                     userId = entity.ownerUserId,
                     deviceId = entity.deviceId,

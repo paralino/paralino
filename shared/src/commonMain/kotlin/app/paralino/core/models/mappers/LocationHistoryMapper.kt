@@ -4,10 +4,10 @@ import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.LocationHistoryKey
 import app.paralino.core.crypto.group.CryptoKEKLocalRepository
 import app.paralino.core.db.AppPrefs
-import app.paralino.core.db.main.keys.GroupHistoryKeyEntity
-import app.paralino.core.db.main.keys.PersonalHistoryKeyEntity
 import app.paralino.core.db.main.history.GroupHistoryEntity
 import app.paralino.core.db.main.history.PersonalHistoryEntity
+import app.paralino.core.db.main.keys.GroupHistoryKeyEntity
+import app.paralino.core.db.main.keys.PersonalHistoryKeyEntity
 import app.paralino.core.logg
 import app.paralino.core.models.CryptoResource
 import app.paralino.core.models.group.UserGroup
@@ -39,7 +39,7 @@ class LocationHistoryMapper(
             memberUserId = appPrefs.userId,
             keys = actualKeys,
             entries = entries.map {
-                it.toReadModel()
+                local2RemotePersonal(it)
             }
         )
     }
@@ -61,7 +61,7 @@ class LocationHistoryMapper(
             memberUserId = memberUserId,
             keys = actualKeys,
             entries = entries.map {
-                it.toReadModel()
+                local2RemoteGroup(it)
             }
         )
     }

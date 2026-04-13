@@ -91,7 +91,6 @@ kotlin {
             implementation(libs.network.ktor.client.okhttp)
         }
 
-        iosMain.get().dependsOn(commonMain.get())
         iosMain.dependencies {
             implementation(libs.network.ktor.client.darwin)
         }

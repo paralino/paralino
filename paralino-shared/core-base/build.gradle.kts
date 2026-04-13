@@ -1,8 +1,8 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.android.multiplatformLibrary)
-    alias(libs.plugins.moko.resources)
     alias(libs.plugins.kotlin.serialization)
 }
 
@@ -10,24 +10,29 @@ kotlin {
     android {
         namespace = "app.paralino.core.base"
         compileSdk = 36
+        minSdk = 29
+        compilerOptions.jvmTarget = JvmTarget.JVM_17
+        compilerOptions.optIn.add("kotlin.RequiresOptIn")
     }
 
     iosX64()
     iosArm64()
     iosSimulatorArm64()
 
+    applyDefaultHierarchyTemplate()
+
     sourceSets {
         commonMain.dependencies {
-            api(libs.moko.resources)
-            api(libs.moko.resources.compose)
+            implementation(libs.kotlinx.coroutines.core)
+            implementation(libs.moko.resources)
+            implementation(libs.moko.resources.compose)
+            implementation(libs.kotlinx.datetime)
         }
 
         androidMain.dependencies {
-            api(libs.appcompat)
-            api(libs.androidx.core.ktx)
-            api(libs.kotlinx.coroutines.android)
+            implementation(libs.appcompat)
+            implementation(libs.androidx.core.ktx)
+            implementation(libs.kotlinx.coroutines.android)
         }
-
-        iosMain.get().dependsOn(commonMain.get())
     }
 }

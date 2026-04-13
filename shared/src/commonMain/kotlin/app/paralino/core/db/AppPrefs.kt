@@ -16,11 +16,6 @@ import com.russhwolf.settings.Settings
 import com.russhwolf.settings.set
 import kotlin.time.Instant
 
-expect class AppPrefsProvider {
-    val userSettings: Settings
-    val appSettings: Settings
-}
-
 class AppPrefs(
     private val provider: AppPrefsProvider
 ) {

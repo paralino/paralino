@@ -2,6 +2,7 @@ package app.paralino.core.models.location
 
 import app.paralino.core.models.CryptoResource
 import app.paralino.core.models.base.GroupOrSpaceId
+import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.models.data
 import app.paralino.core.utils.extensions.fromUTCtoInstant
 import app.paralino.core.utils.extensions.nowUTC
@@ -16,7 +17,7 @@ import kotlin.time.Duration.Companion.seconds
 @Serializable
 data class MemberLocation constructor(
     val id: String,
-    val groupOrSpaceId: GroupOrSpaceId,
+    val groupOrSpaceIdString: String,
     val memberId: String,
     val userId: String,
     val deviceId: String,
@@ -36,6 +37,8 @@ data class MemberLocation constructor(
 ) {
     val name: String get() = nameOrNull ?: "---"
     val nameOrNull: String? get() = deviceData.data?.deviceName
+
+    val groupOrSpaceId: GroupOrSpaceId get() = groupOrSpaceIdString.asGroupOrSpaceId()
 
     val canRequestLocation: Boolean get() {
         val adaptedStatus = locationAwareStatusType
