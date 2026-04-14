@@ -2,7 +2,6 @@ package app.paralino.core.crypto
 
 import app.paralino.core.models.raw.UserCryptoKeyRaw
 import app.paralino.core.utils.BaseRemoteModule
-import kotlinx.serialization.encodeToString
 
 class CryptoCore(
     private val serviceProvider: ICryptoServiceProvider,

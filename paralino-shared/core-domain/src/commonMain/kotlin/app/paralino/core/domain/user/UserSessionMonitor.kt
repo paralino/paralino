@@ -10,7 +10,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
-import org.koin.ext.getFullName
 
 class UserSessionMonitor {
 
@@ -28,7 +27,7 @@ class UserSessionMonitor {
     val sessionStatus = _sessionStatus.asStateFlow()
 
     fun processNetworkError(error: Throwable) {
-        logg.w("Remote exception - ${error::class.getFullName()} - ${error.message}")
+        logg.w("Remote exception - ${error::class.simpleName} - ${error.message}")
         val unauthorizedException = (error as? UnauthorizedException)
         logg.w("Remote exception - Unauthorized exception (${error is UnauthorizedException}) type: ${unauthorizedException?.type}")
         when {

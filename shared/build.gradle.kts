@@ -64,8 +64,6 @@ kotlin {
             api(libs.kotlinx.serialization.json)
             implementation(project.dependencies.platform(libs.koin.bom))
             implementation(libs.koin.core)
-            implementation(libs.multiplatform.settings.coroutines)
-            implementation(libs.multiplatform.settings)
             api(libs.network.ktor.client.core)
             api(libs.network.ktor.client.logging)
             api(libs.network.ktor.content.negotiation)

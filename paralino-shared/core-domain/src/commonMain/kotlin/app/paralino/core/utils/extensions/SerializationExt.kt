@@ -2,8 +2,6 @@ package app.paralino.core.utils.extensions
 
 import app.paralino.core.utils.BaseRemoteModule
 import kotlinx.serialization.SerializationException
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.*
 
 fun Any?.toJsonElement(): JsonElement = when (this) {
