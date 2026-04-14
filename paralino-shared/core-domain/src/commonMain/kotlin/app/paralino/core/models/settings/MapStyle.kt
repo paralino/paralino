@@ -1,4 +1,4 @@
-package app.paralino.core.presentation.settings.generic.maps
+package app.paralino.core.models.settings
 
 sealed class MapStyle {
     abstract val key: String
@@ -58,15 +58,15 @@ sealed class MapStyle {
         }
 
         companion object {
-            val allLightStyles: List<MapStyle.Light> = listOf(
-                MapStyle.Light.OPEN_FREE_MAP_LIBERTY,
-                MapStyle.Light.OPEN_FREE_MAP_BRIGHT,
-                MapStyle.Light.OPEN_FREE_MAP_POSITRON,
-                MapStyle.Light.MAPTILER_BASE_LIGHT,
-                MapStyle.Light.MAPTILER_STREET_LIGHT,
-                MapStyle.Light.MAPTILER_DATAVIZ_LIGHT,
-                MapStyle.Light.MAPTILER_BACKDROP_LIGHT,
-                MapStyle.Light.MAPTILER_OUTDOOR_LIGHT,
+            val allLightStyles: List<Light> = listOf(
+                OPEN_FREE_MAP_LIBERTY,
+                OPEN_FREE_MAP_BRIGHT,
+                OPEN_FREE_MAP_POSITRON,
+                MAPTILER_BASE_LIGHT,
+                MAPTILER_STREET_LIGHT,
+                MAPTILER_DATAVIZ_LIGHT,
+                MAPTILER_BACKDROP_LIGHT,
+                MAPTILER_OUTDOOR_LIGHT,
             )
         }
     }
@@ -117,14 +117,14 @@ sealed class MapStyle {
         }
 
         companion object {
-            val allDarkStyles: List<MapStyle.Dark> = listOf(
-                MapStyle.Dark.OPEN_FREE_MAP_DARK,
-                MapStyle.Dark.OPEN_FREE_MAP_FIORD,
-                MapStyle.Dark.MAPTILER_BASE_DARK,
-                MapStyle.Dark.MAPTILER_STREET_DARK,
-                MapStyle.Dark.MAPTILER_DATAVIZ_DARK,
-                MapStyle.Dark.MAPTILER_BACKDROP_DARK,
-                MapStyle.Dark.MAPTILER_OUTDOOR_DARK,
+            val allDarkStyles: List<Dark> = listOf(
+                OPEN_FREE_MAP_DARK,
+                OPEN_FREE_MAP_FIORD,
+                MAPTILER_BASE_DARK,
+                MAPTILER_STREET_DARK,
+                MAPTILER_DATAVIZ_DARK,
+                MAPTILER_BACKDROP_DARK,
+                MAPTILER_OUTDOOR_DARK,
             )
         }
     }
@@ -133,12 +133,12 @@ sealed class MapStyle {
 
     companion object {
         fun lightStyleFromKey(key: String): Light {
-            return MapStyle.Light.allLightStyles.firstOrNull { it.allKeys.contains(key) }
+            return Light.allLightStyles.firstOrNull { it.allKeys.contains(key) }
                 ?: Light.OPEN_FREE_MAP_LIBERTY
         }
 
         fun darkStyleFromKey(key: String): Dark {
-            return MapStyle.Dark.allDarkStyles.firstOrNull { it.allKeys.contains(key) } ?: Dark.OPEN_FREE_MAP_DARK
+            return Dark.allDarkStyles.firstOrNull { it.allKeys.contains(key) } ?: Dark.OPEN_FREE_MAP_DARK
         }
     }
 }

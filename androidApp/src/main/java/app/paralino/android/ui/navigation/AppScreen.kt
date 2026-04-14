@@ -1,7 +1,7 @@
 package app.paralino.android.ui.navigation
 
 import app.paralino.core.presentation.login.LoginScreenUiType
-import app.paralino.core.presentation.rawdata.RawPresentationDataType
+import app.paralino.core.models.settings.RawPresentationDataType
 import app.paralino.core.ui.main.DeeplinkType
 import app.paralino.core.ui.settings.billing.BillingScreenSourceType
 import app.paralino.core.utils.BaseRemoteModule

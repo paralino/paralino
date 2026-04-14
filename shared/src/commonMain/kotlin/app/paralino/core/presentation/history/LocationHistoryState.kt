@@ -8,17 +8,14 @@ import app.paralino.core.models.base.PlanConfig
 import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.models.location.LatLng
 import app.paralino.core.models.location.LocationHistoryPointId
-import app.paralino.core.models.location.LocationHistoryPointModel
-import app.paralino.core.models.location.MemberDeviceStatusType
+import app.paralino.core.models.location.LocationHistoryPointState
 import app.paralino.core.presentation.groups.MemberActionItemState
 import app.paralino.core.presentation.groups.MemberActionType
 import app.paralino.core.presentation.groups.MemberNavigateItemState
 import app.paralino.core.presentation.map.MapHomeScreenEvent
 import app.paralino.core.presentation.map.MapPinData
-import app.paralino.core.presentation.rawdata.RawPresentationDataType
-import app.paralino.core.presentation.settings.generic.maps.MapInteractionsType
-import app.paralino.core.provider.NetworkSignalStrength
-import app.paralino.core.provider.NetworkType
+import app.paralino.core.models.settings.RawPresentationDataType
+import app.paralino.core.models.settings.MapInteractionsType
 import app.paralino.core.provider.current
 import app.paralino.core.ui.components.dialogs.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
@@ -447,54 +444,6 @@ sealed class UserActiveLocationDeviceState {
         override val deviceId: String = "unknown"
         override val locationId: String = "unknown"
         override val isCurrent: Boolean = false
-    }
-}
-
-sealed interface LocationHistoryPointState {
-    val pointId: String
-    val locationId: String?
-    val locationTime: String?
-    val statusTime: String?
-    val formattedSpeed: String?
-    val formattedElevation: String?
-    val lat: Double?
-    val lng: Double?
-    val accuracy: Float?
-
-    data class Cluster(
-        override val locationId: String?,
-        override val pointId: String,
-        override val locationTime: String?,
-        val points: List<Point>,
-        override val lat: Double,
-        override val lng: Double,
-        override val accuracy: Float,
-        val battery: String?,
-        val isExpanded: Boolean
-    ): LocationHistoryPointState {
-        override val statusTime: String? = null
-        override val formattedElevation: String? = null
-        override val formattedSpeed: String? = null
-    }
-
-    data class Point(
-        override val locationId: String?,
-        override val formattedSpeed: String?,
-        override val formattedElevation: String?,
-        val dateKey: String,
-        val entryId: String,
-        val isCachedLocation: Boolean,
-        val point: LocationHistoryPointModel,
-        override val locationTime: String?,
-        override val statusTime: String? = null,
-        val deviceStatus: MemberDeviceStatusType?,
-        val networkType: NetworkType?,
-        val signalStrength: NetworkSignalStrength?
-    ): LocationHistoryPointState {
-        override val pointId: String = point.properID
-        override val lat: Double? = point.loc?.lat
-        override val lng: Double? = point.loc?.lng
-        override val accuracy: Float? = point.loc?.acc
     }
 }
 

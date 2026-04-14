@@ -13,9 +13,9 @@ import app.paralino.core.logg
 import app.paralino.core.models.mappers.UserKeyMapperCore
 import app.paralino.core.models.raw.UserCryptoKeyRaw
 import app.paralino.core.models.raw.UserMeRaw
+import app.paralino.core.models.user.SignUpStep
+import app.paralino.core.models.user.SignUpStepException
 import app.paralino.core.models.user.UserSession
-import app.paralino.core.presentation.login.SignUpStep
-import app.paralino.core.presentation.login.SignUpStepException
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.BaseRemoteModule
 import app.paralino.core.utils.exceptions.MissingUserKeyException

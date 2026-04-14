@@ -14,6 +14,7 @@ import app.paralino.core.models.location.MemberDeviceStatusType
 import app.paralino.core.models.location.MemberLocation
 import app.paralino.core.models.location.MemberModelWithLocations
 import app.paralino.core.models.location.UserPersonalSpaceModel
+import app.paralino.core.models.map.MapHomeScreenFocusType
 import app.paralino.core.models.places.GroupPlace
 import app.paralino.core.models.user.UserMeData
 import app.paralino.core.presentation.groups.GroupMemberItemLocationState

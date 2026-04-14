@@ -2,6 +2,7 @@ package app.paralino.core.presentation.history
 
 import app.paralino.core.models.location.LatLng
 import app.paralino.core.models.location.LocationHistoryPointLocationModel
+import app.paralino.core.models.location.LocationHistoryPointState
 import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.utils.extensions.isoToLocalDateTime
 import app.paralino.core.utils.extensions.nowUTC

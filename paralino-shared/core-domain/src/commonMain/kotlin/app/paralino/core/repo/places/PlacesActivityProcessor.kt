@@ -13,8 +13,8 @@ import app.paralino.core.models.places.GroupPlace
 import app.paralino.core.models.places.GroupPlaceData
 import app.paralino.core.models.places.GroupPlaceGeofenceData
 import app.paralino.core.models.places.PlaceActivityState
-import app.paralino.core.presentation.places.detail.PlaceSensitivityDelayType
-import app.paralino.core.presentation.places.detail.PlaceSensitivityLocationRefreshType
+import app.paralino.core.models.places.PlaceSensitivityDelayType
+import app.paralino.core.models.places.PlaceSensitivityLocationRefreshType
 import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.provider.IOneTimeLocationProvider
 import app.paralino.core.provider.current

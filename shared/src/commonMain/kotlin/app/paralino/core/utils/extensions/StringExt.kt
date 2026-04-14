@@ -1,7 +1,7 @@
 package app.paralino.core.utils.extensions
 
 import app.paralino.core.MR
-import app.paralino.core.presentation.common.FormValidation
+import app.paralino.core.models.settings.FormValidation
 import app.paralino.core.provider.localizedString
 import app.paralino.core.utils.exceptions.BaseRemoteException
 import app.paralino.core.utils.exceptions.DataStillLoadingException

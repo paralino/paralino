@@ -9,6 +9,8 @@ import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.mapSuccess
 import app.paralino.core.models.places.GroupPlace
 import app.paralino.core.models.places.GroupPlaceSensitivityData
+import app.paralino.core.models.places.PlaceSensitivityDelayType
+import app.paralino.core.models.places.PlaceSensitivityLocationRefreshType
 import app.paralino.core.presentation.settings.generic.BaseGenericSettingViewModel
 import app.paralino.core.presentation.settings.generic.GenericSettingListItem
 import app.paralino.core.presentation.settings.generic.GenericSettingsScreenState
@@ -571,58 +573,5 @@ class PlaceSensitivityViewModel(
             is GenericSettingsScreenStateContent.EmptyState,
             is GenericSettingsScreenStateContent.Loading -> return true
         }
-    }
-}
-
-enum class PlaceSensitivityDelayType(val key: String) {
-    NONE("none"),
-    MINIMUM("min"),
-    BALANCED("mid"),
-    LONG("long");
-
-    val title
-        get() = when (this) {
-            NONE -> MR.strings.place_sensitivity_optionDelay1_title
-            MINIMUM -> MR.strings.place_sensitivity_optionDelay2_title
-            BALANCED -> MR.strings.place_sensitivity_optionDelay3_title
-            LONG -> MR.strings.place_sensitivity_optionDelay4_title
-        }
-
-    val description
-        get() = when (this) {
-            NONE -> MR.strings.place_sensitivity_optionDelay1_info
-            MINIMUM -> MR.strings.place_sensitivity_optionDelay2_info
-            BALANCED -> MR.strings.place_sensitivity_optionDelay3_info
-            LONG -> MR.strings.place_sensitivity_optionDelay4_info
-        }
-
-    companion object {
-        val default = MINIMUM
-        fun fromKey(key: String) = entries.firstOrNull { it.key == key }
-    }
-}
-
-enum class PlaceSensitivityLocationRefreshType(val key: String) {
-    NONE("none"),
-    BEFORE("before"),
-    AFTER("after");
-
-    val title
-        get() = when (this) {
-            NONE -> MR.strings.place_sensitivity_optionRefresh1_title
-            BEFORE -> MR.strings.place_sensitivity_optionRefresh2_title
-            AFTER -> MR.strings.place_sensitivity_optionRefresh3_title
-        }
-
-    val description
-        get() = when (this) {
-            NONE -> MR.strings.place_sensitivity_optionRefresh1_info
-            BEFORE -> MR.strings.place_sensitivity_optionRefresh2_info
-            AFTER -> MR.strings.place_sensitivity_optionRefresh3_info
-        }
-
-    companion object {
-        val default = BEFORE
-        fun fromKey(key: String) = entries.firstOrNull { it.key == key }
     }
 }

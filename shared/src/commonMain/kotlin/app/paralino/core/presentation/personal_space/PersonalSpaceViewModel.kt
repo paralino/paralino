@@ -502,8 +502,10 @@ class PersonalSpaceViewModel(
     private fun deleteDevice(device: UserDeviceModel) {
         logoutOrDeleteAction(
             logoutAction = {
-                if (!device.sessionId.isNullOrBlank()) {
-                    userRepo.remoteLogout(sessionId = device.sessionId)
+                // extracted to satisfy compiler
+                val sessionId = device.sessionId
+                if (!sessionId.isNullOrBlank()) {
+                    userRepo.remoteLogout(sessionId = sessionId)
                 }
             },
             deleteDeviceAction = {

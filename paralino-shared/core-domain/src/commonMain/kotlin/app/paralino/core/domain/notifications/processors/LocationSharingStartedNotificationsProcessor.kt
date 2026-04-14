@@ -4,7 +4,7 @@ import app.paralino.core.MR
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.notifications.IPushNotificationPresenter
 import app.paralino.core.models.raw.PushNotificationRaw
-import app.paralino.core.presentation.settings.generic.NotificationGroupingType
+import app.paralino.core.models.settings.NotificationGroupingType
 import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.base.AccessLogDataSource

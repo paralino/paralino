@@ -10,12 +10,12 @@ import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.models.data
 import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.location.LocationHistoryModel
+import app.paralino.core.models.location.LocationHistoryPointState
 import app.paralino.core.models.mapSuccess
 import app.paralino.core.models.mappers.LocationHistoryMapper
 import app.paralino.core.models.raw.LocationHistoryDeleteGroupPayload
 import app.paralino.core.models.raw.LocationHistoryDeletePayloadEntry
 import app.paralino.core.models.raw.LocationHistoryDeletePersonalPayload
-import app.paralino.core.presentation.history.LocationHistoryPointState
 import app.paralino.core.repo.api.IFunctionsApi
 import app.paralino.core.repo.api.ServerFunction
 import app.paralino.core.repo.api.runAndWait

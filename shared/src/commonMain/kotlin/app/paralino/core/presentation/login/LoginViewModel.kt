@@ -6,8 +6,10 @@ import app.paralino.core.domain.user.CreateAccountUseCase
 import app.paralino.core.domain.user.LoginUseCase
 import app.paralino.core.domain.user.ResetPasswordUseCase
 import app.paralino.core.domain.user.UserSessionMonitor
+import app.paralino.core.models.settings.FormValidation
+import app.paralino.core.models.user.SignUpStep
+import app.paralino.core.models.user.SignUpStepException
 import app.paralino.core.presentation.CoreViewModel
-import app.paralino.core.presentation.common.FormValidation
 import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.base.RemoteConfigRepository

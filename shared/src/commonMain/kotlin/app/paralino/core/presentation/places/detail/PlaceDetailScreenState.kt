@@ -2,7 +2,7 @@ package app.paralino.core.presentation.places.detail
 
 import app.paralino.core.models.base.GroupOrSpaceId
 import app.paralino.core.models.base.ImageModel
-import app.paralino.core.presentation.settings.generic.maps.MapsSDKProvider
+import app.paralino.core.models.settings.MapsSDKProvider
 
 data class PlaceDetailScreenState constructor(
     val groupOrSpaceId: GroupOrSpaceId,

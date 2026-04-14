@@ -6,7 +6,7 @@ import app.paralino.android.ui.map.google.GoogleMapSimpleMapComposable
 import app.paralino.android.ui.map.maplibre.MapLibreSimpleMapComposable
 import app.paralino.core.models.location.LatLng
 import app.paralino.core.presentation.map.MapPinData
-import app.paralino.core.presentation.settings.generic.maps.MapsSDKProvider
+import app.paralino.core.models.settings.MapsSDKProvider
 
 
 @Composable

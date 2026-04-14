@@ -6,13 +6,14 @@ import app.paralino.core.models.base.DeviceType
 import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.models.data
 import app.paralino.core.models.group.UserGroup
+import app.paralino.core.models.map.MapHomeScreenFocusType
 import app.paralino.core.presentation.common.ICoreMessageDispatcher
 import app.paralino.core.presentation.groups.GroupMemberItemEvent
 import app.paralino.core.presentation.groups.GroupMemberItemStateWithFullStateLocations
 import app.paralino.core.presentation.groups.GroupMemberItemStateWithLocations
 import app.paralino.core.presentation.groups.GroupMemberItemStateWithOneLocation
 import app.paralino.core.presentation.map.MapScreenViewSourceType.DefaultGroup
-import app.paralino.core.presentation.settings.generic.maps.MapInteractionsType
+import app.paralino.core.models.settings.MapInteractionsType
 import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.ui.components.AppSnackbarData

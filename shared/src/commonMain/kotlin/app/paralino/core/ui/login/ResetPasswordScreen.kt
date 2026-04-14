@@ -22,7 +22,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import app.paralino.core.MR
-import app.paralino.core.presentation.common.FormValidation
+import app.paralino.core.models.settings.FormValidation
 import app.paralino.core.presentation.login.passwordreset.ResetPasswordScreenEvent
 import app.paralino.core.presentation.login.passwordreset.ResetPasswordViewModel
 import app.paralino.core.provider.localizedString

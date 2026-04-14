@@ -7,7 +7,7 @@ import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.models.data
 import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.raw.PushNotificationRaw
-import app.paralino.core.presentation.settings.generic.NotificationGroupingType
+import app.paralino.core.models.settings.NotificationGroupingType
 import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.base.AccessLogDataSource
 import app.paralino.core.repo.group.UserGroupLocalDataSource

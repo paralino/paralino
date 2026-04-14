@@ -2,7 +2,7 @@ package app.paralino.core.domain.user
 
 import app.paralino.core.crypto.user.CryptoAccountOperationV2
 import app.paralino.core.domain.LimitedExecution
-import app.paralino.core.presentation.login.SignUpStep
+import app.paralino.core.models.user.SignUpStep
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.exceptions.NotFoundException
 import kotlinx.coroutines.delay

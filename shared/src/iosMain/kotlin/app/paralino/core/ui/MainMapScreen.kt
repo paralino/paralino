@@ -28,7 +28,7 @@ import app.paralino.core.presentation.map.MapHomeScreenEvent
 import app.paralino.core.presentation.map.MapHomeScreenUiEvent
 import app.paralino.core.presentation.map.MapHomeViewModel
 import app.paralino.core.presentation.map.asReady
-import app.paralino.core.presentation.rawdata.RawPresentationDataType
+import app.paralino.core.models.settings.RawPresentationDataType
 import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.components.dialogs.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.Show

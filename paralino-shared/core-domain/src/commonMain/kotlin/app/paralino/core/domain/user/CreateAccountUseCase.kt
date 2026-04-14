@@ -9,10 +9,10 @@ import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.LimitedExecution
 import app.paralino.core.logg
 import app.paralino.core.models.raw.UserMeRaw
+import app.paralino.core.models.user.SignUpStep
+import app.paralino.core.models.user.SignUpStepException
 import app.paralino.core.models.user.UserMe
 import app.paralino.core.models.user.UserSession
-import app.paralino.core.presentation.login.SignUpStep
-import app.paralino.core.presentation.login.SignUpStepException
 import app.paralino.core.provider.isSocketTimeout
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.exceptions.UnauthorizedException

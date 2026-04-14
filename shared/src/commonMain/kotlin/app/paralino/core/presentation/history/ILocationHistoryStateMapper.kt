@@ -6,6 +6,7 @@ import app.paralino.core.models.base.PlanConfig
 import app.paralino.core.models.data
 import app.paralino.core.models.location.LocationHistoryModelForDevice
 import app.paralino.core.models.location.LocationHistoryModelForUser
+import app.paralino.core.models.location.LocationHistoryPointState
 import app.paralino.core.models.location.MemberDeviceStatusType
 import app.paralino.core.provider.DistanceType
 import app.paralino.core.provider.IValueFormatter

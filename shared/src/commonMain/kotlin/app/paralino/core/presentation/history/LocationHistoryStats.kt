@@ -1,5 +1,6 @@
 package app.paralino.core.presentation.history
 
+import app.paralino.core.models.location.LocationHistoryPointState
 import app.paralino.core.provider.DistanceType
 import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.provider.NetworkType

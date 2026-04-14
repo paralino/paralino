@@ -5,7 +5,7 @@ import app.paralino.core.models.Payload
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.user.UserMeData
 import app.paralino.core.presentation.CoreViewModel
-import app.paralino.core.presentation.common.FormValidation
+import app.paralino.core.models.settings.FormValidation
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.extensions.errorString
 import app.paralino.core.utils.extensions.getFormValidationErrorText
@@ -18,7 +18,6 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 
 class EditProfileViewModel constructor(
     private val userRepository: UserRepository,

@@ -3,13 +3,12 @@ package app.paralino.core.presentation.map
 import androidx.compose.runtime.Stable
 import app.paralino.core.models.base.GroupOrSpaceId
 import app.paralino.core.models.base.ImageModel
-import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.models.data
 import app.paralino.core.models.location.LocationHistoryPointLocationModel
 import app.paralino.core.models.location.MemberLocation
 import app.paralino.core.presentation.groups.GroupMemberItemLocationState
 import app.paralino.core.presentation.groups.GroupMemberItemState
-import app.paralino.core.presentation.history.LocationHistoryPointState
+import app.paralino.core.models.location.LocationHistoryPointState
 import app.paralino.core.presentation.places.create.CreatePlaceScreenState
 import app.paralino.core.presentation.places.detail.PlaceDetailScreenState
 import app.paralino.core.presentation.places.list.PlaceListItemData

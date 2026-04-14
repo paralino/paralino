@@ -3,8 +3,8 @@ package app.paralino.core.presentation.login.passwordreset
 import app.paralino.core.domain.user.ResetPasswordUseCase
 import app.paralino.core.models.Payload
 import app.paralino.core.presentation.CoreViewModel
-import app.paralino.core.presentation.common.FormValidation
-import app.paralino.core.presentation.login.SignUpStep
+import app.paralino.core.models.settings.FormValidation
+import app.paralino.core.models.user.SignUpStep
 import app.paralino.core.utils.exceptions.BaseRemoteException
 import app.paralino.core.utils.exceptions.DecryptionException
 import app.paralino.core.utils.exceptions.InvalidRequestException

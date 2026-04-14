@@ -7,7 +7,7 @@ import app.paralino.core.models.base.DeviceType
 import app.paralino.core.models.base.GroupOrSpaceId
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.location.LatLng
-import app.paralino.core.presentation.settings.generic.maps.MapsSDKProvider
+import app.paralino.core.models.settings.MapsSDKProvider
 import app.paralino.core.provider.current
 import app.paralino.core.provider.localizedString
 import app.paralino.core.ui.components.dialogs.AlertDialogAction

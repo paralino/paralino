@@ -13,7 +13,7 @@ import app.paralino.core.models.exception
 import app.paralino.core.models.mapSuccess
 import app.paralino.core.models.raw.UserCryptoKeyRaw
 import app.paralino.core.presentation.CoreViewModel
-import app.paralino.core.presentation.common.FormValidation
+import app.paralino.core.models.settings.FormValidation
 import app.paralino.core.provider.localizedString
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.utils.extensions.errorString

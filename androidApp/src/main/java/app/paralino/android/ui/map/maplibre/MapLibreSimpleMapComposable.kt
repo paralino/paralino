@@ -28,7 +28,7 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import app.paralino.core.models.location.LatLng
 import app.paralino.core.presentation.map.MapPinData
-import app.paralino.core.presentation.settings.generic.maps.MapsSDKProvider
+import app.paralino.core.models.settings.MapsSDKProvider
 import app.paralino.core.ui.theme.LocalScreenDimensionType
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged

@@ -44,7 +44,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import app.paralino.core.MR
 import app.paralino.core.models.base.BackendResourceIDs
-import app.paralino.core.presentation.common.FormValidation
+import app.paralino.core.models.settings.FormValidation
 import app.paralino.core.presentation.login.LoginScreenEvent
 import app.paralino.core.presentation.login.LoginScreenState
 import app.paralino.core.presentation.login.LoginScreenUiEvent

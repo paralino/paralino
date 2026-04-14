@@ -62,7 +62,7 @@ import androidx.compose.ui.unit.dp
 import app.paralino.core.MR
 import app.paralino.core.models.base.DeviceType
 import app.paralino.core.models.base.ImageModel
-import app.paralino.core.presentation.map.MapHomeScreenFocusType
+import app.paralino.core.models.map.MapHomeScreenFocusType
 import app.paralino.core.presentation.map.MapHomeScreenState
 import app.paralino.core.presentation.map.MapHomeScreenUiEvent
 import app.paralino.core.presentation.map.asReady

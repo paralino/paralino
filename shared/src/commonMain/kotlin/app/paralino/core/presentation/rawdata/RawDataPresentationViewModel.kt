@@ -4,6 +4,7 @@ import app.paralino.core.domain.crypto.RawCryptoPresentation
 import app.paralino.core.logg
 import app.paralino.core.models.Payload
 import app.paralino.core.models.mapSuccess
+import app.paralino.core.models.settings.RawPresentationDataType
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.utils.extensions.mapToPayload

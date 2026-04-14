@@ -9,15 +9,16 @@ import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.location.LatLng
 import app.paralino.core.models.location.LocationSharingContract
+import app.paralino.core.models.map.MapHomeScreenFocusType
 import app.paralino.core.presentation.groups.GroupMemberItemEvent
 import app.paralino.core.presentation.groups.GroupMemberItemState
 import app.paralino.core.presentation.groups.GroupMemberItemStateWithFullStateLocations
 import app.paralino.core.presentation.groups.GroupMemberItemStateWithOneLocation
 import app.paralino.core.presentation.groups.MemberActionsState
 import app.paralino.core.presentation.places.list.PlaceListItemData
-import app.paralino.core.presentation.settings.generic.IOSNavigationAppType
-import app.paralino.core.presentation.settings.generic.maps.MapInteractionsType
-import app.paralino.core.presentation.settings.generic.maps.MapsSDKProvider
+import app.paralino.core.models.settings.IOSNavigationAppType
+import app.paralino.core.models.settings.MapInteractionsType
+import app.paralino.core.models.settings.MapsSDKProvider
 import app.paralino.core.provider.current
 import app.paralino.core.ui.components.dialogs.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
@@ -269,38 +270,6 @@ sealed interface MapHomeScreenUiEvent {
 
 enum class MapSheetSelectedContentType {
     PLACES, MEMBERS
-}
-
-sealed interface MapHomeScreenFocusType {
-    data object NONE : MapHomeScreenFocusType
-    data class PLACE(val placeId: String) : MapHomeScreenFocusType
-    data class MEMBER(
-        val memberId: String,
-        val memberUserId: String,
-        val memberLocationId: String?,
-        val memberKeyId: String,
-        val isIdleActive: Boolean,
-        val forceZoom: Boolean
-    ) : MapHomeScreenFocusType
-
-    data class LOCATION_HISTORY(
-        val member: MapHomeScreenFocusType.MEMBER?,
-        val groupId: String,
-        val memberUserId: String,
-        val deviceId: String?
-    ) : MapHomeScreenFocusType
-
-    data object ALL_PLACES : MapHomeScreenFocusType
-    data object ALL_MEMBERS : MapHomeScreenFocusType
-
-    val areMembersFocused: Boolean get() = this == ALL_MEMBERS
-    val arePlacesFocused: Boolean get() = this == ALL_PLACES
-    val asLocationHistory: LOCATION_HISTORY? get() = this as? LOCATION_HISTORY
-    val asMember: MEMBER? get() = this as? MEMBER
-    val asPlace: PLACE? get() = this as? PLACE
-    val isLocationHistoryFocused: Boolean get() = this is LOCATION_HISTORY
-    val isMemberOrPlaceFocused: Boolean get() = this is MEMBER || this is PLACE
-    val isMemberPlaceOrHistoryFocused: Boolean get() = isMemberOrPlaceFocused || isLocationHistoryFocused
 }
 
 sealed interface MapScreenViewSourceType {

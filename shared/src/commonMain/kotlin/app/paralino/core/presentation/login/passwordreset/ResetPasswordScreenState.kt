@@ -1,7 +1,7 @@
 package app.paralino.core.presentation.login.passwordreset
 
-import app.paralino.core.presentation.common.FormValidation
-import app.paralino.core.presentation.common.IFormValidationResult
+import app.paralino.core.models.settings.FormValidation
+import app.paralino.core.models.settings.IFormValidationResult
 
 data class ResetPasswordScreenState constructor(
     val email: String = "",

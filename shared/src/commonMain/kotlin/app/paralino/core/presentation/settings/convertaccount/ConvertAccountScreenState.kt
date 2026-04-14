@@ -1,7 +1,7 @@
 package app.paralino.core.presentation.settings.convertaccount
 
 import app.paralino.core.domain.user.ChangeCredentialsStep
-import app.paralino.core.presentation.common.FormValidation
+import app.paralino.core.models.settings.FormValidation
 
 data class ConvertAccountScreenState constructor(
     val email: String = "",

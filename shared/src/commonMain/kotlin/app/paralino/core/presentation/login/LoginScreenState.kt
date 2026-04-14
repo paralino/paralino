@@ -1,6 +1,6 @@
 package app.paralino.core.presentation.login
 
-import app.paralino.core.presentation.common.FormValidation
+import app.paralino.core.models.settings.FormValidation
 import app.paralino.core.ui.components.dialogs.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
 
@@ -63,20 +63,4 @@ sealed class SignUpErrorType {
     object SIGNUP_CRYPTO : SignUpErrorType()
     object SIGNUP_DATA : SignUpErrorType()
     data class SOURCE(val error: Throwable) : SignUpErrorType()
-}
-
-enum class SignUpStep {
-    STARTING,
-    CREATING_ACCOUNT,
-    LOG_USER_IN,
-    GENERATING_KEYS,
-    INIT_USER_DATA,
-    SAVE_USER,
-    ALL_DONE
-}
-
-class SignUpStepException constructor(val step: SignUpStep, cause: Throwable) : Exception(cause) {
-    override fun toString(): String {
-        return super.toString() + "Step: $step"
-    }
 }

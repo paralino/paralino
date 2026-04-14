@@ -5,12 +5,12 @@ import app.paralino.core.models.base.GroupOrSpaceId
 import app.paralino.core.models.base.PlanConfig
 import app.paralino.core.models.data
 import app.paralino.core.models.location.LocationPerformanceType
+import app.paralino.core.models.map.MapHomeScreenFocusType
 import app.paralino.core.models.raw.FunctionExecutionRaw
 import app.paralino.core.models.raw.LocationFocusGroupPayload
 import app.paralino.core.models.raw.LocationFocusSpacePayload
 import app.paralino.core.models.raw.LocationRequestGroupPayload
 import app.paralino.core.models.raw.LocationRequestSpacePayload
-import app.paralino.core.presentation.map.MapHomeScreenFocusType
 import app.paralino.core.repo.api.IFunctionsApi
 import app.paralino.core.repo.api.ServerFunction
 import app.paralino.core.repo.api.runAndWait

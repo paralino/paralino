@@ -3,9 +3,7 @@ package app.paralino.core.presentation.rawdata
 import app.paralino.core.domain.crypto.ContentIdItem
 import app.paralino.core.domain.crypto.RawPresentationModel
 import app.paralino.core.models.CryptoResource
-import app.paralino.core.models.location.LocationHistoryPointId
-import app.paralino.core.utils.BaseRemoteModule
-import kotlinx.serialization.Serializable
+import app.paralino.core.models.settings.RawPresentationDataType
 
 data class RawDataScreenState constructor(
     val subtitle: String?,
@@ -21,8 +19,8 @@ data class RawDataScreenState constructor(
                 decryptedContentSubtitle = section.decryptedDataSubtitle,
                 rawContent = section.rawData,
                 contentIdInfo = section.contentIdInfo,
-                decryptedContent = when (section.decryptedData) {
-                    is CryptoResource.Ready -> section.decryptedData.data
+                decryptedContent = when (val finalData = section.decryptedData) {
+                    is CryptoResource.Ready -> finalData.data
                     else -> section.decryptedData.toString()
                 },
                 type = section.type
@@ -41,51 +39,6 @@ data class RawDataSectionState(
     val decryptedContent: String,
     val type: RawPresentationDataType,
 )
-
-sealed class RawPresentationDataType() {
-    val key
-        get() = when (this) {
-            is GroupPresentation -> "group"
-            is GroupMemberPresentation -> "group_member"
-            is GroupPlacePresentation -> "place"
-            is LocationHistoryPointPresentation -> "history"
-            UserPresentation -> "user"
-            PersonalSpacePresentation -> "space"
-        }
-
-    companion object {
-        fun fromKey(key: String, payload: String): RawPresentationDataType? {
-            return when (key) {
-                "group" -> GroupPresentation(payload)
-                "group_member" -> GroupMemberPresentation(payload)
-                "place" -> GroupPlacePresentation(payload)
-                "history" -> {
-                    try {
-                        BaseRemoteModule.formatter.decodeFromString<LocationHistoryPointPresentation?>(payload)
-                    } catch (e: Exception) {
-                        null
-                    }
-                }
-                "user" -> UserPresentation
-                "space" -> PersonalSpacePresentation
-                else -> null
-            }
-        }
-    }
-
-    object UserPresentation : RawPresentationDataType()
-    object PersonalSpacePresentation : RawPresentationDataType()
-    data class GroupPresentation(val groupId: String) : RawPresentationDataType()
-    data class GroupMemberPresentation(val memberId: String) : RawPresentationDataType()
-    data class GroupPlacePresentation(val placeId: String) : RawPresentationDataType()
-
-    @Serializable
-    data class LocationHistoryPointPresentation(
-        val groupOrSpaceId: String,
-        val memberUserId: String,
-        val pointIds: List<LocationHistoryPointId>
-    ) : RawPresentationDataType()
-}
 
 sealed class RawDataScreenEvent() {
     data class Error(val error: Throwable) : RawDataScreenEvent()

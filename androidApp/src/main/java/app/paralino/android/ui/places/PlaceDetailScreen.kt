@@ -24,7 +24,7 @@ import app.paralino.core.presentation.map.MapPinData
 import app.paralino.core.presentation.places.detail.PlaceDetailScreenState
 import app.paralino.core.presentation.places.detail.PlaceDetailViewModel
 import app.paralino.core.presentation.places.detail.PlaceSettingsState
-import app.paralino.core.presentation.rawdata.RawPresentationDataType
+import app.paralino.core.models.settings.RawPresentationDataType
 import app.paralino.core.ui.components.DefaultToolbar
 import app.paralino.core.ui.components.ToolbarButtons
 import app.paralino.core.ui.places.PlaceDetailScreenCore

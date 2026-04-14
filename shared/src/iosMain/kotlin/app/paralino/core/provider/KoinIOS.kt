@@ -64,7 +64,7 @@ import app.paralino.core.presentation.places.detail.PlaceDetailViewModel
 import app.paralino.core.presentation.places.detail.PlaceSensitivityViewModel
 import app.paralino.core.presentation.places.list.PlacesViewModel
 import app.paralino.core.presentation.rawdata.RawDataPresentationViewModel
-import app.paralino.core.presentation.rawdata.RawPresentationDataType
+import app.paralino.core.models.settings.RawPresentationDataType
 import app.paralino.core.presentation.settings.SettingsViewModel
 import app.paralino.core.presentation.settings.appstatus.AppStatusDebugViewModel
 import app.paralino.core.presentation.settings.billing.PaywallViewModel

@@ -1,6 +1,7 @@
 package app.paralino.core.presentation.settings.generic
 
 import app.paralino.core.models.base.DeviceType
+import app.paralino.core.models.settings.IOSNavigationAppType
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.provider.NotificationSocketServiceManager
 import app.paralino.core.provider.current

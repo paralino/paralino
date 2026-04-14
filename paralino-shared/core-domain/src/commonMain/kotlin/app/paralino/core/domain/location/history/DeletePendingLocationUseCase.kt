@@ -4,9 +4,9 @@ import app.paralino.core.db.MainDatabaseHelper
 import app.paralino.core.domain.location.SaveLocationUseCase
 import app.paralino.core.logg
 import app.paralino.core.models.base.GroupOrSpaceId
+import app.paralino.core.models.location.LocationHistoryPointState
 import app.paralino.core.models.location.MemberGroupIdForUpload
 import app.paralino.core.models.mappers.PendingLocationHistoryMapper
-import app.paralino.core.presentation.history.LocationHistoryPointState
 import app.paralino.core.utils.extensions.historyDateKeyFromApi
 import kotlinx.datetime.LocalDate
 

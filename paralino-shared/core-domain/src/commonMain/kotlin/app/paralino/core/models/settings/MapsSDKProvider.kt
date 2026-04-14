@@ -1,4 +1,4 @@
-package app.paralino.core.presentation.settings.generic.maps
+package app.paralino.core.models.settings
 
 import app.paralino.core.MR
 import dev.icerock.moko.resources.StringResource

@@ -6,7 +6,7 @@ import app.paralino.core.domain.user.ChangeCredentialsUseCase
 import app.paralino.core.models.Payload
 import app.paralino.core.models.data
 import app.paralino.core.presentation.CoreViewModel
-import app.paralino.core.presentation.common.FormValidation
+import app.paralino.core.models.settings.FormValidation
 import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.user.UserRepository

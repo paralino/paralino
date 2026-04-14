@@ -6,8 +6,6 @@ import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.models.data
 import app.paralino.core.models.group.UserGroup
-import app.paralino.core.presentation.places.detail.PlaceSensitivityDelayType
-import app.paralino.core.presentation.places.detail.PlaceSensitivityLocationRefreshType
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient

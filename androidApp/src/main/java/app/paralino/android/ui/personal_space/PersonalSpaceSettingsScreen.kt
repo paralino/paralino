@@ -10,7 +10,7 @@ import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.core.MR
 import app.paralino.core.models.group.UserGroup
 import app.paralino.core.presentation.personal_space.settings.PersonalSpaceSettingsViewModel
-import app.paralino.core.presentation.rawdata.RawPresentationDataType
+import app.paralino.core.models.settings.RawPresentationDataType
 import app.paralino.core.ui.components.DefaultToolbar
 import app.paralino.core.ui.components.ToolbarButtons
 import app.paralino.core.ui.personal_space.PersonalSpaceSettingsScreenCore

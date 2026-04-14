@@ -10,8 +10,8 @@ import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.models.data
 import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.mapSuccess
+import app.paralino.core.models.settings.RawPresentationDataType
 import app.paralino.core.models.user.PushProviderEndpointConfig
-import app.paralino.core.presentation.rawdata.RawPresentationDataType
 import app.paralino.core.provider.NotificationSocketServiceManager
 import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.base.AppConfigRepository

@@ -13,7 +13,7 @@ import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.user.UserMe
 import app.paralino.core.models.user.UserPersonalCode
 import app.paralino.core.presentation.CoreViewModel
-import app.paralino.core.presentation.common.ICoreMessageDispatcherEvent
+import app.paralino.core.provider.ICoreMessageDispatcherEvent
 import app.paralino.core.presentation.invite.manage.PersonalCodeScreenCodeData
 import app.paralino.core.presentation.onboarding.AccountOnboardingScreenEvent.OpenPaywall
 import app.paralino.core.provider.DeviceStatusData

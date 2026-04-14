@@ -2,7 +2,7 @@ package app.paralino.core.presentation.settings.passwordchange
 
 import androidx.compose.ui.text.AnnotatedString
 import app.paralino.core.domain.user.ChangeCredentialsStep
-import app.paralino.core.presentation.common.FormValidation
+import app.paralino.core.models.settings.FormValidation
 
 data class ChangePasswordScreenState(
     val oldPassword: String = "",
