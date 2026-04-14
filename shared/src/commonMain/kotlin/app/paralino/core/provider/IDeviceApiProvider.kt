@@ -114,5 +114,3 @@ enum class AppLifecycleType {
 
     val activeOrInactive: Boolean get() = this == ACTIVE || this == INACTIVE
 }
-
-expect val DeviceType.Companion.current: DeviceType
