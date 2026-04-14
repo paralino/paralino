@@ -2,7 +2,7 @@ package app.paralino.core.models.raw
 
 import app.paralino.core.utils.BaseRemoteModule
 import app.paralino.core.utils.exceptions.BaseRemoteException
-import app.paralino.core.utils.exceptions.fromRemote
+import app.paralino.core.utils.extensions.fromRemote
 import app.paralino.core.utils.extensions.fromJsonObjectToMapOfPrimitives
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

@@ -1,7 +1,9 @@
-package app.paralino.core.utils.exceptions
+package app.paralino.core.utils.extensions
 
 import app.paralino.core.domain.user.UserSessionMonitor
 import app.paralino.core.models.raw.FunctionErrorBody
+import app.paralino.core.utils.exceptions.BaseRemoteException
+import app.paralino.core.utils.exceptions.UnauthorizedException
 
 fun BaseRemoteException.Companion.fromRemote(
     code: Int?,

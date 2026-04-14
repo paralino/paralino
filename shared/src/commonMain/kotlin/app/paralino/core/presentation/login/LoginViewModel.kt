@@ -17,7 +17,7 @@ import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.utils.exceptions.ConflictException
 import app.paralino.core.utils.exceptions.CryptoException
 import app.paralino.core.utils.exceptions.UnauthorizedException
-import app.paralino.core.utils.exceptions.isUserBlocked
+import app.paralino.core.utils.extensions.isUserBlocked
 import app.paralino.core.utils.extensions.errorString
 import app.paralino.core.utils.extensions.getFormValidationErrorText
 import kotlinx.coroutines.channels.Channel
