@@ -15,8 +15,6 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.buildkonfig)
     alias(libs.plugins.moko.resources)
-    alias(libs.plugins.ksp)
-    alias(libs.plugins.androidx.room)
     alias(libs.plugins.aboutlibraries)
 }
 
@@ -72,8 +70,6 @@ kotlin {
             api(libs.network.ktor.client.logging)
             api(libs.network.ktor.content.negotiation)
             implementation(libs.network.ktor.serialization)
-            implementation(libs.androidx.room.runtime)
-            implementation(libs.sqlite.bundled)
             implementation(libs.aboutLibraries.core)
             implementation(libs.aboutLibraries.compose)
         }
@@ -82,8 +78,6 @@ kotlin {
             implementation(project.dependencies.platform(libs.koin.bom))
             api(libs.koin.android)
             api(libs.lifecycle.viewmodel.ktx)
-            implementation(libs.androidx.preference.ktx)
-            implementation(libs.androidx.security.crypto.ktx)
             api(libs.activity.compose)
             api(libs.appcompat)
             api(libs.androidx.core.ktx)
@@ -102,17 +96,6 @@ kotlin {
     }
 
     jvmToolchain(21)
-}
-
-dependencies {
-    add("kspAndroid", libs.androidx.room.compiler)
-    add("kspIosSimulatorArm64", libs.androidx.room.compiler)
-    add("kspIosX64", libs.androidx.room.compiler)
-    add("kspIosArm64", libs.androidx.room.compiler)
-}
-
-room {
-    schemaDirectory("$projectDir/schemas")
 }
 
 buildkonfig {

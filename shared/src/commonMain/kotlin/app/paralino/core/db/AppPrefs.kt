@@ -12,8 +12,6 @@ import app.paralino.core.presentation.settings.generic.NotificationGroupingType
 import app.paralino.core.provider.MeasurementSystemType
 import app.paralino.core.utils.BaseRemoteModule
 import app.paralino.core.utils.extensions.isoWithOffsetToInstant
-import com.russhwolf.settings.Settings
-import com.russhwolf.settings.set
 import kotlin.time.Instant
 
 class AppPrefs(
@@ -272,7 +270,11 @@ class AppPrefs(
     var selectedUnifiedPushDistributor: String?
         get() = provider.userSettings.getStringOrNull(keySelectedUnifiedPushDistributor)
         set(value) {
-            provider.userSettings.set(keySelectedUnifiedPushDistributor, value)
+            if (value == null) {
+                provider.userSettings.remove(keySelectedUnifiedPushDistributor)
+            } else {
+                provider.userSettings.putString(keySelectedUnifiedPushDistributor, value)
+            }
         }
 
     var unifiedPushEndpointConfigUnsynced: String?
@@ -316,7 +318,11 @@ class AppPrefs(
     var selectedGroupId: String?
         get() = provider.userSettings.getStringOrNull(keySelectedGroupID)
         set(value) {
-            provider.userSettings.set(keySelectedGroupID, value)
+            if (value == null) {
+                provider.userSettings.remove(keySelectedGroupID)
+            } else {
+                provider.userSettings.putString(keySelectedGroupID, value)
+            }
         }
 
     var isPersonalSpaceSelected: Boolean
