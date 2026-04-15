@@ -200,7 +200,7 @@ fun SettingsScreenCore(
                     description = when (readyState.boostTime != null) {
                         true -> stringResource(
                             MR.strings.setting_description_locationBoost_enabled,
-                            readyState.boostTime
+                            readyState.boostTime ?: ""
                         )
 
                         false -> stringResource(MR.strings.setting_description_locationBoost_disabled)

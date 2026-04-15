@@ -451,17 +451,18 @@ private fun ColumnScope.PaywallScreen(
         onEvent = onEvent
     )
 
-    if (state.selectedPlan != null && state.canShowPlanPeriodSelector) {
+    val selectedPlan = state.selectedPlan
+    if (selectedPlan != null && state.canShowPlanPeriodSelector) {
         CompositionLocalProvider(LocalContentColor provides MaterialTheme.colors.onBackground) {
             BillingPeriodOptions(
                 modifier = Modifier
                     .padding(top = 8.dp, bottom = 12.dp)
                     .padding(horizontal = 20.dp),
-                selectedPlan = state.selectedPlan,
+                selectedPlan = selectedPlan,
                 onPeriodSelected = {
                     onEvent(
                         PaywallScreenUiEvent.SelectBillingPeriod(
-                            planType = state.selectedPlan.type,
+                            planType = selectedPlan.type,
                             period = it
                         )
                     )
@@ -632,17 +633,17 @@ private fun ColumnScope.PaywallScreen(
                 onEvent = onEvent
             )
 
-            if (state.selectedPlan != null && state.canShowPlanPeriodSelector) {
+            if (selectedPlan != null && state.canShowPlanPeriodSelector) {
                 CompositionLocalProvider(LocalContentColor provides MaterialTheme.colors.onBackground) {
                     BillingPeriodOptions(
                         modifier = Modifier
                             .padding(top = 8.dp)
                             .padding(horizontal = 20.dp),
-                        selectedPlan = state.selectedPlan,
+                        selectedPlan = selectedPlan,
                         onPeriodSelected = {
                             onEvent(
                                 PaywallScreenUiEvent.SelectBillingPeriod(
-                                    planType = state.selectedPlan.type,
+                                    planType = selectedPlan.type,
                                     period = it
                                 )
                             )
@@ -655,10 +656,10 @@ private fun ColumnScope.PaywallScreen(
         Spacer(Modifier.size(30.dp))
     }
 
-    if (state.faq != null) {
+    state.faq?.let { faq ->
         FaqSection(
             modifier = Modifier.padding(horizontal = 20.dp),
-            faqsList = state.faq.faqs
+            faqsList = faq.faqs
         )
     }
 

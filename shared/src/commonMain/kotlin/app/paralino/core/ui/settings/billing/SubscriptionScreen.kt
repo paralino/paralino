@@ -305,7 +305,7 @@ private fun SubscriptionDetailsBox(
                 Spacer(Modifier.size(4.dp))
                 CompositionLocalProvider(LocalContentAlpha provides 0.5f) {
                     Text(
-                        text = state.planProviderText.annotatedBoldCompose(),
+                        text = (state.planProviderText ?: "").annotatedBoldCompose(),
                         style = MaterialTheme.typography.caption,
                         modifier = Modifier.fillMaxWidth()
                     )
