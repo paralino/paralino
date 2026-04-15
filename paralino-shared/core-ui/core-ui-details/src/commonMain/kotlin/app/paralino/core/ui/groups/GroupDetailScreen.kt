@@ -62,10 +62,10 @@ import app.paralino.core.ui.components.NoticeInfoChip
 import app.paralino.core.ui.components.PlanLimitCount
 import app.paralino.core.ui.components.SmallActionButton
 import app.paralino.core.presentation.common.AlertDialogAction
+import app.paralino.core.ui.components.PremiumPlanBannerSmall
 import app.paralino.core.ui.components.dialogs.LoadingDialog
 import app.paralino.core.ui.components.dialogs.Show
 import app.paralino.core.ui.groups.components.GroupMember
-import app.paralino.core.ui.settings.billing.PremiumPlanBannerSmall
 import app.paralino.core.ui.theme.ButtonStyle
 import app.paralino.core.utils.ConditionErrorType
 import app.paralino.core.utils.extensions.annotatedBoldCompose

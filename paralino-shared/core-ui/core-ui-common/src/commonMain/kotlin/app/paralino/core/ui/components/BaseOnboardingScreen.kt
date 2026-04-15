@@ -1,4 +1,4 @@
-package app.paralino.core.ui.onboarding
+package app.paralino.core.ui.components
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedContentTransitionScope
@@ -46,12 +46,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import app.paralino.core.MR
-import app.paralino.core.ui.components.AppButtonState
 import app.paralino.core.resources.CoreAppIcons
 import app.paralino.core.resources.CoreAppIcons.asPainterResource
-import app.paralino.core.ui.components.FilledButton
-import app.paralino.core.ui.components.OnboardingSkipButton
-import app.paralino.core.ui.components.ScaffoldBottomBarButtons
 import app.paralino.core.ui.theme.ButtonStyle
 import app.paralino.core.utils.extensions.annotatedBoldCompose
 import app.paralino.core.utils.extensions.conditional

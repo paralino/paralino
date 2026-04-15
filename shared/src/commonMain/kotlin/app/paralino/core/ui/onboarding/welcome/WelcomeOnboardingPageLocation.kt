@@ -50,7 +50,7 @@ import app.paralino.core.resources.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.groups.components.GroupMember
 import app.paralino.core.ui.groups.components.dummyLocations
 import app.paralino.core.ui.groups.components.dummyMemberState
-import app.paralino.core.ui.map.MapMarkerContent
+import app.paralino.core.ui.components.MapMarkerContent
 import app.paralino.core.ui.places.PlacesEmptyStateMarkers
 import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.utils.Emojis

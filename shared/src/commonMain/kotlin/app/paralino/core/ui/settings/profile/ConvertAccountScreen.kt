@@ -49,7 +49,7 @@ import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.components.NoticeInfoChip
 import app.paralino.core.ui.components.PasswordInputField
 import app.paralino.core.ui.components.PasswordValidationElement
-import app.paralino.core.ui.settings.SettingsActionItem
+import app.paralino.core.ui.components.SettingsActionItem
 import app.paralino.core.presentation.settings.SettingsActionItemType
 import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.ui.theme.featureItemTitle

@@ -27,9 +27,9 @@ fun GroupMemberPreview() {
     AppTheme {
         Surface(color = MaterialTheme.colors.background) {
             Column(modifier = Modifier.padding(40.dp)) {
-                GroupMember(
+                _root_ide_package_.app.paralino.core.ui.groups.components.GroupMember(
                     state = GroupMemberItemStateWithOneLocation(
-                        memberState = dummyMemberState,
+                        memberState = _root_ide_package_.app.paralino.core.ui.groups.components.dummyMemberState,
                         singleLocation = null,
                         deviceId = "",
                         actions = MemberActionsState(
@@ -42,10 +42,12 @@ fun GroupMemberPreview() {
                     )
                 ) { }
                 Spacer(modifier = Modifier.size(8.dp))
-                GroupMember(
+                _root_ide_package_.app.paralino.core.ui.groups.components.GroupMember(
                     state = GroupMemberItemStateWithOneLocation(
-                        memberState = dummyMemberState.copy(isVerified = false),
-                        singleLocation = dummyLocations.first(),
+                        memberState = _root_ide_package_.app.paralino.core.ui.groups.components.dummyMemberState.copy(
+                            isVerified = false
+                        ),
+                        singleLocation = _root_ide_package_.app.paralino.core.ui.groups.components.dummyLocations.first(),
                         deviceId = "",
                         actions = MemberActionsState(
                             deleteMember = MemberActionItemState(
@@ -57,10 +59,10 @@ fun GroupMemberPreview() {
                     )
                 ) { }
                 Spacer(modifier = Modifier.size(8.dp))
-                GroupMember(
+                _root_ide_package_.app.paralino.core.ui.groups.components.GroupMember(
                     state = GroupMemberItemStateWithLocations(
-                        memberState = dummyMemberState,
-                        locations = dummyLocations,
+                        memberState = _root_ide_package_.app.paralino.core.ui.groups.components.dummyMemberState,
+                        locations = _root_ide_package_.app.paralino.core.ui.groups.components.dummyLocations,
                         allowShowingDevices = true,
                         actions = MemberActionsState(
                             deleteMember = MemberActionItemState(
@@ -71,10 +73,14 @@ fun GroupMemberPreview() {
                         lastStatusPing = "16:30",
                     )
                 ) { }
-                GroupMember(
+                _root_ide_package_.app.paralino.core.ui.groups.components.GroupMember(
                     state = GroupMemberItemStateWithLocations(
-                        memberState = dummyMemberState,
-                        locations = listOf(dummyLocations.get(1)),
+                        memberState = _root_ide_package_.app.paralino.core.ui.groups.components.dummyMemberState,
+                        locations = listOf(
+                            _root_ide_package_.app.paralino.core.ui.groups.components.dummyLocations.get(
+                                1
+                            )
+                        ),
                         allowShowingDevices = false,
                         actions = MemberActionsState(
                             deleteMember = MemberActionItemState(

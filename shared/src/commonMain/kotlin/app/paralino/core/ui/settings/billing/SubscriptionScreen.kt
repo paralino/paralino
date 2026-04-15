@@ -53,8 +53,10 @@ import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.components.SmallActionButton
 import app.paralino.core.presentation.common.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.Show
-import app.paralino.core.ui.settings.SettingsActionItem
+import app.paralino.core.ui.components.SettingsActionItem
 import app.paralino.core.presentation.settings.SettingsActionItemType
+import app.paralino.core.ui.components.MembershipPlanFeatureTable
+import app.paralino.core.ui.components.PremiumPlanBanner
 import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.utils.extensions.annotatedBoldCompose
 import app.paralino.core.utils.extensions.conditional
@@ -189,7 +191,7 @@ fun SubscriptionScreenCore(
                 )
             }
 
-            FeatureTable(
+            MembershipPlanFeatureTable(
                 modifier = Modifier,
                 table = uiState.featureTableState,
                 canExpand = false,

@@ -7,8 +7,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import app.paralino.core.MR
 import app.paralino.core.presentation.onboarding.WelcomeOnboardingViewModel
-import app.paralino.core.ui.onboarding.BaseOnboardingHeaderContent
-import app.paralino.core.ui.onboarding.BaseOnboardingScreen
+import app.paralino.core.ui.components.BaseOnboardingHeaderContent
+import app.paralino.core.ui.components.BaseOnboardingScreen
 import dev.icerock.moko.resources.StringResource
 import dev.icerock.moko.resources.compose.stringResource
 

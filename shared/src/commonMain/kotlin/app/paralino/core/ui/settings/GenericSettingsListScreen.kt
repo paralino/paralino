@@ -66,6 +66,7 @@ import app.paralino.core.ui.components.LargeSeekbarSwitch
 import app.paralino.core.ui.components.LargeSeekbarSwitchState
 import app.paralino.core.ui.components.LargeSwitchSize
 import app.paralino.core.ui.components.NoticeInfoChip
+import app.paralino.core.ui.components.SettingsActionItem
 import app.paralino.core.ui.components.SettingsSectionHeader
 import app.paralino.core.ui.components.SmallActionButton
 import app.paralino.core.ui.components.dialogs.LoadingDialog

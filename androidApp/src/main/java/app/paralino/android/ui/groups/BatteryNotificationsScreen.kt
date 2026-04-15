@@ -31,7 +31,7 @@ fun BatteryNotificationsScreen(
             )
         }
     ) {
-        BatteryNotificationsScreenCore(
+        _root_ide_package_.app.paralino.core.ui.groups.BatteryNotificationsScreenCore(
             appState = appState,
             vm = vm,
             contentPadding = it,

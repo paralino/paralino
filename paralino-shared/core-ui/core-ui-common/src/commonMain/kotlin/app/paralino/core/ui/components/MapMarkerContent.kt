@@ -1,4 +1,4 @@
-package app.paralino.core.ui.map
+package app.paralino.core.ui.components
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -18,6 +18,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ColorMatrix
@@ -37,8 +38,6 @@ import app.paralino.core.provider.current
 import app.paralino.core.provider.localizedString
 import app.paralino.core.resources.CoreAppIcons
 import app.paralino.core.resources.CoreAppIcons.asPainterResource
-import app.paralino.core.ui.components.ImageModelImage
-import app.paralino.core.ui.components.SmallActionButton
 import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.extensions.isLocationInaccurate
@@ -117,7 +116,7 @@ private fun createPinPath(totalSize: Float): Path {
     // Circle path
     val circlePath = Path().apply {
         addOval(
-            androidx.compose.ui.geometry.Rect(
+            Rect(
                 left = circleCenter.x - circleRadius,
                 top = circleCenter.y - circleRadius,
                 right = circleCenter.x + circleRadius,

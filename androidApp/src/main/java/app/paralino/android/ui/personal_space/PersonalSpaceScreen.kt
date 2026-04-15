@@ -47,7 +47,7 @@ fun PersonalSpaceScreen(
             )
         }
     ) { padding ->
-        PersonalSpaceScreenCore(
+        _root_ide_package_.app.paralino.core.ui.personal_space.PersonalSpaceScreenCore(
             appState = appState,
             vm = vm,
             contentPadding = padding,

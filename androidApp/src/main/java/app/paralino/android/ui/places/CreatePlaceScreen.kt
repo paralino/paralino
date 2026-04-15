@@ -53,7 +53,7 @@ fun CreatePlaceScreen(
             )
         }
     ) {
-        CreatePlaceScreenCore(
+        _root_ide_package_.app.paralino.core.ui.places.CreatePlaceScreenCore(
             appState = appState,
             vm = vm,
             onNavigateBack = { appState.navController.popBackStack() },
@@ -66,10 +66,30 @@ fun CreatePlaceScreen(
                 PlaceCreateMapComposable(
                     modifier = Modifier.fillMaxSize(),
                     state = state,
-                    onMapCameraSettled = { vm.onEvent(CreatePlaceScreenUiEvent.OnMapPositionChanged(it)) },
+                    onMapCameraSettled = {
+                        vm.onEvent(
+                            CreatePlaceScreenUiEvent.OnMapPositionChanged(
+                                it
+                            )
+                        )
+                    },
                     onMapInteraction = { },
-                    onMapTap = { lat, lng -> vm.onEvent(CreatePlaceScreenUiEvent.OnMapTap(lat, lng)) },
-                    onMapLongPress = { lat, lng -> vm.onEvent(CreatePlaceScreenUiEvent.OnMapTap(lat, lng)) }
+                    onMapTap = { lat, lng ->
+                        vm.onEvent(
+                            CreatePlaceScreenUiEvent.OnMapTap(
+                                lat,
+                                lng
+                            )
+                        )
+                    },
+                    onMapLongPress = { lat, lng ->
+                        vm.onEvent(
+                            CreatePlaceScreenUiEvent.OnMapTap(
+                                lat,
+                                lng
+                            )
+                        )
+                    }
                 )
             }
         )

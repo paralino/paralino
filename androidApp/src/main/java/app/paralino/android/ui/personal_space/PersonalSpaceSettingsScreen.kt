@@ -32,7 +32,7 @@ fun PersonalSpaceSettingsScreen(
             )
         }
     ) {
-        PersonalSpaceSettingsScreenCore(
+        _root_ide_package_.app.paralino.core.ui.personal_space.PersonalSpaceSettingsScreenCore(
             appState = appState,
             vm = vm,
             openRawDataScreen = {

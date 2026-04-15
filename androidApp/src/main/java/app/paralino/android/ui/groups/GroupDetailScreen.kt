@@ -65,7 +65,7 @@ private fun GroupDetailScreen(
             )
         }
     ) {
-        GroupDetailScreenCore(
+        _root_ide_package_.app.paralino.core.ui.groups.GroupDetailScreenCore(
             appState = appState,
             vm = koinViewModel { parametersOf(groupId) },
             groupId = groupId,

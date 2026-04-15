@@ -99,8 +99,9 @@ import app.paralino.core.ui.components.SmallActionButton
 import app.paralino.core.ui.components.ToolbarButtons
 import app.paralino.core.presentation.common.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.Show
-import app.paralino.core.ui.settings.SettingsActionItem
+import app.paralino.core.ui.components.SettingsActionItem
 import app.paralino.core.presentation.settings.SettingsActionItemType
+import app.paralino.core.ui.components.MembershipPlanFeatureTable
 import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.ui.theme.ButtonStyle
 import app.paralino.core.ui.theme.featureItemTitle
@@ -539,7 +540,7 @@ private fun ColumnScope.PaywallScreen(
 
     var arePlansExpanded by remember { mutableStateOf(false) }
 
-    FeatureTable(
+    MembershipPlanFeatureTable(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = animateDpAsState(if (arePlansExpanded) 10.dp else 0.dp).value)
@@ -554,7 +555,12 @@ private fun ColumnScope.PaywallScreen(
             arePlansExpanded = true
         },
         onCellClick = { featureTableState, item ->
-            onEvent(PaywallScreenUiEvent.OnCellItemClick(table = featureTableState, cellItem = item))
+            onEvent(
+                PaywallScreenUiEvent.OnCellItemClick(
+                    table = featureTableState,
+                    cellItem = item
+                )
+            )
         }
     )
 

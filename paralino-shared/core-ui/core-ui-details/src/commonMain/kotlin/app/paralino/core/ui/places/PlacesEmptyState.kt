@@ -56,8 +56,8 @@ import app.paralino.core.provider.localizedString
 import app.paralino.core.ui.components.ConditionErrorItem
 import app.paralino.core.resources.CoreAppIcons
 import app.paralino.core.resources.CoreAppIcons.asPainterResource
+import app.paralino.core.ui.components.MapMarkerContent
 import app.paralino.core.ui.components.NoticeInfoChip
-import app.paralino.core.ui.map.MapMarkerContent
 import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.utils.ConditionErrorType
 import app.paralino.core.utils.Emojis

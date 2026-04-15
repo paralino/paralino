@@ -12,12 +12,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import app.paralino.core.MR
 import app.paralino.core.presentation.personal_space.settings.PersonalSpaceSettingsViewModel
-import app.paralino.core.ui.CoreUiState
 import app.paralino.core.resources.CoreAppIcons
 import app.paralino.core.resources.CoreAppIcons.asPainterResource
+import app.paralino.core.ui.CoreUiState
 import app.paralino.core.ui.components.MessageDispatcherEffect
+import app.paralino.core.ui.components.SettingsActionItem
 import app.paralino.core.ui.components.dialogs.LoadingDialog
-import app.paralino.core.ui.settings.SettingsActionItem
 import app.paralino.core.ui.theme.AppColors
 import dev.icerock.moko.resources.compose.stringResource
 

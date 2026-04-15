@@ -1,4 +1,4 @@
-package app.paralino.core.ui.settings.billing
+package app.paralino.core.ui.components
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
@@ -54,17 +54,15 @@ import app.paralino.core.presentation.billing.FeatureTableItemValue
 import app.paralino.core.presentation.billing.FeatureTableItemValueDataPoint
 import app.paralino.core.presentation.billing.FeatureTableItemVisibilityMode
 import app.paralino.core.presentation.billing.FeatureTableState
-import app.paralino.core.ui.components.AppButtonState
 import app.paralino.core.resources.CoreAppIcons
 import app.paralino.core.resources.CoreAppIcons.asPainterResource
-import app.paralino.core.ui.components.FilledButton
 import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.ui.theme.ButtonStyle
 import app.paralino.core.utils.extensions.annotatedBoldCompose
 import dev.icerock.moko.resources.compose.stringResource
 
 @Composable
-fun FeatureTable(
+fun MembershipPlanFeatureTable(
     modifier: Modifier = Modifier.Companion,
     table: FeatureTableState,
     canExpand: Boolean = table.canExpand,

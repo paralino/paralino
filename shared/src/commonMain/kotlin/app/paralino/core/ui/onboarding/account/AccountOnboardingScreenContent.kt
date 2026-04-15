@@ -9,9 +9,9 @@ import app.paralino.core.MR
 import app.paralino.core.presentation.onboarding.AccountOnboardingContent
 import app.paralino.core.presentation.onboarding.AccountOnboardingUiEvent
 import app.paralino.core.ui.CoreUiState
-import app.paralino.core.ui.onboarding.BaseOnboardingScrollableContent
-import app.paralino.core.ui.onboarding.BaseOnboardingHeaderContent
-import app.paralino.core.ui.onboarding.BaseOnboardingScreen
+import app.paralino.core.ui.components.BaseOnboardingScrollableContent
+import app.paralino.core.ui.components.BaseOnboardingHeaderContent
+import app.paralino.core.ui.components.BaseOnboardingScreen
 import app.paralino.core.ui.onboarding.welcome.WelcomeOnboardingPageLocationHistory
 import dev.icerock.moko.resources.compose.stringResource
 

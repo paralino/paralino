@@ -36,7 +36,7 @@ fun GroupCreateScreen(
             )
         }
     ) {
-        GroupCreateScreenCore(
+        _root_ide_package_.app.paralino.core.ui.groups.GroupCreateScreenCore(
             appState = appState,
             vm = vm,
             onBottomSheetAction = {

@@ -17,6 +17,7 @@ import app.paralino.core.ui.CoreUiState
 import app.paralino.core.resources.CoreAppIcons
 import app.paralino.core.resources.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.MessageDispatcherEffect
+import app.paralino.core.ui.components.SettingsActionItem
 import dev.icerock.moko.resources.compose.stringResource
 
 @Composable

@@ -109,7 +109,7 @@ fun SharingStartScreen(
             )
         }
     ) {
-        SharingStartScreenCore(
+        _root_ide_package_.app.paralino.core.ui.share.SharingStartScreenCore(
             appState = appState,
             vm = vm,
             onSharingStarted = {
@@ -125,7 +125,11 @@ fun SharingStartScreen(
             askLocationService = { permissionHandler.askLocationService() },
             askLocationPermission = { permissionHandler.askLocationPermission() },
             askBackgroundLocationPermission = { permissionHandler.askBackgroundLocationPermission() },
-            askBackgroundAccessPermission = { permissionHandler.askUnrestrictedBackgroundAccess(forcePrompt = true) },
+            askBackgroundAccessPermission = {
+                permissionHandler.askUnrestrictedBackgroundAccess(
+                    forcePrompt = true
+                )
+            },
             openSubscriptions = {
                 appState.navController.navigate(AppScreen.MainHome.BillingPaywall.route())
             }

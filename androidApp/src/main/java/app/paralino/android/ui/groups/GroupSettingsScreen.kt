@@ -38,7 +38,7 @@ fun GroupSettingsScreen(
             )
         }
     ) {
-        GroupSettingsScreenCore(
+        _root_ide_package_.app.paralino.core.ui.groups.GroupSettingsScreenCore(
             appState = appState,
             vm = vm,
             openEditGroup = {

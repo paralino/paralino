@@ -23,7 +23,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
@@ -36,7 +35,7 @@ import androidx.compose.ui.unit.dp
 import app.paralino.core.presentation.map.MapPinData
 import app.paralino.core.resources.CoreAppIcons
 import app.paralino.core.resources.CoreAppIcons.asPainterResource
-import app.paralino.core.ui.map.MapMarkerContent
+import app.paralino.core.ui.components.MapMarkerContent
 import app.paralino.core.ui.places.PlacesEmptyStateMarkers
 import app.paralino.core.ui.theme.AppColors
 import kotlin.math.roundToInt

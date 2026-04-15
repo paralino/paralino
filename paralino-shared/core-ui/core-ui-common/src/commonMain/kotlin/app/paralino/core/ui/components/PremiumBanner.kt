@@ -1,4 +1,4 @@
-package app.paralino.core.ui.settings.billing
+package app.paralino.core.ui.components
 
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
@@ -43,11 +42,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.paralino.core.MR
 import app.paralino.core.models.base.ImageModel
-import app.paralino.core.ui.components.BlurredCircle
 import app.paralino.core.resources.CoreAppIcons
 import app.paralino.core.resources.CoreAppIcons.asPainterResource
-import app.paralino.core.ui.components.ImageModelImage
-import app.paralino.core.ui.components.drawBlurredCircles
 import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.utils.Emojis
 import dev.icerock.moko.resources.compose.stringResource
