@@ -15,7 +15,9 @@ include(":core-presentation-settings")
 include(":core-presentation-onboarding")
 include(":core-resources-icons")
 include(":core-ui-common")
+include(":core-ui-details")
 include(":core-ui-map")
+include(":core-ui-onboarding")
 include(":core-ui-settings")
 
 project(":appwrite-android").projectDir = File("appwrite-android/library")
@@ -30,7 +32,9 @@ project(":core-presentation-settings").projectDir = File("paralino-shared/core-p
 project(":core-presentation-onboarding").projectDir = File("paralino-shared/core-presentation/core-presentation-onboarding")
 project(":core-resources-icons").projectDir = File("paralino-shared/core-resources/core-resources-icons")
 project(":core-ui-common").projectDir = File("paralino-shared/core-ui/core-ui-common")
+project(":core-ui-details").projectDir = File("paralino-shared/core-ui/core-ui-details")
 project(":core-ui-map").projectDir = File("paralino-shared/core-ui/core-ui-map")
+project(":core-ui-onboarding").projectDir = File("paralino-shared/core-ui/core-ui-onboarding")
 project(":core-ui-settings").projectDir = File("paralino-shared/core-ui/core-ui-settings")
 
 pluginManagement {
