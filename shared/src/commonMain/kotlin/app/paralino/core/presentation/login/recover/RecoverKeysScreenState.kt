@@ -2,7 +2,7 @@ package app.paralino.core.presentation.login.recover
 
 import app.paralino.core.crypto.GeneratedUserKeys
 import app.paralino.core.models.Resource
-import app.paralino.core.ui.components.dialogs.MainAlertDialog
+import app.paralino.core.presentation.common.MainAlertDialog
 
 data class RecoverKeysScreenState constructor(
     val uiStep: RecoverKeysUiStep,

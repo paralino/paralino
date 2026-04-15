@@ -96,7 +96,7 @@ import app.paralino.core.ui.components.NoticeInfoChip
 import app.paralino.core.ui.components.SettingsSectionHeader
 import app.paralino.core.ui.components.SmallActionButton
 import app.paralino.core.ui.components.ToolbarButtons
-import app.paralino.core.ui.components.dialogs.AlertDialogAction
+import app.paralino.core.presentation.common.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.Show
 import app.paralino.core.ui.settings.SettingsActionItem
 import app.paralino.core.ui.settings.SettingsActionItemType

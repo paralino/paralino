@@ -22,7 +22,7 @@ import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.places.PlacesLocalDataSource
 import app.paralino.core.repo.places.PlacesRepository
-import app.paralino.core.ui.components.dialogs.MainAlertDialog
+import app.paralino.core.presentation.common.MainAlertDialog
 import app.paralino.core.ui.groups.components.SuggestionSectionChipData
 import app.paralino.core.ui.theme.ScreenDimensionType
 import app.paralino.core.utils.Emojis

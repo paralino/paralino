@@ -5,7 +5,7 @@ import app.paralino.core.models.data
 import app.paralino.core.models.user.BlocklistType
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.repo.user.UserRepository
-import app.paralino.core.ui.components.dialogs.MainAlertDialog
+import app.paralino.core.presentation.common.MainAlertDialog
 import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.extensions.errorString
 import kotlinx.coroutines.channels.Channel

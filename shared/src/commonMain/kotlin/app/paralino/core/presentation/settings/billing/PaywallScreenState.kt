@@ -12,8 +12,11 @@ import app.paralino.core.models.base.PlanType
 import app.paralino.core.models.base.SubscriptionInfoNotice
 import app.paralino.core.provider.localizedString
 import app.paralino.core.ui.components.CoreAppIcons
-import app.paralino.core.ui.components.dialogs.AlertDialogAction
-import app.paralino.core.ui.components.dialogs.MainAlertDialog
+import app.paralino.core.presentation.common.AlertDialogAction
+import app.paralino.core.presentation.common.AlertDialogButtonData
+import app.paralino.core.presentation.common.AlertDialogData
+import app.paralino.core.presentation.common.MainAlertDialog
+import app.paralino.core.presentation.common.MainAlertDialog.Buttons
 import app.paralino.core.ui.settings.billing.BillingScreenSourceType
 import org.jetbrains.compose.resources.DrawableResource
 
@@ -273,3 +276,27 @@ class PurchaseErrorException(
     val errorMessage: String,
     val userCancelled: Boolean
 ) : Throwable(errorMessage)
+
+data class SubscriptionActiveOnAnotherPlatform(
+    val planName: String,
+    val planProvider: String,
+    val event: PaywallScreenUiEvent
+) : MainAlertDialog {
+    override val key: String = this::class.simpleName ?: "dialog"
+    override val dialogData: AlertDialogData = AlertDialogData(
+        id = key,
+        title = stringResource(MR.strings.plans_management_alert_otherPlatformPlan_title),
+        message = stringResource(MR.strings.plans_management_alert_otherPlatformPlan_message, planName, planProvider),
+        buttons = listOf(
+            AlertDialogButtonData(
+                id = Buttons.buttonOk,
+                text = stringResource(MR.strings.button_continue),
+                color = AlertDialogButtonData.positiveColor,
+            ),
+            AlertDialogButtonData(
+                id = Buttons.buttonCancel,
+                text = stringResource(resource = MR.strings.button_cancel)
+            )
+        )
+    )
+}

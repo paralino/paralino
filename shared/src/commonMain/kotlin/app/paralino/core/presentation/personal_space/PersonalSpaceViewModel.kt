@@ -27,10 +27,10 @@ import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.places.PlaceActivityDataSource
 import app.paralino.core.repo.user.UserPersonalSpaceLocalDataSource
 import app.paralino.core.repo.user.UserRepository
-import app.paralino.core.ui.components.AppSnackbarData
-import app.paralino.core.ui.components.SnackbarDuration
-import app.paralino.core.ui.components.dialogs.MainAlertDialog
-import app.paralino.core.ui.components.onAction
+import app.paralino.core.presentation.common.AppSnackbarData
+import app.paralino.core.presentation.common.SnackbarDuration
+import app.paralino.core.presentation.common.MainAlertDialog
+import app.paralino.core.presentation.common.onAction
 import app.paralino.core.utils.ConditionErrorType
 import app.paralino.core.utils.MandatoryBackgroundLocationSharingConditionType
 import app.paralino.core.utils.MandatoryForegroundLocationSharingConditionType
@@ -406,7 +406,7 @@ class PersonalSpaceViewModel(
                                 delay(200)
                                 _uiState.update {
                                     it.copy(
-                                        alertDialog = MainAlertDialog.DeleteInactiveUserOwnDeviceConfirm(event.action.dialog.device)
+                                        alertDialog = MainAlertDialog.DeleteInactiveUserOwnDeviceConfirm(dialog.device)
                                     )
                                 }
                             }

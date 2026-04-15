@@ -65,7 +65,7 @@ import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.components.NoticeInfoChip
 import app.paralino.core.ui.components.PasswordInputField
 import app.paralino.core.ui.components.PasswordValidationElement
-import app.paralino.core.ui.components.dialogs.AlertDialogAction
+import app.paralino.core.presentation.common.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.Show
 import app.paralino.core.ui.components.rememberSeekbarState
 import app.paralino.core.ui.theme.AppColors

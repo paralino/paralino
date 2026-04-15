@@ -49,7 +49,7 @@ import app.paralino.core.ui.components.NoticeInfoChip
 import app.paralino.core.ui.components.OnboardingSkipButton
 import app.paralino.core.ui.components.PlanLimitSmallUpgradeButton
 import app.paralino.core.ui.components.SettingsSectionHeader
-import app.paralino.core.ui.components.dialogs.AlertDialogAction
+import app.paralino.core.presentation.common.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.Show
 import app.paralino.core.ui.groups.GroupListItem
 import app.paralino.core.ui.onboarding.BaseOnboardingScreen

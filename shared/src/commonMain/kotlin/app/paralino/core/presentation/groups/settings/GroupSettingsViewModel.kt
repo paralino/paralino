@@ -20,11 +20,11 @@ import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.base.AppConfigRepository
 import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.group.UserGroupLocalDataSource
-import app.paralino.core.ui.components.AppSnackbarData
-import app.paralino.core.ui.components.AppSnackbarPayload
-import app.paralino.core.ui.components.SnackbarDuration
-import app.paralino.core.ui.components.dialogs.MainAlertDialog
-import app.paralino.core.ui.components.dialogs.MainAlertDialog.ToggleMemberVerification
+import app.paralino.core.presentation.common.AppSnackbarData
+import app.paralino.core.presentation.common.AppSnackbarPayload
+import app.paralino.core.presentation.common.SnackbarDuration
+import app.paralino.core.presentation.common.MainAlertDialog
+import app.paralino.core.presentation.common.MainAlertDialog.ToggleMemberVerification
 import app.paralino.core.utils.exceptions.DataStillLoadingException
 import app.paralino.core.utils.exceptions.NotFoundException
 import app.paralino.core.utils.exceptions.asRemoteException
@@ -137,7 +137,7 @@ class GroupSettingsViewModel(
                         }
                     }
 
-                    is MainAlertDialog.ToggleMemberVerification -> {
+                    is ToggleMemberVerification -> {
                         if (event.action.action == MainAlertDialog.Buttons.buttonOk) {
                             toggleMembershipVerification()
                         }

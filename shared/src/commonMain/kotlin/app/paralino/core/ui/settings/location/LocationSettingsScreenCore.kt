@@ -23,7 +23,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import app.paralino.core.MR
-import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.presentation.settings.location.LocationSettingsScreenEvent
 import app.paralino.core.presentation.settings.location.LocationSettingsScreenUiEvent
 import app.paralino.core.presentation.settings.location.LocationSettingsViewModel
@@ -35,7 +34,7 @@ import app.paralino.core.ui.components.LargeSeekbarSwitchState
 import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.components.NoticeInfoChip
 import app.paralino.core.ui.components.SettingsSectionHeader
-import app.paralino.core.ui.components.dialogs.AlertDialogAction
+import app.paralino.core.presentation.common.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.Show
 import app.paralino.core.ui.components.rememberSeekbarState
 import app.paralino.core.ui.settings.GenericSettingsOptions

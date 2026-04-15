@@ -92,7 +92,7 @@ import app.paralino.core.ui.components.MainInputBasicField
 import app.paralino.core.ui.components.MainInputField
 import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.components.ScaffoldBottomBarButton
-import app.paralino.core.ui.components.dialogs.AlertDialogAction
+import app.paralino.core.presentation.common.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.LoadingDialog
 import app.paralino.core.ui.components.dialogs.Show
 import app.paralino.core.ui.groups.ShakeEffect

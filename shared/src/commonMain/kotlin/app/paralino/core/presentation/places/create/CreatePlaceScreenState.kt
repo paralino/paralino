@@ -10,8 +10,8 @@ import app.paralino.core.models.location.LatLng
 import app.paralino.core.models.settings.MapsSDKProvider
 import app.paralino.core.provider.current
 import app.paralino.core.provider.localizedString
-import app.paralino.core.ui.components.dialogs.AlertDialogAction
-import app.paralino.core.ui.components.dialogs.MainAlertDialog
+import app.paralino.core.presentation.common.AlertDialogAction
+import app.paralino.core.presentation.common.MainAlertDialog
 import app.paralino.core.ui.groups.components.SuggestionSectionChipData
 import app.paralino.core.ui.theme.ScreenDimensionType
 import app.paralino.core.utils.Emojis

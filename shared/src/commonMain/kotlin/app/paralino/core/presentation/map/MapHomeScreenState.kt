@@ -20,8 +20,8 @@ import app.paralino.core.models.settings.IOSNavigationAppType
 import app.paralino.core.models.settings.MapInteractionsType
 import app.paralino.core.models.settings.MapsSDKProvider
 import app.paralino.core.provider.current
-import app.paralino.core.ui.components.dialogs.AlertDialogAction
-import app.paralino.core.ui.components.dialogs.MainAlertDialog
+import app.paralino.core.presentation.common.AlertDialogAction
+import app.paralino.core.presentation.common.MainAlertDialog
 import app.paralino.core.ui.map.BottomSheetPosition
 
 sealed class MapHomeScreenState {

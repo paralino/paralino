@@ -51,7 +51,7 @@ import app.paralino.core.ui.components.LargeSeekbarSwitchState
 import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.components.NoticeInfoChip
 import app.paralino.core.ui.components.SettingsSectionHeader
-import app.paralino.core.ui.components.dialogs.AlertDialogAction
+import app.paralino.core.presentation.common.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.LoadingDialog
 import app.paralino.core.ui.components.dialogs.Show
 import app.paralino.core.ui.groups.GroupDetailSharingStatusElement

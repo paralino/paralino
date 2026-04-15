@@ -35,7 +35,7 @@ import app.paralino.core.ui.components.DefaultToolbar
 import app.paralino.core.ui.components.FilledButton
 import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.components.PasswordInputField
-import app.paralino.core.ui.components.dialogs.AlertDialogAction
+import app.paralino.core.presentation.common.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.Show
 import app.paralino.core.ui.theme.ButtonStyle
 import dev.icerock.moko.resources.compose.stringResource

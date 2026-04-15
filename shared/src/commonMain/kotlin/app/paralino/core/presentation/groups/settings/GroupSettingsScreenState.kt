@@ -4,8 +4,8 @@ import app.paralino.core.models.base.ImageModel
 import app.paralino.core.presentation.settings.billing.FeatureTableItemState
 import app.paralino.core.presentation.settings.billing.FeatureTableItemValue
 import app.paralino.core.presentation.settings.billing.FeatureTableState
-import app.paralino.core.ui.components.dialogs.AlertDialogAction
-import app.paralino.core.ui.components.dialogs.MainAlertDialog
+import app.paralino.core.presentation.common.AlertDialogAction
+import app.paralino.core.presentation.common.MainAlertDialog
 
 data class GroupSettingsScreenState(
     val id: String,

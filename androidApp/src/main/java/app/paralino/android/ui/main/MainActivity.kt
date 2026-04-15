@@ -38,7 +38,7 @@ import app.paralino.core.presentation.main.MainActivityUiEvent
 import app.paralino.core.presentation.main.MainViewModel
 import app.paralino.core.ui.components.AppSnackbar
 import app.paralino.core.ui.components.MessageDispatcherEffect
-import app.paralino.core.ui.components.dialogs.AlertDialogAction
+import app.paralino.core.presentation.common.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.LoadingDialog
 import app.paralino.core.ui.components.dialogs.Show
 import app.paralino.core.ui.main.DeeplinkType

@@ -24,7 +24,7 @@ import app.paralino.core.ui.components.AppButtonState
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.DefaultEmptyState
 import app.paralino.core.ui.components.MessageDispatcherEffect
-import app.paralino.core.ui.components.dialogs.AlertDialogAction
+import app.paralino.core.presentation.common.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.Show
 import kotlinx.coroutines.flow.collectLatest
 

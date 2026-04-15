@@ -37,10 +37,10 @@ import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.places.PlaceActivityDataSource
 import app.paralino.core.repo.user.UserRepository
-import app.paralino.core.ui.components.AppSnackbarData
-import app.paralino.core.ui.components.SnackbarDuration
-import app.paralino.core.ui.components.dialogs.MainAlertDialog
-import app.paralino.core.ui.components.onAction
+import app.paralino.core.presentation.common.AppSnackbarData
+import app.paralino.core.presentation.common.SnackbarDuration
+import app.paralino.core.presentation.common.MainAlertDialog
+import app.paralino.core.presentation.common.onAction
 import app.paralino.core.utils.ConditionErrorType
 import app.paralino.core.utils.MandatoryBackgroundLocationSharingConditionType
 import app.paralino.core.utils.MandatoryForegroundLocationSharingConditionType
@@ -267,7 +267,7 @@ class GroupDetailViewModel(
     fun onEvent(event: GroupDetailScreenUiEvent) {
         when (event) {
             is GroupDetailScreenUiEvent.DialogAction -> {
-                when (event.action.dialog) {
+                when (val dialog = event.action.dialog) {
                     is MainAlertDialog.ServiceMaxLimit,
                     is MainAlertDialog.PlanLimitForMembers -> {
                         _uiState.update { it.mapSuccess { it.copy(alertDialog = null) } }
@@ -276,21 +276,21 @@ class GroupDetailViewModel(
                     is MainAlertDialog.BlockUser -> {
                         _uiState.update { it.mapSuccess { it.copy(alertDialog = null) } }
                         if (event.action.isOk) {
-                            blockUser(event.action.dialog.userId)
+                            blockUser(dialog.userId)
                         }
                     }
 
                     is MainAlertDialog.UnblockGroupOrUser -> {
                         _uiState.update { it.mapSuccess { it.copy(alertDialog = null) } }
                         if (event.action.isOk) {
-                            unblockUser(event.action.dialog.id)
+                            unblockUser(dialog.id)
                         }
                     }
 
                     is MainAlertDialog.DeleteGroupMember -> {
                         _uiState.update { it.mapSuccess { it.copy(alertDialog = null) } }
                         if (event.action.isOk) {
-                            removeMember(event.action.dialog.memberUserId)
+                            removeMember(dialog.memberUserId)
                         }
                     }
 
@@ -303,10 +303,10 @@ class GroupDetailViewModel(
                                     it.mapSuccess {
                                         it.copy(
                                             alertDialog = MainAlertDialog.DeleteMemberLocationConfirm(
-                                                memberId = event.action.dialog.memberId,
-                                                locationId = event.action.dialog.locationId,
-                                                isUserOwnDevice = event.action.dialog.isUserOwnDevice,
-                                                memberName = event.action.dialog.memberName
+                                                memberId = dialog.memberId,
+                                                locationId = dialog.locationId,
+                                                isUserOwnDevice = dialog.isUserOwnDevice,
+                                                memberName = dialog.memberName
                                             )
                                         )
                                     }
@@ -321,8 +321,8 @@ class GroupDetailViewModel(
                         _uiState.update { it.mapSuccess { it.copy(alertDialog = null) } }
                         if (event.action.isOk) {
                             removeMemberLocation(
-                                memberId = event.action.dialog.memberId,
-                                locationId = event.action.dialog.locationId
+                                memberId = dialog.memberId,
+                                locationId = dialog.locationId
                             )
                         }
                     }

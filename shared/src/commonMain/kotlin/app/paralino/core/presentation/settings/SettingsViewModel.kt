@@ -31,7 +31,7 @@ import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.location.LocationPerformanceManager
 import app.paralino.core.repo.personal_code.PersonalCodesRepository
 import app.paralino.core.repo.user.UserRepository
-import app.paralino.core.ui.components.dialogs.MainAlertDialog
+import app.paralino.core.presentation.common.MainAlertDialog
 import app.paralino.core.utils.ConditionErrorType
 import app.paralino.core.utils.exceptions.UnauthorizedException
 import app.paralino.core.utils.extensions.errorString

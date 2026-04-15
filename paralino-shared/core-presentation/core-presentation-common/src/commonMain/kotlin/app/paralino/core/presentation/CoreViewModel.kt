@@ -1,9 +1,9 @@
 package app.paralino.core.presentation
 
+import app.paralino.core.presentation.common.AppSnackbarData
 import app.paralino.core.presentation.common.CoreMessageDispatcher
 import app.paralino.core.presentation.common.ICoreMessageDispatcher
-import app.paralino.core.ui.components.AppSnackbarData
-import app.paralino.core.ui.components.SnackbarDuration
+import app.paralino.core.presentation.common.SnackbarDuration
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

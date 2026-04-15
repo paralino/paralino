@@ -12,9 +12,9 @@ import app.paralino.core.presentation.groups.LocationRequestItemState
 import app.paralino.core.presentation.groups.MemberActionType
 import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.LocationSharingManager
-import app.paralino.core.ui.components.AppSnackbarData
-import app.paralino.core.ui.components.SnackbarDuration
-import app.paralino.core.ui.components.onAction
+import app.paralino.core.presentation.common.AppSnackbarData
+import app.paralino.core.presentation.common.SnackbarDuration
+import app.paralino.core.presentation.common.onAction
 import app.paralino.core.utils.exceptions.asRemoteException
 import app.paralino.core.utils.extensions.errorString
 import app.paralino.core.utils.extensions.nowUTC

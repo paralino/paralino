@@ -18,10 +18,10 @@ import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.base.AppConfigRepository
 import app.paralino.core.repo.user.UserConfigRepository
 import app.paralino.core.repo.user.UserRepository
-import app.paralino.core.ui.components.AppSnackbarData
-import app.paralino.core.ui.components.AppSnackbarPayload
-import app.paralino.core.ui.components.SnackbarDuration
-import app.paralino.core.ui.components.dialogs.MainAlertDialog
+import app.paralino.core.presentation.common.AppSnackbarData
+import app.paralino.core.presentation.common.AppSnackbarPayload
+import app.paralino.core.presentation.common.SnackbarDuration
+import app.paralino.core.presentation.common.MainAlertDialog
 import app.paralino.core.utils.extensions.errorString
 import app.paralino.core.utils.extensions.mapToPayload
 import kotlinx.coroutines.channels.Channel

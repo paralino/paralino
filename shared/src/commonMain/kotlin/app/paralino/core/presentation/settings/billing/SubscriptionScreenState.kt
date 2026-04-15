@@ -1,7 +1,7 @@
 package app.paralino.core.presentation.settings.billing
 
-import app.paralino.core.ui.components.dialogs.AlertDialogAction
-import app.paralino.core.ui.components.dialogs.MainAlertDialog
+import app.paralino.core.presentation.common.AlertDialogAction
+import app.paralino.core.presentation.common.MainAlertDialog
 
 data class SubscriptionScreenState(
     val allActivePlans: List<SubscriptionDetailsState> = emptyList(),

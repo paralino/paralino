@@ -1,8 +1,8 @@
 package app.paralino.core.presentation.groups.edit
 
 import app.paralino.core.models.base.ImageModel
-import app.paralino.core.ui.components.dialogs.AlertDialogAction
-import app.paralino.core.ui.components.dialogs.MainAlertDialog
+import app.paralino.core.presentation.common.AlertDialogAction
+import app.paralino.core.presentation.common.MainAlertDialog
 import app.paralino.core.ui.groups.components.SuggestionSectionChipData
 import app.paralino.core.utils.Emojis
 

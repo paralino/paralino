@@ -9,7 +9,7 @@ import app.paralino.core.models.exception
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.models.settings.FormValidation
 import app.paralino.core.provider.localizedString
-import app.paralino.core.ui.components.dialogs.MainAlertDialog
+import app.paralino.core.presentation.common.MainAlertDialog
 import app.paralino.core.utils.exceptions.DecryptionException
 import app.paralino.core.utils.extensions.errorString
 import app.paralino.core.utils.extensions.getFormValidationErrorText

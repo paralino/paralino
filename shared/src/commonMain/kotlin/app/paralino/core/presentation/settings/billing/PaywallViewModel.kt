@@ -19,6 +19,10 @@ import app.paralino.core.models.base.PlanProvider
 import app.paralino.core.models.base.PlanType
 import app.paralino.core.models.user.UserPlans
 import app.paralino.core.presentation.CoreViewModel
+import app.paralino.core.presentation.common.AppSnackbarData
+import app.paralino.core.presentation.common.AppSnackbarPayload
+import app.paralino.core.presentation.common.MainAlertDialog
+import app.paralino.core.presentation.common.SnackbarDuration
 import app.paralino.core.provider.IBillingProvider
 import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.provider.IValueFormatter
@@ -26,10 +30,6 @@ import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.base.AppConfigRepository
 import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.user.UserRepository
-import app.paralino.core.ui.components.AppSnackbarData
-import app.paralino.core.ui.components.AppSnackbarPayload
-import app.paralino.core.ui.components.SnackbarDuration
-import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.ui.settings.billing.BillingScreenSourceType
 import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.extensions.annotatedBold
@@ -136,7 +136,7 @@ class PaywallViewModel(
     fun onEvent(event: PaywallScreenUiEvent) {
         when (event) {
             is PaywallScreenUiEvent.DialogAction -> {
-                when (event.action.dialog) {
+                when (val dialog = event.action.dialog) {
                     is MainAlertDialog.BillingLoadingError, is MainAlertDialog.BillingError -> {
                         _uiState.update { it.copy(alertDialog = null) }
                         coroutineScope.launch {
@@ -144,10 +144,10 @@ class PaywallViewModel(
                         }
                     }
 
-                    is MainAlertDialog.SubscriptionActiveOnAnotherPlatform -> {
+                    is SubscriptionActiveOnAnotherPlatform -> {
                         _uiState.update { it.copy(alertDialog = null) }
                         if (event.action.isOk) {
-                            when (event.action.dialog.event) {
+                            when (dialog.event) {
                                 PaywallScreenUiEvent.StartPurchase -> {
                                     val selectedPlan = uiState.value.selectedPlan
                                     if (selectedPlan != null) {
@@ -664,7 +664,7 @@ class PaywallViewModel(
     ) {
         _uiState.update {
             it.copy(
-                alertDialog = MainAlertDialog.SubscriptionActiveOnAnotherPlatform(
+                alertDialog = SubscriptionActiveOnAnotherPlatform(
                     planName = plan.name,
                     planProvider = when (planProvider) {
                         PlanProvider.APPLE_APP_STORE -> MR.strings.plans_management_providerName_apple.localizedString()

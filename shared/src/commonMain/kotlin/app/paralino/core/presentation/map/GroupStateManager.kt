@@ -16,10 +16,10 @@ import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.user.UserPersonalSpaceLocalDataSource
 import app.paralino.core.repo.user.UserRepository
-import app.paralino.core.ui.components.AppSnackbarData
+import app.paralino.core.presentation.common.AppSnackbarData
 import app.paralino.core.ui.components.BottomSheetPickerType
-import app.paralino.core.ui.components.SnackbarDuration
-import app.paralino.core.ui.components.onAction
+import app.paralino.core.presentation.common.SnackbarDuration
+import app.paralino.core.presentation.common.onAction
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow

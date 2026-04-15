@@ -17,8 +17,8 @@ import androidx.compose.ui.window.DialogProperties
 import app.paralino.core.MR
 import app.paralino.core.models.base.SubscriptionOfferDialogContent
 import app.paralino.core.provider.localizedString
-import app.paralino.core.ui.components.dialogs.AlertDialogButtonData
-import app.paralino.core.ui.components.dialogs.MainAlertDialog.Buttons
+import app.paralino.core.presentation.common.AlertDialogButtonData
+import app.paralino.core.presentation.common.MainAlertDialog.Buttons
 import app.paralino.core.ui.components.dialogs.MainAlertDialogActionButton
 import app.paralino.core.ui.theme.AppTheme
 import app.paralino.core.utils.extensions.annotatedBoldCompose

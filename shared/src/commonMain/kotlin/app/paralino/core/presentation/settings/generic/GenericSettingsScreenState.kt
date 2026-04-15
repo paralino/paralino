@@ -4,8 +4,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import app.paralino.core.models.location.LatLng
 import app.paralino.core.models.settings.MapsSDKProvider
-import app.paralino.core.ui.components.dialogs.AlertDialogAction
-import app.paralino.core.ui.components.dialogs.MainAlertDialog
+import app.paralino.core.presentation.common.AlertDialogAction
+import app.paralino.core.presentation.common.MainAlertDialog
 import app.paralino.core.ui.settings.SettingsActionItemType
 import app.paralino.core.utils.ConditionErrorType
 import org.jetbrains.compose.resources.DrawableResource

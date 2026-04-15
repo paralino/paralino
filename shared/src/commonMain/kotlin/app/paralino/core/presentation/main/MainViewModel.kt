@@ -18,8 +18,8 @@ import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.base.AppUpdateType
 import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.user.UserRepository
-import app.paralino.core.ui.components.SnackbarDuration
-import app.paralino.core.ui.components.dialogs.MainAlertDialog
+import app.paralino.core.presentation.common.SnackbarDuration
+import app.paralino.core.presentation.common.MainAlertDialog
 import app.paralino.core.ui.main.DeeplinkType
 import app.paralino.core.utils.NetworkQualityMonitor
 import app.paralino.core.utils.extensions.errorString

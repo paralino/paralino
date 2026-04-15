@@ -25,7 +25,7 @@ import app.paralino.core.ui.components.LargeSeekbarSwitch
 import app.paralino.core.ui.components.LargeSeekbarSwitchState
 import app.paralino.core.ui.components.LargeSwitchDefaults
 import app.paralino.core.ui.components.SettingsSectionHeader
-import app.paralino.core.ui.components.dialogs.AlertDialogAction
+import app.paralino.core.presentation.common.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.Show
 import app.paralino.core.ui.invite.manage.PersonalCodeItem
 import app.paralino.core.ui.invite.manage.PersonalCodeItemWithHints

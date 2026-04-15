@@ -16,10 +16,10 @@ import app.paralino.core.presentation.map.MapScreenViewSourceType.DefaultGroup
 import app.paralino.core.models.settings.MapInteractionsType
 import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.group.UserGroupLocalDataSource
-import app.paralino.core.ui.components.AppSnackbarData
-import app.paralino.core.ui.components.SnackbarDuration
-import app.paralino.core.ui.components.dialogs.MainAlertDialog
-import app.paralino.core.ui.components.onAction
+import app.paralino.core.presentation.common.AppSnackbarData
+import app.paralino.core.presentation.common.SnackbarDuration
+import app.paralino.core.presentation.common.MainAlertDialog
+import app.paralino.core.presentation.common.onAction
 import app.paralino.core.ui.map.BottomSheetPosition
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel

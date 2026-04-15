@@ -1,18 +1,13 @@
-package app.paralino.core.ui.components.dialogs
+package app.paralino.core.presentation.common
 
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.graphics.Color
 import app.paralino.core.MR
-import app.paralino.core.models.base.PlanConfig
-import app.paralino.core.models.base.PlanProvider
-import app.paralino.core.models.base.PlanType
 import app.paralino.core.models.base.SubscriptionOfferDialogContent
 import app.paralino.core.models.location.UserDeviceModel
 import app.paralino.core.models.user.BlocklistType
 import app.paralino.core.models.user.UserSession
-import app.paralino.core.presentation.settings.billing.PaywallScreenUiEvent
 import app.paralino.core.provider.localizedString
-import app.paralino.core.ui.theme.AppColors
 import dev.icerock.moko.resources.StringResource
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
@@ -27,8 +22,11 @@ data class AlertDialogButtonData(
     val needsLongConfirmation: Boolean = false,
 ) {
     companion object {
-        val destructiveColor = AppColors.errorBackground
-        val positiveColor = AppColors.accentLight.copy(alpha = 0.3f)
+        // TODO replace with enum
+//        val destructiveColor = AppColors.errorBackground
+//        val positiveColor = AppColors.accentLight.copy(alpha = 0.3f)
+        val destructiveColor = Color(0x33F44336) //AppColors.errorBackground
+        val positiveColor = Color(0xFF80CBC4).copy(alpha = 0.3f)
     }
 }
 
@@ -43,7 +41,7 @@ data class AlertDialogData(
 )
 
 @Stable
-@Serializable
+//@Serializable
 data class AlertDialogAction(
     val dialog: MainAlertDialog,
     val action: String?,
@@ -52,8 +50,8 @@ data class AlertDialogAction(
     val isCancel = action == MainAlertDialog.Buttons.buttonCancel
 }
 
-@Serializable
-sealed interface MainAlertDialog {
+//@Serializable
+interface MainAlertDialog {
     object Buttons {
         const val buttonOk = "ok"
         const val buttonCancel = "cancel"
@@ -1090,30 +1088,6 @@ sealed interface MainAlertDialog {
                     id = Buttons.buttonOk,
                     text = stringResource(resource = MR.strings.button_ok),
                     color = AlertDialogButtonData.positiveColor,
-                )
-            )
-        )
-    }
-
-    data class SubscriptionActiveOnAnotherPlatform(
-        val planName: String,
-        val planProvider: String,
-        val event: PaywallScreenUiEvent
-    ) : MainAlertDialog {
-        override val key: String = this::class.simpleName ?: "dialog"
-        override val dialogData: AlertDialogData = AlertDialogData(
-            id = key,
-            title = stringResource(MR.strings.plans_management_alert_otherPlatformPlan_title),
-            message = stringResource(MR.strings.plans_management_alert_otherPlatformPlan_message, planName, planProvider),
-            buttons = listOf(
-                AlertDialogButtonData(
-                    id = Buttons.buttonOk,
-                    text = stringResource(MR.strings.button_continue),
-                    color = AlertDialogButtonData.positiveColor,
-                ),
-                AlertDialogButtonData(
-                    id = Buttons.buttonCancel,
-                    text = stringResource(resource = MR.strings.button_cancel)
                 )
             )
         )

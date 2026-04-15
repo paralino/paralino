@@ -26,7 +26,7 @@ import app.paralino.core.repo.base.AppConfigRepository
 import app.paralino.core.repo.user.IPushProviderManager
 import app.paralino.core.repo.user.UserPersonalSpaceLocalDataSource
 import app.paralino.core.ui.components.CoreAppIcons
-import app.paralino.core.ui.components.dialogs.MainAlertDialog
+import app.paralino.core.presentation.common.MainAlertDialog
 import app.paralino.core.ui.settings.SettingsActionItemType
 import app.paralino.core.utils.ConditionErrorType
 import kotlinx.coroutines.Dispatchers

@@ -50,7 +50,7 @@ import app.paralino.core.ui.components.EditImageIcon
 import app.paralino.core.ui.components.ImageModelImage
 import app.paralino.core.ui.components.MainInputField
 import app.paralino.core.ui.components.MessageDispatcherEffect
-import app.paralino.core.ui.components.dialogs.AlertDialogAction
+import app.paralino.core.presentation.common.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.Show
 import app.paralino.core.ui.groups.components.ChipsSuggestionsSection
 import app.paralino.core.utils.Emojis

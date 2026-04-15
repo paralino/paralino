@@ -46,7 +46,7 @@ import app.paralino.core.presentation.map.asReady
 import app.paralino.core.presentation.onboarding.AccountOnboardingViewModel
 import app.paralino.core.models.settings.MapsSDKProvider
 import app.paralino.core.ui.components.MessageDispatcherEffect
-import app.paralino.core.ui.components.dialogs.AlertDialogAction
+import app.paralino.core.presentation.common.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.Show
 import app.paralino.core.ui.history.LocationHistoryMapCardUi
 import app.paralino.core.ui.map.BottomSheetPosition

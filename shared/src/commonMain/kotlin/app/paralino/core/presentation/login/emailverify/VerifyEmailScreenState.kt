@@ -1,7 +1,7 @@
 package app.paralino.core.presentation.login.emailverify
 
-import app.paralino.core.ui.components.dialogs.AlertDialogAction
-import app.paralino.core.ui.components.dialogs.MainAlertDialog
+import app.paralino.core.presentation.common.AlertDialogAction
+import app.paralino.core.presentation.common.MainAlertDialog
 
 data class VerifyEmailScreenState(
     val currentEmail: String,

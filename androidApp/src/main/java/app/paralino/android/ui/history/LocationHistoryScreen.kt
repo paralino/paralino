@@ -21,7 +21,7 @@ import app.paralino.core.presentation.history.LocationHistoryScreenUiState
 import app.paralino.core.presentation.history.LocationHistorySelectedDayPosition
 import app.paralino.core.presentation.history.LocationHistoryStats
 import app.paralino.core.presentation.history.LocationHistoryUiEvent
-import app.paralino.core.ui.components.dialogs.AlertDialogAction
+import app.paralino.core.presentation.common.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.Show
 import app.paralino.core.ui.history.LocationHistoryDateSelector
 import app.paralino.core.ui.history.LocationHistoryStatsTable

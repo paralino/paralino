@@ -6,8 +6,8 @@ import app.paralino.core.models.location.MemberModel
 import app.paralino.core.models.user.UserPersonalCodeData
 import app.paralino.core.presentation.groups.GroupItemState
 import app.paralino.core.ui.components.BottomSheetPickerType
-import app.paralino.core.ui.components.dialogs.AlertDialogAction
-import app.paralino.core.ui.components.dialogs.MainAlertDialog
+import app.paralino.core.presentation.common.AlertDialogAction
+import app.paralino.core.presentation.common.MainAlertDialog
 import app.paralino.core.ui.settings.billing.BillingScreenSourceType
 import app.paralino.core.utils.Emojis
 

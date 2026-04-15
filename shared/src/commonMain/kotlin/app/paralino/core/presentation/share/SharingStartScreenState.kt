@@ -5,8 +5,8 @@ import app.paralino.core.models.Payload
 import app.paralino.core.models.data
 import app.paralino.core.models.location.LocationSharingContract
 import app.paralino.core.presentation.groups.GroupItemState
-import app.paralino.core.ui.components.dialogs.AlertDialogAction
-import app.paralino.core.ui.components.dialogs.MainAlertDialog
+import app.paralino.core.presentation.common.AlertDialogAction
+import app.paralino.core.presentation.common.MainAlertDialog
 import app.paralino.core.utils.ConditionErrorType
 import app.paralino.core.utils.SharingDurationPreset
 

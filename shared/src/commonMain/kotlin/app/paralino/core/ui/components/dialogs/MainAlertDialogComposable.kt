@@ -42,6 +42,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
 import app.paralino.core.MR
+import app.paralino.core.presentation.common.AlertDialogButtonData
+import app.paralino.core.presentation.common.AlertDialogData
+import app.paralino.core.presentation.common.MainAlertDialog
 import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.ui.theme.AppTheme
 import app.paralino.core.utils.extensions.annotatedBoldCompose

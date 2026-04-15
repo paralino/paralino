@@ -4,8 +4,8 @@ import app.paralino.core.app_update.AppUpdateStatus
 import app.paralino.core.domain.user.AppAccountState
 import app.paralino.core.models.Resource
 import app.paralino.core.repo.base.AppUpdateType
-import app.paralino.core.ui.components.dialogs.AlertDialogAction
-import app.paralino.core.ui.components.dialogs.MainAlertDialog
+import app.paralino.core.presentation.common.AlertDialogAction
+import app.paralino.core.presentation.common.MainAlertDialog
 import app.paralino.core.ui.main.DeeplinkType
 
 data class MainActivityState(

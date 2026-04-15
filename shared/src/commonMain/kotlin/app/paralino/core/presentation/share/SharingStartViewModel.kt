@@ -27,8 +27,8 @@ import app.paralino.core.repo.places.PlaceActivityDataSource
 import app.paralino.core.repo.user.UserPersonalSpaceLocalDataSource
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.ui.components.BottomSheetPickerType
-import app.paralino.core.ui.components.SnackbarDuration
-import app.paralino.core.ui.components.dialogs.MainAlertDialog
+import app.paralino.core.presentation.common.SnackbarDuration
+import app.paralino.core.presentation.common.MainAlertDialog
 import app.paralino.core.ui.components.nameRes
 import app.paralino.core.utils.ConditionErrorType
 import app.paralino.core.utils.MandatoryForegroundLocationSharingConditionType

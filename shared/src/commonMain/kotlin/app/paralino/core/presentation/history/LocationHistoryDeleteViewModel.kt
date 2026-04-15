@@ -12,8 +12,8 @@ import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.user.UserPersonalSpaceLocalDataSource
 import app.paralino.core.repo.user.UserRepository
-import app.paralino.core.ui.components.dialogs.MainAlertDialog
-import app.paralino.core.ui.components.dialogs.MainAlertDialog.DeleteLocationHistoryDays
+import app.paralino.core.presentation.common.MainAlertDialog
+import app.paralino.core.presentation.common.MainAlertDialog.DeleteLocationHistoryDays
 import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.extensions.errorString
 import app.paralino.core.utils.extensions.nowUTC
@@ -152,7 +152,7 @@ class LocationHistoryDeleteViewModel(
             is LocationHistoryDeleteUiEvent.DialogAction -> {
                 _uiState.update { it.copy(alertDialog = null) }
                 when (event.action.dialog) {
-                    is MainAlertDialog.DeleteLocationHistoryDays -> {
+                    is DeleteLocationHistoryDays -> {
                         if (event.action.action == MainAlertDialog.Buttons.buttonOk) {
                             confirmDeletion()
                         }

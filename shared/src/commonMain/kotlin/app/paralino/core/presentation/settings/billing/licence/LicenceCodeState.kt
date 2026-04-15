@@ -1,6 +1,6 @@
 package app.paralino.core.presentation.settings.billing.licence
 
-import app.paralino.core.ui.components.dialogs.MainAlertDialog
+import app.paralino.core.presentation.common.MainAlertDialog
 
 data class LicenceCodeState(
     val code: String = "",

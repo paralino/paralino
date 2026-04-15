@@ -6,8 +6,8 @@ import app.paralino.core.models.data
 import app.paralino.core.models.places.GroupPlace
 import app.paralino.core.presentation.map.MapPinData
 import app.paralino.core.models.settings.MapsSDKProvider
-import app.paralino.core.ui.components.dialogs.AlertDialogAction
-import app.paralino.core.ui.components.dialogs.MainAlertDialog
+import app.paralino.core.presentation.common.AlertDialogAction
+import app.paralino.core.presentation.common.MainAlertDialog
 import app.paralino.core.utils.ConditionErrorType
 import app.paralino.core.utils.Emojis
 

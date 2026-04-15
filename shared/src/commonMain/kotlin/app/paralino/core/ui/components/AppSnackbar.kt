@@ -18,7 +18,6 @@ import androidx.compose.material.FractionalThreshold
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.SnackbarHost
 import androidx.compose.material.SnackbarHostState
-import androidx.compose.material.SnackbarResult
 import androidx.compose.material.Text
 import androidx.compose.material.rememberSwipeableState
 import androidx.compose.material.swipeable
@@ -43,13 +42,14 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import app.paralino.core.presentation.common.AppSnackbarPayload
+import app.paralino.core.presentation.common.SwipeDirection
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.theme.ButtonStyle
 import app.paralino.core.utils.BaseRemoteModule
 import app.paralino.core.utils.extensions.annotatedBoldCompose
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.serialization.Serializable
 import kotlin.math.absoluteValue
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -203,7 +203,7 @@ fun AppSnackbar(
                             Text(
                                 modifier = Modifier
                                     .padding(4.dp),
-                                text = payload.title,
+                                text = payload.title ?: "",
                                 textAlign = TextAlign.Start,
                                 style = MaterialTheme.typography.subtitle1.copy(
                                     fontWeight = FontWeight.SemiBold
@@ -244,69 +244,4 @@ fun AppSnackbar(
             }
         }
     )
-}
-
-fun SnackbarResult.onAction(action: () -> Unit): SnackbarResult {
-    if (this == SnackbarResult.ActionPerformed)
-        action()
-    return this
-}
-
-fun SnackbarResult.onDismiss(action: () -> Unit): SnackbarResult {
-    if (this == SnackbarResult.Dismissed)
-        action()
-    return this
-}
-
-data class AppSnackbarResult constructor(
-    val data: AppSnackbarData,
-    val result: SnackbarResult
-)
-
-@Serializable
-data class AppSnackbarPayload(
-    val text: String,
-    val title: String? = null,
-    val hasCloseButton: Boolean = false,
-//    val iconRes: Int?,
-//    val iconTint: Int?
-)
-
-data class AppSnackbarData constructor(
-    val payload: AppSnackbarPayload,
-    val actionText: String? = null,
-    val duration: SnackbarDuration = if (actionText.isNullOrBlank()) SnackbarDuration.Short else SnackbarDuration.Forever,
-    val id: String = payload.text,
-) {
-    constructor(
-        text: String,
-        actionText: String? = null,
-        duration: SnackbarDuration = if (actionText.isNullOrBlank()) {
-            SnackbarDuration.Short
-        } else {
-            SnackbarDuration.Forever
-        },
-        id: String = text
-    ) : this(
-        payload = AppSnackbarPayload(
-            title = null,
-            text = text,
-            hasCloseButton = false
-        ),
-        actionText = actionText,
-        duration = duration,
-        id = text
-    )
-}
-
-enum class SnackbarDuration {
-    Short,
-    Long,
-    Forever
-}
-
-enum class SwipeDirection {
-    Left,
-    Initial,
-    Right,
 }

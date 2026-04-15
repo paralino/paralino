@@ -50,7 +50,7 @@ import app.paralino.core.ui.components.NoticeInfoChip
 import app.paralino.core.ui.components.OnboardingSkipButton
 import app.paralino.core.ui.components.PlanLimitCount
 import app.paralino.core.ui.components.SmallActionButton
-import app.paralino.core.ui.components.dialogs.AlertDialogAction
+import app.paralino.core.presentation.common.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.Show
 import app.paralino.core.ui.onboarding.BaseOnboardingScreen
 import app.paralino.core.ui.settings.billing.PremiumPlanBannerSmall
@@ -58,7 +58,6 @@ import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.ui.theme.ButtonStyle
 import app.paralino.core.utils.ConditionErrorType
 import app.paralino.core.utils.extensions.conditional
-import app.paralino.core.utils.extensions.errorString
 import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.flow.collectLatest
 

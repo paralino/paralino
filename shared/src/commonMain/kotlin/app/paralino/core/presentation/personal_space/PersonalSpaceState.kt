@@ -8,8 +8,8 @@ import app.paralino.core.presentation.groups.GroupMemberItemLocationState
 import app.paralino.core.presentation.groups.MemberLocationVisibilityType
 import app.paralino.core.presentation.groups.detail.LocationSharingState
 import app.paralino.core.provider.IValueFormatter
-import app.paralino.core.ui.components.dialogs.AlertDialogAction
-import app.paralino.core.ui.components.dialogs.MainAlertDialog
+import app.paralino.core.presentation.common.AlertDialogAction
+import app.paralino.core.presentation.common.MainAlertDialog
 import app.paralino.core.utils.ConditionErrorType
 
 data class PersonalSpaceScreenState(

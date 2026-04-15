@@ -13,7 +13,7 @@ import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.personal_code.PersonalCodesRepository
 import app.paralino.core.repo.user.UserRepository
-import app.paralino.core.ui.components.dialogs.MainAlertDialog
+import app.paralino.core.presentation.common.MainAlertDialog
 import app.paralino.core.ui.main.DeeplinkType
 import app.paralino.core.utils.ConditionErrorType
 import app.paralino.core.utils.extensions.errorString

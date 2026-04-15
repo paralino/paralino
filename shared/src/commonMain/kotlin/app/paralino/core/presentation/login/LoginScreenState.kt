@@ -1,8 +1,8 @@
 package app.paralino.core.presentation.login
 
 import app.paralino.core.models.settings.FormValidation
-import app.paralino.core.ui.components.dialogs.AlertDialogAction
-import app.paralino.core.ui.components.dialogs.MainAlertDialog
+import app.paralino.core.presentation.common.AlertDialogAction
+import app.paralino.core.presentation.common.MainAlertDialog
 
 data class LoginScreenState constructor(
     val email: String = "",

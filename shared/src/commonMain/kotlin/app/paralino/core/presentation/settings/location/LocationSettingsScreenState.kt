@@ -2,8 +2,8 @@ package app.paralino.core.presentation.settings.location
 
 import app.paralino.core.presentation.settings.generic.GroupOptionItem
 import app.paralino.core.repo.location.LocationPerformanceSettingsType
-import app.paralino.core.ui.components.dialogs.AlertDialogAction
-import app.paralino.core.ui.components.dialogs.MainAlertDialog
+import app.paralino.core.presentation.common.AlertDialogAction
+import app.paralino.core.presentation.common.MainAlertDialog
 
 data class LocationSettingsScreenState(
     val highPerformanceSettings: LocationSettingsHighPerformance,

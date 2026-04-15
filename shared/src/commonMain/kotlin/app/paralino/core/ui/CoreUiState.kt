@@ -6,8 +6,8 @@ import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import app.paralino.core.ui.components.AppSnackbarData
-import app.paralino.core.ui.components.SnackbarDuration
+import app.paralino.core.presentation.common.AppSnackbarData
+import app.paralino.core.presentation.common.SnackbarDuration
 import app.paralino.core.utils.BaseRemoteModule
 import kotlinx.coroutines.CoroutineScope
 

@@ -4,8 +4,8 @@ import app.paralino.core.MR
 import app.paralino.core.models.base.GroupOrSpaceId
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.provider.localizedString
-import app.paralino.core.ui.components.dialogs.AlertDialogAction
-import app.paralino.core.ui.components.dialogs.MainAlertDialog
+import app.paralino.core.presentation.common.AlertDialogAction
+import app.paralino.core.presentation.common.MainAlertDialog
 import kotlinx.datetime.LocalDate
 
 data class LocationHistoryDeleteScreenState(

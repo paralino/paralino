@@ -3,7 +3,7 @@ package app.paralino.core.presentation.invite.manage
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.data
 import app.paralino.core.models.user.UserPersonalCode
-import app.paralino.core.ui.components.dialogs.MainAlertDialog
+import app.paralino.core.presentation.common.MainAlertDialog
 import app.paralino.core.utils.ConditionErrorType
 import app.paralino.core.utils.Emojis
 
