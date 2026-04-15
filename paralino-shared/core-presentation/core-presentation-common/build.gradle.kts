@@ -45,10 +45,6 @@ kotlin {
             implementation(libs.lifecycle.viewmodel.ktx)
             implementation(libs.activity.compose)
         }
-
-        iosMain.dependencies {
-            implementation(libs.network.ktor.client.darwin)
-        }
     }
 
     jvmToolchain(21)

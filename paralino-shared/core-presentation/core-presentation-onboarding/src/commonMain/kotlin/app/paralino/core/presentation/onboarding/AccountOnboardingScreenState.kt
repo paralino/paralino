@@ -2,10 +2,8 @@ package app.paralino.core.presentation.onboarding
 
 import app.paralino.core.models.base.GroupOrSpaceId
 import app.paralino.core.models.base.ImageModel
-import app.paralino.core.presentation.invite.manage.PersonalCodeScreenCodeData
-import app.paralino.core.ui.onboarding.account.AccountOnboardingContent
-import app.paralino.core.ui.onboarding.account.AccountOnboardingUiEvent
-import app.paralino.core.ui.settings.billing.BillingScreenSourceType
+import app.paralino.core.presentation.billing.BillingScreenSourceType
+import app.paralino.core.presentation.paralinoid.PersonalCodeScreenCodeData
 
 data class AccountOnboardingScreenState constructor(
     val userImage: ImageModel,

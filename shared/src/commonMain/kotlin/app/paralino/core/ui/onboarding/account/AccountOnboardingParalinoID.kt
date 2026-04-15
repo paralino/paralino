@@ -7,6 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import app.paralino.core.MR
+import app.paralino.core.presentation.onboarding.AccountOnboardingContent
 import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.DefaultEmptyState
@@ -26,11 +27,12 @@ fun AccountOnboardingParalinoID(
             .padding(top = 12.dp)
             .fillMaxSize()
     ) {
-        if (step.personalCode != null) {
+        val personalCode = step.personalCode
+        if (personalCode != null) {
             PersonalCodeItemWithHints(hintDelayMillis = 800) {
                 PersonalCodeItem(
                     modifier = this,
-                    state = step.personalCode,
+                    state = personalCode,
                     hintDelayMillis = 0,
                     hasShareHint = false,
                     onCopy = onCopyPersonalCode,

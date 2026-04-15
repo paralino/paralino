@@ -59,7 +59,7 @@ import app.paralino.core.presentation.settings.generic.MeasurementSystemViewMode
 import app.paralino.core.presentation.settings.generic.NotificationsGroupingViewModel
 import app.paralino.core.presentation.settings.generic.PlaceSearchSettingsViewModel
 import app.paralino.android.presentation.settings.generic.NotificationSocketSettingsViewModel
-import app.paralino.core.ui.settings.billing.BillingScreenSourceType
+import app.paralino.core.presentation.billing.BillingScreenSourceType
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 

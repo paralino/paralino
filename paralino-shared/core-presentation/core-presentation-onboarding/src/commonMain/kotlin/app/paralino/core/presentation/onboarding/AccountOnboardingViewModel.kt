@@ -13,9 +13,10 @@ import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.user.UserMe
 import app.paralino.core.models.user.UserPersonalCode
 import app.paralino.core.presentation.CoreViewModel
+import app.paralino.core.presentation.billing.BillingScreenSourceType
 import app.paralino.core.provider.ICoreMessageDispatcherEvent
-import app.paralino.core.presentation.invite.manage.PersonalCodeScreenCodeData
 import app.paralino.core.presentation.onboarding.AccountOnboardingScreenEvent.OpenPaywall
+import app.paralino.core.presentation.paralinoid.PersonalCodeScreenCodeData
 import app.paralino.core.provider.DeviceStatusData
 import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.provider.NotificationPermissionResultEvent
@@ -26,9 +27,6 @@ import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.personal_code.PersonalCodesRepository
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.DeeplinkType
-import app.paralino.core.ui.onboarding.account.AccountOnboardingContent
-import app.paralino.core.ui.onboarding.account.AccountOnboardingUiEvent
-import app.paralino.core.ui.settings.billing.BillingScreenSourceType
 import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.extensions.errorString
 import kotlinx.coroutines.Dispatchers

@@ -49,7 +49,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import app.paralino.core.MR
 import app.paralino.core.models.base.ImageModel
-import app.paralino.core.presentation.invite.manage.PersonalCodeScreenCodeData
+import app.paralino.core.presentation.paralinoid.PersonalCodeScreenCodeData
 import app.paralino.core.ui.components.ConditionErrorItem
 import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource

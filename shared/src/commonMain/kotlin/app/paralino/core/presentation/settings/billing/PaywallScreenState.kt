@@ -17,7 +17,7 @@ import app.paralino.core.presentation.common.AlertDialogButtonData
 import app.paralino.core.presentation.common.AlertDialogData
 import app.paralino.core.presentation.common.MainAlertDialog
 import app.paralino.core.presentation.common.MainAlertDialog.Buttons
-import app.paralino.core.ui.settings.billing.BillingScreenSourceType
+import app.paralino.core.presentation.billing.BillingScreenSourceType
 import org.jetbrains.compose.resources.DrawableResource
 
 data class PaywallScreenState(

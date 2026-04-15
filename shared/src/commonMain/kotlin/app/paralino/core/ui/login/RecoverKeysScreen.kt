@@ -182,7 +182,7 @@ private fun RecoverKeysScreen(
         verticalArrangement = Arrangement.Center
     ) {
 
-        when (state.uiStep) {
+        when (val uiStep = state.uiStep) {
             is RecoverKeysUiStep.Recover -> {
                 Text(
                     text = stringResource(MR.strings.recover_account_header_recover_possible),
@@ -191,22 +191,22 @@ private fun RecoverKeysScreen(
                 Spacer(modifier = Modifier.size(30.dp))
                 Text(text = stringResource(MR.strings.recover_account_caption_recover_possible))
                 Spacer(modifier = Modifier.size(10.dp))
-                if (state.uiStep is RecoverKeysUiStep.Recover.RecoverClassicAccount) {
+                if (uiStep is RecoverKeysUiStep.Recover.RecoverClassicAccount) {
                     PasswordInputField(
-                        password = state.uiStep.oldPassword,
+                        password = uiStep.oldPassword,
                         hint = stringResource(MR.strings.login_placeholder_password_old),
-                        hasError = state.uiStep.hasOldPasswordError,
+                        hasError = uiStep.hasOldPasswordError,
                         imeAction = ImeAction.Next,
                         focusManager = focusManager,
                         onInputChange = { onOldPasswordChange(it) }
                     )
 
-                    if (state.uiStep.recoverState.data != null) {
+                    if (uiStep.recoverState.data != null) {
                         Spacer(modifier = Modifier.size(10.dp))
                         PasswordInputField(
-                            password = state.uiStep.currentPassword,
+                            password = uiStep.currentPassword,
                             hint = stringResource(MR.strings.settings_account_edit_email_placeholder_password),
-                            hasError = state.uiStep.hasCurrentPasswordError,
+                            hasError = uiStep.hasCurrentPasswordError,
                             imeAction = ImeAction.Next,
                             focusManager = focusManager,
                             onInputChange = { onCurrentPasswordChange(it) }
@@ -221,12 +221,12 @@ private fun RecoverKeysScreen(
                     style = MaterialTheme.typography.h5
                 )
 
-                if (state.uiStep is RecoverKeysUiStep.Reset.ResetClassicAccount) {
+                if (uiStep is RecoverKeysUiStep.Reset.ResetClassicAccount) {
                     Spacer(modifier = Modifier.size(10.dp))
                     PasswordInputField(
-                        password = state.uiStep.currentPassword,
+                        password = uiStep.currentPassword,
                         hint = stringResource(MR.strings.settings_account_edit_email_placeholder_password),
-                        hasError = state.uiStep.hasCurrentPasswordError,
+                        hasError = uiStep.hasCurrentPasswordError,
                         imeAction = ImeAction.Next,
                         focusManager = focusManager,
                         onInputChange = { onCurrentPasswordChange(it) }
@@ -236,9 +236,9 @@ private fun RecoverKeysScreen(
         }
 
         val rememberRecoverState = remember(state.uiStep) {
-            when (state.uiStep) {
-                is RecoverKeysUiStep.Recover.RecoverClassicAccount -> state.uiStep.recoverState
-                is RecoverKeysUiStep.Recover.RecoverGuest -> state.uiStep.recoverState
+            when (val uiStep = state.uiStep) {
+                is RecoverKeysUiStep.Recover.RecoverClassicAccount -> uiStep.recoverState
+                is RecoverKeysUiStep.Recover.RecoverGuest -> uiStep.recoverState
                 is RecoverKeysUiStep.Reset.ResetClassicAccount -> Resource.NotInitialized
                 RecoverKeysUiStep.Reset.ResetGuest -> Resource.NotInitialized
             }
@@ -323,16 +323,18 @@ private fun RecoverKeysScreen(
                 else
                     Text(text = stringResource(MR.strings.recover_account_caption_reset).annotatedBoldCompose())
 
-                if (state.uiStep is RecoverKeysUiStep.Recover.RecoverClassicAccount && rememberRecoverState is Resource.Ready && rememberRecoverState.data == null) {
-                    Spacer(modifier = Modifier.size(10.dp))
-                    PasswordInputField(
-                        password = state.uiStep.currentPassword,
-                        hint = stringResource(MR.strings.settings_account_edit_email_placeholder_password),
-                        hasError = state.uiStep.hasCurrentPasswordError,
-                        imeAction = ImeAction.Next,
-                        focusManager = focusManager,
-                        onInputChange = { onCurrentPasswordChange(it) }
-                    )
+                with(state.uiStep) {
+                    if (this is RecoverKeysUiStep.Recover.RecoverClassicAccount && rememberRecoverState is Resource.Ready && rememberRecoverState.data == null) {
+                        Spacer(modifier = Modifier.size(10.dp))
+                        PasswordInputField(
+                            password = currentPassword,
+                            hint = stringResource(MR.strings.settings_account_edit_email_placeholder_password),
+                            hasError = hasCurrentPasswordError,
+                            imeAction = ImeAction.Next,
+                            focusManager = focusManager,
+                            onInputChange = { onCurrentPasswordChange(it) }
+                        )
+                    }
                 }
 
                 Spacer(modifier = Modifier.size(10.dp))

@@ -42,7 +42,7 @@ import app.paralino.core.presentation.common.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.LoadingDialog
 import app.paralino.core.ui.components.dialogs.Show
 import app.paralino.core.utils.DeeplinkType
-import app.paralino.core.ui.settings.billing.BillingScreenSourceType
+import app.paralino.core.presentation.billing.BillingScreenSourceType
 import app.paralino.core.ui.theme.AppTheme
 import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.delay

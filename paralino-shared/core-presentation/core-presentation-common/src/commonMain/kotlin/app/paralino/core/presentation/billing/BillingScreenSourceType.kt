@@ -1,4 +1,4 @@
-package app.paralino.core.ui.settings.billing
+package app.paralino.core.presentation.billing
 
 enum class BillingScreenSourceType(val key: String) {
     GROUP_ONBOARDING("group_onboarding"),
@@ -22,7 +22,7 @@ enum class BillingScreenSourceType(val key: String) {
 
     companion object {
         fun fromKey(key: String?): BillingScreenSourceType {
-            return BillingScreenSourceType.entries.firstOrNull { it.key == key } ?: NORMAL
+            return entries.firstOrNull { it.key == key } ?: NORMAL
         }
     }
 }

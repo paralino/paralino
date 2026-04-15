@@ -8,13 +8,14 @@ import androidx.compose.ui.Modifier
 import app.paralino.core.MR
 import app.paralino.core.models.base.GroupOrSpaceId
 import app.paralino.core.models.data
+import app.paralino.core.presentation.onboarding.AccountOnboardingContent
 import app.paralino.core.presentation.onboarding.AccountOnboardingScreenEvent
 import app.paralino.core.presentation.onboarding.AccountOnboardingScreenUiEvent
 import app.paralino.core.presentation.onboarding.AccountOnboardingViewModel
 import app.paralino.core.ui.CoreUiState
 import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.components.dialogs.LoadingDialog
-import app.paralino.core.ui.settings.billing.BillingScreenSourceType
+import app.paralino.core.presentation.billing.BillingScreenSourceType
 import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.flow.collectLatest
 

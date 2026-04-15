@@ -24,7 +24,7 @@ import app.paralino.core.presentation.settings.generic.GenericSettingsScreenUiEv
 import app.paralino.core.ui.components.DefaultToolbar
 import app.paralino.core.ui.components.ToolbarButtons
 import app.paralino.core.ui.settings.GenericSettingsScreenCore
-import app.paralino.core.ui.settings.billing.BillingScreenSourceType
+import app.paralino.core.presentation.billing.BillingScreenSourceType
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable

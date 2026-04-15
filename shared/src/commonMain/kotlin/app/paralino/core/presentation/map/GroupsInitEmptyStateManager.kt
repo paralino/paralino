@@ -6,7 +6,7 @@ import app.paralino.core.models.data
 import app.paralino.core.models.user.UserMe
 import app.paralino.core.models.user.UserPersonalCode
 import app.paralino.core.presentation.common.ICoreMessageDispatcher
-import app.paralino.core.presentation.invite.manage.PersonalCodeScreenCodeData
+import app.paralino.core.presentation.paralinoid.PersonalCodeScreenCodeData
 import app.paralino.core.provider.DeviceStatusData
 import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.provider.localizedString

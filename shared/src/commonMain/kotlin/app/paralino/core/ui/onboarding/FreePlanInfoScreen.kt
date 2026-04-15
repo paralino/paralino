@@ -9,9 +9,9 @@ import androidx.compose.ui.Modifier
 import app.paralino.core.presentation.settings.billing.PlanInfoViewModel
 import app.paralino.core.ui.CoreUiState
 import app.paralino.core.ui.components.MessageDispatcherEffect
-import app.paralino.core.ui.onboarding.account.AccountOnboardingContent
+import app.paralino.core.presentation.onboarding.AccountOnboardingContent
 import app.paralino.core.ui.onboarding.account.AccountOnboardingScreenContent
-import app.paralino.core.ui.onboarding.account.AccountOnboardingUiEvent
+import app.paralino.core.presentation.onboarding.AccountOnboardingUiEvent
 
 @Composable
 fun FreePlanInfoScreenCore(

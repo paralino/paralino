@@ -8,7 +8,7 @@ import app.paralino.core.presentation.groups.GroupItemState
 import app.paralino.core.ui.components.BottomSheetPickerType
 import app.paralino.core.presentation.common.AlertDialogAction
 import app.paralino.core.presentation.common.MainAlertDialog
-import app.paralino.core.ui.settings.billing.BillingScreenSourceType
+import app.paralino.core.presentation.billing.BillingScreenSourceType
 import app.paralino.core.utils.Emojis
 
 data class MemberInviteScreenState(

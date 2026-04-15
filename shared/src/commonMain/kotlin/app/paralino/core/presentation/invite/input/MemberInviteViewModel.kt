@@ -14,7 +14,7 @@ import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.ui.components.BottomSheetPickerType
 import app.paralino.core.presentation.common.MainAlertDialog
 import app.paralino.core.utils.DeeplinkType
-import app.paralino.core.ui.settings.billing.BillingScreenSourceType
+import app.paralino.core.presentation.billing.BillingScreenSourceType
 import app.paralino.core.utils.exceptions.ConflictException
 import app.paralino.core.utils.exceptions.NotFoundException
 import app.paralino.core.utils.exceptions.asRemoteException

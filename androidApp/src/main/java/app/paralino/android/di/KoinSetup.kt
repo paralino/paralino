@@ -127,7 +127,7 @@ import app.paralino.core.repo.places.PlacesActivityProcessor
 import app.paralino.core.repo.user.IExportPersonalLocationHistoryUseCase
 import app.paralino.core.repo.user.IImportPersonalLocationHistoryUseCase
 import app.paralino.core.repo.user.IPushProviderManager
-import app.paralino.core.ui.settings.billing.BillingScreenSourceType
+import app.paralino.core.presentation.billing.BillingScreenSourceType
 import org.koin.android.ext.koin.androidApplication
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.dsl.viewModel

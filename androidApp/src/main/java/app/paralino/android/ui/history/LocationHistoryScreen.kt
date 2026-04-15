@@ -25,7 +25,7 @@ import app.paralino.core.presentation.common.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.Show
 import app.paralino.core.ui.history.LocationHistoryDateSelector
 import app.paralino.core.ui.history.LocationHistoryStatsTable
-import app.paralino.core.ui.settings.billing.BillingScreenSourceType
+import app.paralino.core.presentation.billing.BillingScreenSourceType
 import app.paralino.core.ui.theme.AppTheme
 import app.paralino.core.utils.extensions.openNavigation
 import kotlinx.coroutines.flow.Flow
