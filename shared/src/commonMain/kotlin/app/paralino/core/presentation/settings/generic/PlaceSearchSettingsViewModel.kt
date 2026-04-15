@@ -5,7 +5,7 @@ import app.paralino.core.MR
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.provider.localizedString
-import app.paralino.core.ui.components.CoreAppIcons
+import app.paralino.core.resources.CoreAppIcons
 import kotlinx.coroutines.flow.update
 
 class PlaceSearchSettingsViewModel(

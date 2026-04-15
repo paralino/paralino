@@ -1,6 +1,6 @@
 package app.paralino.core.models.settings
 
-import app.paralino.core.resources.Res
+import app.paralino.core.domain.resources.Res
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 
 sealed class FormValidation {

@@ -67,5 +67,5 @@ kotlin {
 compose.resources {
     publicResClass = true
     nameOfResClass = "Res"
-    packageOfResClass = "app.paralino.core.resources"
+    packageOfResClass = "app.paralino.core.domain.resources"
 }

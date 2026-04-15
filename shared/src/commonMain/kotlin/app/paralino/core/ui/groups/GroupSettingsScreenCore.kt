@@ -23,8 +23,8 @@ import app.paralino.core.presentation.groups.settings.GroupSettingsScreenEvent
 import app.paralino.core.presentation.groups.settings.GroupSettingsUiEvent
 import app.paralino.core.presentation.groups.settings.GroupSettingsViewModel
 import app.paralino.core.ui.CoreUiState
-import app.paralino.core.ui.components.CoreAppIcons
-import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
+import app.paralino.core.resources.CoreAppIcons
+import app.paralino.core.resources.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.presentation.common.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.LoadingDialog

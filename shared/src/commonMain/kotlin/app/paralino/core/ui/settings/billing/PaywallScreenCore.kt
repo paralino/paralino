@@ -88,8 +88,8 @@ import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.provider.current
 import app.paralino.core.ui.CoreUiState
 import app.paralino.core.ui.components.AppButtonState
-import app.paralino.core.ui.components.CoreAppIcons
-import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
+import app.paralino.core.resources.CoreAppIcons
+import app.paralino.core.resources.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.DefaultToolbar
 import app.paralino.core.ui.components.FilledButton
 import app.paralino.core.ui.components.MessageDispatcherEffect

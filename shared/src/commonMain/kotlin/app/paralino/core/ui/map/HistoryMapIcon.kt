@@ -8,8 +8,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import app.paralino.core.ui.components.CoreAppIcons
-import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
+import app.paralino.core.resources.CoreAppIcons
+import app.paralino.core.resources.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.utils.extensions.conditional
 

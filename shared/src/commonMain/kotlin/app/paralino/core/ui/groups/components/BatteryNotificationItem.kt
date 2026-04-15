@@ -27,8 +27,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.paralino.core.presentation.groups.settings.BatteryNotificationMemberState
 import app.paralino.core.ui.components.AppButtonState
-import app.paralino.core.ui.components.CoreAppIcons
-import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
+import app.paralino.core.resources.CoreAppIcons
+import app.paralino.core.resources.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.FilledButton
 import app.paralino.core.ui.components.ImageModelImage
 import app.paralino.core.ui.theme.ButtonStyle

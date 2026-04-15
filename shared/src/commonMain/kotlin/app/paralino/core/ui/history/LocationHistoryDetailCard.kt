@@ -70,8 +70,8 @@ import app.paralino.core.presentation.history.LocationHistoryDataViewType
 import app.paralino.core.models.location.LocationHistoryPointState
 import app.paralino.core.presentation.history.LocationHistoryScreenUiState
 import app.paralino.core.presentation.history.LocationHistoryUiEvent
-import app.paralino.core.ui.components.CoreAppIcons
-import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
+import app.paralino.core.resources.CoreAppIcons
+import app.paralino.core.resources.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.DataInfoChip
 import app.paralino.core.ui.components.EmbeddedSlider
 import app.paralino.core.ui.components.EmbeddedSliderSize

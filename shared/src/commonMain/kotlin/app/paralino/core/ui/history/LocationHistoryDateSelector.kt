@@ -61,8 +61,8 @@ import app.paralino.core.presentation.history.LocationHistoryDateSelectorState
 import app.paralino.core.presentation.history.LocationHistoryDayState
 import app.paralino.core.presentation.history.LocationHistorySelectedDayPosition
 import app.paralino.core.presentation.history.LocationHistoryUiEvent
-import app.paralino.core.ui.components.CoreAppIcons
-import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
+import app.paralino.core.resources.CoreAppIcons
+import app.paralino.core.resources.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.SmallActionButton
 import app.paralino.core.ui.onboarding.onboardingContentTransitionSpec
 import app.paralino.core.ui.theme.AppColors

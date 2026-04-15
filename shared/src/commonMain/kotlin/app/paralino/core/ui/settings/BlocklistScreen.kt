@@ -33,8 +33,8 @@ import app.paralino.core.presentation.settings.blocklist.BlocklistElementState
 import app.paralino.core.presentation.settings.blocklist.BlocklistScreenState
 import app.paralino.core.presentation.settings.blocklist.BlocklistViewModel
 import app.paralino.core.ui.CoreUiState
-import app.paralino.core.ui.components.CoreAppIcons
-import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
+import app.paralino.core.resources.CoreAppIcons
+import app.paralino.core.resources.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.DefaultEmptyState
 import app.paralino.core.ui.components.ImageModelImage
 import app.paralino.core.ui.components.MessageDispatcherEffect

@@ -26,7 +26,7 @@ import androidx.compose.ui.unit.dp
 import app.paralino.core.MR
 import app.paralino.core.presentation.login.LoggedOutViewModel
 import app.paralino.core.ui.components.ActionScaffold
-import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
+import app.paralino.core.resources.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.theme.AppTheme
 import dev.icerock.moko.resources.compose.stringResource
 import org.jetbrains.compose.resources.painterResource

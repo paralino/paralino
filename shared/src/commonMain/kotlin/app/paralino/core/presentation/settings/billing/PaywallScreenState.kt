@@ -11,7 +11,7 @@ import app.paralino.core.models.base.PlanProvider
 import app.paralino.core.models.base.PlanType
 import app.paralino.core.models.base.SubscriptionInfoNotice
 import app.paralino.core.provider.localizedString
-import app.paralino.core.ui.components.CoreAppIcons
+import app.paralino.core.resources.CoreAppIcons
 import app.paralino.core.presentation.common.AlertDialogAction
 import app.paralino.core.presentation.common.AlertDialogButtonData
 import app.paralino.core.presentation.common.AlertDialogData

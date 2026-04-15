@@ -26,7 +26,7 @@ import androidx.compose.ui.unit.sp
 import app.paralino.core.MR
 import app.paralino.core.presentation.history.LocationHistoryStats
 import app.paralino.core.provider.localizedString
-import app.paralino.core.ui.components.CoreAppIcons
+import app.paralino.core.resources.CoreAppIcons
 import org.jetbrains.compose.resources.DrawableResource
 
 private data class StatInfo(

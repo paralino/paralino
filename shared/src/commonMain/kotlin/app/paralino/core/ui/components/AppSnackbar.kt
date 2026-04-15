@@ -44,7 +44,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import app.paralino.core.presentation.common.AppSnackbarPayload
 import app.paralino.core.presentation.common.SwipeDirection
-import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
+import app.paralino.core.resources.CoreAppIcons
+import app.paralino.core.resources.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.theme.ButtonStyle
 import app.paralino.core.utils.BaseRemoteModule
 import app.paralino.core.utils.extensions.annotatedBoldCompose

@@ -34,8 +34,8 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.unit.dp
 import app.paralino.core.presentation.map.MapPinData
-import app.paralino.core.ui.components.CoreAppIcons
-import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
+import app.paralino.core.resources.CoreAppIcons
+import app.paralino.core.resources.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.map.MapMarkerContent
 import app.paralino.core.ui.places.PlacesEmptyStateMarkers
 import app.paralino.core.ui.theme.AppColors
