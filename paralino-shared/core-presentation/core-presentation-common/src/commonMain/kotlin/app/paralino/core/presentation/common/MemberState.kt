@@ -1,4 +1,4 @@
-package app.paralino.core.presentation.groups
+package app.paralino.core.presentation.common
 
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.data
@@ -242,22 +242,9 @@ data class MemberActionsState(
     ).isNotEmpty()
 }
 
-data class MemberActionItemState(
-    val type: MemberActionType,
-    val isLoading: Boolean = false,
-    val isEnabled: Boolean = true,
-)
-
 data class LocationHistoryActionItemState(
     val isLoading: Boolean = false,
     val isEnabled: Boolean = true,
-)
-
-data class MemberNavigateItemState(
-    val lat: Double,
-    val lng: Double,
-    val title: String?,
-    val isEnabled: Boolean = true
 )
 
 data class LocationRequestItemState(
@@ -275,10 +262,6 @@ data class LocationRequestItemState(
     val canInteract: Boolean = !isLoading && !isWaitingForUser
     val hasError = hasRequestError || hasDeviceSetupWrongError || hasDeviceUnreachableError || hasDeviceMaybeUnreachableError
     val isStatusRecent: Boolean = lastDeviceUpdate?.isOlderThan(10.minutes) == false
-}
-
-enum class MemberActionType {
-    DELETE_MEMBER, DELETE_LOCATION, BLOCK_USER, UNBLOCK_USER;
 }
 
 enum class MemberLocationVisibilityType {

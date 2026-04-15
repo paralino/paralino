@@ -185,8 +185,9 @@ fun LocationHistoryDateSelector(
             }
         }
 
+        val dateRangeDays = state.dateRangeDays
         AnimatedVisibility(
-            visible = state.dateRangeDays != null && state.dateRangeDays > 1 && !state.isLimitedHistoryPlanMode,
+            visible = dateRangeDays != null && dateRangeDays > 1 && !state.isLimitedHistoryPlanMode,
             enter = fadeIn() + expandHorizontally(),
             exit = fadeOut() + shrinkHorizontally()
         ) {

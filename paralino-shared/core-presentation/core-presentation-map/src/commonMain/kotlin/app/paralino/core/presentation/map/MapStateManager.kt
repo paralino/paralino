@@ -3,10 +3,10 @@ package app.paralino.core.presentation.map
 import app.paralino.core.MR
 import app.paralino.core.models.map.MapHomeScreenFocusType
 import app.paralino.core.presentation.common.ICoreMessageDispatcher
-import app.paralino.core.presentation.groups.GroupMemberItemState
 import app.paralino.core.provider.localizedString
 import app.paralino.core.presentation.common.AppSnackbarData
 import app.paralino.core.presentation.common.AppSnackbarPayload
+import app.paralino.core.presentation.common.GroupMemberItemState
 import app.paralino.core.presentation.common.onAction
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel

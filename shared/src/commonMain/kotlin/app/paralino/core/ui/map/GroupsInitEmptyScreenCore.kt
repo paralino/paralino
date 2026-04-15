@@ -71,11 +71,12 @@ fun GroupsInitEmptyScreenContent(
 
         Spacer(modifier = Modifier.size(20.dp))
 
-        if (state.personalCode != null) {
+        val personalCode = state.personalCode
+        if (personalCode != null) {
             PersonalCodeItemWithHints {
                 PersonalCodeItem(
                     modifier = this,
-                    state = state.personalCode,
+                    state = personalCode,
                     onCopy = {
                         onEvent(GroupsInitEmptyScreenUiEvent.CopyPersonalCode)
                     },

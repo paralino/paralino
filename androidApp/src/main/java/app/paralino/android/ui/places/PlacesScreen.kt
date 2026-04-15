@@ -22,7 +22,7 @@ import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.core.MR
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.base.asGroupOrSpaceId
-import app.paralino.core.presentation.places.list.PlaceListItemData
+import app.paralino.core.presentation.common.PlaceListItemData
 import app.paralino.core.presentation.places.list.PlacesViewModel
 import app.paralino.core.ui.components.DefaultToolbar
 import app.paralino.core.ui.components.ToolbarButtons

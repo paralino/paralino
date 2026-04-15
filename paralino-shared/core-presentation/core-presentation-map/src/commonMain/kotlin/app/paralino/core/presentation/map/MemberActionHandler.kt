@@ -7,12 +7,12 @@ import app.paralino.core.domain.location.LocationRequestUseCase
 import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.presentation.common.ICoreMessageDispatcher
 import app.paralino.core.presentation.common.GroupItemState
-import app.paralino.core.presentation.groups.GroupMemberItemState
-import app.paralino.core.presentation.groups.LocationRequestItemState
-import app.paralino.core.presentation.groups.MemberActionType
 import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.presentation.common.AppSnackbarData
+import app.paralino.core.presentation.common.GroupMemberItemState
+import app.paralino.core.presentation.common.LocationRequestItemState
+import app.paralino.core.presentation.common.MemberActionType
 import app.paralino.core.presentation.common.SnackbarDuration
 import app.paralino.core.presentation.common.onAction
 import app.paralino.core.utils.exceptions.asRemoteException

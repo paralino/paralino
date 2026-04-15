@@ -189,7 +189,7 @@ fun LocationHistoryDeleteScreenCore(
                                         )
                                         if (!item.tag.isNullOrBlank()) {
                                             Text(
-                                                text = item.tag,
+                                                text = item.tag ?: "",
                                                 style = MaterialTheme.typography.overline.copy(fontWeight = FontWeight.SemiBold),
                                                 color = MaterialTheme.colors.onSecondary,
                                                 modifier = Modifier

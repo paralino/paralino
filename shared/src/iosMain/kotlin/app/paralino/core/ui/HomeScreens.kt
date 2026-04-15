@@ -27,7 +27,7 @@ import app.paralino.core.presentation.personal_space.settings.PersonalSpaceSetti
 import app.paralino.core.presentation.places.create.CreatePlaceViewModel
 import app.paralino.core.presentation.places.detail.PlaceDetailScreenState
 import app.paralino.core.presentation.places.detail.PlaceDetailViewModel
-import app.paralino.core.presentation.places.list.PlaceListItemData
+import app.paralino.core.presentation.common.PlaceListItemData
 import app.paralino.core.presentation.places.list.PlacesListScreenState
 import app.paralino.core.presentation.places.list.PlacesViewModel
 import app.paralino.core.presentation.settings.billing.PlanInfoViewModel

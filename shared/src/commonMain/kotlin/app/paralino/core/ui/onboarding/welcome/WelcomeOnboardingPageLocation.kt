@@ -41,10 +41,10 @@ import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import app.paralino.core.models.base.ImageModel
-import app.paralino.core.presentation.groups.GroupMemberItemStateWithLocations
-import app.paralino.core.presentation.groups.MemberActionItemState
-import app.paralino.core.presentation.groups.MemberActionType
-import app.paralino.core.presentation.groups.MemberActionsState
+import app.paralino.core.presentation.common.GroupMemberItemStateWithLocations
+import app.paralino.core.presentation.common.MemberActionItemState
+import app.paralino.core.presentation.common.MemberActionType
+import app.paralino.core.presentation.common.MemberActionsState
 import app.paralino.core.resources.CoreAppIcons
 import app.paralino.core.resources.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.groups.components.GroupMember

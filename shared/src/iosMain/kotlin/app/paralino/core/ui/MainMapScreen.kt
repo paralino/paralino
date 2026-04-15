@@ -33,7 +33,7 @@ import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.presentation.common.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.Show
 import app.paralino.core.ui.history.LocationHistoryMapCardUi
-import app.paralino.core.ui.map.BottomSheetPosition
+import app.paralino.core.presentation.map.BottomSheetPosition
 import app.paralino.core.ui.map.MainMapSheet
 import app.paralino.core.ui.map.MapHomeElementMainCards
 import app.paralino.core.ui.map.MapHomeScreenElements

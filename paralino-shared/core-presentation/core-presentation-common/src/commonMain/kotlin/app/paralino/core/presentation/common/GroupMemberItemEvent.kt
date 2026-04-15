@@ -1,4 +1,4 @@
-package app.paralino.core.presentation.groups
+package app.paralino.core.presentation.common
 
 sealed interface GroupMemberItemEvent {
     data class onItemClick(val item: GroupMemberItemState): GroupMemberItemEvent

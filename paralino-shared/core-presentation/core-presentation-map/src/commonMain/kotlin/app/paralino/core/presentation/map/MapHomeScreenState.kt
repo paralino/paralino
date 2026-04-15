@@ -10,19 +10,18 @@ import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.location.LatLng
 import app.paralino.core.models.location.LocationSharingContract
 import app.paralino.core.models.map.MapHomeScreenFocusType
-import app.paralino.core.presentation.groups.GroupMemberItemEvent
-import app.paralino.core.presentation.groups.GroupMemberItemState
-import app.paralino.core.presentation.groups.GroupMemberItemStateWithFullStateLocations
-import app.paralino.core.presentation.groups.GroupMemberItemStateWithOneLocation
-import app.paralino.core.presentation.groups.MemberActionsState
-import app.paralino.core.presentation.places.list.PlaceListItemData
 import app.paralino.core.models.settings.IOSNavigationAppType
 import app.paralino.core.models.settings.MapInteractionsType
 import app.paralino.core.models.settings.MapsSDKProvider
 import app.paralino.core.provider.current
 import app.paralino.core.presentation.common.AlertDialogAction
+import app.paralino.core.presentation.common.GroupMemberItemEvent
+import app.paralino.core.presentation.common.GroupMemberItemState
+import app.paralino.core.presentation.common.GroupMemberItemStateWithFullStateLocations
+import app.paralino.core.presentation.common.GroupMemberItemStateWithOneLocation
 import app.paralino.core.presentation.common.MainAlertDialog
-import app.paralino.core.ui.map.BottomSheetPosition
+import app.paralino.core.presentation.common.MemberActionsState
+import app.paralino.core.presentation.common.PlaceListItemData
 
 sealed class MapHomeScreenState {
     abstract val currentUserImage: ImageModel

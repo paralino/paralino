@@ -65,7 +65,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.paralino.core.MR
-import app.paralino.core.presentation.groups.MemberActionType
+import app.paralino.core.presentation.common.MemberActionType
 import app.paralino.core.presentation.history.LocationHistoryDataViewType
 import app.paralino.core.models.location.LocationHistoryPointState
 import app.paralino.core.presentation.history.LocationHistoryScreenUiState
@@ -376,7 +376,7 @@ fun LocationHistoryDetailCard(
                                 .fillMaxWidth(),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            when (uiState.selectedPoint) {
+                            when (val selectedPoint = uiState.selectedPoint) {
                                 is LocationHistoryPointState.Cluster -> {
                                     AnimatedVisibility(!isCollapsed) {
                                         GroupMemberActionButton(
@@ -385,7 +385,7 @@ fun LocationHistoryDetailCard(
                                             endIcon = CoreAppIcons.ChevronRight.asPainterResource(),
                                             text = stringResource(
                                                 MR.strings.history_entry_clustered_count,
-                                                "${uiState.selectedPoint.points.size}"
+                                                "${selectedPoint.points.size}"
                                             ),
                                             backgroundColor = if (isSystemInDarkTheme()) {
                                                 AppColors.accentLight.copy(alpha = 0.2f)
@@ -393,7 +393,7 @@ fun LocationHistoryDetailCard(
                                                 AppColors.accent.copy(alpha = 0.2f)
                                             },
                                             onClick = {
-                                                handleEvent(LocationHistoryUiEvent.ExpandCluster(uiState.selectedPoint))
+                                                handleEvent(LocationHistoryUiEvent.ExpandCluster(selectedPoint))
                                             }
                                         )
                                     }
@@ -405,7 +405,7 @@ fun LocationHistoryDetailCard(
                                             .padding(start = 8.dp),
                                         verticalAlignment = Alignment.CenterVertically
                                     ) {
-                                        BatteryAndNetworkData(point = uiState.selectedPoint)
+                                        BatteryAndNetworkData(point = selectedPoint)
                                     }
                                 }
 
@@ -420,7 +420,8 @@ fun LocationHistoryDetailCard(
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End),
                             ) {
-                                if (uiState.rawDataAction != null && !isCollapsed) {
+                                val rawDataAction = uiState.rawDataAction
+                                if (rawDataAction != null && !isCollapsed) {
                                     GroupMemberActionButton(
                                         modifier = Modifier,
                                         startIcon = CoreAppIcons.Security.asPainterResource(),
@@ -435,7 +436,7 @@ fun LocationHistoryDetailCard(
                                         },
                                         onClick = {
                                             handleEvent(
-                                                LocationHistoryUiEvent.OnRawDataPointClicked(action = uiState.rawDataAction)
+                                                LocationHistoryUiEvent.OnRawDataPointClicked(action = rawDataAction)
                                             )
                                         }
                                     )

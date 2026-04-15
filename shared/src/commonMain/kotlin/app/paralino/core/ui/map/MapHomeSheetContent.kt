@@ -48,12 +48,13 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import app.paralino.core.MR
-import app.paralino.core.presentation.groups.GroupMemberItemEvent
-import app.paralino.core.presentation.groups.GroupMemberItemState
+import app.paralino.core.presentation.common.GroupMemberItemEvent
+import app.paralino.core.presentation.common.GroupMemberItemState
 import app.paralino.core.presentation.map.MapHomeScreenState
 import app.paralino.core.presentation.map.MapHomeScreenUiEvent
 import app.paralino.core.presentation.map.MapSheetSelectedContentType
-import app.paralino.core.presentation.places.list.PlaceListItemData
+import app.paralino.core.presentation.common.PlaceListItemData
+import app.paralino.core.presentation.map.BottomSheetPosition
 import app.paralino.core.provider.localizedString
 import app.paralino.core.resources.CoreAppIcons
 import app.paralino.core.resources.CoreAppIcons.asPainterResource

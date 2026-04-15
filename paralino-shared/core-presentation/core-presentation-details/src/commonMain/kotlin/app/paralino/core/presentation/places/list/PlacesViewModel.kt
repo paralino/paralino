@@ -22,6 +22,7 @@ import app.paralino.core.repo.places.PlacesRepository
 import app.paralino.core.repo.user.UserPersonalSpaceLocalDataSource
 import app.paralino.core.presentation.common.SnackbarDuration
 import app.paralino.core.presentation.common.MainAlertDialog
+import app.paralino.core.presentation.common.PlaceListItemData
 import app.paralino.core.utils.ConditionErrorType
 import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.extensions.errorString

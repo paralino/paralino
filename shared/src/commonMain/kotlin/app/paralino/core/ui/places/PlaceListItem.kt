@@ -24,7 +24,7 @@ import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import app.paralino.core.presentation.places.list.PlaceListItemData
+import app.paralino.core.presentation.common.PlaceListItemData
 import app.paralino.core.resources.CoreAppIcons
 import app.paralino.core.resources.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.ImageModelImage

@@ -1,8 +1,8 @@
 package app.paralino.core.presentation.groups.detail
 
 import app.paralino.core.models.base.ImageModel
-import app.paralino.core.presentation.groups.GroupMemberItemEvent
-import app.paralino.core.presentation.groups.GroupMemberItemState
+import app.paralino.core.presentation.common.GroupMemberItemEvent
+import app.paralino.core.presentation.common.GroupMemberItemState
 import app.paralino.core.presentation.common.AlertDialogAction
 import app.paralino.core.presentation.common.MainAlertDialog
 import app.paralino.core.utils.ConditionErrorType

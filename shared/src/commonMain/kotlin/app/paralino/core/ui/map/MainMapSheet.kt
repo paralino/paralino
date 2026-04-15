@@ -12,12 +12,11 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
+import app.paralino.core.presentation.map.BottomSheetPosition
 import app.paralino.core.presentation.map.MapHomeScreenState
 import app.paralino.core.presentation.map.MapHomeScreenUiEvent
 import app.paralino.core.ui.CoreUiState
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -69,26 +68,35 @@ fun MainMapSheet(
         swipeableState = swipeableState,
         screenContent = screenContent,
         body = {
-            if (mapUiState is MapHomeScreenState.Ready && mapUiState.locationHistoryMode == null) {
-                MainMapSheetActiveBody(
-                    screenPaddingValues = screenPaddingValues,
-                    appState = appState,
-                    swipeableState = swipeableState,
-                    readyState = mapUiState,
-                    onMapGroupInfoHeightChange = { infoHeight = it },
-                    onEvent = onEvent
-                )
-            } else if (mapUiState is MapHomeScreenState.Empty && mapUiState.groupsEmptyState != null) {
-                GroupsInitEmptyScreenContent(
-                    modifier = Modifier,
-                    paddingValues = PaddingValues(
-                        bottom = screenPaddingValues.calculateTopPadding() + 40.dp
-                    ),
-                    state = mapUiState.groupsEmptyState,
-                    onEvent = {
-                        onEvent(MapHomeScreenUiEvent.OnGroupsEmptyStateEvent(it))
+            when (mapUiState) {
+                is MapHomeScreenState.Empty -> {
+                    val groupsEmptyState = mapUiState.groupsEmptyState
+                    if (groupsEmptyState != null) {
+                        GroupsInitEmptyScreenContent(
+                            modifier = Modifier,
+                            paddingValues = PaddingValues(
+                                bottom = screenPaddingValues.calculateTopPadding() + 40.dp
+                            ),
+                            state = groupsEmptyState,
+                            onEvent = {
+                                onEvent(MapHomeScreenUiEvent.OnGroupsEmptyStateEvent(it))
+                            }
+                        )
                     }
-                )
+                }
+
+                is MapHomeScreenState.Ready -> {
+                    if (mapUiState.locationHistoryMode == null) {
+                        MainMapSheetActiveBody(
+                            screenPaddingValues = screenPaddingValues,
+                            appState = appState,
+                            swipeableState = swipeableState,
+                            readyState = mapUiState,
+                            onMapGroupInfoHeightChange = { infoHeight = it },
+                            onEvent = onEvent
+                        )
+                    }
+                }
             }
         }
     )

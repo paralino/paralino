@@ -4,8 +4,8 @@ import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.base.PlanConfig
 import app.paralino.core.models.location.UserDeviceModel
 import app.paralino.core.models.user.UserSession
-import app.paralino.core.presentation.groups.GroupMemberItemLocationState
-import app.paralino.core.presentation.groups.MemberLocationVisibilityType
+import app.paralino.core.presentation.common.GroupMemberItemLocationState
+import app.paralino.core.presentation.common.MemberLocationVisibilityType
 import app.paralino.core.presentation.groups.detail.LocationSharingState
 import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.presentation.common.AlertDialogAction

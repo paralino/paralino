@@ -6,7 +6,6 @@ import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.CornerBasedShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -22,13 +21,11 @@ import androidx.compose.ui.unit.dp
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.location.MemberDeviceOnlineStatusType
 import app.paralino.core.models.location.MemberDeviceStatusType
-import app.paralino.core.presentation.groups.GroupMemberItemEvent
-import app.paralino.core.presentation.groups.GroupMemberItemLocationState
-import app.paralino.core.presentation.groups.GroupMemberItemState
-import app.paralino.core.presentation.groups.GroupMemberItemStateWithLocations
-import app.paralino.core.presentation.groups.GroupMemberItemStateWithOneLocation
-import app.paralino.core.presentation.groups.GroupMemberState
-import app.paralino.core.presentation.groups.MemberLocationVisibilityType
+import app.paralino.core.presentation.common.GroupMemberItemEvent
+import app.paralino.core.presentation.common.GroupMemberItemLocationState
+import app.paralino.core.presentation.common.GroupMemberItemState
+import app.paralino.core.presentation.common.GroupMemberState
+import app.paralino.core.presentation.common.MemberLocationVisibilityType
 import app.paralino.core.provider.NetworkSignalStrength
 import app.paralino.core.provider.NetworkType
 import app.paralino.core.utils.Emojis

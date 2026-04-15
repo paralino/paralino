@@ -32,7 +32,7 @@ import androidx.compose.ui.zIndex
 import app.paralino.core.MR
 import app.paralino.core.models.Payload
 import app.paralino.core.models.data
-import app.paralino.core.presentation.places.list.PlaceListItemData
+import app.paralino.core.presentation.common.PlaceListItemData
 import app.paralino.core.presentation.places.list.PlacesListScreenState
 import app.paralino.core.presentation.places.list.PlacesScreenEvent
 import app.paralino.core.presentation.places.list.PlacesScreenUiEvent

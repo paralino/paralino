@@ -33,8 +33,8 @@ import app.paralino.core.models.location.MemberDeviceOnlineStatusType
 import app.paralino.core.models.location.MemberDeviceStatusType
 import app.paralino.core.models.location.UserDeviceModel
 import app.paralino.core.models.user.UserSession
-import app.paralino.core.presentation.groups.GroupMemberItemLocationState
-import app.paralino.core.presentation.groups.MemberLocationVisibilityType
+import app.paralino.core.presentation.common.GroupMemberItemLocationState
+import app.paralino.core.presentation.common.MemberLocationVisibilityType
 import app.paralino.core.presentation.personal_space.UserDeviceAction
 import app.paralino.core.presentation.personal_space.UserDeviceItemState
 import app.paralino.core.presentation.personal_space.UserDeviceOrSessionItemState

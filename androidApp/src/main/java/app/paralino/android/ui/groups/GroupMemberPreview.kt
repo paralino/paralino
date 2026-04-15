@@ -11,24 +11,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import app.paralino.core.models.base.ImageModel
-import app.paralino.core.models.location.MemberDeviceOnlineStatusType
-import app.paralino.core.models.location.MemberDeviceStatusType
-import app.paralino.core.presentation.groups.GroupMemberItemLocationState
-import app.paralino.core.presentation.groups.GroupMemberItemStateWithLocations
-import app.paralino.core.presentation.groups.GroupMemberItemStateWithOneLocation
-import app.paralino.core.presentation.groups.GroupMemberState
-import app.paralino.core.presentation.groups.MemberActionItemState
-import app.paralino.core.presentation.groups.MemberActionType
-import app.paralino.core.presentation.groups.MemberActionsState
-import app.paralino.core.presentation.groups.MemberLocationVisibilityType
-import app.paralino.core.provider.NetworkSignalStrength
-import app.paralino.core.provider.NetworkType
+import app.paralino.core.presentation.common.GroupMemberItemStateWithLocations
+import app.paralino.core.presentation.common.GroupMemberItemStateWithOneLocation
+import app.paralino.core.presentation.common.MemberActionItemState
+import app.paralino.core.presentation.common.MemberActionType
+import app.paralino.core.presentation.common.MemberActionsState
 import app.paralino.core.ui.groups.components.GroupMember
 import app.paralino.core.ui.groups.components.dummyLocations
 import app.paralino.core.ui.groups.components.dummyMemberState
 import app.paralino.core.ui.theme.AppTheme
-import app.paralino.core.utils.Emojis
 
 @Preview(device = Devices.PIXEL_3A)
 @Composable
