@@ -7,7 +7,7 @@ plugins {
 
 kotlin {
     android {
-        namespace = "app.paralino.core.presentation"
+        namespace = "app.paralino.core.presentation.onboarding"
         compileSdk = 36
     }
 

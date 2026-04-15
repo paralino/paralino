@@ -36,6 +36,7 @@ kotlin {
             implementation(libs.network.ktor.client.logging)
             implementation(libs.network.ktor.content.negotiation)
             implementation(libs.network.ktor.serialization)
+            // koin only used in BaseRepository, remove at some point to slim down dependencies
             implementation(project.dependencies.platform(libs.koin.bom))
             implementation(libs.koin.core)
             implementation(project(":moko"))
