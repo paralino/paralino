@@ -65,8 +65,8 @@ import app.paralino.core.presentation.groups.edit.CreateGroupViewModel
 import app.paralino.core.presentation.groups.settings.BatteryNotificationsViewModel
 import app.paralino.core.presentation.groups.settings.GroupSettingsViewModel
 import app.paralino.core.presentation.history.LocationHistoryDeleteViewModel
-import app.paralino.core.presentation.invite.input.MemberInviteViewModel
-import app.paralino.core.presentation.invite.manage.PersonalCodeViewModel
+import app.paralino.core.presentation.groups.add_member.MemberInviteViewModel
+import app.paralino.core.presentation.paralinoid.PersonalCodeViewModel
 import app.paralino.core.presentation.login.LoggedOutViewModel
 import app.paralino.core.presentation.login.LoginScreenUiType
 import app.paralino.core.presentation.login.LoginViewModel

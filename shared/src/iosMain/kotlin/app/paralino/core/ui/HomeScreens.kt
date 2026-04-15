@@ -20,7 +20,7 @@ import app.paralino.core.presentation.groups.edit.CreateGroupViewModel
 import app.paralino.core.presentation.groups.settings.BatteryNotificationsViewModel
 import app.paralino.core.presentation.groups.settings.GroupSettingsViewModel
 import app.paralino.core.presentation.history.LocationHistoryDeleteViewModel
-import app.paralino.core.presentation.invite.input.MemberInviteViewModel
+import app.paralino.core.presentation.groups.add_member.MemberInviteViewModel
 import app.paralino.core.presentation.onboarding.AccountOnboardingViewModel
 import app.paralino.core.presentation.personal_space.PersonalSpaceViewModel
 import app.paralino.core.presentation.personal_space.settings.PersonalSpaceSettingsViewModel

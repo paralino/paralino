@@ -31,10 +31,10 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import app.paralino.core.MR
-import app.paralino.core.presentation.invite.input.MemberInviteScreenEvent
-import app.paralino.core.presentation.invite.input.MemberInviteScreenState
-import app.paralino.core.presentation.invite.input.MemberInviteScreenUiEvent
-import app.paralino.core.presentation.invite.input.MemberInviteViewModel
+import app.paralino.core.presentation.groups.add_member.MemberInviteScreenEvent
+import app.paralino.core.presentation.groups.add_member.MemberInviteScreenState
+import app.paralino.core.presentation.groups.add_member.MemberInviteScreenUiEvent
+import app.paralino.core.presentation.groups.add_member.MemberInviteViewModel
 import app.paralino.core.ui.CoreUiState
 import app.paralino.core.ui.components.AppButtonState
 import app.paralino.core.presentation.common.BottomSheetPickerType
@@ -194,28 +194,34 @@ private fun MemberInviteScreen(
             verticalArrangement = if (!state.isLoaded || state.group == null) Arrangement.Center else Arrangement.Top,
             horizontalAlignment = Alignment.Start
         ) {
-            if (state.loadedState != null) {
-                if (state.group != null) {
+            val loadedState = state.loadedState
+            val group = state.group
+            val premiumStatus = state.premiumStatus
+
+            if (loadedState != null) {
+                if (group != null) {
                     Spacer(modifier = Modifier.size(20.dp))
 //                    SettingsSectionHeader(name = stringResource(MR.strings.invite_section_title_group))
                     GroupListItem(
                         modifier = Modifier
                             .padding(horizontal = 20.dp)
                             .clickable {
-                                if (state.loadedState.canChangeGroup) onPickGroup()
+                                if (loadedState.canChangeGroup) {
+                                    onPickGroup()
+                                }
                             },
-                        data = state.group,
+                        data = group,
                         onEdit = {}
                     )
 
-                    if (state.premiumStatus != null && state.members.isNotEmpty()) {
+                    if (premiumStatus != null && state.members.isNotEmpty()) {
                         SettingsSectionHeader(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(horizontal = 20.dp),
                             name = stringResource(MR.strings.group_details_section_members_title),
-                            count = state.premiumStatus.payload.count,
-                            limit = state.premiumStatus.payload.limit
+                            count = premiumStatus.payload.count,
+                            limit = premiumStatus.payload.limit
                         )
                         LazyRow(
                             modifier = Modifier.fillMaxWidth(),
@@ -265,7 +271,7 @@ private fun MemberInviteScreen(
                     onInputChange = onCodeChange
                 )
 
-            if (state.loadedState != null) {
+            if (loadedState != null) {
                 Spacer(modifier = Modifier.size(20.dp))
 
                 Row(
@@ -273,16 +279,16 @@ private fun MemberInviteScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     ImageModelImage(
-                        imageModel = state.loadedState.userImage,
+                        imageModel = loadedState.userImage,
                         modifier = Modifier.size(70.dp)
                     )
                     Spacer(modifier = Modifier.size(10.dp))
-                    Text(text = state.loadedState.userName, style = MaterialTheme.typography.h5)
+                    Text(text = loadedState.userName, style = MaterialTheme.typography.h5)
                 }
 
                 Spacer(modifier = Modifier.size(20.dp))
 
-                if (state.group != null) {
+                if (group != null) {
                     NoticeInfoChip(
                         modifier = Modifier
                             .padding(vertical = 10.dp)
@@ -290,8 +296,8 @@ private fun MemberInviteScreen(
                         icon = CoreAppIcons.Person.asPainterResource(),
                         text = stringResource(
                             MR.strings.invite_connect_disclaimer_user,
-                            state.loadedState.userName,
-                            state.group.name
+                            loadedState.userName,
+                            group.name
                         )
                     )
                 }

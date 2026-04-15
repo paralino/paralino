@@ -19,8 +19,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import app.paralino.core.MR
-import app.paralino.core.presentation.invite.manage.PersonalCodeScreenUiEvent
-import app.paralino.core.presentation.invite.manage.PersonalCodeViewModel
+import app.paralino.core.presentation.paralinoid.PersonalCodeScreenUiEvent
+import app.paralino.core.presentation.paralinoid.PersonalCodeViewModel
 import app.paralino.core.provider.localizedString
 import app.paralino.core.ui.CoreUiState
 import app.paralino.core.ui.components.AppButtonState

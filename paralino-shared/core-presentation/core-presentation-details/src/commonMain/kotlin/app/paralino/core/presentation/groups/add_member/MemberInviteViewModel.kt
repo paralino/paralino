@@ -1,4 +1,4 @@
-package app.paralino.core.presentation.invite.input
+package app.paralino.core.presentation.groups.add_member
 
 import app.paralino.core.MR
 import app.paralino.core.domain.group.GroupMemberAddUseCase

@@ -1,4 +1,4 @@
-package app.paralino.core.presentation.invite.input
+package app.paralino.core.presentation.groups.add_member
 
 import app.paralino.core.domain.user.PremiumStatusLimitState
 import app.paralino.core.models.base.ImageModel

@@ -1,4 +1,4 @@
-package app.paralino.core.presentation.invite.manage
+package app.paralino.core.presentation.paralinoid
 
 import app.paralino.core.models.Payload
 import app.paralino.core.models.base.ImageModel
@@ -12,7 +12,6 @@ import app.paralino.core.repo.base.AppConfigRepository
 import app.paralino.core.repo.personal_code.PersonalCodesRepository
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.presentation.common.MainAlertDialog
-import app.paralino.core.presentation.paralinoid.PersonalCodeScreenCodeData
 import app.paralino.core.utils.ConditionErrorType
 import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.extensions.errorString

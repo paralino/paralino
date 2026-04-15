@@ -1,7 +1,6 @@
-package app.paralino.core.presentation.invite.manage
+package app.paralino.core.presentation.paralinoid
 
 import app.paralino.core.presentation.common.MainAlertDialog
-import app.paralino.core.presentation.paralinoid.PersonalCodeScreenCodeData
 import app.paralino.core.utils.ConditionErrorType
 
 data class PersonalCodeScreenState(
