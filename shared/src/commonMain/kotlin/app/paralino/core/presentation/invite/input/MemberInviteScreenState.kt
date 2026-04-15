@@ -4,8 +4,8 @@ import app.paralino.core.domain.user.PremiumStatusLimitState
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.location.MemberModel
 import app.paralino.core.models.user.UserPersonalCodeData
-import app.paralino.core.presentation.groups.GroupItemState
-import app.paralino.core.ui.components.BottomSheetPickerType
+import app.paralino.core.presentation.common.GroupItemState
+import app.paralino.core.presentation.common.BottomSheetPickerType
 import app.paralino.core.presentation.common.AlertDialogAction
 import app.paralino.core.presentation.common.MainAlertDialog
 import app.paralino.core.presentation.billing.BillingScreenSourceType

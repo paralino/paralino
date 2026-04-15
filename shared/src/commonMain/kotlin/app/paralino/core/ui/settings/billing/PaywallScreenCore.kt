@@ -83,7 +83,7 @@ import app.paralino.core.presentation.settings.billing.PaywallScreenState
 import app.paralino.core.presentation.settings.billing.PaywallScreenStep
 import app.paralino.core.presentation.settings.billing.PaywallScreenUiEvent
 import app.paralino.core.presentation.settings.billing.PaywallViewModel
-import app.paralino.core.presentation.settings.billing.PlanInfoState
+import app.paralino.core.presentation.billing.PlanInfoState
 import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.provider.current
 import app.paralino.core.ui.CoreUiState
@@ -100,7 +100,7 @@ import app.paralino.core.ui.components.ToolbarButtons
 import app.paralino.core.presentation.common.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.Show
 import app.paralino.core.ui.settings.SettingsActionItem
-import app.paralino.core.ui.settings.SettingsActionItemType
+import app.paralino.core.presentation.settings.SettingsActionItemType
 import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.ui.theme.ButtonStyle
 import app.paralino.core.ui.theme.featureItemTitle
@@ -1042,7 +1042,7 @@ private fun BillingPeriodOptions(
         }
 
         AnimatedVisibility(
-            visible = selectedPlan.selectedBillingPeriod?.pricePerMember != null && !selectedPlan.selectedBillingPeriod.isNativePlatformCurrentBillingPeriod
+            visible = selectedPlan.selectedBillingPeriod?.pricePerMember != null && selectedPlan.selectedBillingPeriod?.isNativePlatformCurrentBillingPeriod == false
         ) {
             Text(
                 modifier = Modifier

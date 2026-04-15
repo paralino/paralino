@@ -37,7 +37,7 @@ import app.paralino.core.repo.personal_code.PersonalCodesRepository
 import app.paralino.core.repo.places.PlacesRepository
 import app.paralino.core.repo.user.UserPersonalSpaceLocalDataSource
 import app.paralino.core.repo.user.UserRepository
-import app.paralino.core.ui.components.BottomSheetPickerType
+import app.paralino.core.presentation.common.BottomSheetPickerType
 import app.paralino.core.utils.Emojis
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO

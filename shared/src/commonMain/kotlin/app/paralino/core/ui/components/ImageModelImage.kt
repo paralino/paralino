@@ -17,12 +17,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.min
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.base.ImageType
+import app.paralino.core.resources.icons.Res
+import app.paralino.core.resources.icons.ic_person
 import app.paralino.core.utils.Emojis
 import dev.icerock.moko.resources.compose.painterResource
-import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.ExperimentalResourceApi
-import paralino.shared.generated.resources.Res
-import paralino.shared.generated.resources.ic_person
 
 @OptIn(ExperimentalResourceApi::class)
 @Composable

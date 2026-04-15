@@ -6,7 +6,6 @@ import app.paralino.core.MR
 import app.paralino.core.models.AppFlavor
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.base.PlanBillingPeriod
-import app.paralino.core.models.base.PlanConfig
 import app.paralino.core.models.base.PlanProvider
 import app.paralino.core.models.base.PlanType
 import app.paralino.core.models.base.SubscriptionInfoNotice
@@ -18,6 +17,12 @@ import app.paralino.core.presentation.common.AlertDialogData
 import app.paralino.core.presentation.common.MainAlertDialog
 import app.paralino.core.presentation.common.MainAlertDialog.Buttons
 import app.paralino.core.presentation.billing.BillingScreenSourceType
+import app.paralino.core.presentation.billing.FeatureTableItemHighlightMode
+import app.paralino.core.presentation.billing.FeatureTableItemState
+import app.paralino.core.presentation.billing.FeatureTableItemValue
+import app.paralino.core.presentation.billing.FeatureTableState
+import app.paralino.core.presentation.billing.PlanBillingPeriodState
+import app.paralino.core.presentation.billing.PlanInfoState
 import org.jetbrains.compose.resources.DrawableResource
 
 data class PaywallScreenState(
@@ -66,8 +71,9 @@ data class PaywallScreenState(
 
     val continueButtonType: PaywallContinueButtonType = when (screenStep) {
         PaywallScreenStep.PAYWALL -> {
-            if (!hasActivePlanOnAnotherPlatform && selectedBillingPeriod?.trialDurationDays != null) {
-                PaywallContinueButtonType.FreeTrial(selectedBillingPeriod.trialDurationDays)
+            val trialDurationDays = selectedBillingPeriod?.trialDurationDays
+            if (!hasActivePlanOnAnotherPlatform && trialDurationDays != null) {
+                PaywallContinueButtonType.FreeTrial(trialDays = trialDurationDays)
             } else {
                 when (appFlavor) {
                     AppFlavor.ANDROID_GOOGLE -> {
@@ -139,10 +145,8 @@ data class PaywallScreenState(
     }
 
     val subscriptionNoticeForCurrentPlan: String? = selectedPlan?.let { plan ->
-        if (plan.selectedBillingPeriod != null) {
-            noticeForPlan(planType = plan.config.planTypeEnum, period = plan.selectedBillingPeriod.billingPeriod)
-        } else {
-            null
+        plan.selectedBillingPeriod?.let {
+            noticeForPlan(planType = plan.config.planTypeEnum, period = it.billingPeriod)
         }
     }
 
@@ -164,42 +168,6 @@ data class PaywallScreenState(
         }
     }
 }
-
-data class PlanInfoState(
-    val productId: String,
-    val name: String,
-    val config: PlanConfig,
-    val isCurrentPlan: Boolean,
-    val hasSpecialOffer: Boolean,
-    val isSelected: Boolean,
-    val isExpanded: Boolean,
-    val billingPeriods: List<PlanBillingPeriodState>
-) {
-    val type: PlanType = config.planTypeEnum
-    val selectedBillingPeriod: PlanBillingPeriodState? =
-        billingPeriods.firstOrNull { it.isSelected }
-
-    val displayedName: String = if (hasSpecialOffer) {
-        "🎁$name"
-    } else {
-        name
-    }
-}
-
-data class PlanBillingPeriodState(
-    val productPlanId: String,
-    val billingPeriod: PlanBillingPeriod,
-    val name: String,
-    val isSelected: Boolean,
-    val price: String,
-    val pricePerMonth: String?,
-    val pricePerMember: String?,
-    val discountedPrice: String?,
-    val discountPercent: String?,
-    val isPromoDiscount: Boolean,
-    val trialDurationDays: Int?,
-    val isNativePlatformCurrentBillingPeriod: Boolean
-)
 
 enum class PaywallScreenStep {
     ONBOARDING, DEMO, LOCATION_HISTORY, PAYWALL

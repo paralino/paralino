@@ -48,7 +48,7 @@ import app.paralino.core.presentation.share.SharingStartViewModel
 import app.paralino.core.provider.localizedString
 import app.paralino.core.ui.CoreUiState
 import app.paralino.core.ui.components.AppButtonState
-import app.paralino.core.ui.components.BottomSheetPickerType
+import app.paralino.core.presentation.common.BottomSheetPickerType
 import app.paralino.core.ui.components.ConditionErrorItem
 import app.paralino.core.resources.CoreAppIcons
 import app.paralino.core.resources.CoreAppIcons.asPainterResource

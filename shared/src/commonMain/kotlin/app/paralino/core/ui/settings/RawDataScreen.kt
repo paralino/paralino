@@ -129,7 +129,7 @@ fun RawDataScreen(
                     modifier = Modifier.padding(
                         top = 30.dp
                     ),
-                    text = state.subtitle,
+                    text = state.subtitle ?: "",
                     style = MaterialTheme.typography.caption,
                     color = MaterialTheme.colors.onBackground.copy(alpha = ContentAlpha.medium)
                 )
@@ -164,7 +164,7 @@ private fun RawDataScreenSection(
     ) {
         if (section.title != null) {
             Text(
-                text = section.title.annotatedBoldCompose(),
+                text = (section.title ?: "").annotatedBoldCompose(),
                 style = MaterialTheme.typography.h6,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -174,7 +174,7 @@ private fun RawDataScreenSection(
 
         if (section.subtitle != null) {
             Text(
-                text = section.subtitle.annotatedBoldCompose(),
+                text = (section.subtitle ?: "").annotatedBoldCompose(),
                 style = MaterialTheme.typography.subtitle2,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -248,7 +248,7 @@ private fun RawDataScreenSection(
             CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.disabled) {
                 Text(
                     modifier = Modifier.fillMaxWidth().padding(bottom = 4.dp, start = 8.dp),
-                    text = section.decryptedContentSubtitle.annotatedBoldCompose(),
+                    text = (section.decryptedContentSubtitle ?: "").annotatedBoldCompose(),
                     style = MaterialTheme.typography.caption.copy(fontWeight = FontWeight.Light)
                 )
             }

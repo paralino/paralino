@@ -13,7 +13,7 @@ import app.paralino.core.presentation.map.MapHomeScreenEvent
 import app.paralino.core.presentation.map.MapHomeScreenState
 import app.paralino.core.presentation.map.MapHomeScreenUiEvent
 import app.paralino.core.presentation.map.MapHomeViewModel
-import app.paralino.core.ui.components.BottomSheetPickerType
+import app.paralino.core.presentation.common.BottomSheetPickerType
 import app.paralino.core.ui.map.BottomSheetPosition
 import app.paralino.core.ui.map.SwipeableSheetState
 import app.paralino.core.ui.map.isFullyExpanded

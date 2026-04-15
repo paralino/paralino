@@ -81,7 +81,7 @@ fun BatteryNotificationItem(
                 )
                 if (!state.tag.isNullOrBlank()) {
                     Text(
-                        text = state.tag,
+                        text = state.tag ?: "",
                         style = MaterialTheme.typography.caption.copy(fontWeight = FontWeight.SemiBold),
                         color = MaterialTheme.colors.onSecondary,
                         modifier = Modifier

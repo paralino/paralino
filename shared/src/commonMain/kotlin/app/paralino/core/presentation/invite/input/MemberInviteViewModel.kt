@@ -6,12 +6,12 @@ import app.paralino.core.domain.user.PremiumStatusLimitState
 import app.paralino.core.domain.user.PremiumStatusManager
 import app.paralino.core.models.Payload
 import app.paralino.core.presentation.CoreViewModel
-import app.paralino.core.presentation.groups.GroupItemState
+import app.paralino.core.presentation.common.GroupItemState
 import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.personal_code.PersonalCodesRepository
 import app.paralino.core.repo.user.UserRepository
-import app.paralino.core.ui.components.BottomSheetPickerType
+import app.paralino.core.presentation.common.BottomSheetPickerType
 import app.paralino.core.presentation.common.MainAlertDialog
 import app.paralino.core.utils.DeeplinkType
 import app.paralino.core.presentation.billing.BillingScreenSourceType

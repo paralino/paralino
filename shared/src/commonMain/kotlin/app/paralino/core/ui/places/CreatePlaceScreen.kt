@@ -68,7 +68,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.paralino.core.MR
-import app.paralino.core.asPainterResource
 import app.paralino.core.models.Payload
 import app.paralino.core.models.data
 import app.paralino.core.presentation.places.create.CreatePlaceAddressSearchUiMode
@@ -81,7 +80,7 @@ import app.paralino.core.presentation.places.create.PlaceAddressSuggestion
 import app.paralino.core.provider.localizedString
 import app.paralino.core.ui.CoreUiState
 import app.paralino.core.ui.components.AppButtonState
-import app.paralino.core.ui.components.BottomSheetPickerType
+import app.paralino.core.presentation.common.BottomSheetPickerType
 import app.paralino.core.resources.CoreAppIcons
 import app.paralino.core.resources.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.DefaultEmptyState
@@ -94,6 +93,7 @@ import app.paralino.core.ui.components.MainInputField
 import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.components.ScaffoldBottomBarButton
 import app.paralino.core.presentation.common.AlertDialogAction
+import app.paralino.core.resources.MokoResources.imageAsPainterResource
 import app.paralino.core.ui.components.dialogs.LoadingDialog
 import app.paralino.core.ui.components.dialogs.Show
 import app.paralino.core.ui.groups.ShakeEffect
@@ -497,11 +497,11 @@ private fun CreatePlaceMapStep(
             if (state.hasSatelliteMode) {
                 Image(
                     painter = if (!state.isSatelliteModeActive) {
-                        MR.images.image_map_type_satellite.asPainterResource()
+                        MR.images.image_map_type_satellite.imageAsPainterResource()
                     } else if (isSystemInDarkTheme()) {
-                        MR.images.image_map_type_default_dark.asPainterResource()
+                        MR.images.image_map_type_default_dark.imageAsPainterResource()
                     } else {
-                        MR.images.image_map_type_default_light.asPainterResource()
+                        MR.images.image_map_type_default_light.imageAsPainterResource()
                     },
                     contentDescription = null,
                     modifier = Modifier

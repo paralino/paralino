@@ -6,7 +6,7 @@ import app.paralino.core.domain.location.ClearUserLocationUseCase
 import app.paralino.core.domain.location.LocationRequestUseCase
 import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.presentation.common.ICoreMessageDispatcher
-import app.paralino.core.presentation.groups.GroupItemState
+import app.paralino.core.presentation.common.GroupItemState
 import app.paralino.core.presentation.groups.GroupMemberItemState
 import app.paralino.core.presentation.groups.LocationRequestItemState
 import app.paralino.core.presentation.groups.MemberActionType
@@ -65,13 +65,11 @@ class MemberActionHandler(
     ) {
         val stateWithLocation = uiState.value.asReady()?.allMembersOrDevices?.firstOrNull { it.keyId == state.keyId }
 
-        if (stateWithLocation?.singleLocation == null) {
-            return
-        }
+        val singleLocation = stateWithLocation?.singleLocation ?: return
 
         clearUserLocation.clearLocation(
             groupId = state.memberState.groupId.asGroupOrSpaceId(),
-            locationId = stateWithLocation.singleLocation.locationId
+            locationId = singleLocation.locationId
         )
             .onStart {
                 updateReadyState { readyState ->
@@ -132,25 +130,24 @@ class MemberActionHandler(
     ) {
         val stateWithLocation = uiState.value.asReady()?.allMembersOrDevices?.firstOrNull { it.keyId == state.keyId }
 
-        if (stateWithLocation?.singleLocation == null) {
-            return
-        }
+        val singleLocation = stateWithLocation?.singleLocation ?: return
+        val locationRequest = stateWithLocation.actions.locationRequest
 
-        if (stateWithLocation.actions.locationRequest == null) {
+        if (locationRequest == null) {
             coroutineScope.launch {
                 messageDispatcher.showSnackbar(Throwable("Active device not found").errorString())
             }
             return
         }
 
-        if (!stateWithLocation.actions.locationRequest.isEnabled) {
+        if (!locationRequest.isEnabled) {
             coroutineScope.launch {
                 messageDispatcher.showSnackbar(MR.strings.group_member_device_request_disabled.localizedString())
             }
             return
         }
 
-        if (!stateWithLocation.actions.locationRequest.isPremiumFeatureEnabled) {
+        if (!locationRequest.isPremiumFeatureEnabled) {
             coroutineScope.launch {
                 val group = getAllGroupsItemState().firstOrNull { it.id == stateWithLocation.memberState.groupId.asGroupOrSpaceId() }
                 if (group != null) {
@@ -176,7 +173,7 @@ class MemberActionHandler(
             locationRequestUseCase.requestMemberDeviceLocation(
                 groupId = stateWithLocation.memberState.groupId.asGroupOrSpaceId(),
                 memberUserId = stateWithLocation.memberState.userId,
-                locationId = stateWithLocation.singleLocation.locationId
+                locationId = singleLocation.locationId
             )
             delay(500)
             emit(Unit)

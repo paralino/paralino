@@ -66,6 +66,8 @@ import app.paralino.core.ui.components.NoticeInfoChip
 import app.paralino.core.ui.components.PasswordInputField
 import app.paralino.core.ui.components.PasswordValidationElement
 import app.paralino.core.presentation.common.AlertDialogAction
+import app.paralino.core.resources.icons.Res
+import app.paralino.core.resources.icons.ic_launcher_foreground
 import app.paralino.core.ui.components.dialogs.Show
 import app.paralino.core.ui.components.rememberSeekbarState
 import app.paralino.core.ui.theme.AppColors
@@ -75,8 +77,6 @@ import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import org.jetbrains.compose.resources.painterResource
-import paralino.shared.generated.resources.Res
-import paralino.shared.generated.resources.ic_launcher_foreground
 
 @Composable
 fun LoginScreenCore(

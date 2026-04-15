@@ -357,7 +357,7 @@ fun GroupMemberWithLocations(
                                 .clickable {
                                     onEvent?.invoke(
                                         GroupMemberItemEvent.onCopyCode(
-                                            memberState.paralinoId
+                                            memberState.paralinoId ?: ""
                                         )
                                     )
                                 }
@@ -378,7 +378,7 @@ fun GroupMemberWithLocations(
                             }
                             Text(
                                 modifier = Modifier.padding(start = 4.dp),
-                                text = memberState.paralinoId,
+                                text = memberState.paralinoId ?: "",
                                 style = TextStyle(
                                     fontWeight = FontWeight.SemiBold,
                                     fontSize = 14.sp,
@@ -490,24 +490,31 @@ private fun ColumnScope.GroupMemberActions(
     onEvent: (GroupMemberItemEvent) -> Unit
 ) {
     val actions = state.actions
+    val deleteMemberAction = state.actions.deleteMember
+    val blockUserAction = state.actions.blockUser
+    val unblockUserAction = state.actions.unblockUser
+    val deleteLocationAction = state.actions.deleteLocation
+    val navigateAction = state.actions.navigate
+    val locationRequestAction = state.actions.locationRequest
+
     FlowRow(
         modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        if (actions.deleteMember != null) {
+        if (deleteMemberAction != null) {
             GroupMemberActionButton(
                 modifier = Modifier.align(Alignment.CenterVertically),
-                startIcon = actions.deleteMember.type.actionIcon,
+                startIcon = deleteMemberAction.type.actionIcon,
                 endIcon = null,
-                isLoading = actions.deleteMember.isLoading,
-                text = stringResource(actions.deleteMember.type.actionText),
+                isLoading = deleteMemberAction.isLoading,
+                text = stringResource(deleteMemberAction.type.actionText),
                 backgroundColor = AppColors.errorBackground,
                 contentColor = AppColors.redMain,
                 onClick = {
                     onEvent(
                         GroupMemberItemEvent.onActionClick(
-                            action = actions.deleteMember,
+                            action = deleteMemberAction,
                             item = state
                         )
                     )
@@ -515,19 +522,19 @@ private fun ColumnScope.GroupMemberActions(
             )
         }
 
-        if (actions.blockUser != null) {
+        if (blockUserAction != null) {
             GroupMemberActionButton(
                 modifier = Modifier.align(Alignment.CenterVertically),
-                startIcon = actions.blockUser.type.actionIcon,
+                startIcon = blockUserAction.type.actionIcon,
                 endIcon = null,
-                isLoading = actions.blockUser.isLoading,
-                text = stringResource(actions.blockUser.type.actionText),
+                isLoading = blockUserAction.isLoading,
+                text = stringResource(blockUserAction.type.actionText),
                 backgroundColor = AppColors.errorBackground,
                 contentColor = AppColors.redMain,
                 onClick = {
                     onEvent(
                         GroupMemberItemEvent.onActionClick(
-                            action = actions.blockUser,
+                            action = blockUserAction,
                             item = state
                         )
                     )
@@ -535,13 +542,13 @@ private fun ColumnScope.GroupMemberActions(
             )
         }
 
-        if (actions.unblockUser != null) {
+        if (unblockUserAction != null) {
             GroupMemberActionButton(
                 modifier = Modifier.align(Alignment.CenterVertically),
-                startIcon = actions.unblockUser.type.actionIcon,
+                startIcon = unblockUserAction.type.actionIcon,
                 endIcon = null,
-                isLoading = actions.unblockUser.isLoading,
-                text = stringResource(actions.unblockUser.type.actionText),
+                isLoading = unblockUserAction.isLoading,
+                text = stringResource(unblockUserAction.type.actionText),
                 backgroundColor = if (isSystemInDarkTheme()) {
                     AppColors.accentLight.copy(alpha = 0.2f)
                 } else {
@@ -550,7 +557,7 @@ private fun ColumnScope.GroupMemberActions(
                 onClick = {
                     onEvent(
                         GroupMemberItemEvent.onActionClick(
-                            action = actions.unblockUser,
+                            action = unblockUserAction,
                             item = state
                         )
                     )
@@ -558,19 +565,19 @@ private fun ColumnScope.GroupMemberActions(
             )
         }
 
-        if (actions.deleteLocation != null) {
+        if (deleteLocationAction != null) {
             GroupMemberActionButton(
                 modifier = Modifier.align(Alignment.CenterVertically),
                 startIcon = MemberActionType.DELETE_LOCATION.actionIcon,
                 endIcon = null,
-                isLoading = actions.deleteLocation.isLoading,
+                isLoading = deleteLocationAction.isLoading,
                 text = stringResource(MemberActionType.DELETE_LOCATION.actionText),
                 backgroundColor = AppColors.errorBackground,
                 contentColor = AppColors.redMain,
                 onClick = {
                     onEvent(
                         GroupMemberItemEvent.onActionClick(
-                            action = actions.deleteLocation,
+                            action = deleteLocationAction,
                             item = state
                         )
                     )
@@ -592,7 +599,7 @@ private fun ColumnScope.GroupMemberActions(
             )
         }
 
-        if (actions.navigate != null) {
+        if (navigateAction != null) {
             GroupMemberActionButton(
                 modifier = Modifier.align(Alignment.CenterVertically),
                 startIcon = CoreAppIcons.Directions.asPainterResource(),
@@ -601,7 +608,7 @@ private fun ColumnScope.GroupMemberActions(
                 onClick = {
                     onEvent(
                         GroupMemberItemEvent.onDirectionsRequest(
-                            action = actions.navigate,
+                            action = navigateAction,
                             item = state
                         )
                     )
@@ -621,12 +628,12 @@ private fun ColumnScope.GroupMemberActions(
             )
         }
 
-        if (actions.locationRequest != null) {
+        if (locationRequestAction != null) {
             LocationRequestItem(
                 modifier = Modifier
                     .align(Alignment.CenterVertically)
                     .fillMaxWidth(),
-                state = actions.locationRequest
+                state = locationRequestAction
             ) {
                 onEvent(GroupMemberItemEvent.onLocationRequest(state))
             }
@@ -730,7 +737,7 @@ private fun GroupMemberLocationChild(
                                 .size(14.dp)
                         )
                         Text(
-                            text = state.lastLocationPing.annotatedBoldCompose(),
+                            text = (state.lastLocationPing ?: "").annotatedBoldCompose(),
                             style = MaterialTheme.typography.caption,
                             color = MaterialTheme.colors.onSurface.copy(alpha = 0.5f),
                         )

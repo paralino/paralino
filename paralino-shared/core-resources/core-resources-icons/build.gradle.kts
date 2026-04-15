@@ -25,7 +25,7 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
-            implementation(libs.jetbrains.compose.components.resources)
+            api(libs.jetbrains.compose.components.resources)
             implementation(libs.jetbrains.compose.foundation)
         }
     }

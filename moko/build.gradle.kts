@@ -3,6 +3,8 @@ plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.android.multiplatformLibrary)
     alias(libs.plugins.moko.resources)
+    // Needed for composable extension
+    alias(libs.plugins.compose.compiler)
 }
 
 kotlin {

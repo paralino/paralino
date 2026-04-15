@@ -1,5 +1,8 @@
 package app.paralino.core.presentation.settings.billing
 
+import app.paralino.core.presentation.billing.FeatureTableItemState
+import app.paralino.core.presentation.billing.FeatureTableItemValue
+import app.paralino.core.presentation.billing.FeatureTableState
 import app.paralino.core.presentation.common.AlertDialogAction
 import app.paralino.core.presentation.common.MainAlertDialog
 

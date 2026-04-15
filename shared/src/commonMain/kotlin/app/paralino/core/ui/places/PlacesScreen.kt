@@ -219,6 +219,7 @@ private fun PlacesScreen(
                 onPostSampleNotification = onPostSampleNotification
             )
         } else {
+            val error = state.error
             LazyColumn(
                 modifier = Modifier.fillMaxSize().padding(it),
                 contentPadding = PaddingValues(
@@ -256,13 +257,13 @@ private fun PlacesScreen(
                         }
                     }
 
-                    if (state.error != null) {
-                        this.item(key = state.error.toString()) {
+                    if (error != null) {
+                        this.item(key = error.toString()) {
                             ConditionErrorItem(
                                 modifier = Modifier.padding(top = 8.dp),
-                                data = state.error
+                                data = error
                             ) {
-                                onErrorItemClick(state.error)
+                                onErrorItemClick(error)
                             }
                         }
                     }

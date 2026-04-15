@@ -101,7 +101,11 @@ class MapStateManager(
                 trackingMarker = null,
                 markers = it.markers.map { it.copy(focused = false, hidden = it.obsolete) },
                 allMembersOrDevices = it.allMembersOrDevices.map {
-                    it.copy(singleLocation = it.singleLocation?.copy(visibility = it.singleLocation.visibility.tryToHide()))
+                    it.copy(
+                        singleLocation = it.singleLocation?.let {
+                            it.copy(visibility = it.visibility.tryToHide())
+                        }
+                    )
                 },
                 mapHomeScreenFocusType = MapHomeScreenFocusType.NONE
             )
@@ -188,9 +192,9 @@ class MapStateManager(
                 allMembersOrDevices = it.allMembersOrDevices.map {
                     if (it.keyId == memberItem.keyId) {
                         it.copy(
-                            singleLocation = it.singleLocation?.copy(
-                                visibility = it.singleLocation.visibility.show()
-                            )
+                            singleLocation = it.singleLocation?.let {
+                                it.copy(visibility = it.visibility.show())
+                            }
                         )
                     } else {
                         it

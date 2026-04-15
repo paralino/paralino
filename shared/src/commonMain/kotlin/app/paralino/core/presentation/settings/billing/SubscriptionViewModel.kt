@@ -12,6 +12,9 @@ import app.paralino.core.models.base.PlanProvider
 import app.paralino.core.models.user.UserPlan
 import app.paralino.core.models.user.UserPlans
 import app.paralino.core.presentation.CoreViewModel
+import app.paralino.core.presentation.billing.FeatureTableItemValue
+import app.paralino.core.presentation.billing.FeatureTableState
+import app.paralino.core.presentation.billing.PlanInfoState
 import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.provider.localizedString

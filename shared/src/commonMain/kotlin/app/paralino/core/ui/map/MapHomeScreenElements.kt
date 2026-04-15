@@ -60,7 +60,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.coerceIn
 import androidx.compose.ui.unit.dp
 import app.paralino.core.MR
-import app.paralino.core.asPainterResource
 import app.paralino.core.models.base.DeviceType
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.map.MapHomeScreenFocusType
@@ -70,6 +69,7 @@ import app.paralino.core.presentation.map.asReady
 import app.paralino.core.provider.current
 import app.paralino.core.resources.CoreAppIcons
 import app.paralino.core.resources.CoreAppIcons.asPainterResource
+import app.paralino.core.resources.MokoResources.imageAsPainterResource
 import app.paralino.core.ui.components.FilledButton
 import app.paralino.core.ui.components.ImageModelImage
 import app.paralino.core.ui.components.NoticeInfoChip
@@ -211,11 +211,11 @@ fun MapHomeScreenElements(
             if (readyState != null) {
                 Image(
                     painter = if (!state.isSatelliteModeActive) {
-                        MR.images.image_map_type_satellite.asPainterResource()
+                        MR.images.image_map_type_satellite.imageAsPainterResource()
                     } else if (isSystemInDarkTheme()) {
-                        MR.images.image_map_type_default_dark.asPainterResource()
+                        MR.images.image_map_type_default_dark.imageAsPainterResource()
                     } else {
-                        MR.images.image_map_type_default_light.asPainterResource()
+                        MR.images.image_map_type_default_light.imageAsPainterResource()
                     },
                     contentDescription = null,
                     modifier = Modifier

@@ -25,15 +25,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import app.paralino.core.MR
 import app.paralino.core.presentation.login.LoggedOutViewModel
+import app.paralino.core.resources.icons.Res
+import app.paralino.core.resources.icons.ic_launcher_foreground
+import app.paralino.core.resources.icons.paralino_start_background
 import app.paralino.core.ui.components.ActionScaffold
-import app.paralino.core.resources.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.theme.AppTheme
 import dev.icerock.moko.resources.compose.stringResource
 import org.jetbrains.compose.resources.painterResource
-import paralino.shared.generated.resources.Res
-import paralino.shared.generated.resources.ic_launcher_foreground
-import paralino.shared.generated.resources.ic_login
-import paralino.shared.generated.resources.paralino_start_background
 
 @Composable
 fun WelcomeScreen(

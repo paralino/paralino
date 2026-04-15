@@ -31,6 +31,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import app.paralino.core.MR
 import app.paralino.core.models.base.BackendResourceIDs
+import app.paralino.core.presentation.settings.SettingsActionItemType
 import app.paralino.core.presentation.settings.general.GeneralInfoScreenStateUiEvent
 import app.paralino.core.presentation.settings.general.GeneralInfoViewModel
 import app.paralino.core.ui.CoreUiState

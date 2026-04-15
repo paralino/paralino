@@ -7,19 +7,19 @@ import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.models.data
 import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.map.MapHomeScreenFocusType
+import app.paralino.core.models.settings.MapInteractionsType
+import app.paralino.core.presentation.common.AppSnackbarData
 import app.paralino.core.presentation.common.ICoreMessageDispatcher
+import app.paralino.core.presentation.common.MainAlertDialog
+import app.paralino.core.presentation.common.SnackbarDuration
+import app.paralino.core.presentation.common.onAction
 import app.paralino.core.presentation.groups.GroupMemberItemEvent
 import app.paralino.core.presentation.groups.GroupMemberItemStateWithFullStateLocations
 import app.paralino.core.presentation.groups.GroupMemberItemStateWithLocations
 import app.paralino.core.presentation.groups.GroupMemberItemStateWithOneLocation
 import app.paralino.core.presentation.map.MapScreenViewSourceType.DefaultGroup
-import app.paralino.core.models.settings.MapInteractionsType
 import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.group.UserGroupLocalDataSource
-import app.paralino.core.presentation.common.AppSnackbarData
-import app.paralino.core.presentation.common.SnackbarDuration
-import app.paralino.core.presentation.common.MainAlertDialog
-import app.paralino.core.presentation.common.onAction
 import app.paralino.core.ui.map.BottomSheetPosition
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
@@ -356,10 +356,10 @@ class MapEventHandler(
                             member = it.mapHomeScreenFocusType.asMember,
                             groupId = event.item.memberState.groupId,
                             memberUserId = event.item.memberState.userId,
-                            deviceId = when (event.item) {
+                            deviceId = when (val item = event.item) {
                                 is GroupMemberItemStateWithLocations -> null
                                 is GroupMemberItemStateWithFullStateLocations -> null
-                                is GroupMemberItemStateWithOneLocation -> event.item.deviceId
+                                is GroupMemberItemStateWithOneLocation -> item.deviceId
                             }
                         )
                     )

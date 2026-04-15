@@ -16,15 +16,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import app.paralino.core.MR
 import app.paralino.core.models.base.ImageModel
+import app.paralino.core.presentation.SuggestionSectionChipData
 import app.paralino.core.ui.components.DataInfoChip
 import app.paralino.core.ui.components.ImageModelImage
 import app.paralino.core.utils.Emojis
 import dev.icerock.moko.resources.compose.stringResource
-
-data class SuggestionSectionChipData(
-    val image: ImageModel,
-    val name: String,
-)
 
 @Composable
 fun ChipsSuggestionsSection(

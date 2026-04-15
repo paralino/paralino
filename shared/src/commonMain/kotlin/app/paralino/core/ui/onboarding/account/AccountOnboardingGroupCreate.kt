@@ -26,7 +26,7 @@ import androidx.compose.ui.unit.dp
 import app.paralino.core.MR
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.base.asGroupOrSpaceId
-import app.paralino.core.presentation.groups.GroupItemState
+import app.paralino.core.presentation.common.GroupItemState
 import app.paralino.core.provider.localizedString
 import app.paralino.core.ui.groups.GroupListItem
 import app.paralino.core.ui.theme.AppColors

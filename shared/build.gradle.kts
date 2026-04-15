@@ -60,6 +60,7 @@ kotlin {
             api(project(":core-presentation-map"))
             api(project(":core-presentation-settings"))
             api(project(":core-presentation-onboarding"))
+            api(project(":core-resources-icons"))
             api(project(":core-ui-common"))
             api(project(":core-ui-map"))
             api(project(":core-ui-settings"))

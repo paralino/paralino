@@ -44,10 +44,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
-import app.paralino.android.ui.theme.AppIcons
 import app.paralino.core.models.base.ImageModel
-import app.paralino.core.ui.components.CoreAppIcons
-import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
+import app.paralino.core.resources.CoreAppIcons
+import app.paralino.core.resources.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.ImageModelImage
 import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.ui.theme.AppTheme
@@ -143,7 +142,7 @@ fun MapGroupPicker(
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
-                    painter = AppIcons.ExpandMore,
+                    painter = CoreAppIcons.ExpandMore.asPainterResource(),
                     contentDescription = null,
                     modifier = Modifier.size(24.dp)
                 )
@@ -184,7 +183,7 @@ fun MapGroupPicker(
             ) {
                 CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.disabled) {
                     Icon(
-                        painter = AppIcons.Group,
+                        painter = CoreAppIcons.Group.asPainterResource(),
                         modifier = Modifier.size(14.dp),
                         contentDescription = null
                     )
@@ -296,7 +295,7 @@ fun MapGroupPicker(
                 )
             } else {
                 Icon(
-                    painter = AppIcons.Warning,
+                    painter = CoreAppIcons.Warning.asPainterResource(),
                     tint = MaterialTheme.colors.error,
                     contentDescription = null,
                     modifier = Modifier.size(20.dp)

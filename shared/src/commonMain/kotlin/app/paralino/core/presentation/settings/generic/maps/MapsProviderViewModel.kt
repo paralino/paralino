@@ -281,9 +281,9 @@ class MapsProviderViewModel(
             is GenericSettingsScreenUiEvent.OnMapInteraction -> {
                 _uiState.update { state ->
                     state.copy(
-                        content = when (state.content) {
+                        content = when (val stateContent = state.content) {
                             is GenericSettingsScreenStateContent.ListItems -> {
-                                state.content.copy(isUserScrollEnabled = !event.isTouchingMap)
+                                stateContent.copy(isUserScrollEnabled = !event.isTouchingMap)
                             }
 
                             else -> state.content

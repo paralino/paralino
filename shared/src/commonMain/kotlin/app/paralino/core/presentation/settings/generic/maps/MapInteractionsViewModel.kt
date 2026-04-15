@@ -62,10 +62,10 @@ class MapInteractionsViewModel(
                 }
                 _uiState.update { state ->
                     state.copy(
-                        content = when (state.content) {
+                        content = when (val stateContent = state.content) {
                             is GenericSettingsScreenStateContent.ListItems -> {
-                                state.content.copy(
-                                    items = state.content.items.map { item ->
+                                stateContent.copy(
+                                    items = stateContent.items.map { item ->
                                         when (val finalItem = item) {
                                             is GenericSettingListItem.GroupOptions -> {
                                                 finalItem.copy(

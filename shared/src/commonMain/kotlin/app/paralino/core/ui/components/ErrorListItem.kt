@@ -22,13 +22,13 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import app.paralino.core.MR
+import app.paralino.core.presentation.common.endActionTextRes
+import app.paralino.core.presentation.common.nameRes
 import app.paralino.core.resources.CoreAppIcons
 import app.paralino.core.resources.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.utils.ConditionErrorType
 import app.paralino.core.utils.extensions.annotatedBoldCompose
-import dev.icerock.moko.resources.StringResource
 import dev.icerock.moko.resources.compose.stringResource
 
 @Composable
@@ -151,30 +151,3 @@ val ConditionErrorType.icon: Painter
         ConditionErrorType.NewAppUpdate -> CoreAppIcons.DownloadArrow
         ConditionErrorType.UnrestrictedBackgroundAccess -> CoreAppIcons.BatteryFull
     }.asPainterResource()
-
-val ConditionErrorType.nameRes: StringResource
-    get() = when (this) {
-        ConditionErrorType.GPS -> MR.strings.location_banner_error_gps_off
-        ConditionErrorType.PermissionNotifications -> MR.strings.location_banner_error_no_permission_notifications
-        ConditionErrorType.PermissionLocation.PermissionLocationAny -> MR.strings.location_banner_error_no_permission_location
-        ConditionErrorType.PermissionLocation.PermissionLocationPrecise -> MR.strings.location_banner_error_no_permission_location_precise
-        ConditionErrorType.PermissionLocationBackground -> MR.strings.location_banner_error_no_permission_location_background
-        ConditionErrorType.Network -> MR.strings.location_banner_error_offline
-        is ConditionErrorType.EmailVerification -> MR.strings.info_email_confirm
-        ConditionErrorType.GuestAccount -> MR.strings.settings_account_guest_badge
-        ConditionErrorType.NewAppUpdate -> MR.strings.app_version_alert_title
-        ConditionErrorType.UnrestrictedBackgroundAccess -> MR.strings.location_banner_error_background_access
-    }
-
-val ConditionErrorType.endActionTextRes: StringResource?
-    get() = when (this) {
-        ConditionErrorType.GPS -> MR.strings.location_banner_fix
-        ConditionErrorType.PermissionNotifications -> MR.strings.location_banner_fix
-        is ConditionErrorType.PermissionLocation -> MR.strings.location_banner_fix
-        ConditionErrorType.PermissionLocationBackground -> MR.strings.location_banner_fix
-        ConditionErrorType.Network -> null
-        is ConditionErrorType.EmailVerification -> MR.strings.button_verify
-        ConditionErrorType.GuestAccount -> MR.strings.location_banner_fix
-        ConditionErrorType.NewAppUpdate -> MR.strings.app_version_alert_button_update
-        ConditionErrorType.UnrestrictedBackgroundAccess -> MR.strings.location_banner_fix
-    }

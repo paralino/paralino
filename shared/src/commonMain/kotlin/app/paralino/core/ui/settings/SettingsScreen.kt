@@ -55,6 +55,7 @@ import app.paralino.core.resources.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.FilledButton
 import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.presentation.common.AlertDialogAction
+import app.paralino.core.presentation.settings.SettingsActionItemType
 import app.paralino.core.ui.components.dialogs.Show
 import app.paralino.core.ui.settings.billing.PremiumPlanBanner
 import app.paralino.core.ui.settings.profile.AccountInfoHeader
@@ -450,10 +451,3 @@ fun SettingsActionItem(
     }
 }
 
-sealed interface SettingsActionItemType {
-    object Navigation : SettingsActionItemType
-    object Action : SettingsActionItemType
-    object Link : SettingsActionItemType
-    object Loading : SettingsActionItemType
-    data class Switch(val checked: Boolean) : SettingsActionItemType
-}
