@@ -13,7 +13,7 @@ import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.presentation.common.SnackbarDuration
 import app.paralino.core.presentation.common.MainAlertDialog
-import app.paralino.core.ui.main.DeeplinkType
+import app.paralino.core.utils.DeeplinkType
 import app.paralino.core.utils.extensions.errorString
 import app.paralino.core.utils.extensions.getFormValidationErrorText
 import app.paralino.core.utils.extensions.mapToPayload

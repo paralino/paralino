@@ -20,7 +20,7 @@ import app.paralino.android.ui.main.MainActivity
 import app.paralino.android.utils.extensions.attributedBold
 import app.paralino.core.MR
 import app.paralino.core.ui.components.nameRes
-import app.paralino.core.ui.main.DeeplinkType
+import app.paralino.core.utils.DeeplinkType
 import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.utils.ConditionErrorType
 

@@ -14,7 +14,7 @@ import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.personal_code.PersonalCodesRepository
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.presentation.common.MainAlertDialog
-import app.paralino.core.ui.main.DeeplinkType
+import app.paralino.core.utils.DeeplinkType
 import app.paralino.core.utils.ConditionErrorType
 import app.paralino.core.utils.extensions.errorString
 import kotlinx.coroutines.CoroutineScope

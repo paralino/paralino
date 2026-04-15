@@ -1,4 +1,4 @@
-package app.paralino.core.utils
+package app.paralino.core.presentation.common
 
 import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.coroutines.flow.Flow
@@ -6,11 +6,11 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
-import kotlin.time.Instant
 import kotlin.math.sqrt
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
+import kotlin.time.Instant
 
 class NetworkQualityMonitor() {
 

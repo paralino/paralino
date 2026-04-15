@@ -6,7 +6,7 @@ import app.paralino.core.models.Resource
 import app.paralino.core.repo.base.AppUpdateType
 import app.paralino.core.presentation.common.AlertDialogAction
 import app.paralino.core.presentation.common.MainAlertDialog
-import app.paralino.core.ui.main.DeeplinkType
+import app.paralino.core.utils.DeeplinkType
 
 data class MainActivityState(
     val userState: Resource<AppAccountState> = Resource.NotInitialized,

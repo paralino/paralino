@@ -1,4 +1,4 @@
-package app.paralino.core.ui.main
+package app.paralino.core.utils
 
 import io.ktor.http.URLBuilder
 import io.ktor.http.Url
@@ -196,17 +196,17 @@ sealed class DeeplinkType() {
 
                 path.matches(linkHome) -> {
                     val type = cleanDeeplink.parameters.get(HomeScreen.argumentType)
-                    DeeplinkType.HomeScreen(deeplink = deeplink, type = type)
+                    HomeScreen(deeplink = deeplink, type = type)
                 }
 
                 path.matches(pathBilling) -> {
                     val type = cleanDeeplink.parameters.get(PaywallScreen.argumentType)
                     val action = cleanDeeplink.parameters.get(PaywallScreen.argumentAction)
-                    DeeplinkType.PaywallScreen(deeplink = deeplink, type = type, action = action)
+                    PaywallScreen(deeplink = deeplink, type = type, action = action)
                 }
 
                 path.matches(pathPushNotificationService) -> {
-                    DeeplinkType.PushNotificationServiceScreen(deeplink = deeplink)
+                    PushNotificationServiceScreen(deeplink = deeplink)
                 }
 
                 else -> null

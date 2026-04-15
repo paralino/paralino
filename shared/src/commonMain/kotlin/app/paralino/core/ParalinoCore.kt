@@ -139,7 +139,7 @@ import app.paralino.core.repo.user.UserLocalDataSource
 import app.paralino.core.repo.user.UserPersonalSpaceLocalDataSource
 import app.paralino.core.repo.user.UserRemoteSource
 import app.paralino.core.repo.user.UserRepository
-import app.paralino.core.utils.NetworkQualityMonitor
+import app.paralino.core.presentation.common.NetworkQualityMonitor
 import org.koin.core.KoinApplication
 import org.koin.core.context.startKoin
 import org.koin.core.module.Module

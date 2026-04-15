@@ -60,7 +60,7 @@ import app.paralino.core.ui.components.SettingsSectionHeader
 import app.paralino.core.presentation.common.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.LoadingDialog
 import app.paralino.core.ui.components.dialogs.Show
-import app.paralino.core.ui.main.DeeplinkType
+import app.paralino.core.utils.DeeplinkType
 import app.paralino.core.ui.settings.SettingsActionItem
 import app.paralino.core.ui.settings.SettingsActionItemType
 import app.paralino.core.ui.theme.AppColors

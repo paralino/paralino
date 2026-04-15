@@ -20,8 +20,8 @@ import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.presentation.common.SnackbarDuration
 import app.paralino.core.presentation.common.MainAlertDialog
-import app.paralino.core.ui.main.DeeplinkType
-import app.paralino.core.utils.NetworkQualityMonitor
+import app.paralino.core.presentation.common.NetworkQualityMonitor
+import app.paralino.core.utils.DeeplinkType
 import app.paralino.core.utils.extensions.errorString
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO

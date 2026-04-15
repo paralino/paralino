@@ -25,7 +25,7 @@ import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.personal_code.PersonalCodesRepository
 import app.paralino.core.repo.user.UserRepository
-import app.paralino.core.ui.main.DeeplinkType
+import app.paralino.core.utils.DeeplinkType
 import app.paralino.core.ui.onboarding.account.AccountOnboardingContent
 import app.paralino.core.ui.onboarding.account.AccountOnboardingUiEvent
 import app.paralino.core.ui.settings.billing.BillingScreenSourceType
