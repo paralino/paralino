@@ -75,7 +75,7 @@ class PlaceDetailState: BaseMapObservableObject {
     }
     
     func updateMarkers(state: PlaceDetailScreenState) {
-        markers = [MapAnnotatedItem(marker: MapPinData(state_: state))]
+        markers = [MapAnnotatedItem(marker: state.makeMapPin())]
         refocusMap(animate: false)
     }
     

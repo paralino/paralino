@@ -39,6 +39,13 @@ kotlin {
 
             // required so iOS app can use resource directly in Swift code
             export(project(":moko"))
+            export(project(":core-base"))
+            export(project(":core-domain"))
+            export(project(":core-presentation-common"))
+            export(project(":core-presentation-details"))
+            export(project(":core-presentation-map"))
+            export(project(":core-presentation-settings"))
+            export(project(":core-presentation-onboarding"))
             export(libs.moko.resources)
         }
     }
