@@ -54,10 +54,6 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
-            implementation(libs.jetbrains.compose.runtime)
-            implementation(libs.jetbrains.compose.foundation)
-            implementation(libs.jetbrains.compose.material)
-            api(libs.jetbrains.compose.components.resources)
             api(project(":moko"))
             api(project(":core-base"))
             api(project(":core-db"))
@@ -73,17 +69,6 @@ kotlin {
             api(project(":core-ui-map"))
             api(project(":core-ui-onboarding"))
             api(project(":core-ui-settings"))
-            api(libs.kotlinx.coroutines.core)
-            api(libs.kotlinx.datetime)
-            api(libs.kotlinx.serialization.json)
-            implementation(project.dependencies.platform(libs.koin.bom))
-            implementation(libs.koin.core)
-            api(libs.network.ktor.client.core)
-            api(libs.network.ktor.client.logging)
-            api(libs.network.ktor.content.negotiation)
-            implementation(libs.network.ktor.serialization)
-            implementation(libs.aboutLibraries.core)
-            implementation(libs.aboutLibraries.compose)
         }
 
         androidMain.dependencies {
@@ -94,11 +79,6 @@ kotlin {
             api(libs.appcompat)
             api(libs.androidx.core.ktx)
             api(libs.kotlinx.coroutines.android)
-            implementation(libs.network.ktor.client.okhttp)
-        }
-
-        iosMain.dependencies {
-            implementation(libs.network.ktor.client.darwin)
         }
     }
 

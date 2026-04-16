@@ -284,6 +284,13 @@ dependencies {
     implementation(platform(libs.okhttp.bom))
     implementation(libs.okhttp)
     debugImplementation(libs.logging.interceptor)
+
+    implementation(libs.network.ktor.client.core)
+    implementation(libs.network.ktor.client.logging)
+
+    implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.kotlinx.datetime)
+    implementation(libs.kotlinx.serialization.json)
     // endregion
 }
 
