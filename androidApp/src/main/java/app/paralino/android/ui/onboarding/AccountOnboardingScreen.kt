@@ -24,7 +24,7 @@ fun AccountOnboardingScreen(
     )
 
     val context = LocalContext.current
-    AccountOnboardingScreenCore(
+    _root_ide_package_.app.paralino.core.ui.onboarding.account.AccountOnboardingScreenCore(
         modifier = Modifier.safeDrawingPadding(),
         appState = appState,
         vm = vm,

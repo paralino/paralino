@@ -13,7 +13,7 @@ fun PasswordConfirmationScreen(
     appState: MainAppState,
     vm: PasswordConfirmationViewModel = koinViewModel()
 ) {
-    PasswordConfirmationScreenCore(
+    _root_ide_package_.app.paralino.core.ui.login.PasswordConfirmationScreenCore(
         modifier = Modifier.safeDrawingPadding(),
         appState = appState,
         vm = vm

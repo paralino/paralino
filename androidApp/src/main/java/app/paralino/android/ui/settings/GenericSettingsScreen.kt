@@ -67,7 +67,7 @@ fun GenericSettingsScreen(
             )
         }
     ) {
-        GenericSettingsScreenCore(
+        _root_ide_package_.app.paralino.core.ui.settings.GenericSettingsScreenCore(
             coreUiState = appState,
             vm = vm,
             paddingValues = remember { PaddingValues() },
@@ -82,7 +82,13 @@ fun GenericSettingsScreen(
                         isSatelliteMode = false,
                         canTapOnCircles = true,
                         onMapCameraSettled = {},
-                        onMapInteraction = { vm.onEvent(GenericSettingsScreenUiEvent.OnMapInteraction(isTouchingMap = it)) },
+                        onMapInteraction = {
+                            vm.onEvent(
+                                GenericSettingsScreenUiEvent.OnMapInteraction(
+                                    isTouchingMap = it
+                                )
+                            )
+                        },
                         onMapTap = { lat, lng -> },
                         onMapLongPress = { lat, lng -> }
                     )
@@ -95,7 +101,11 @@ fun GenericSettingsScreen(
                 context.openNotificationChannelSettings(PushServiceNotificationHandler.channelId)
             },
             askNotificationPermission = { notificationPermissionHandler?.askNotificationPermission() },
-            askBackgroundAccessPermission = { locationPermissionHandler?.askUnrestrictedBackgroundAccess(forcePrompt = true) }
+            askBackgroundAccessPermission = {
+                locationPermissionHandler?.askUnrestrictedBackgroundAccess(
+                    forcePrompt = true
+                )
+            }
         )
     }
 }

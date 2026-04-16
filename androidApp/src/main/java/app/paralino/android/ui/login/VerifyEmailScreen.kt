@@ -14,7 +14,7 @@ fun VerifyEmailScreen(
     appState: MainAppState,
     vm: VerifyEmailViewModel = koinViewModel(),
 ) {
-    VerifyEmailScreenCore(
+    _root_ide_package_.app.paralino.core.ui.login.VerifyEmailScreenCore(
         modifier = Modifier.safeDrawingPadding(),
         appState = appState,
         vm = vm,

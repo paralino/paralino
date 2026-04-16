@@ -28,12 +28,6 @@ kotlin {
             implementation(libs.jetbrains.compose.runtime)
             implementation(libs.jetbrains.compose.foundation)
             implementation(libs.jetbrains.compose.material)
-            implementation(libs.kotlinx.coroutines.core)
-            implementation(libs.kotlinx.datetime)
-            implementation(libs.kotlinx.serialization.json)
-            // koin only used here because of BaseRepository, remove at some point to slim down dependencies
-            implementation(project.dependencies.platform(libs.koin.bom))
-            implementation(libs.koin.core)
             implementation(project(":moko"))
             implementation(project(":core-base"))
             implementation(project(":core-db"))
@@ -47,7 +41,6 @@ kotlin {
         androidMain.dependencies {
             implementation(libs.appcompat)
             implementation(libs.androidx.core.ktx)
-            implementation(libs.kotlinx.coroutines.android)
             implementation(libs.lifecycle.viewmodel.ktx)
             implementation(libs.activity.compose)
         }

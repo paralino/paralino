@@ -44,7 +44,7 @@ fun LoggedOutScreen(
         }
     }
 
-    WelcomeScreen(
+    _root_ide_package_.app.paralino.core.ui.login.WelcomeScreen(
         vm = vm,
         paddingValues = WindowInsets.safeDrawing.asPaddingValues(),
         onLoginClick = {
@@ -64,7 +64,7 @@ fun LoggedOutScreen(
 fun LoggedOutScreenPreview() {
     AppTheme() {
         Surface {
-            WelcomeScreen(
+            _root_ide_package_.app.paralino.core.ui.login.WelcomeScreen(
                 paddingValues = PaddingValues(vertical = 20.dp),
                 onStartClick = {}
             )

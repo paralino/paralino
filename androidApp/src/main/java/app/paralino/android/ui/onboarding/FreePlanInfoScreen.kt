@@ -15,7 +15,7 @@ fun FreePlanInfoScreen(
     appState: MainAppState,
     vm: PlanInfoViewModel = koinViewModel()
 ) {
-    FreePlanInfoScreenCore(
+    _root_ide_package_.app.paralino.core.ui.onboarding.FreePlanInfoScreenCore(
         coreUiState = appState,
         vm = vm,
         paddingValues = WindowInsets.safeDrawing.asPaddingValues(),
