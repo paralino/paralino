@@ -29,12 +29,12 @@ kotlin {
             implementation(libs.jetbrains.compose.foundation)
             implementation(libs.jetbrains.compose.material)
             implementation(libs.kotlinx.serialization.json)
-            implementation(project(":moko"))
             implementation(project(":core-base"))
             implementation(project(":core-db"))
             implementation(project(":core-domain"))
             implementation(project(":core-presentation-common"))
             implementation(project(":core-resources-icons"))
+            implementation(project(":core-resources-moko"))
         }
 
         androidMain.dependencies {

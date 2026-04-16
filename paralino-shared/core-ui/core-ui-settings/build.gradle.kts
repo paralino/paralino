@@ -33,7 +33,6 @@ kotlin {
             implementation(libs.kotlinx.datetime)
             implementation(libs.aboutLibraries.core)
             implementation(libs.aboutLibraries.compose)
-            implementation(project(":moko"))
             implementation(project(":core-base"))
             implementation(project(":core-db"))
             implementation(project(":core-domain"))
@@ -41,6 +40,7 @@ kotlin {
             implementation(project(":core-presentation-details"))
             implementation(project(":core-presentation-settings"))
             implementation(project(":core-resources-icons"))
+            implementation(project(":core-resources-moko"))
             implementation(project(":core-ui-common"))
             implementation(project(":core-ui-details"))
         }

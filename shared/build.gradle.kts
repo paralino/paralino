@@ -38,7 +38,6 @@ kotlin {
             isStatic = true
 
             // required so iOS app can use resource directly in Swift code
-            export(project(":moko"))
             export(project(":core-base"))
             export(project(":core-domain"))
             export(project(":core-presentation-common"))
@@ -46,6 +45,7 @@ kotlin {
             export(project(":core-presentation-map"))
             export(project(":core-presentation-settings"))
             export(project(":core-presentation-onboarding"))
+            export(project(":core-resources-moko"))
             export(libs.moko.resources)
         }
     }
@@ -54,7 +54,6 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
-            api(project(":moko"))
             api(project(":core-base"))
             api(project(":core-db"))
             api(project(":core-domain"))
@@ -64,6 +63,7 @@ kotlin {
             api(project(":core-presentation-settings"))
             api(project(":core-presentation-onboarding"))
             api(project(":core-resources-icons"))
+            api(project(":core-resources-moko"))
             api(project(":core-ui-common"))
             api(project(":core-ui-details"))
             api(project(":core-ui-map"))

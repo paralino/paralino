@@ -9,7 +9,7 @@ plugins {
 
 kotlin {
     android {
-        namespace = "app.paralino.core.moko"
+        namespace = "app.paralino.core.resources.moko"
         compileSdk = 36
     }
 

@@ -39,7 +39,7 @@ kotlin {
             // koin only used in BaseRepository, remove at some point to slim down dependencies
             implementation(project.dependencies.platform(libs.koin.bom))
             implementation(libs.koin.core)
-            implementation(project(":moko"))
+            implementation(project(":core-resources-moko"))
             implementation(project(":core-base"))
             implementation(project(":core-db"))
         }

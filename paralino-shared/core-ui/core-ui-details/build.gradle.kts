@@ -28,13 +28,13 @@ kotlin {
             implementation(libs.jetbrains.compose.runtime)
             implementation(libs.jetbrains.compose.foundation)
             implementation(libs.jetbrains.compose.material)
-            implementation(project(":moko"))
             implementation(project(":core-base"))
             implementation(project(":core-db"))
             implementation(project(":core-domain"))
             implementation(project(":core-presentation-common"))
             implementation(project(":core-presentation-details"))
             implementation(project(":core-resources-icons"))
+            implementation(project(":core-resources-moko"))
             implementation(project(":core-ui-common"))
         }
 
