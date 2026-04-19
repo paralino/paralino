@@ -1,0 +1,3 @@
+[submodule "parasodium"]
+	path = parasodium
+	url = git@github.com:paralino/parasodium.git

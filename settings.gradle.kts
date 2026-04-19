@@ -3,7 +3,7 @@ rootProject.name = "Paralino"
 include(":androidApp")
 include(":shared")
 include(":appwrite-android")
-include(":lazysodium-android")
+include(":parasodium")
 include(":core-base")
 include(":core-db")
 include(":core-domain")
@@ -21,7 +21,7 @@ include(":core-ui-onboarding")
 include(":core-ui-settings")
 
 project(":appwrite-android").projectDir = File("appwrite-android/library")
-project(":lazysodium-android").projectDir = File("lazysodium-android/app")
+project(":parasodium").projectDir = File("parasodium/parasodium")
 project(":core-base").projectDir = File("core-base")
 project(":core-db").projectDir = File("core-db")
 project(":core-domain").projectDir = File("core-domain")
@@ -52,5 +52,10 @@ dependencyResolutionManagement {
         google()
         mavenCentral()
         maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
+    }
+    versionCatalogs {
+        create("parasodiumlibs") {
+            from(files("parasodium/gradle/parasodiumlibs.versions.toml"))
+        }
     }
 }

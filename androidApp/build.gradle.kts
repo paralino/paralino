@@ -271,13 +271,10 @@ dependencies {
     implementation(libs.maps.maplibre.compose)
     directImplementation(libs.unifiedPush.connector)
 
-    implementation(project(path = ":lazysodium-android"))
-    implementation(libs.jna) {
-        artifact { type = "aar" }
-    }
     implementation(libs.nanoid)
     implementation(libs.sentry.android)
 
+    implementation(project(path = ":parasodium"))
     implementation(project(path = ":appwrite-android"))
 //    releaseImplementation(libs.appwrite.android)
 
