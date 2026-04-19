@@ -7,8 +7,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import app.paralino.android.R
+import app.paralino.core.models.map.MapHomeScreenFocusType
 import app.paralino.core.presentation.map.FocusedMarkerData
-import app.paralino.core.presentation.map.MapHomeScreenFocusType
 import app.paralino.core.presentation.map.MapPinData
 import app.paralino.core.presentation.map.MapPinType
 import com.google.android.gms.maps.CameraUpdateFactory

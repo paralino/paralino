@@ -3,7 +3,7 @@ package app.paralino.android.ui.map.google.history
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.geometry.Offset
 import app.paralino.android.ui.map.google.rememberComposeBitmapDescriptor
-import app.paralino.core.presentation.history.LocationHistoryPointState
+import app.paralino.core.models.location.LocationHistoryPointState
 import app.paralino.core.ui.map.HistoryMapIcon
 import app.paralino.core.utils.extensions.isLocationInaccurate
 import com.google.android.gms.maps.model.BitmapDescriptor
