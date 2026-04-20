@@ -1,3 +1,6 @@
 [submodule "parasodium"]
 	path = parasodium
 	url = git@github.com:paralino/parasodium.git
+[submodule "appwrite-android"]
+	path = appwrite-android
+	url = git@github.com:paralino/appwrite-android.git

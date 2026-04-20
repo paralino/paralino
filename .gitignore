@@ -8,24 +8,19 @@
 /captures
 .externalNativeBuild
 .cxx
-androidApp/schemas/
 
 local_resources/
-
-appwrite-android/
-lazysodium-android/
 
 user.properties
 iosApp/Configuration/production-config.xcconfig
 iosApp/Configuration/staging-config.xcconfig
 
 androidApp/src/*/res/values/fcm_config.xml
-
 androidApp/proguard-merged-config.txt
+androidApp/schemas/
 
 paralinoTestKey
 
 androidApp/playStoreGoogle/release/
 androidApp/direct/release/
-
 androidApp/playStore/release/
