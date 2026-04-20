@@ -30,6 +30,8 @@
 		254EFF732CB5457800818618 /* paralino-nse.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 254EFF6B2CB5457800818618 /* paralino-nse.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		254EFF7A2CB545AB00818618 /* paralino_apple_core.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 257DCAD32CB4407700402562 /* paralino_apple_core.framework */; };
 		2556E2472ACFFC7500A1BACE /* NotificationPermissionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2556E2462ACFFC7500A1BACE /* NotificationPermissionHandler.swift */; };
+		2558D4B32F96A6EF0027A529 /* Appwrite in Frameworks */ = {isa = PBXBuildFile; productRef = 2558D4B22F96A6EF0027A529 /* Appwrite */; };
+		2558D4B62F96AFCB0027A529 /* AsyncHTTPClient in Frameworks */ = {isa = PBXBuildFile; productRef = 2558D4B52F96AFCB0027A529 /* AsyncHTTPClient */; };
 		25592FB02D11E370003EECCB /* AppRatingPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25592FAF2D11E370003EECCB /* AppRatingPresenter.swift */; };
 		25592FB22D11EAA7003EECCB /* WelcomeOnboardingScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25592FB12D11EAA0003EECCB /* WelcomeOnboardingScreen.swift */; };
 		255B0CA12E203D95001426C3 /* HistoryMapMarker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 255B0CA02E203D95001426C3 /* HistoryMapMarker.swift */; };
@@ -83,7 +85,6 @@
 		25C91A362A5890B400A49F06 /* MemberInviteScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25C91A352A5890B400A49F06 /* MemberInviteScreen.swift */; };
 		25C9E5672CCB75C200C3C58A /* LocationPermissionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25C9E5662CCB75BA00C3C58A /* LocationPermissionHandler.swift */; };
 		25C9E5692CD0300E00C3C58A /* LoadingOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25C9E5682CD0300E00C3C58A /* LoadingOverlay.swift */; };
-		25CDB2B22ED2626C006BA727 /* AsyncHTTPClient in Frameworks */ = {isa = PBXBuildFile; productRef = 25CDB2B12ED2626C006BA727 /* AsyncHTTPClient */; };
 		25D8A43529CE24A00023A0E5 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25D8A43429CE24A00023A0E5 /* AppDelegate.swift */; };
 		25DA00932D307BEE00F705FB /* BatteryNotificationsSettingsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25DA00922D307BEE00F705FB /* BatteryNotificationsSettingsScreen.swift */; };
 		25E943462D5E4948002B91D7 /* VerifyEmailScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25E943452D5E4948002B91D7 /* VerifyEmailScreen.swift */; };
@@ -395,13 +396,14 @@
 				2568AF642CB5342B007EE00F /* NIOEmbedded in Frameworks */,
 				2568AF5E2CB5342B007EE00F /* NIO in Frameworks */,
 				2568AF602CB5342B007EE00F /* NIOConcurrencyHelpers in Frameworks */,
-				25CDB2B22ED2626C006BA727 /* AsyncHTTPClient in Frameworks */,
 				2568AF662CB5342B007EE00F /* NIOFoundationCompat in Frameworks */,
 				257DCAE42CB441BB00402562 /* Clibsodium in Frameworks */,
 				2568AF622CB5342B007EE00F /* NIOCore in Frameworks */,
 				250BB6AA2CB9391800CCAB64 /* Appwrite in Frameworks */,
 				257B6E0B2CB5717B004F5438 /* Atomics in Frameworks */,
+				2558D4B32F96A6EF0027A529 /* Appwrite in Frameworks */,
 				257DCAE62CB441BB00402562 /* Sodium in Frameworks */,
+				2558D4B62F96AFCB0027A529 /* AsyncHTTPClient in Frameworks */,
 				254729E62CB5967000172F55 /* Sentry in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -759,7 +761,8 @@
 				257B6E0A2CB5717B004F5438 /* Atomics */,
 				254729E52CB5967000172F55 /* Sentry */,
 				250BB6A92CB9391800CCAB64 /* Appwrite */,
-				25CDB2B12ED2626C006BA727 /* AsyncHTTPClient */,
+				2558D4B22F96A6EF0027A529 /* Appwrite */,
+				2558D4B52F96AFCB0027A529 /* AsyncHTTPClient */,
 			);
 			productName = "paralino-apple-core";
 			productReference = 257DCAD32CB4407700402562 /* paralino_apple_core.framework */;
@@ -855,9 +858,9 @@
 				25008E4D2BDAE84600A3BCCA /* XCRemoteSwiftPackageReference "SwiftLocation" */,
 				2568AF5C2CB5342B007EE00F /* XCRemoteSwiftPackageReference "swift-nio" */,
 				257B6E092CB5717B004F5438 /* XCRemoteSwiftPackageReference "swift-atomics" */,
-				25A5A6222CB9384100D3D160 /* XCLocalSwiftPackageReference "appwrite-ios" */,
 				2508BC132CD50FEE007919B8 /* XCRemoteSwiftPackageReference "purchases-ios-spm" */,
-				25CDB2B02ED2626C006BA727 /* XCLocalSwiftPackageReference "async-http-client" */,
+				2558D4B12F96A6EF0027A529 /* XCLocalSwiftPackageReference "appwrite-apple" */,
+				2558D4B42F96AFCB0027A529 /* XCLocalSwiftPackageReference "async-http-client" */,
 			);
 			productRefGroup = 25C03A6529CCE77100646364 /* Products */;
 			projectDirPath = "";
@@ -1789,11 +1792,11 @@
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
-		25A5A6222CB9384100D3D160 /* XCLocalSwiftPackageReference "appwrite-ios" */ = {
+		2558D4B12F96A6EF0027A529 /* XCLocalSwiftPackageReference "appwrite-apple" */ = {
 			isa = XCLocalSwiftPackageReference;
-			relativePath = "appwrite-ios";
+			relativePath = "appwrite-apple";
 		};
-		25CDB2B02ED2626C006BA727 /* XCLocalSwiftPackageReference "async-http-client" */ = {
+		2558D4B42F96AFCB0027A529 /* XCLocalSwiftPackageReference "async-http-client" */ = {
 			isa = XCLocalSwiftPackageReference;
 			relativePath = "async-http-client";
 		};
@@ -1860,6 +1863,14 @@
 			package = 25129FEB2BBDE6B800D1A5AE /* XCRemoteSwiftPackageReference "sentry-cocoa" */;
 			productName = Sentry;
 		};
+		2558D4B22F96A6EF0027A529 /* Appwrite */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Appwrite;
+		};
+		2558D4B52F96AFCB0027A529 /* AsyncHTTPClient */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = AsyncHTTPClient;
+		};
 		2568AF5D2CB5342B007EE00F /* NIO */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 2568AF5C2CB5342B007EE00F /* XCRemoteSwiftPackageReference "swift-nio" */;
@@ -1909,10 +1920,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 2508BC132CD50FEE007919B8 /* XCRemoteSwiftPackageReference "purchases-ios-spm" */;
 			productName = RevenueCat;
-		};
-		25CDB2B12ED2626C006BA727 /* AsyncHTTPClient */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = AsyncHTTPClient;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
