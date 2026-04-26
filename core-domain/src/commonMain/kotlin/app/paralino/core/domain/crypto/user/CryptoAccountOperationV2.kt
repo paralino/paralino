@@ -166,6 +166,7 @@ class CryptoAccountOperationV2(
         )
     }
 
+    @Throws(IllegalStateException::class)
     suspend fun verifyUserKeysChange(
         oldKey: UserCryptoKeyRaw,
         oldPassword: String,
@@ -182,6 +183,7 @@ class CryptoAccountOperationV2(
         ) { "Old key does not match" }
     }
 
+    @Throws(IllegalStateException::class)
     suspend fun verifyUserKeysChange(
         oldKey: UserCryptoKeyRaw,
         newKey: UserCryptoKeyRaw,

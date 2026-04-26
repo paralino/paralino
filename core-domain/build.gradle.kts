@@ -44,6 +44,10 @@ kotlin {
             implementation(project(":core-db"))
         }
 
+        commonTest.dependencies {
+            implementation(kotlin("test"))
+        }
+
         androidMain.dependencies {
             implementation(libs.appcompat)
             implementation(libs.androidx.core.ktx)

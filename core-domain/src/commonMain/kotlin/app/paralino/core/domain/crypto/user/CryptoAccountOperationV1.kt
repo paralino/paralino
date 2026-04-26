@@ -159,6 +159,7 @@ class CryptoAccountOperationV1(
         )
     }
 
+    @Throws(IllegalStateException::class)
     suspend fun verifyUserKeysChange(
         oldKey: UserCryptoKeyRaw,
         oldMasterAuthKey: String,
