@@ -1,10 +1,9 @@
 package app.paralino.core.models
 
 data class AppBuildConfig constructor(
-    val serverUrl: String,
-    val projectId: String,
-    val publicServerUrl: String,
-    val billingRCApiKey: String,
+    val prodServerConfig: ApiServerConfig,
+    val devServerConfig: ApiServerConfig?,
+    val billingRCApiKey: String?,
     val iOSTeamId: String,
     val iOSAppGroup: String,
     val appPackageName: String,
@@ -17,11 +16,24 @@ data class AppBuildConfig constructor(
     val hasNotificationSocketService: Boolean,
     val appFlavor: AppFlavor
 ) {
-    val endpoint = "$serverUrl/v1"
+    val apiServerConfig: ApiServerConfig = if (isDevMode) {
+        devServerConfig?.takeIf { it.isValid } ?: prodServerConfig
+    } else {
+        prodServerConfig
+    }
 
     companion object {
         lateinit var instance: AppBuildConfig
     }
+}
+
+data class ApiServerConfig(
+    val serverUrl: String,
+    val projectId: String,
+    val publicServerUrl: String
+) {
+    val endpoint = "$serverUrl/v1"
+    val isValid = serverUrl.isNotBlank() && projectId.isNotBlank() && publicServerUrl.isNotBlank()
 }
 
 enum class AppFlavor constructor(val key: String) {

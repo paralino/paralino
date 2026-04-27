@@ -36,21 +36,30 @@ class BillingProviderIOS: IBillingProvider {
         })
     }
     
-    private func configure(billingUserId: String) -> Bool {
+    private func configure(billingUserId: String) throws -> Bool {
         Purchases.logLevel = appBuildConfig.logToConsole ? .debug : .error
         
         if Purchases.isConfigured, Purchases.shared.appUserID == billingUserId {
             return true
         }
         
-        Purchases.configure(withAPIKey: appBuildConfig.billingRCApiKey, appUserID: billingUserId)
+        guard let billingRCApiKey = appBuildConfig.billingRCApiKey, billingRCApiKey.isEmpty == false else {
+            let sharedError = PurchaseErrorException(
+                errorCode: 0,
+                errorMessage: "Missing RC billing key",
+                userCancelled: false
+            )
+            throw PurchaseError(sharedError: sharedError)
+        }
+        
+        Purchases.configure(withAPIKey: billingRCApiKey, appUserID: billingUserId)
         
         return false
     }
     
     func configure() async throws -> IBillingProviderSubscriptionProviderData {
         let billingUserId = try await userConfigRepo.ensureAndGetBillingUserId()
-        let result = configure(billingUserId: billingUserId)
+        let result = try configure(billingUserId: billingUserId)
         
         if !result {
             try await Task.sleep(nanoseconds: 800_000_000) // 800 milliseconds

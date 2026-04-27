@@ -1,6 +1,7 @@
 package app.paralino.core.repo.base
 
 import app.paralino.core.db.AppPrefs
+import app.paralino.core.models.ApiServerConfig
 import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.AppFlavor
 import app.paralino.core.models.AppHost
@@ -15,10 +16,10 @@ class AppConfigRepository(
     val hasPreviewFeatures: Boolean get() = appBuildConfig.hasPreviewFeatures
     val logErrorsToRemote: Boolean get() = appBuildConfig.logErrorsToRemote
     val logToConsole: Boolean = appBuildConfig.logToConsole
-    val billingRCApiKey: String get() = appBuildConfig.billingRCApiKey
-    val serverUrl: String get() = appBuildConfig.serverUrl
-    val endpoint: String get() = appBuildConfig.endpoint
-    val projectId: String get() = appBuildConfig.projectId
+    val billingRCApiKey: String? get() = appBuildConfig.billingRCApiKey
+    val apiServerConfig: ApiServerConfig get() = appBuildConfig.apiServerConfig
+    val endpoint: String get() = appBuildConfig.apiServerConfig.endpoint
+    val projectId: String get() = appBuildConfig.apiServerConfig.projectId
     val appHost: AppHost get() = appBuildConfig.appHost
     val resourceIds: BackendResourceIDs get() = BackendResourceIDs
     val hasGoogleMaps: Boolean get() = appBuildConfig.hasGoogleMaps

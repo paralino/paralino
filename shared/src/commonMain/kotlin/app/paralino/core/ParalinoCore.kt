@@ -208,7 +208,7 @@ object ParalinoCore {
 
         logr.i("paralino_core", "Paralino core initialized: ${deviceApiProvider.clientHeaderValue}")
 
-        if (appBuildConfig.serverUrl.isBlank() || appBuildConfig.projectId.isBlank()) {
+        if (appBuildConfig.apiServerConfig.serverUrl.isBlank() || appBuildConfig.apiServerConfig.projectId.isBlank()) {
             logg.e("ERROR", "Server config invalid - missing endpoint or projectId")
         }
     }

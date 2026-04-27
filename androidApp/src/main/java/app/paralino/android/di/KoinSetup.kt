@@ -56,9 +56,11 @@ import app.paralino.core.domain.location.history.LocationHistoryUploadEngine
 import app.paralino.core.domain.notifications.IGroupActivityNotificationPresenter
 import app.paralino.core.domain.notifications.IInfoMessagesNotificationPresenter
 import app.paralino.core.domain.notifications.IPlaceActivityNotificationPresenter
+import app.paralino.core.models.ApiServerConfig
 import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.AppFlavor
 import app.paralino.core.models.AppHost
+import app.paralino.core.models.base.BackendResourceIDs
 import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.presentation.groups.detail.GroupDetailViewModel
 import app.paralino.core.presentation.groups.edit.CreateGroupViewModel
@@ -194,10 +196,18 @@ object KoinSetup {
         single { LocationHistoryUploadEngine(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) } bind ILocationHistoryUploadEngine::class
 
         single {
+            val appFlavor = when (BuildConfig.FLAVOR) {
+                "direct" -> AppFlavor.ANDROID_DIRECT
+                "playStore" -> AppFlavor.ANDROID_GOOGLE
+                else -> throw IllegalArgumentException("Wrong app flavor")
+            }
             AppBuildConfig(
-                serverUrl = BuildConfig.serverUrl,
-                projectId = BuildConfig.serverKey,
-                publicServerUrl = BuildConfig.publicServerUrl,
+                prodServerConfig = BackendResourceIDs.productionServerConfig,
+                devServerConfig = ApiServerConfig(
+                    serverUrl = BuildConfig.devServerUrl,
+                    projectId = BuildConfig.devServerKey,
+                    publicServerUrl = BuildConfig.devPublicServerUrl,
+                ),
                 billingRCApiKey = BuildConfig.revenueCatApiKey,
                 iOSTeamId = "",
                 iOSAppGroup = "",
@@ -207,13 +217,9 @@ object KoinSetup {
                 hasPreviewFeatures = BuildConfig.internalTesting,
                 logToConsole = BuildConfig.forceLogToSystem,
                 logErrorsToRemote = true,
-                hasGoogleMaps = BuildConfig.hasGoogleMaps,
-                hasNotificationSocketService = BuildConfig.hasNotificationSocketService,
-                appFlavor = when (BuildConfig.FLAVOR) {
-                    "direct" -> AppFlavor.ANDROID_DIRECT
-                    "playStore" -> AppFlavor.ANDROID_GOOGLE
-                    else -> throw IllegalArgumentException("Wrong app flavor")
-                }
+                hasGoogleMaps = appFlavor == AppFlavor.ANDROID_GOOGLE,
+                hasNotificationSocketService = appFlavor == AppFlavor.ANDROID_DIRECT,
+                appFlavor = appFlavor
             )
         }
         single {

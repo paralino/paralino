@@ -11,6 +11,12 @@ plugins {
     alias(libs.plugins.kotlin.parcelize)
 }
 
+fun loadUserProperties(rootDir: File): Properties? {
+    val propsFile = File(rootDir, "user.properties")
+    if (!propsFile.exists()) return null
+    return Properties().apply { load(FileInputStream(propsFile)) }
+}
+
 android {
     namespace = "app.paralino.android"
     compileSdk = 36
@@ -61,12 +67,8 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        val propsFile = rootProject.file("user.properties")
-        val props = Properties()
-        props.load(FileInputStream(propsFile))
-
-        manifestPlaceholders["MAPS_API_KEY"] = props["MAPS_API_KEY"] as String
-        resValue("string", "glitchTipDSN", props["glitchTipDSNAndroid"] as String)
+        val userProps = loadUserProperties(rootProject.rootDir)
+        resValue("string", "glitchTipDSN", userProps?.getProperty("glitchTipDSNAndroid") ?: "")
 
         // room schema export
         javaCompileOptions {
@@ -78,16 +80,16 @@ android {
 
     signingConfigs {
         create("testConfig") {
-            try {
-                val propsFile = rootProject.file("user.properties")
-                val props = Properties()
-                props.load(FileInputStream(propsFile))
-                storePassword = props["testKeyPassword"] as String
-                keyAlias = props["testKeyAlias"] as String
-                keyPassword = props["testKeyPassword"] as String
-                storeFile = file("${projectDir.parentFile}/paralinoTestKey")
-            } catch (ex: Exception) {
-                throw ex
+            val userProps = loadUserProperties(rootProject.rootDir)
+            val storePasswordValue = userProps?.getProperty("testKeyPassword")
+            val keyAliasValue = userProps?.getProperty("testKeyAlias")
+            val storeFileValue = file("${projectDir.parentFile}/paralinoTestKey")
+
+            if (!storePasswordValue.isNullOrBlank() && !keyAliasValue.isNullOrBlank() && storeFileValue.exists()) {
+                storePassword = storePasswordValue
+                keyAlias = keyAliasValue
+                keyPassword = storePasswordValue
+                storeFile = storeFileValue
             }
         }
     }
@@ -99,15 +101,12 @@ android {
             isDebuggable = false
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
 
+            buildConfigField("String", "devServerUrl", "\"\"")
+            buildConfigField("String", "devServerKey", "\"\"")
+            buildConfigField("String", "devPublicServerUrl", "\"\"")
+
             buildConfigField("boolean", "internalTesting", "false")
             buildConfigField("boolean", "forceLogToSystem", "false")
-
-            val propsFile = rootProject.file("user.properties")
-            val props = Properties()
-            props.load(FileInputStream(propsFile))
-            buildConfigField("String", "serverUrl", props["productionServerUrl"] as String)
-            buildConfigField("String", "serverKey", props["productionServerKey"] as String)
-            buildConfigField("String", "publicServerUrl", props["productionPublicServerUrl"] as String)
         }
         getByName("debug") {
             isDebuggable = true
@@ -120,14 +119,20 @@ android {
             buildConfigField("boolean", "internalTesting", "true")
             buildConfigField("boolean", "forceLogToSystem", "true")
 
-            val propsFile = rootProject.file("user.properties")
-            val props = Properties()
-            props.load(FileInputStream(propsFile))
-            buildConfigField("String", "serverUrl", props["devServerUrl"] as String)
-            buildConfigField("String", "serverKey", props["devServerKey"] as String)
-            buildConfigField("String", "publicServerUrl", props["devPublicServerUrl"] as String)
+            val userProps = loadUserProperties(rootProject.rootDir)
+            if (userProps != null) {
+                val devServerUrl = userProps["devServerUrl"] as? String
+                val devServerKey = userProps["devServerKey"] as? String
+                val devPublicServerUrl = userProps["devPublicServerUrl"] as? String
+                buildConfigField("String", "devServerUrl", devServerUrl ?: "\"\"")
+                buildConfigField("String", "devServerKey", devServerKey ?: "\"\"")
+                buildConfigField("String", "devPublicServerUrl", devPublicServerUrl ?: "\"\"")
+            }
 
-            signingConfig = signingConfigs.getByName("testConfig")
+            val testSigning = signingConfigs.getByName("testConfig")
+            if (testSigning.storeFile != null) {
+                signingConfig = testSigning
+            }
         }
         create("releaseTest") {
             initWith(getByName("release"))
@@ -135,7 +140,11 @@ android {
             buildConfigField("boolean", "internalTesting", "true")
             buildConfigField("boolean", "forceLogToSystem", "true")
             isDebuggable = true
-            signingConfig = signingConfigs.getByName("testConfig")
+
+            val testSigning = signingConfigs.getByName("testConfig")
+            if (testSigning.storeFile != null) {
+                signingConfig = testSigning
+            }
         }
     }
 
@@ -146,22 +155,16 @@ android {
             versionCode = 79
             versionName = "2.2.2"
 
-            val propsFile = rootProject.file("user.properties")
-            val props = Properties()
-            props.load(FileInputStream(propsFile))
-            buildConfigField("String", "revenueCatApiKey", props["revenueCatApiKey"] as String)
-
-            buildConfigField("boolean", "hasGoogleMaps", "true")
-            buildConfigField("boolean", "hasNotificationSocketService", "false")
+            val userProps = loadUserProperties(rootProject.rootDir)
+            buildConfigField("String", "revenueCatApiKey", userProps?.getProperty("revenueCatApiKey") ?: "null")
+            manifestPlaceholders["MAPS_API_KEY"] = userProps?.getProperty("MAPS_API_KEY").orEmpty()
         }
         create("direct") {
             dimension = "version"
             versionCode = 79
             versionName = "2.2.2"
 
-            buildConfigField("String", "revenueCatApiKey", "\"\"")
-            buildConfigField("boolean", "hasGoogleMaps", "false")
-            buildConfigField("boolean", "hasNotificationSocketService", "true")
+            buildConfigField("String", "revenueCatApiKey", "null")
         }
     }
 
@@ -291,6 +294,7 @@ dependencies {
     // endregion
 }
 
+// used by UnifiedPush
 configurations.all {
     val tink = "com.google.crypto.tink:tink-android:1.20.0"
     // You can also use the library declaration catalog

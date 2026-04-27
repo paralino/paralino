@@ -25,7 +25,7 @@ abstract class IConnectionStatusProvider(
                 logg.v("app_state", "Network status OFFLINE")
                 NetworkConnectionInfo(ConnectionStatus.OFFLINE)
             }
-            checkInternet(url = appBuildConfig.serverUrl, forceCheck = forceCheck) -> {
+            checkInternet(url = appBuildConfig.apiServerConfig.serverUrl, forceCheck = forceCheck) -> {
                 NetworkConnectionInfo(ConnectionStatus.CONNECTED, getNetworkType())
             }
             else -> {

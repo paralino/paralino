@@ -1,11 +1,6 @@
-import com.codingfeline.buildkonfig.compiler.FieldSpec
 import org.gradle.kotlin.dsl.aboutLibraries
-import org.jetbrains.kotlin.daemon.common.trimQuotes
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
-import java.io.FileInputStream
-import java.io.FileNotFoundException
-import java.util.Properties
 
 plugins {
     alias(libs.plugins.android.multiplatformLibrary)
@@ -13,7 +8,6 @@ plugins {
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.kotlin.serialization)
-    alias(libs.plugins.buildkonfig)
     alias(libs.plugins.moko.resources)
     alias(libs.plugins.aboutlibraries)
 }
@@ -88,27 +82,6 @@ kotlin {
     }
 
     jvmToolchain(21)
-}
-
-buildkonfig {
-    packageName = "app.paralino.core"
-    exposeObjectWithName = "BuildKonfig"
-
-    val propsFile = rootProject.file("user.properties")
-    if (!propsFile.exists()) {
-        throw FileNotFoundException("user.properties file not found")
-    }
-
-    val props = Properties()
-    props.load(FileInputStream(propsFile))
-
-    defaultConfigs {}
-
-    targetConfigs {
-        create("ios") {
-            buildConfigField(FieldSpec.Type.STRING, "glitchTipDSN", props.getProperty("glitchTipDSNiOS").trimQuotes())
-        }
-    }
 }
 
 aboutLibraries {

@@ -1,5 +1,7 @@
 package app.paralino.core.models.base
 
+import app.paralino.core.models.ApiServerConfig
+
 enum class BackendDatabaseType(val id: String) {
     DATA(id = BackendResourceIDs.databaseDataID),
     KEYS(id = BackendResourceIDs.databaseKeysID),
@@ -7,6 +9,12 @@ enum class BackendDatabaseType(val id: String) {
 }
 
 object BackendResourceIDs {
+
+    val productionServerConfig = ApiServerConfig(
+        serverUrl = "https://api.paralino.app",
+        projectId = "paralino-app",
+        publicServerUrl = "https://papi.paralino.app"
+    )
 
     const val passwordResetUrl = "https://paralino.app/recover"
     const val emailConfirmationUrl = "https://paralino.app/verify"
