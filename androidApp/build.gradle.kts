@@ -17,31 +17,52 @@ fun loadUserProperties(rootDir: File): Properties? {
     return Properties().apply { load(FileInputStream(propsFile)) }
 }
 
+// This block runs after configuration is complete and tasks are created
+tasks.whenTaskAdded {
+    val task = this
+    // We look for tasks that assemble or bundle our specific variants
+    val variantsToCheck = listOf("playStoreRelease", "playStoreReleaseTest", "playStoreDebug")
+
+    // Find if the current task is assembling or bundling one of our target variants
+    val targetVariant = variantsToCheck.find { variant ->
+        // we capitalize so it can match the task name
+        val adjustedName = variant.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
+        task.name.equals("assemble${adjustedName}", ignoreCase = true) ||
+                task.name.equals("bundle${adjustedName}", ignoreCase = true)
+    }
+
+    if (targetVariant != null) {
+        val taskName = task.name.replaceFirstChar {
+            if (it.isLowerCase()) it.titlecase() else it.toString()
+        }
+        val verifyTaskName = "verifyFcmConfigFor${taskName}"
+
+        if (tasks.findByName(verifyTaskName) == null) {
+            val verifyTask = tasks.register(verifyTaskName) {
+                doLast {
+                    // Dynamically construct the path based on the variant name
+                    // e.g., "androidApp/src/playStoreRelease/res/values/fcm_config.xml"
+                    val fcmConfigFile = rootProject.file("androidApp/src/$targetVariant/res/values/fcm_config.xml")
+
+                    if (!fcmConfigFile.exists()) {
+                        throw FileNotFoundException("Missing Firebase config file for $targetVariant at ${fcmConfigFile.path}")
+                    }
+                }
+            }
+            task.dependsOn(verifyTask)
+        }
+    }
+}
+
 android {
     namespace = "app.paralino.android"
     compileSdk = 36
 
+    // release config is dynamically injected in release pipeline
     androidComponents.beforeVariants { variant ->
         val names = variant.productFlavors.map { flavor -> flavor.second }
         val variantIgnore = (variant.buildType == "releaseTest" && names.contains("direct"))
         variant.enable = !variantIgnore
-
-        if ((variant.buildType == "release" && names.contains("playStore"))) {
-            val fcmConfigFile = rootProject.file("androidApp/src/playStoreRelease/res/values/fcm_config.xml")
-            if (!fcmConfigFile.exists()) {
-                throw FileNotFoundException("Missing Firebase config file for PRODUCTION_RELEASE")
-            }
-        } else if ((variant.buildType == "releaseTest" && names.contains("playStore"))) {
-            val fcmConfigFile = rootProject.file("androidApp/src/playStoreReleaseTest/res/values/fcm_config.xml")
-            if (!fcmConfigFile.exists()) {
-                throw FileNotFoundException("Missing Firebase config file for TEST_RELEASE")
-            }
-        } else if ((variant.buildType == "debug" && names.contains("playStore"))) {
-            val fcmConfigFile = rootProject.file("androidApp/src/playStoreDebug/res/values/fcm_config.xml")
-            if (!fcmConfigFile.exists()) {
-                throw FileNotFoundException("Missing Firebase config file for DEBUG")
-            }
-        }
     }
 
     applicationVariants.all {
@@ -78,18 +99,37 @@ android {
         }
     }
 
+    // signing configs are dynamically injected in release pipeline
     signingConfigs {
-        create("testConfig") {
-            val userProps = loadUserProperties(rootProject.rootDir)
+        val userProps = loadUserProperties(rootProject.rootDir)
+
+        apply {
             val storePasswordValue = userProps?.getProperty("testKeyPassword")
             val keyAliasValue = userProps?.getProperty("testKeyAlias")
             val storeFileValue = file("${projectDir.parentFile}/paralinoTestKey")
-
             if (!storePasswordValue.isNullOrBlank() && !keyAliasValue.isNullOrBlank() && storeFileValue.exists()) {
-                storePassword = storePasswordValue
-                keyAlias = keyAliasValue
-                keyPassword = storePasswordValue
-                storeFile = storeFileValue
+                create("testConfig") {
+                    storePassword = storePasswordValue
+                    keyAlias = keyAliasValue
+                    keyPassword = storePasswordValue
+                    storeFile = storeFileValue
+                }
+            }
+        }
+
+        apply {
+            val storePasswordValue = userProps?.getProperty("releaseStorePassword")
+            val keyAliasValue = userProps?.getProperty("releaseKeyAlias")
+            val keyPasswordValue = userProps?.getProperty("releaseKeyPassword")
+            val storeFileValue = file("${projectDir.parentFile}/releaseKeystore.jks")
+
+            if (!storePasswordValue.isNullOrBlank() && !keyAliasValue.isNullOrBlank() && !keyPasswordValue.isNullOrBlank() && storeFileValue.exists()) {
+                create("releaseConfig") {
+                    storePassword = storePasswordValue
+                    keyAlias = keyAliasValue
+                    keyPassword = keyPasswordValue
+                    storeFile = storeFileValue
+                }
             }
         }
     }
@@ -107,6 +147,12 @@ android {
 
             buildConfigField("boolean", "internalTesting", "false")
             buildConfigField("boolean", "forceLogToSystem", "false")
+
+            signingConfigs.findByName("releaseConfig")
+                ?.takeIf { it.storeFile != null }
+                ?.let { config ->
+                    this.signingConfig = config
+                }
         }
         getByName("debug") {
             isDebuggable = true
@@ -129,10 +175,11 @@ android {
                 buildConfigField("String", "devPublicServerUrl", devPublicServerUrl ?: "\"\"")
             }
 
-            val testSigning = signingConfigs.getByName("testConfig")
-            if (testSigning.storeFile != null) {
-                signingConfig = testSigning
-            }
+            signingConfigs.findByName("testConfig")
+                ?.takeIf { it.storeFile != null }
+                ?.let { config ->
+                    this.signingConfig = config
+                }
         }
         create("releaseTest") {
             initWith(getByName("release"))
@@ -141,10 +188,11 @@ android {
             buildConfigField("boolean", "forceLogToSystem", "true")
             isDebuggable = true
 
-            val testSigning = signingConfigs.getByName("testConfig")
-            if (testSigning.storeFile != null) {
-                signingConfig = testSigning
-            }
+            signingConfigs.findByName("testConfig")
+                ?.takeIf { it.storeFile != null }
+                ?.let { config ->
+                    this.signingConfig = config
+                }
         }
     }
 
@@ -152,8 +200,8 @@ android {
     productFlavors {
         create("playStore") {
             dimension = "version"
-            versionCode = 79
-            versionName = "2.2.2"
+            versionCode = 80
+            versionName = "2.2.3"
 
             val userProps = loadUserProperties(rootProject.rootDir)
             buildConfigField("String", "revenueCatApiKey", userProps?.getProperty("revenueCatApiKey") ?: "null")
@@ -161,8 +209,8 @@ android {
         }
         create("direct") {
             dimension = "version"
-            versionCode = 79
-            versionName = "2.2.2"
+            versionCode = 80
+            versionName = "2.2.3"
 
             buildConfigField("String", "revenueCatApiKey", "null")
         }
