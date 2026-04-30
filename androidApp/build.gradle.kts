@@ -166,14 +166,9 @@ android {
             buildConfigField("boolean", "forceLogToSystem", "true")
 
             val userProps = loadUserProperties(rootProject.rootDir)
-            if (userProps != null) {
-                val devServerUrl = userProps["devServerUrl"] as? String
-                val devServerKey = userProps["devServerKey"] as? String
-                val devPublicServerUrl = userProps["devPublicServerUrl"] as? String
-                buildConfigField("String", "devServerUrl", devServerUrl ?: "\"\"")
-                buildConfigField("String", "devServerKey", devServerKey ?: "\"\"")
-                buildConfigField("String", "devPublicServerUrl", devPublicServerUrl ?: "\"\"")
-            }
+            buildConfigField("String", "devServerUrl", userProps?.getProperty("devServerUrl") ?: "\"\"")
+            buildConfigField("String", "devServerKey", userProps?.getProperty("devServerKey") ?: "\"\"")
+            buildConfigField("String", "devPublicServerUrl", userProps?.getProperty("devPublicServerUrl") ?: "\"\"")
 
             signingConfigs.findByName("testConfig")
                 ?.takeIf { it.storeFile != null }
