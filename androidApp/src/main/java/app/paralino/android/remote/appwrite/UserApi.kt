@@ -69,13 +69,13 @@ class UserApi constructor(
 
     override suspend fun initEmailVerification() {
         return remoteModule.execute {
-            account.createVerification(remoteModule.appConfig.resourceIds.emailConfirmationUrl)
+            account.createEmailVerification(remoteModule.appConfig.resourceIds.emailConfirmationUrl)
         }
     }
 
     override suspend fun confirmEmail(userId: String, secret: String) {
         return remoteModule.execute {
-            account.updateVerification(userId = userId, secret = secret)
+            account.updateEmailVerification(userId = userId, secret = secret)
         }
     }
 

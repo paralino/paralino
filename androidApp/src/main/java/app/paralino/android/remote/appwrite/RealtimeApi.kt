@@ -10,9 +10,11 @@ class RealtimeApi constructor(
     private val remoteModule: AppWriteRemoteModule
 ): IRealtimeApi() {
 
-    override fun subscribeWithFilter(channels: List<String>, filters: List<String>): Flow<RealtimeResponse<Map<String, Any>>> {
+    override fun subscribeWithFilter(
+        channels: List<String>,
+        filters: List<String>
+    ): Flow<RealtimeResponse<Map<String, Any>>> {
         return callbackFlow {
-
             val subscription = remoteModule.realtime.subscribe(
                 channels = channels.toTypedArray(),
                 payloadType = mutableMapOf<String, Any>().javaClass
