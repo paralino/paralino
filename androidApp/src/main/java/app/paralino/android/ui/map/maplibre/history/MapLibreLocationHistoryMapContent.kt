@@ -39,11 +39,11 @@ import app.paralino.android.ui.map.maplibre.MapLibreMarkerComposable
 import app.paralino.android.ui.map.maplibre.refocus
 import app.paralino.android.ui.map.maplibre.rememberComposeImageBitmap
 import app.paralino.core.presentation.history.LocationHistoryDataViewType
-import app.paralino.core.presentation.history.LocationHistoryPointState
+import app.paralino.core.models.location.LocationHistoryPointState
 import app.paralino.core.presentation.history.LocationHistoryScreenUiState
 import app.paralino.core.presentation.history.LocationHistoryUiEvent
 import app.paralino.core.presentation.map.MapPinData
-import app.paralino.core.presentation.settings.generic.maps.MapsSDKProvider
+import app.paralino.core.models.settings.MapsSDKProvider
 import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.utils.extensions.isLocationInaccurate
 import kotlinx.coroutines.delay

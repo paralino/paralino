@@ -16,8 +16,8 @@ import androidx.compose.ui.platform.LocalView
 import androidx.core.graphics.applyCanvas
 import app.paralino.core.presentation.map.MapMarkerStyle
 import app.paralino.core.presentation.map.MapPinData
-import app.paralino.core.ui.map.MapMarkerContent
-import app.paralino.core.ui.map.MapMarkerInfoWindowContent
+import app.paralino.core.ui.components.MapMarkerContent
+import app.paralino.core.ui.components.MapMarkerInfoWindowContent
 import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng

@@ -1,0 +1,97 @@
+name: Tests
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: tests-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  android:
+    name: Android (instrumented)
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          submodules: recursive
+
+      - name: Enable KVM
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Set up Java
+        uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5
+        with:
+          distribution: zulu
+          java-version: "21"
+          cache: gradle
+
+      - name: Run instrumented tests (directDebug)
+        uses: reactivecircus/android-emulator-runner@e89f39f1abbbd05b1113a29cf4db69e7540cae5a # v2.37
+        with:
+          api-level: 34
+          arch: x86_64
+          disable-animations: true
+          script: ./gradlew :androidApp:connectedDirectDebugAndroidTest --no-daemon
+
+  ios:
+    name: Shared & iOS
+    runs-on: macos-26
+    timeout-minutes: 60
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          submodules: recursive
+
+      - name: Set up Java
+        uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5
+        with:
+          distribution: zulu
+          java-version: "21"
+          cache: gradle
+
+      - name: Gradle tests (core-domain)
+        run: ./gradlew :core-domain:allTests --no-daemon
+
+      - name: Create empty production config
+        run: touch iosApp/Configuration/production-config.xcconfig
+
+      - name: Assert iOS 26 simulator runtime exists
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          echo "Installed iOS Simulator runtimes:"
+          xcrun simctl list runtimes | sed -n '1,200p'
+
+          if ! xcrun simctl list runtimes | grep -E "iOS 26" >/dev/null; then
+            echo "::error::No iOS 26 Simulator runtime found on this runner."
+            echo "Try updating the runner image / Xcode version, or change CI destination."
+            exit 1
+          fi
+
+      - name: iOS tests (iOS 26)
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          xcodebuild test \
+            -project iosApp/paralino-ios.xcodeproj \
+            -scheme paralino-apple-tests \
+            -destination "platform=iOS Simulator,name=iPhone 17 Pro,OS=26.2" \
+            -resultBundlePath TestResults.xcresult

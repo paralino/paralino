@@ -25,7 +25,10 @@ struct MainApp: App {
         AppDelegate.sharedInstance = appDelegate
         
         SentrySDK.start { options in
-            options.dsn = BuildKonfig.shared.glitchTipDSN
+            options.dsn = Bundle.main.object(forInfoDictionaryKey: "glitchTipDSNiOS") as? String
+            options.enableUserInteractionTracing = false
+            options.attachScreenshot = false
+            options.attachViewHierarchy = false
             options.debug = false
         }
     }

@@ -11,31 +11,58 @@ plugins {
     alias(libs.plugins.kotlin.parcelize)
 }
 
+fun loadUserProperties(rootDir: File): Properties? {
+    val propsFile = File(rootDir, "user.properties")
+    if (!propsFile.exists()) return null
+    return Properties().apply { load(FileInputStream(propsFile)) }
+}
+
+// This block runs after configuration is complete and tasks are created
+tasks.whenTaskAdded {
+    val task = this
+    // We look for tasks that assemble or bundle our specific variants
+    val variantsToCheck = listOf("playStoreRelease", "playStoreReleaseTest", "playStoreDebug")
+
+    // Find if the current task is assembling or bundling one of our target variants
+    val targetVariant = variantsToCheck.find { variant ->
+        // we capitalize so it can match the task name
+        val adjustedName = variant.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
+        task.name.equals("assemble${adjustedName}", ignoreCase = true) ||
+                task.name.equals("bundle${adjustedName}", ignoreCase = true)
+    }
+
+    if (targetVariant != null) {
+        val taskName = task.name.replaceFirstChar {
+            if (it.isLowerCase()) it.titlecase() else it.toString()
+        }
+        val verifyTaskName = "verifyFcmConfigFor${taskName}"
+
+        if (tasks.findByName(verifyTaskName) == null) {
+            val verifyTask = tasks.register(verifyTaskName) {
+                doLast {
+                    // Dynamically construct the path based on the variant name
+                    // e.g., "androidApp/src/playStoreRelease/res/values/fcm_config.xml"
+                    val fcmConfigFile = rootProject.file("androidApp/src/$targetVariant/res/values/fcm_config.xml")
+
+                    if (!fcmConfigFile.exists()) {
+                        throw FileNotFoundException("Missing Firebase config file for $targetVariant at ${fcmConfigFile.path}")
+                    }
+                }
+            }
+            task.dependsOn(verifyTask)
+        }
+    }
+}
+
 android {
     namespace = "app.paralino.android"
     compileSdk = 36
 
+    // release config is dynamically injected in release pipeline
     androidComponents.beforeVariants { variant ->
         val names = variant.productFlavors.map { flavor -> flavor.second }
         val variantIgnore = (variant.buildType == "releaseTest" && names.contains("direct"))
         variant.enable = !variantIgnore
-
-        if ((variant.buildType == "release" && names.contains("playStore"))) {
-            val fcmConfigFile = rootProject.file("androidApp/src/playStoreRelease/res/values/fcm_config.xml")
-            if (!fcmConfigFile.exists()) {
-                throw FileNotFoundException("Missing Firebase config file for PRODUCTION_RELEASE")
-            }
-        } else if ((variant.buildType == "releaseTest" && names.contains("playStore"))) {
-            val fcmConfigFile = rootProject.file("androidApp/src/playStoreReleaseTest/res/values/fcm_config.xml")
-            if (!fcmConfigFile.exists()) {
-                throw FileNotFoundException("Missing Firebase config file for TEST_RELEASE")
-            }
-        } else if ((variant.buildType == "debug" && names.contains("playStore"))) {
-            val fcmConfigFile = rootProject.file("androidApp/src/playStoreDebug/res/values/fcm_config.xml")
-            if (!fcmConfigFile.exists()) {
-                throw FileNotFoundException("Missing Firebase config file for DEBUG")
-            }
-        }
     }
 
     applicationVariants.all {
@@ -61,12 +88,8 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        val propsFile = rootProject.file("user.properties")
-        val props = Properties()
-        props.load(FileInputStream(propsFile))
-
-        manifestPlaceholders["MAPS_API_KEY"] = props["MAPS_API_KEY"] as String
-        resValue("string", "glitchTipDSN", props["glitchTipDSNAndroid"] as String)
+        val userProps = loadUserProperties(rootProject.rootDir)
+        resValue("string", "glitchTipDSN", userProps?.getProperty("glitchTipDSNAndroid") ?: "")
 
         // room schema export
         javaCompileOptions {
@@ -76,18 +99,37 @@ android {
         }
     }
 
+    // signing configs are dynamically injected in release pipeline
     signingConfigs {
-        create("testConfig") {
-            try {
-                val propsFile = rootProject.file("user.properties")
-                val props = Properties()
-                props.load(FileInputStream(propsFile))
-                storePassword = props["testKeyPassword"] as String
-                keyAlias = props["testKeyAlias"] as String
-                keyPassword = props["testKeyPassword"] as String
-                storeFile = file("${projectDir.parentFile}/paralinoTestKey")
-            } catch (ex: Exception) {
-                throw ex
+        val userProps = loadUserProperties(rootProject.rootDir)
+
+        apply {
+            val storePasswordValue = userProps?.getProperty("testKeyPassword")
+            val keyAliasValue = userProps?.getProperty("testKeyAlias")
+            val storeFileValue = file("${projectDir.parentFile}/paralinoTestKey")
+            if (!storePasswordValue.isNullOrBlank() && !keyAliasValue.isNullOrBlank() && storeFileValue.exists()) {
+                create("testConfig") {
+                    storePassword = storePasswordValue
+                    keyAlias = keyAliasValue
+                    keyPassword = storePasswordValue
+                    storeFile = storeFileValue
+                }
+            }
+        }
+
+        apply {
+            val storePasswordValue = userProps?.getProperty("releaseStorePassword")
+            val keyAliasValue = userProps?.getProperty("releaseKeyAlias")
+            val keyPasswordValue = userProps?.getProperty("releaseKeyPassword")
+            val storeFileValue = file("${projectDir.parentFile}/releaseKeystore.jks")
+
+            if (!storePasswordValue.isNullOrBlank() && !keyAliasValue.isNullOrBlank() && !keyPasswordValue.isNullOrBlank() && storeFileValue.exists()) {
+                create("releaseConfig") {
+                    storePassword = storePasswordValue
+                    keyAlias = keyAliasValue
+                    keyPassword = keyPasswordValue
+                    storeFile = storeFileValue
+                }
             }
         }
     }
@@ -99,15 +141,18 @@ android {
             isDebuggable = false
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
 
+            buildConfigField("String", "devServerUrl", "\"\"")
+            buildConfigField("String", "devServerKey", "\"\"")
+            buildConfigField("String", "devPublicServerUrl", "\"\"")
+
             buildConfigField("boolean", "internalTesting", "false")
             buildConfigField("boolean", "forceLogToSystem", "false")
 
-            val propsFile = rootProject.file("user.properties")
-            val props = Properties()
-            props.load(FileInputStream(propsFile))
-            buildConfigField("String", "serverUrl", props["productionServerUrl"] as String)
-            buildConfigField("String", "serverKey", props["productionServerKey"] as String)
-            buildConfigField("String", "publicServerUrl", props["productionPublicServerUrl"] as String)
+            signingConfigs.findByName("releaseConfig")
+                ?.takeIf { it.storeFile != null }
+                ?.let { config ->
+                    this.signingConfig = config
+                }
         }
         getByName("debug") {
             isDebuggable = true
@@ -120,14 +165,16 @@ android {
             buildConfigField("boolean", "internalTesting", "true")
             buildConfigField("boolean", "forceLogToSystem", "true")
 
-            val propsFile = rootProject.file("user.properties")
-            val props = Properties()
-            props.load(FileInputStream(propsFile))
-            buildConfigField("String", "serverUrl", props["devServerUrl"] as String)
-            buildConfigField("String", "serverKey", props["devServerKey"] as String)
-            buildConfigField("String", "publicServerUrl", props["devPublicServerUrl"] as String)
+            val userProps = loadUserProperties(rootProject.rootDir)
+            buildConfigField("String", "devServerUrl", userProps?.getProperty("devServerUrl") ?: "\"\"")
+            buildConfigField("String", "devServerKey", userProps?.getProperty("devServerKey") ?: "\"\"")
+            buildConfigField("String", "devPublicServerUrl", userProps?.getProperty("devPublicServerUrl") ?: "\"\"")
 
-            signingConfig = signingConfigs.getByName("testConfig")
+            signingConfigs.findByName("testConfig")
+                ?.takeIf { it.storeFile != null }
+                ?.let { config ->
+                    this.signingConfig = config
+                }
         }
         create("releaseTest") {
             initWith(getByName("release"))
@@ -135,7 +182,12 @@ android {
             buildConfigField("boolean", "internalTesting", "true")
             buildConfigField("boolean", "forceLogToSystem", "true")
             isDebuggable = true
-            signingConfig = signingConfigs.getByName("testConfig")
+
+            signingConfigs.findByName("testConfig")
+                ?.takeIf { it.storeFile != null }
+                ?.let { config ->
+                    this.signingConfig = config
+                }
         }
     }
 
@@ -143,25 +195,19 @@ android {
     productFlavors {
         create("playStore") {
             dimension = "version"
-            versionCode = 79
-            versionName = "2.2.2"
+            versionCode = 80
+            versionName = "2.2.3"
 
-            val propsFile = rootProject.file("user.properties")
-            val props = Properties()
-            props.load(FileInputStream(propsFile))
-            buildConfigField("String", "revenueCatApiKey", props["revenueCatApiKey"] as String)
-
-            buildConfigField("boolean", "hasGoogleMaps", "true")
-            buildConfigField("boolean", "hasNotificationSocketService", "false")
+            val userProps = loadUserProperties(rootProject.rootDir)
+            buildConfigField("String", "revenueCatApiKey", userProps?.getProperty("revenueCatApiKey") ?: "null")
+            manifestPlaceholders["MAPS_API_KEY"] = userProps?.getProperty("MAPS_API_KEY").orEmpty()
         }
         create("direct") {
             dimension = "version"
-            versionCode = 79
-            versionName = "2.2.2"
+            versionCode = 80
+            versionName = "2.2.3"
 
-            buildConfigField("String", "revenueCatApiKey", "\"\"")
-            buildConfigField("boolean", "hasGoogleMaps", "false")
-            buildConfigField("boolean", "hasNotificationSocketService", "true")
+            buildConfigField("String", "revenueCatApiKey", "null")
         }
     }
 
@@ -271,22 +317,27 @@ dependencies {
     implementation(libs.maps.maplibre.compose)
     directImplementation(libs.unifiedPush.connector)
 
-    implementation(project(path = ":lazysodium-android"))
-    implementation(libs.jna) {
-        artifact { type = "aar" }
-    }
     implementation(libs.nanoid)
     implementation(libs.sentry.android)
 
+    implementation(project(path = ":parasodium"))
     implementation(project(path = ":appwrite-android"))
 //    releaseImplementation(libs.appwrite.android)
 
     implementation(platform(libs.okhttp.bom))
     implementation(libs.okhttp)
     debugImplementation(libs.logging.interceptor)
+
+    implementation(libs.network.ktor.client.core)
+    implementation(libs.network.ktor.client.logging)
+
+    implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.kotlinx.datetime)
+    implementation(libs.kotlinx.serialization.json)
     // endregion
 }
 
+// used by UnifiedPush
 configurations.all {
     val tink = "com.google.crypto.tink:tink-android:1.20.0"
     // You can also use the library declaration catalog

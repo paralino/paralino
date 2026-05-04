@@ -5,7 +5,7 @@ import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import app.paralino.core.presentation.map.FocusedMarkerData
-import app.paralino.core.presentation.map.MapHomeScreenFocusType
+import app.paralino.core.models.map.MapHomeScreenFocusType
 import app.paralino.core.presentation.map.MapPinData
 import app.paralino.core.presentation.map.MapPinType
 import kotlinx.coroutines.CoroutineScope

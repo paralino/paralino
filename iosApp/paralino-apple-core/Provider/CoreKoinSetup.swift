@@ -68,10 +68,13 @@ public class CoreKoinSetup {
         let bundleId = systemBundleId.starts(with: "app.paralino.ios.test") ? "app.paralino.ios.test" : "app.paralino.ios"
         
         let appBuildConfig = AppBuildConfig(
-            serverUrl: Bundle.main.object(forInfoDictionaryKey: "paralinoServerUrl") as! String,
-            projectId: Bundle.main.object(forInfoDictionaryKey: "paralinoServerKey") as! String,
-            publicServerUrl: Bundle.main.object(forInfoDictionaryKey: "paralinoPublicServerUrl") as! String,
-            billingRCApiKey: Bundle.main.object(forInfoDictionaryKey: "revenueCatApiKey") as! String,
+            prodServerConfig: BackendResourceIDs.shared.productionServerConfig,
+            devServerConfig: ApiServerConfig(
+                serverUrl: Bundle.main.object(forInfoDictionaryKey: "devServerUrl") as? String ?? "",
+                projectId: Bundle.main.object(forInfoDictionaryKey: "devServerKey") as? String ?? "",
+                publicServerUrl: Bundle.main.object(forInfoDictionaryKey: "devPublicServerUrl") as? String ?? ""
+            ),
+            billingRCApiKey: Bundle.main.object(forInfoDictionaryKey: "revenueCatApiKey") as? String,
             iOSTeamId: Bundle.main.object(forInfoDictionaryKey: "TEAM_ID") as! String,
             iOSAppGroup: "group.\(bundleId)",
             appPackageName: bundleId,

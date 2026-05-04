@@ -8,24 +8,23 @@ import kotlinx.coroutines.flow.callbackFlow
 
 class RealtimeApi constructor(
     private val remoteModule: AppWriteRemoteModule
-): IRealtimeApi() {
-
-    override fun subscribeWithFilter(channels: List<String>, filters: List<String>): Flow<RealtimeResponse<Map<String, Any>>> {
+) : IRealtimeApi() {
+    override fun subscribeToChannels(
+        channels: List<String>
+    ): Flow<RealtimeResponse<Map<String, Any>>> {
         return callbackFlow {
-
             val subscription = remoteModule.realtime.subscribe(
                 channels = channels.toTypedArray(),
                 payloadType = mutableMapOf<String, Any>().javaClass
             ) {
-                if(filters.isEmpty() || it.events.any { event -> filters.any { it == event } })
-                    this.trySend(
-                        RealtimeResponse(
-                            events = it.events,
-                            channels = it.channels,
-                            timestamp = it.timestamp,
-                            payload = it.payload
-                        )
+                this.trySend(
+                    RealtimeResponse(
+                        events = it.events,
+                        channels = it.channels,
+                        timestamp = it.timestamp,
+                        payload = it.payload
                     )
+                )
             }
 
             awaitClose {

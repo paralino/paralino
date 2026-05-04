@@ -13,19 +13,16 @@ import app.paralino.core.utils.exceptions.CryptoException
 import app.paralino.core.utils.exceptions.DecryptionException
 import app.paralino.core.utils.exceptions.EncryptionException
 import app.paralino.core.utils.exceptions.UnsupportedEncryptionSchemeException
-import com.goterl.lazysodium.LazySodiumAndroid
-import com.goterl.lazysodium.SodiumAndroid
-import com.goterl.lazysodium.interfaces.AEAD
-import com.goterl.lazysodium.interfaces.Box
-import com.goterl.lazysodium.interfaces.KeyDerivation
-import com.goterl.lazysodium.interfaces.MessageEncoder
-import com.goterl.lazysodium.interfaces.PwHash
-import com.goterl.lazysodium.interfaces.Sign
-import com.goterl.lazysodium.utils.HexMessageEncoder
-import com.goterl.lazysodium.utils.Key
-import com.sun.jna.NativeLong
+import app.paralino.parasodium.AEAD
+import app.paralino.parasodium.Box
+import app.paralino.parasodium.HexMessageEncoder
+import app.paralino.parasodium.KeyDerivation
+import app.paralino.parasodium.MessageEncoder
+import app.paralino.parasodium.ParasodiumAndroid
+import app.paralino.parasodium.PwHash
+import app.paralino.parasodium.Sign
+import app.paralino.parasodium.models.Key
 import io.viascom.nanoid.NanoId
-import java.nio.charset.StandardCharsets
 import java.util.Base64
 
 class CryptoFrameworkLibsodium : ICryptoServiceProvider {
@@ -51,11 +48,7 @@ class CryptoFrameworkLibsodium : ICryptoServiceProvider {
     }
 
     private val messageEncoder = base64UrlEncoder
-    private val lazySodium = LazySodiumAndroid(
-        SodiumAndroid(),
-        StandardCharsets.UTF_8,
-        messageEncoder
-    )
+    private val paraSodium = ParasodiumAndroid()
 
     override fun createRandomId(length: Int, alphabet: AlphabetType): String {
         return NanoId.generate(
@@ -65,30 +58,30 @@ class CryptoFrameworkLibsodium : ICryptoServiceProvider {
     }
 
     override fun createNewSymmetricKey(): String {
-        val key = lazySodium.randomBytesBuf(AEAD.XCHACHA20POLY1305_IETF_KEYBYTES)
-        lazySodium.cryptoAeadXChaCha20Poly1305IetfKeygen(key)
+        val key = paraSodium.randomBytesBuf(AEAD.XCHACHA20POLY1305_IETF_KEYBYTES)
+        paraSodium.cryptoAeadXChaCha20Poly1305IetfKeygen(key)
         return key.encodeWithCipherAlg()
     }
 
     override fun createNewSymmetricKeyForDerivation(): String {
-        val key = lazySodium.randomBytesBuf(AEAD.XCHACHA20POLY1305_IETF_KEYBYTES)
-        lazySodium.cryptoAeadXChaCha20Poly1305IetfKeygen(key)
+        val key = paraSodium.randomBytesBuf(AEAD.XCHACHA20POLY1305_IETF_KEYBYTES)
+        paraSodium.cryptoAeadXChaCha20Poly1305IetfKeygen(key)
         return key.encodeWithCipherAlg(algType = CipherAlgType.DEFAULT_KEY_DERIVE)
     }
 
     override fun createNewCryptoKeyPair(): SimpleKeyPairData {
-        val keyPair = lazySodium.cryptoBoxKeypair()
+        val keyPair = paraSodium.cryptoBoxKeypair()
         return SimpleKeyPairData(
-            privateKey = keyPair.secretKey.asBytes.encodeWithCipherAlg(),
-            publicKey = keyPair.publicKey.asBytes.encodeWithCipherAlg(),
+            privateKey = keyPair.secretKey.getAsBytes().encodeWithCipherAlg(),
+            publicKey = keyPair.publicKey.getAsBytes().encodeWithCipherAlg(),
         )
     }
 
     override fun createNewSignatureKeyPair(): SimpleKeyPairData {
-        val keyPair = lazySodium.cryptoSignKeypair()
+        val keyPair = paraSodium.cryptoSignKeypair()
         return SimpleKeyPairData(
-            privateKey = keyPair.secretKey.asBytes.encodeWithCipherAlg(),
-            publicKey = keyPair.publicKey.asBytes.encodeWithCipherAlg()
+            privateKey = keyPair.secretKey.getAsBytes().encodeWithCipherAlg(),
+            publicKey = keyPair.publicKey.getAsBytes().encodeWithCipherAlg()
         )
     }
 
@@ -110,7 +103,7 @@ class CryptoFrameworkLibsodium : ICryptoServiceProvider {
                 // since realtime locations don't have order, this way we make it hard to guess
                 // how many times location was updated compared to using a counter
                 // key id is not sensitive and is stored and delivered in plain text
-                val keyId = lazySodium.randomBytesRandom()
+                val keyId = paraSodium.randomBytesRandom()
                 val newKey = deriveSymmetricKey(
                     key = decodedKey.data,
                     derivedKeyId = keyId,
@@ -122,7 +115,7 @@ class CryptoFrameworkLibsodium : ICryptoServiceProvider {
                 )
                     .encodeWithCipherAlg(
                         algType = CipherAlgType.DEFAULT_KEY_DERIVE,
-                        payload = base64UrlEncoder.encode(lazySodium.bytes(keyId.toString()))
+                        payload = base64UrlEncoder.encode(paraSodium.bytes(keyId.toString()))
                     )
             }
 
@@ -134,20 +127,20 @@ class CryptoFrameworkLibsodium : ICryptoServiceProvider {
         data: String,
         key: ByteArray
     ): ByteArray {
-        val nonce = lazySodium.nonce(AEAD.XCHACHA20POLY1305_IETF_NPUBBYTES)
-        val messageBytes: ByteArray = lazySodium.bytes(data)
+        val nonce = paraSodium.nonce(AEAD.XCHACHA20POLY1305_IETF_NPUBBYTES)
+        val messageBytes: ByteArray = paraSodium.bytes(data)
         val cipherBytes = ByteArray(AEAD.XCHACHA20POLY1305_IETF_ABYTES + messageBytes.size)
 
-        val result = lazySodium.cryptoAeadXChaCha20Poly1305IetfEncrypt(
-            cipherBytes,
-            null,
-            messageBytes,
-            messageBytes.size.toLong(),
-            null,
-            0,
-            null,
-            nonce,
-            key
+        val result = paraSodium.cryptoAeadXChaCha20Poly1305IetfEncrypt(
+            cipher = cipherBytes,
+            cipherLen = null,
+            message = messageBytes,
+            messageLen = messageBytes.size.toLong(),
+            additionalData = null,
+            additionalDataLen = 0,
+            nSec = null,
+            nPub = nonce,
+            key = key
         )
 
         if (!result) {
@@ -181,7 +174,7 @@ class CryptoFrameworkLibsodium : ICryptoServiceProvider {
 
             CipherAlgType.DEFAULT_KEY_DERIVE -> {
                 val keyId = cipher.payload
-                    ?.let { lazySodium.str(base64UrlEncoder.decode(it)) }
+                    ?.let { paraSodium.str(base64UrlEncoder.decode(it)) }
                     ?.toLongOrNull()
                     ?: throw UnsupportedEncryptionSchemeException("keyId: ${cipher.payload}")
                 val newKey = deriveSymmetricKey(
@@ -206,22 +199,22 @@ class CryptoFrameworkLibsodium : ICryptoServiceProvider {
             source.sliceArray(AEAD.XCHACHA20POLY1305_IETF_NPUBBYTES until source.size)
         val messageBytes = ByteArray(cipherBytes.size - AEAD.XCHACHA20POLY1305_IETF_ABYTES)
 
-        val result = lazySodium.cryptoAeadXChaCha20Poly1305IetfDecrypt(
-            messageBytes,
-            null,
-            null,
-            cipherBytes,
-            cipherBytes.size.toLong(),
-            null,
-            0L,
-            nonce,
-            key
+        val result = paraSodium.cryptoAeadXChaCha20Poly1305IetfDecrypt(
+            message = messageBytes,
+            messageLen = null,
+            nSec = null,
+            cipher = cipherBytes,
+            cipherLen = cipherBytes.size.toLong(),
+            additionalData = null,
+            additionalDataLen = 0L,
+            nPub = nonce,
+            key = key
         )
         if (!result) {
             throw DecryptionException(type = "symmetric", message = "Could not decrypt message.")
         }
 
-        return lazySodium.str(messageBytes)
+        return paraSodium.str(messageBytes)
     }
 
     override fun deriveSymmetricKey(
@@ -232,14 +225,14 @@ class CryptoFrameworkLibsodium : ICryptoServiceProvider {
         val decodedKey = key.decodeAsCipherPayload()
         when (decodedKey.algorithm) {
             CipherAlgType.DEFAULT, CipherAlgType.DEFAULT_KEY_DERIVE -> {
-                val derivedKey = lazySodium.cryptoKdfDeriveFromKey(
+                val derivedKey = paraSodium.cryptoKdfDeriveFromKey(
                     KeyDerivation.MASTER_KEY_BYTES,
                     derivedKeyId,
                     context,
                     Key.fromBytes(decodedKey.decodeData())
                 )
 
-                return derivedKey.asBytes.encodeWithCipherAlg()
+                return derivedKey.getAsBytes().encodeWithCipherAlg()
             }
 
             else -> throw UnsupportedEncryptionSchemeException(scheme = "algorithm ${decodedKey.algorithm}")
@@ -253,41 +246,43 @@ class CryptoFrameworkLibsodium : ICryptoServiceProvider {
     ): String {
         when (alg.kdfType) {
             KDFType.ARGON2ID -> {
-                val saltOutput = lazySodium.randomBytesBuf(PwHash.ARGON2ID_SALTBYTES)
-                val saltInput = lazySodium.bytes(salt)
+                val saltOutput = paraSodium.randomBytesBuf(PwHash.ARGON2ID_SALTBYTES)
+                val saltInput = paraSodium.bytes(salt)
                 if (
-                    !lazySodium.cryptoGenericHash(
-                        saltOutput,
-                        PwHash.ARGON2ID_SALTBYTES,
-                        saltInput,
-                        saltInput.size.toLong()
+                    !paraSodium.cryptoGenericHash(
+                        dataOut = saltOutput,
+                        outLen = PwHash.ARGON2ID_SALTBYTES,
+                        dataIn = saltInput,
+                        inLen = saltInput.size.toLong()
                     )
                 ) {
                     throw CryptoException("Error creating password context hash")
                 }
 
-                val passwordBytes: ByteArray = lazySodium.bytes(password)
-                PwHash.Checker.checkAll(
-                    passwordBytes.size.toLong(),
-                    saltOutput.size.toLong(),
-                    alg.rounds,
-                    NativeLong(alg.memoryBytes)
+                val passwordBytes: ByteArray = paraSodium.bytes(password)
+                PwHash.checkAll(
+                    passwordBytesLen = passwordBytes.size.toLong(),
+                    saltBytesLen = saltOutput.size.toLong(),
+                    opsLimit = alg.rounds,
+                    memLimit = alg.memoryBytes
                 )
                 val outputKey = ByteArray(alg.keyBytes)
-                val result = lazySodium.cryptoPwHash(
-                    outputKey,
-                    outputKey.size,
-                    passwordBytes,
-                    passwordBytes.size,
-                    saltOutput,
-                    alg.rounds,
-                    NativeLong(alg.memoryBytes),
-                    PwHash.Alg.PWHASH_ALG_ARGON2ID13
+                val result = paraSodium.cryptoPwHash(
+                    outputHash = outputKey,
+                    outputHashLen = outputKey.size,
+                    password = passwordBytes,
+                    passwordLen = passwordBytes.size,
+                    salt = saltOutput,
+                    opsLimit = alg.rounds,
+                    memLimit = alg.memoryBytes,
+                    alg = PwHash.Alg.PWHASH_ALG_ARGON2ID13
                 )
 
                 if (!result) {
-                    throw CryptoException(message = "Could not hash your string. This may be due to insufficient " +
-                            "memory or your CPU does not support Argon2's instruction set.")
+                    throw CryptoException(
+                        message = "Could not hash your string. This may be due to insufficient " +
+                                "memory or your CPU does not support Argon2's instruction set."
+                    )
                 }
 
                 return when (alg.encodingType) {
@@ -316,17 +311,17 @@ class CryptoFrameworkLibsodium : ICryptoServiceProvider {
 
         when (decodedPublicKey.algorithm) {
             CipherAlgType.DEFAULT -> {
-                val nonce = lazySodium.nonce(Box.CURVE25519XSALSA20POLY1305_NONCEBYTES)
-                val messageBytes: ByteArray = lazySodium.bytes(data)
+                val nonce = paraSodium.nonce(Box.CURVE25519XSALSA20POLY1305_NONCEBYTES)
+                val messageBytes: ByteArray = paraSodium.bytes(data)
                 val cipherBytes = ByteArray(Box.MACBYTES + messageBytes.size)
 
-                val result: Boolean = lazySodium.cryptoBoxEasy(
-                    cipherBytes,
-                    messageBytes,
-                    messageBytes.size.toLong(),
-                    nonce,
-                    decodedPublicKey.decodeData(),
-                    decodedPrivateKey.decodeData()
+                val result: Boolean = paraSodium.cryptoBoxEasy(
+                    cipherText = cipherBytes,
+                    message = messageBytes,
+                    messageLen = messageBytes.size.toLong(),
+                    nonce = nonce,
+                    publicKey = decodedPublicKey.decodeData(),
+                    secretKey = decodedPrivateKey.decodeData()
                 )
 
                 if (!result) {
@@ -365,20 +360,23 @@ class CryptoFrameworkLibsodium : ICryptoServiceProvider {
                     source.sliceArray(Box.CURVE25519XSALSA20POLY1305_NONCEBYTES until source.size)
 
                 val message = ByteArray(content.size - Box.MACBYTES)
-                val res: Boolean = lazySodium.cryptoBoxOpenEasy(
-                    message,
-                    content,
-                    content.size.toLong(),
-                    nonce,
-                    decodedPublicKey.decodeData(),
-                    decodedPrivateKey.decodeData()
+                val res: Boolean = paraSodium.cryptoBoxOpenEasy(
+                    message = message,
+                    cipherText = content,
+                    cipherTextLen = content.size.toLong(),
+                    nonce = nonce,
+                    publicKey = decodedPublicKey.decodeData(),
+                    secretKey = decodedPrivateKey.decodeData()
                 )
 
                 if (!res) {
-                    throw DecryptionException(type = "keyPair", message = "Could not decrypt your message.")
+                    throw DecryptionException(
+                        type = "keyPair",
+                        message = "Could not decrypt your message."
+                    )
                 }
 
-                return lazySodium.str(message)
+                return paraSodium.str(message)
             }
 
             else -> throw UnsupportedEncryptionSchemeException("algorithm: ${cipher.algorithm}")
@@ -389,13 +387,13 @@ class CryptoFrameworkLibsodium : ICryptoServiceProvider {
         val decodedPrivateKey = myPrivateKey.decodeAsCipherPayload()
         when (decodedPrivateKey.algorithm) {
             CipherAlgType.DEFAULT -> {
-                val messageBytes = lazySodium.bytes(data)
-                val signedMessage = lazySodium.randomBytesBuf(Sign.BYTES + messageBytes.size)
-                val result = lazySodium.cryptoSign(
-                    signedMessage,
-                    messageBytes,
-                    messageBytes.size.toLong(),
-                    decodedPrivateKey.decodeData()
+                val messageBytes = paraSodium.bytes(data)
+                val signedMessage = paraSodium.randomBytesBuf(Sign.BYTES + messageBytes.size)
+                val result = paraSodium.cryptoSign(
+                    signedMessage = signedMessage,
+                    message = messageBytes,
+                    messageLen = messageBytes.size.toLong(),
+                    secretKey = decodedPrivateKey.decodeData()
                 )
 
                 if (!result) {
@@ -422,20 +420,20 @@ class CryptoFrameworkLibsodium : ICryptoServiceProvider {
 
                 val signedMessageBytes = signedData.decodeData()
                 val publicKeyBytes = decodedPublicKey.decodeData()
-                val messageBytes = lazySodium.randomBytesBuf(signedMessageBytes.size - Sign.BYTES)
+                val messageBytes = paraSodium.randomBytesBuf(signedMessageBytes.size - Sign.BYTES)
 
-                val result = lazySodium.cryptoSignOpen(
-                    messageBytes,
-                    signedMessageBytes,
-                    signedMessageBytes.size.toLong(),
-                    publicKeyBytes
+                val result = paraSodium.cryptoSignOpen(
+                    message = messageBytes,
+                    signedMessage = signedMessageBytes,
+                    signedMessageLen = signedMessageBytes.size.toLong(),
+                    publicKey = publicKeyBytes
                 )
 
                 if (!result) {
                     return null
                 }
 
-                return lazySodium.str(messageBytes)
+                return paraSodium.str(messageBytes)
             }
 
             else -> throw UnsupportedEncryptionSchemeException("algorithm: ${signedData.algorithm}")
@@ -444,10 +442,14 @@ class CryptoFrameworkLibsodium : ICryptoServiceProvider {
 
     override fun computeHash(data: String, type: HashType, encodingType: EncodingType): String {
 
-        val message: ByteArray = lazySodium.bytes(data)
-        val hash: ByteArray = lazySodium.randomBytesBuf(type.bytes)
-        val res: Boolean =
-            lazySodium.cryptoGenericHash(hash, hash.size, message, message.size.toLong())
+        val message: ByteArray = paraSodium.bytes(data)
+        val hash: ByteArray = paraSodium.randomBytesBuf(type.bytes)
+        val res: Boolean = paraSodium.cryptoGenericHash(
+            dataOut = hash,
+            outLen = hash.size,
+            dataIn = message,
+            inLen = message.size.toLong()
+        )
 
         if (!res) {
             throw CryptoException("Could not hash the message.")

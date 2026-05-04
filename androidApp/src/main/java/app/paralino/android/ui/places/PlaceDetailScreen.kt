@@ -24,7 +24,8 @@ import app.paralino.core.presentation.map.MapPinData
 import app.paralino.core.presentation.places.detail.PlaceDetailScreenState
 import app.paralino.core.presentation.places.detail.PlaceDetailViewModel
 import app.paralino.core.presentation.places.detail.PlaceSettingsState
-import app.paralino.core.presentation.rawdata.RawPresentationDataType
+import app.paralino.core.models.settings.RawPresentationDataType
+import app.paralino.core.presentation.places.detail.makeMapPin
 import app.paralino.core.ui.components.DefaultToolbar
 import app.paralino.core.ui.components.ToolbarButtons
 import app.paralino.core.ui.places.PlaceDetailScreenCore
@@ -117,9 +118,11 @@ private fun PlaceDetailMapComposable(
     onMapInteraction: (Boolean) -> Unit,
 ) {
     val pin = remember(state.lat, state.lng, state.radiusMeters, state.image) {
-        if (state.lat != null && state.lng != null)
-            MapPinData(state)
-        else null
+        if (state.lat != null && state.lng != null) {
+            state.makeMapPin()
+        } else {
+            null
+        }
     }
     SimpleGenericMapComposable(
         modifier = modifier,

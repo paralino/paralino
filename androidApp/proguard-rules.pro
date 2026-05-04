@@ -21,9 +21,6 @@
 # hide the original source file name.
 -renamesourcefileattribute SourceFile
 
--keep class com.cossacklabs.themis.**
--keep class com.cossacklabs.themis.** {*;}
-
 -keep class com.sun.jna.* { *; }
 -keepclassmembers class * extends com.sun.jna.* { public *; }
 -keep class java.awt.* { *; }
@@ -49,7 +46,11 @@
 -keep class app.paralino.android.data.** { *; }
 -keep class app.paralino.android.remote.** { *; }
 -keep class app.paralino.core.models.** { *; }
+-keep class app.paralino.core.provider.** { *; }
+-keep class app.paralino.core.utils.exceptions.** { *; }
+-keep class app.paralino.core.crypto.** { *; }
 -keep class app.paralino.core.db.** { *; }
+-keep class app.paralino.parasodium.** { *; }
 -keep class io.appwrite.** { *; }
 
 -keep class app.paralino.core.MokoResources { *; }

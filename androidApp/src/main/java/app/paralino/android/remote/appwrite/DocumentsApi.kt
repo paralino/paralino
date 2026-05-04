@@ -70,6 +70,7 @@ class DocumentsApi constructor(
                 val results = tablesDB.listRows(
                     databaseId = databaseType.id,
                     tableId = collectionId,
+                    total = false,
                     queries = buildList {
                         addAll(buildQuery(queries))
                         add(Query.limit(limit))

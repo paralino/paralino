@@ -5,7 +5,7 @@ import android.graphics.BitmapFactory
 import android.util.Base64
 import androidx.annotation.PluralsRes
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 
 fun String.bitmapFromBase64(): Bitmap? {
     return try {
@@ -18,5 +18,5 @@ fun String.bitmapFromBase64(): Bitmap? {
 
 @Composable
 fun quantityStringResource(@PluralsRes id: Int, quantity: Int, vararg formatArgs: Any): String {
-    return LocalContext.current.resources.getQuantityString(id, quantity, *formatArgs)
+    return LocalResources.current.getQuantityString(id, quantity, *formatArgs)
 }

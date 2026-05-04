@@ -3,7 +3,7 @@ package app.paralino.android.domain
 import app.paralino.android.AppClass
 import app.paralino.core.crypto.AlphabetType
 import app.paralino.core.crypto.CryptoCore
-import app.paralino.core.crypto.user.CryptoUserKeysLocalSource
+import app.paralino.core.domain.crypto.user.CryptoUserKeysLocalSource
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.db.MainDatabaseHelper
 import app.paralino.core.db.main.history.UnconfirmedLocationHistoryEntity

@@ -18,7 +18,7 @@ import app.paralino.core.presentation.map.MapHomeScreenUiEvent
 @Composable
 fun GoogleMapHomeScreenMapComposable(
     modifier: Modifier = Modifier,
-    uiState: MapHomeScreenState,
+    uiState: app.paralino.core.presentation.map.MapHomeScreenState,
     readyState: MapHomeScreenState.Ready?,
     historyUiState: LocationHistoryScreenUiState?,
     mapContentPadding: PaddingValues,

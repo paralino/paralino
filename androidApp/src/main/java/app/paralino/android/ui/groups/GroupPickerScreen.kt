@@ -50,11 +50,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import app.paralino.core.MR
-import app.paralino.core.presentation.groups.GroupItemState
+import app.paralino.core.presentation.common.GroupItemState
 import app.paralino.core.provider.localizedString
-import app.paralino.core.ui.components.BottomSheetPickerType
-import app.paralino.core.ui.components.CoreAppIcons
-import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
+import app.paralino.core.presentation.common.BottomSheetPickerType
+import app.paralino.core.resources.CoreAppIcons
+import app.paralino.core.resources.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.DefaultToolbar
 import app.paralino.core.ui.components.FullWidthActionButton
 import app.paralino.core.ui.components.PlanLimitCount

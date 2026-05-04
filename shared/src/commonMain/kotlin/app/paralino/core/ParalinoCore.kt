@@ -3,18 +3,18 @@ package app.paralino.core
 import app.paralino.core.app_rating.AppRatingManager
 import app.paralino.core.crypto.AlphabetType
 import app.paralino.core.crypto.CryptoCore
-import app.paralino.core.crypto.group.CryptoKEKLocalRepository
-import app.paralino.core.crypto.group.CryptoKEKRefreshUseCase
-import app.paralino.core.crypto.group.CryptoKeyLocalDataSource
-import app.paralino.core.crypto.group.CryptoKeyRemoteDataSource
-import app.paralino.core.crypto.user.CryptoAccountOperationV1
-import app.paralino.core.crypto.user.CryptoAccountOperationV2
-import app.paralino.core.crypto.user.CryptoUserKeysLocalSource
-import app.paralino.core.crypto.user.CryptoUserKeysRemoteSource
+import app.paralino.core.domain.crypto.group.CryptoKEKLocalRepository
+import app.paralino.core.domain.crypto.group.CryptoKEKRefreshUseCase
+import app.paralino.core.domain.crypto.group.CryptoKeyLocalDataSource
+import app.paralino.core.domain.crypto.group.CryptoKeyRemoteDataSource
+import app.paralino.core.domain.crypto.user.CryptoAccountOperationV1
+import app.paralino.core.domain.crypto.user.CryptoAccountOperationV2
+import app.paralino.core.domain.crypto.user.CryptoUserKeysLocalSource
+import app.paralino.core.domain.crypto.user.CryptoUserKeysRemoteSource
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.LimitedExecutionParentManager
-import app.paralino.core.domain.crypto.GroupCryptoKeyRotation
-import app.paralino.core.domain.crypto.GroupValidityVerification
+import app.paralino.core.domain.crypto.group.GroupCryptoKeyRotation
+import app.paralino.core.domain.crypto.group.GroupValidityVerification
 import app.paralino.core.domain.crypto.RawCryptoPresentation
 import app.paralino.core.domain.group.GroupBatterySettingsUpdateUseCase
 import app.paralino.core.domain.group.GroupCreateUseCase
@@ -139,7 +139,7 @@ import app.paralino.core.repo.user.UserLocalDataSource
 import app.paralino.core.repo.user.UserPersonalSpaceLocalDataSource
 import app.paralino.core.repo.user.UserRemoteSource
 import app.paralino.core.repo.user.UserRepository
-import app.paralino.core.utils.NetworkQualityMonitor
+import app.paralino.core.presentation.common.NetworkQualityMonitor
 import org.koin.core.KoinApplication
 import org.koin.core.context.startKoin
 import org.koin.core.module.Module
@@ -208,7 +208,7 @@ object ParalinoCore {
 
         logr.i("paralino_core", "Paralino core initialized: ${deviceApiProvider.clientHeaderValue}")
 
-        if (appBuildConfig.serverUrl.isBlank() || appBuildConfig.projectId.isBlank()) {
+        if (appBuildConfig.apiServerConfig.serverUrl.isBlank() || appBuildConfig.apiServerConfig.projectId.isBlank()) {
             logg.e("ERROR", "Server config invalid - missing endpoint or projectId")
         }
     }

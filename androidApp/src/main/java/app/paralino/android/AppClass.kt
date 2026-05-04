@@ -124,6 +124,9 @@ class AppClass : CoreAppClass(), ICoroutineScopeProvider, DefaultLifecycleObserv
     private fun initCrashReporting() {
         SentryAndroid.init(this) {
             it.isSendDefaultPii = false
+            it.isEnableUserInteractionTracing = false
+            it.isAttachScreenshot = false
+            it.isAttachViewHierarchy = false
             it.isEnabled = AppPrefs.instance.errorReporting
         }
     }

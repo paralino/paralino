@@ -18,6 +18,7 @@ import app.paralino.core.presentation.map.MapPinData
 import app.paralino.core.presentation.places.create.CreatePlaceScreenState
 import app.paralino.core.presentation.places.create.CreatePlaceScreenUiEvent
 import app.paralino.core.presentation.places.create.CreatePlaceViewModel
+import app.paralino.core.presentation.places.create.makeMapPin
 import app.paralino.core.ui.components.DefaultToolbar
 import app.paralino.core.ui.components.EmojiBottomSheetPicker
 import app.paralino.core.ui.components.ToolbarButtons
@@ -65,10 +66,30 @@ fun CreatePlaceScreen(
                 PlaceCreateMapComposable(
                     modifier = Modifier.fillMaxSize(),
                     state = state,
-                    onMapCameraSettled = { vm.onEvent(CreatePlaceScreenUiEvent.OnMapPositionChanged(it)) },
+                    onMapCameraSettled = {
+                        vm.onEvent(
+                            CreatePlaceScreenUiEvent.OnMapPositionChanged(
+                                it
+                            )
+                        )
+                    },
                     onMapInteraction = { },
-                    onMapTap = { lat, lng -> vm.onEvent(CreatePlaceScreenUiEvent.OnMapTap(lat, lng)) },
-                    onMapLongPress = { lat, lng -> vm.onEvent(CreatePlaceScreenUiEvent.OnMapTap(lat, lng)) }
+                    onMapTap = { lat, lng ->
+                        vm.onEvent(
+                            CreatePlaceScreenUiEvent.OnMapTap(
+                                lat,
+                                lng
+                            )
+                        )
+                    },
+                    onMapLongPress = { lat, lng ->
+                        vm.onEvent(
+                            CreatePlaceScreenUiEvent.OnMapTap(
+                                lat,
+                                lng
+                            )
+                        )
+                    }
                 )
             }
         )
@@ -93,9 +114,11 @@ private fun PlaceCreateMapComposable(
     onMapLongPress: (lat: Double, lng: Double) -> Unit,
 ) {
     val pin = remember(state.lat, state.lng, state.radiusMeters, state.image) {
-        if (state.lat != null && state.lng != null)
-            MapPinData(state)
-        else null
+        if (state.lat != null && state.lng != null) {
+            state.makeMapPin()
+        } else {
+            null
+        }
     }
     SimpleGenericMapComposable(
         modifier = modifier,

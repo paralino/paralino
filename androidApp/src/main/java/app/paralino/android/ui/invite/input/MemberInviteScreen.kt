@@ -13,7 +13,7 @@ import app.paralino.android.ui.groups.rememberGroupBottomSheetPickerState
 import app.paralino.android.ui.main.MainAppState
 import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.core.MR
-import app.paralino.core.presentation.invite.input.MemberInviteViewModel
+import app.paralino.core.presentation.groups.add_member.MemberInviteViewModel
 import app.paralino.core.ui.components.DefaultToolbar
 import app.paralino.core.ui.components.ToolbarButtons
 import app.paralino.core.ui.invite.MemberInviteScreenCore
