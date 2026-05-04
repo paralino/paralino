@@ -17,7 +17,7 @@ class RealtimeEventsMaker constructor(
 ) {
     val eventSetNotificationOnly = Pair(
         listOf(realtimeEventsProcessor.pushNotificationsChannel),
-        listOf("${realtimeEventsProcessor.pushNotificationsChannel}.*.create")
+        listOf("${realtimeEventsProcessor.pushNotificationsChannel}.create")
     )
 
     val eventSetUiOnly = Pair(
@@ -30,14 +30,12 @@ class RealtimeEventsMaker constructor(
             realtimeEventsProcessor.locationFocusChannel,
         ),
         listOf(
-            "${realtimeEventsProcessor.membersChannel}.*",
-            "${realtimeEventsProcessor.groupsLocationsChannel}.*",
-            "${realtimeEventsProcessor.personalLocationsChannel}.*",
-            "${realtimeEventsProcessor.personalDevicesChannel}.*",
-            "${realtimeEventsProcessor.placesChannel}.*.create",
-            "${realtimeEventsProcessor.placesChannel}.*.update",
-            "${realtimeEventsProcessor.locationFocusChannel}.*.create",
-            "${realtimeEventsProcessor.locationFocusChannel}.*.update",
+            realtimeEventsProcessor.membersChannel,
+            realtimeEventsProcessor.groupsLocationsChannel,
+            realtimeEventsProcessor.personalLocationsChannel,
+            realtimeEventsProcessor.personalDevicesChannel,
+            "${realtimeEventsProcessor.placesChannel}.upsert",
+            "${realtimeEventsProcessor.locationFocusChannel}.upsert",
         )
     )
 
@@ -48,9 +46,8 @@ class RealtimeEventsMaker constructor(
 
     fun listenForEventsWhileActive(eventSet: Pair<List<String>, List<String>>): Flow<Unit> {
         logg.tag("realtime_events").v("Start realtime subscription")
-        return realtimeApi.subscribeWithFilter(
-            channels = eventSet.first,
-            filters = eventSet.second
+        return realtimeApi.subscribeToChannels(
+            channels = eventSet.second
         )
             .onEach {
                 realtimeEventsProcessor.processEvent(it)

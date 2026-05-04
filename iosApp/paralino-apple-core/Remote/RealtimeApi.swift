@@ -17,9 +17,8 @@ class RealtimeApi: IRealtimeApiIOS {
         self.remoteModule = remoteModule
     }
 
-    func subscribeWithFilter(
+    func subscribeToChannels(
         channels: [String],
-        filters: [String],
         onResult: @escaping (RealtimeResponse<NSDictionary>) -> Void
     ) async throws -> Payload<RealtimeSubscriptionCallbackIOS> {
         return await remoteModule.execute { module in
@@ -27,22 +26,16 @@ class RealtimeApi: IRealtimeApiIOS {
                 channels: Set(channels.map { $0 }),
                 payloadType: String.self
             ) { response in
-                if filters.isEmpty
-                    || (response.events?.contains(where: { event in
-                        filters.contains(where: { filter in filter == event })
-                    }) ?? false)
-                {
-                    onResult(
-                        RealtimeResponse(
-                            events: response.events ?? [],
-                            channels: response.channels ?? [],
-                            timestamp: response.timestamp ?? "",
-                            payload: NSDictionary(
-                                dictionary: response.payload ?? [:]
-                            )
+                onResult(
+                    RealtimeResponse(
+                        events: response.events ?? [],
+                        channels: response.channels ?? [],
+                        timestamp: response.timestamp ?? "",
+                        payload: NSDictionary(
+                            dictionary: response.payload ?? [:]
                         )
                     )
-                }
+                )
             }
             return RealtimeSubscriptionCallbackIOS {
                 self.closeSubscription(subscription: subscription)
