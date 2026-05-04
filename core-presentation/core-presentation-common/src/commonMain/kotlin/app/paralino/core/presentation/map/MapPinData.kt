@@ -35,7 +35,7 @@ data class MapPinData constructor(
         groupOrSpaceId = location.groupOrSpaceId,
         markerId = location.id,
         pinType = MapPinType.MEMBER,
-        markerStyle = if(location.locationData.data?.isAccurate == true) MapMarkerStyle.PIN else MapMarkerStyle.CIRCLE,
+        markerStyle = if(location.locationData.data?.isAccurateForPinType == true) MapMarkerStyle.PIN else MapMarkerStyle.CIRCLE,
         focused = false,
         active = location.isPinActive,
         obsolete = location.isLocationAvailableButOld,

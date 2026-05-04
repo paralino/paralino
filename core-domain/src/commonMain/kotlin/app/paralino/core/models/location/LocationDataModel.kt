@@ -30,7 +30,7 @@ data class LocationDataModel constructor(
     val isMasked: Boolean = false
 ) {
     val shouldShowApproximateCircle get() = accuracy > 2f
-    val isAccurate get() = accuracy < 50f
+    val isAccurateForPinType get() = accuracy < 50f
     @Transient
     val timeUTCInstant: Instant? = timeUTC?.fromUTCtoInstant()
 
