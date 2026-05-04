@@ -270,7 +270,7 @@ fun MapHomeSheetContent(
 
                 MapSheetSelectedContentType.MEMBERS -> {
                     membersList(
-                        canAddNewMember = true,//!readyState.isPersonalSpace && readyState.isCurrentUserOwnerOfSelectedGroup,
+                        canAddNewMember = !readyState.isPersonalSpace && readyState.isCurrentUserOwnerOfSelectedGroup,
                         members = members,
                         onEvent = {
                             onEvent(MapHomeScreenUiEvent.OnMemberItemEvent(it))
