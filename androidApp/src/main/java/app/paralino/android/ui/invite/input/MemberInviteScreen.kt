@@ -44,7 +44,7 @@ fun MemberInviteScreen(
             )
         }
     ) {
-        _root_ide_package_.app.paralino.core.ui.invite.MemberInviteScreenCore(
+        MemberInviteScreenCore(
             appState = appState,
             vm = vm,
             isOnboarding = isOnboarding,

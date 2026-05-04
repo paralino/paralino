@@ -26,7 +26,7 @@ fun AppStatusDebugScreen(
             )
         },
     ) {
-        _root_ide_package_.app.paralino.core.ui.settings.AppStatusDebugScreenCore(
+        AppStatusDebugScreenCore(
             appState = appState,
             vm = vm,
             paddingValues = it

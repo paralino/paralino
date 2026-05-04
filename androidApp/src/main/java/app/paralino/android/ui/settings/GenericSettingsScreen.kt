@@ -67,7 +67,7 @@ fun GenericSettingsScreen(
             )
         }
     ) {
-        _root_ide_package_.app.paralino.core.ui.settings.GenericSettingsScreenCore(
+        GenericSettingsScreenCore(
             coreUiState = appState,
             vm = vm,
             paddingValues = remember { PaddingValues() },

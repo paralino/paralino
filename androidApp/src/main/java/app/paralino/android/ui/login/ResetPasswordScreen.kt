@@ -36,7 +36,7 @@ fun ResetPasswordScreen(
             )
         }
     ) {
-        _root_ide_package_.app.paralino.core.ui.login.ResetPasswordScreenCore(
+        ResetPasswordScreenCore(
             appState = appState,
             vm = vm,
             openLoginScreen = {

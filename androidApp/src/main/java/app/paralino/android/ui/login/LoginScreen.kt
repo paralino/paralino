@@ -21,7 +21,7 @@ fun LoginScreen(
     vm: LoginViewModel = koinViewModel { parametersOf(startScreenUiType) },
 ) {
     val canNavigateBack by vm.canNavigateBack.collectAsState(initial = true)
-    _root_ide_package_.app.paralino.core.ui.login.LoginScreenCore(
+    LoginScreenCore(
         modifier = Modifier.safeDrawingPadding(),
         appState = appState,
         vm = vm,

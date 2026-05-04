@@ -109,7 +109,7 @@ fun SharingStartScreen(
             )
         }
     ) {
-        _root_ide_package_.app.paralino.core.ui.share.SharingStartScreenCore(
+        SharingStartScreenCore(
             appState = appState,
             vm = vm,
             onSharingStarted = {

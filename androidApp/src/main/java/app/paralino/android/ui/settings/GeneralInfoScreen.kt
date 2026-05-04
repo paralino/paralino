@@ -32,7 +32,7 @@ fun GeneralInfoScreen(
         },
     ) {
         val context = LocalContext.current
-        _root_ide_package_.app.paralino.core.ui.settings.GeneralInfoScreenCore(
+        GeneralInfoScreenCore(
             appState = appState,
             vm = vm,
             paddingValues = it,

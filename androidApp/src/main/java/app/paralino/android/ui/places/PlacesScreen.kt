@@ -66,7 +66,7 @@ fun PlacesScreen(
             )
         }
     ) {
-        _root_ide_package_.app.paralino.core.ui.places.PlacesScreenCore(
+        PlacesScreenCore(
             appState = appState,
             vm = vm,
             userScrollEnabled = userScroll,
@@ -127,7 +127,7 @@ fun PlacesScreen(
 @Composable
 private fun PlaceListItemPreview() {
     AppTheme {
-        _root_ide_package_.app.paralino.core.ui.places.PlaceListItem(
+        PlaceListItem(
             state = PlaceListItemData(
                 id = "",
                 groupOrSpaceId = "".asGroupOrSpaceId(),

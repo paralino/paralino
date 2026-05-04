@@ -13,7 +13,7 @@ fun RecoverKeysScreen(
     appState: MainAppState,
     vm: RecoverKeysViewModel = koinViewModel(),
 ) {
-    _root_ide_package_.app.paralino.core.ui.login.RecoverKeysScreenCore(
+    RecoverKeysScreenCore(
         modifier = Modifier.safeDrawingPadding(),
         appState = appState,
         vm = vm

@@ -34,7 +34,7 @@ fun PlaceAlertsSettingsScreen(
             )
         }
     ) {
-        _root_ide_package_.app.paralino.core.ui.places.PlaceAlertsSettingsScreenCore(
+        PlaceAlertsSettingsScreenCore(
             appState = appState,
             vm = vm,
             contentPadding = remember {

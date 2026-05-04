@@ -53,7 +53,7 @@ fun CreatePlaceScreen(
             )
         }
     ) {
-        _root_ide_package_.app.paralino.core.ui.places.CreatePlaceScreenCore(
+        CreatePlaceScreenCore(
             appState = appState,
             vm = vm,
             onNavigateBack = { appState.navController.popBackStack() },

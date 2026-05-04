@@ -17,14 +17,14 @@ fun WelcomeOnboardingScreen(
     isDemo: Boolean,
     onFinish: () -> Unit,
 ) {
-    val step = rememberSaveable { mutableStateOf(_root_ide_package_.app.paralino.core.ui.onboarding.welcome.WelcomeOnboardingContent.entries.first()) }
+    val step = rememberSaveable { mutableStateOf(WelcomeOnboardingContent.entries.first()) }
     BackHandler(step.value.ordinal > 0) {
         val previous = step.value.previous()
         if (previous != null) {
             step.value = previous
         }
     }
-    _root_ide_package_.app.paralino.core.ui.onboarding.welcome.WelcomeOnboardingScreenCore(
+    WelcomeOnboardingScreenCore(
         modifier = Modifier.safeDrawingPadding(),
         vm = vm,
         isDemo = isDemo,

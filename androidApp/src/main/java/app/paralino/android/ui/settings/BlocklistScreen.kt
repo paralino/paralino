@@ -28,7 +28,7 @@ fun BlocklistScreen(
             )
         },
     ) {
-        _root_ide_package_.app.paralino.core.ui.settings.BlocklistScreenCore(
+        BlocklistScreenCore(
             appState = appState,
             vm = vm,
             paddingValues = it

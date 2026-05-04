@@ -57,7 +57,7 @@ fun PlaceDetailScreen(
             )
         }
     ) {
-        _root_ide_package_.app.paralino.core.ui.places.PlaceDetailScreenCore(
+        PlaceDetailScreenCore(
             appState = appState,
             vm = vm,
             userScrollEnabled = userScroll,
@@ -161,22 +161,22 @@ private fun PlaceDetailUserItemPreview() {
                 loadingEnter = false,
                 loadingExit = false
             )
-            _root_ide_package_.app.paralino.core.ui.places.PlaceDetailUserListItem(
+            PlaceDetailUserListItem(
                 state = item,
                 onEnterChange = {},
                 onExitChange = {}
             )
-            _root_ide_package_.app.paralino.core.ui.places.PlaceDetailUserListItem(
+            PlaceDetailUserListItem(
                 state = item.copy(notifyEnter = true, notifyExit = true),
                 onEnterChange = {},
                 onExitChange = {}
             )
-            _root_ide_package_.app.paralino.core.ui.places.PlaceDetailUserListItem(
+            PlaceDetailUserListItem(
                 state = item.copy(notifyEnter = true, loadingEnter = true),
                 onEnterChange = {},
                 onExitChange = {}
             )
-            _root_ide_package_.app.paralino.core.ui.places.PlaceDetailUserListItem(
+            PlaceDetailUserListItem(
                 state = item.copy(loadingExit = true, isCurrentUserOrDevice = true),
                 onEnterChange = {},
                 onExitChange = {}

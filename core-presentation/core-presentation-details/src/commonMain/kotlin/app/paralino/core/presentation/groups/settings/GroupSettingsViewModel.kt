@@ -33,8 +33,10 @@ import app.paralino.core.utils.extensions.mapToPayload
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
@@ -50,9 +52,9 @@ class GroupSettingsViewModel(
 ) : CoreViewModel() {
 
     private val groupData = MutableStateFlow<UserGroup?>(null)
-    private val _uiState =
-        MutableStateFlow<Resource<GroupSettingsScreenState>>(Resource.NotInitialized)
-    val uiState: Flow<Resource<GroupSettingsScreenState>> = _uiState
+    private val _uiState = MutableStateFlow<Resource<GroupSettingsScreenState>>(Resource.NotInitialized)
+    val uiState: StateFlow<Resource<GroupSettingsScreenState>> = _uiState
+    val groupNameState = uiState.map { it.data?.name }
 
     private val _eventChannel = Channel<GroupSettingsScreenEvent?>()
     val events = _eventChannel.receiveAsFlow()

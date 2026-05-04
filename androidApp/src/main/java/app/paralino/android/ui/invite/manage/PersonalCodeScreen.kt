@@ -42,7 +42,7 @@ fun PersonalCodeScreen(
             )
         }
     ) {
-        _root_ide_package_.app.paralino.core.ui.invite.manage.PersonalCodeScreenCore(
+        PersonalCodeScreenCore(
             appState = appState,
             vm = vm,
             askNotificationPermission = {

@@ -29,7 +29,7 @@ fun AppSettingsScreen(
             )
         },
     ) {
-        _root_ide_package_.app.paralino.core.ui.settings.AppSettingsScreenCore(
+        AppSettingsScreenCore(
             vm = vm,
             appState = appState,
             paddingValues = it,
