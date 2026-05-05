@@ -24,6 +24,7 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.coerceIn
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.min
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.paralino.android.ui.groups.GroupBottomSheetPicker
 import app.paralino.android.ui.groups.GroupPickerAction
@@ -274,16 +275,11 @@ internal fun HomeScreenMapWithElements(
                 }
 
                 val bottomPadding = if (readyState?.mapHomeScreenFocusType?.isMemberPlaceOrHistoryFocused == true) {
-                    if (screenBottomPadding <= this.maxHeight) {
-                        (cardHeight + screenBottomPadding).coerceIn(
-                            minimumValue = screenBottomPadding,
-                            maximumValue = this.maxHeight
-                        )
-                    } else {
-                        (cardHeight + screenBottomPadding).coerceAtLeast(
-                            minimumValue = screenBottomPadding
-                        )
-                    }
+                    val minPadding = cardHeight + screenBottomPadding
+                    minPadding.coerceIn(
+                        minimumValue = min(screenBottomPadding, this.maxHeight),
+                        maximumValue = this.maxHeight
+                    )
                 } else {
                     val range = this.maxHeight * BottomSheetPosition.HALF_EXPANDED.screenHeightPercent
                     val padding = if (sheetProgressTilMinimized < 1f) {
@@ -293,7 +289,7 @@ internal fun HomeScreenMapWithElements(
                     }
 
                     padding.coerceIn(
-                        minimumValue = screenBottomPadding,
+                        minimumValue = min(screenBottomPadding, range),
                         maximumValue = range
                     )
                 }
