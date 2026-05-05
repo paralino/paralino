@@ -1,8 +1,8 @@
 package app.paralino.core.domain.user
 
-import app.paralino.core.domain.crypto.group.CryptoKEKRefreshUseCase
 import app.paralino.core.domain.LimitedExecutionParentManager
 import app.paralino.core.domain.LimitedExecutionRepository
+import app.paralino.core.domain.crypto.group.CryptoKEKRefreshUseCase
 import app.paralino.core.domain.group.GroupRefreshUseCase
 import app.paralino.core.domain.group.GroupRemoveUseCase
 import app.paralino.core.domain.location.ClearUserLocationUseCase
@@ -81,7 +81,7 @@ class RefreshEverythingUseCase(
                     personalCodesRepo.refreshPersonalCodes()
                     configRepo.refreshConfig()
                     try {
-                        userConfigRepo.refreshMaybeAndGetConfig(cacheTime = 8.hours)
+                        userConfigRepo.refreshMaybeAndGetConfig(cacheTime = null)
                     } catch (e: Exception) {
                     }
                     scheduleRefreshAllGroupsWithPlaces(

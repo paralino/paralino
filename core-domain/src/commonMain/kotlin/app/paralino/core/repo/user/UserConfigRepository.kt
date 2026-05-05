@@ -36,12 +36,18 @@ class UserConfigRepository(
         )
 
     suspend fun refreshMaybeAndGetConfig(
-        cacheTime: Duration
+        cacheTime: Duration?
     ): UserConfigModel? {
+        if (cacheTime == null) {
+            configState.value.takeIf { it.isValid }?.let { config ->
+                return config
+            }
+        }
+
         return triggerRemoteMaybe(
             remotePreference = RemotePreference.CACHE(
                 key = "user_config_refresh",
-                timeMillis = cacheTime.inWholeMilliseconds,
+                timeMillis = cacheTime?.inWholeMilliseconds ?: 0,
                 failOnError = false
             )
         ) {
