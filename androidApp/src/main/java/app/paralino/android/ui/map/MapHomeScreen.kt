@@ -37,20 +37,20 @@ import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.android.ui.onboarding.AccountOnboardingScreen
 import app.paralino.core.models.Resource
 import app.paralino.core.models.base.asGroupOrSpaceId
+import app.paralino.core.models.settings.MapsSDKProvider
+import app.paralino.core.presentation.common.AlertDialogAction
 import app.paralino.core.presentation.history.LocationHistoryScreenUiState
 import app.paralino.core.presentation.history.LocationHistoryUiEvent
+import app.paralino.core.presentation.map.BottomSheetPosition
 import app.paralino.core.presentation.map.MapHomeScreenState
 import app.paralino.core.presentation.map.MapHomeScreenUiEvent
 import app.paralino.core.presentation.map.MapHomeViewModel
 import app.paralino.core.presentation.map.MapScreenViewSourceType
 import app.paralino.core.presentation.map.asReady
 import app.paralino.core.presentation.onboarding.AccountOnboardingViewModel
-import app.paralino.core.models.settings.MapsSDKProvider
 import app.paralino.core.ui.components.MessageDispatcherEffect
-import app.paralino.core.presentation.common.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.Show
 import app.paralino.core.ui.history.LocationHistoryMapCardUi
-import app.paralino.core.presentation.map.BottomSheetPosition
 import app.paralino.core.ui.map.MainMapSheet
 import app.paralino.core.ui.map.MapHomeElementMainCards
 import app.paralino.core.ui.map.MapHomeScreenElements
@@ -235,13 +235,28 @@ internal fun HomeScreenMapWithElements(
     var cardHeight by remember { mutableStateOf(0.dp) }
     BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
 
-        LaunchedEffect(this.maxHeight, this.maxWidth, readyState?.mapHomeScreenFocusType?.asLocationHistory) {
-            onMainEvent(MapHomeScreenUiEvent.OnScreenDensityChange(maxWidthDp = maxWidth, maxHeightDp = maxHeight))
-            onHistoryEvent(LocationHistoryUiEvent.OnScreenDensityChange(maxWidthDp = maxWidth, maxHeightDp = maxHeight))
+        LaunchedEffect(
+            this.maxHeight,
+            this.maxWidth,
+            readyState?.mapHomeScreenFocusType?.asLocationHistory
+        ) {
+            onMainEvent(
+                MapHomeScreenUiEvent.OnScreenDensityChange(
+                    maxWidthDp = maxWidth,
+                    maxHeightDp = maxHeight
+                )
+            )
+            onHistoryEvent(
+                LocationHistoryUiEvent.OnScreenDensityChange(
+                    maxWidthDp = maxWidth,
+                    maxHeightDp = maxHeight
+                )
+            )
         }
 
         val screenAreaPadding = WindowInsets.safeDrawing.asPaddingValues()
-        val screenBottomPadding = WindowInsets.safeDrawing.asPaddingValues().calculateBottomPadding()
+        val screenBottomPadding =
+            WindowInsets.safeDrawing.asPaddingValues().calculateBottomPadding()
         val sheetProgressTilCollapsed = sheetState.progress(
             from = BottomSheetPosition.COLLAPSED,
             to = BottomSheetPosition.HALF_EXPANDED
@@ -268,31 +283,36 @@ internal fun HomeScreenMapWithElements(
             cardHeight
         ) {
             derivedStateOf {
-                val topPadding = if (uiState.canCollapseMapHeader || historyUiState?.canCollapseMapHeader == true) {
-                    screenAreaPadding.calculateTopPadding() + 12.dp
-                } else {
-                    screenAreaPadding.calculateTopPadding() + 64.dp
-                }
-
-                val bottomPadding = if (readyState?.mapHomeScreenFocusType?.isMemberPlaceOrHistoryFocused == true) {
-                    val minPadding = cardHeight + screenBottomPadding
-                    minPadding.coerceIn(
-                        minimumValue = min(screenBottomPadding, this.maxHeight),
-                        maximumValue = this.maxHeight
-                    )
-                } else {
-                    val range = this.maxHeight * BottomSheetPosition.HALF_EXPANDED.screenHeightPercent
-                    val padding = if (sheetProgressTilMinimized < 1f) {
-                        collapsedHeightDp.times(sheetProgressTilMinimized)
+                val topPadding =
+                    if (uiState.canCollapseMapHeader || historyUiState?.canCollapseMapHeader == true) {
+                        screenAreaPadding.calculateTopPadding() + 12.dp
                     } else {
-                        collapsedHeightDp + (range - collapsedHeightDp).times(sheetProgressTilCollapsed)
+                        screenAreaPadding.calculateTopPadding() + 64.dp
                     }
 
-                    padding.coerceIn(
-                        minimumValue = min(screenBottomPadding, range),
-                        maximumValue = range
-                    )
-                }
+                val bottomPadding =
+                    if (readyState?.mapHomeScreenFocusType?.isMemberPlaceOrHistoryFocused == true) {
+                        val minPadding = cardHeight + screenBottomPadding
+                        minPadding.coerceIn(
+                            minimumValue = min(screenBottomPadding, this.maxHeight),
+                            maximumValue = this.maxHeight
+                        )
+                    } else {
+                        val range =
+                            this.maxHeight * BottomSheetPosition.HALF_EXPANDED.screenHeightPercent
+                        val padding = if (sheetProgressTilMinimized < 1f) {
+                            collapsedHeightDp.times(sheetProgressTilMinimized)
+                        } else {
+                            collapsedHeightDp + (range - collapsedHeightDp).times(
+                                sheetProgressTilCollapsed
+                            )
+                        }
+
+                        padding.coerceIn(
+                            minimumValue = min(screenBottomPadding, range),
+                            maximumValue = range
+                        )
+                    }
 
                 PaddingValues(
                     top = topPadding,
