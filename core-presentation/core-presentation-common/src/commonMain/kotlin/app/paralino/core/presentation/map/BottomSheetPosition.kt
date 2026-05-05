@@ -11,21 +11,21 @@ sealed interface BottomSheetPosition {
     }
 
     data object HALF_EXPANDED: BottomSheetPosition {
-        override val order: Int = 10
+        override val order: Int = 1
         const val screenHeightPercent: Float = 0.4f
         const val remainingScreenHeightPercent: Float = 1f - screenHeightPercent
     }
 
     data object COLLAPSED: BottomSheetPosition {
-        override val order: Int = 20
+        override val order: Int = 2
     }
 
     data object COLLAPSED_MINIMISED: BottomSheetPosition {
-        override val order: Int = 25
+        override val order: Int = 3
     }
 
     data object HIDDEN: BottomSheetPosition {
-        override val order: Int = 30
+        override val order: Int = 4
     }
 
     fun computeTarget(
