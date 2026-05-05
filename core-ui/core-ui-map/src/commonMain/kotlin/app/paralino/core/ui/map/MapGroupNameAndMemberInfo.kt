@@ -1,5 +1,6 @@
 package app.paralino.core.ui.map
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -111,83 +112,88 @@ fun MapGroupNameAndMemberInfo(
                     modifier = Modifier
                 )
 
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.disabled) {
-                        if (isPersonalSpace) {
-                            Icon(
-                                painter = CoreAppIcons.PhoneAndroid.asPainterResource(),
-                                modifier = Modifier.size(14.dp),
-                                contentDescription = null
-                            )
-                        } else {
-                            Icon(
-                                painter = CoreAppIcons.Group.asPainterResource(),
-                                modifier = Modifier.size(14.dp),
-                                contentDescription = null
-                            )
-                        }
-                        Spacer(Modifier.size(2.dp))
-                        Text(
-                            text = "$userCount",
-                            style = MaterialTheme.typography.caption.copy(
-                                fontSize = 12.sp,
-                                fontWeight = FontWeight.Bold
-                            ),
-                            modifier = Modifier
-                        )
-                    }
 
-                    if (idleUserCount > 0 || inactiveUserCount > 0) {
-                        Row(
-                            modifier = Modifier
-                                .padding(start = 4.dp)
-                                .background(
-                                    color = MaterialTheme.colors.primary.copy(alpha = 0.1f),
-                                    shape = MaterialTheme.shapes.medium
+                AnimatedVisibility(visible = collapsedVisibilityFraction >= 1f) {
+                    Row(
+                        modifier = Modifier.alpha(collapsedVisibilityFraction),
+                        horizontalArrangement = Arrangement.Start,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.disabled) {
+                            if (isPersonalSpace) {
+                                Icon(
+                                    painter = CoreAppIcons.PhoneAndroid.asPainterResource(),
+                                    modifier = Modifier.size(14.dp),
+                                    contentDescription = null
                                 )
-                                .padding(start = 4.dp, end = 6.dp)
-                                .padding(vertical = 1.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            MapUserCountElement(
-                                count = activeUserCount,
-                                color = AppColors.accent
-                            )
-
-                            if (idleUserCount > 0) {
-                                Spacer(Modifier.size(8.dp))
-                                MapUserCountElement(
-                                    count = idleUserCount,
-                                    color = AppColors.highlightGold
+                            } else {
+                                Icon(
+                                    painter = CoreAppIcons.Group.asPainterResource(),
+                                    modifier = Modifier.size(14.dp),
+                                    contentDescription = null
                                 )
                             }
+                            Spacer(Modifier.size(2.dp))
+                            Text(
+                                text = "$userCount",
+                                style = MaterialTheme.typography.caption.copy(
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.Bold
+                                ),
+                                modifier = Modifier
+                            )
+                        }
 
-                            if (inactiveUserCount > 0) {
-                                Spacer(Modifier.size(8.dp))
+                        if (idleUserCount > 0 || inactiveUserCount > 0) {
+                            Row(
+                                modifier = Modifier
+                                    .padding(start = 4.dp)
+                                    .background(
+                                        color = MaterialTheme.colors.primary.copy(alpha = 0.1f),
+                                        shape = MaterialTheme.shapes.medium
+                                    )
+                                    .padding(start = 4.dp, end = 6.dp)
+                                    .padding(vertical = 1.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
                                 MapUserCountElement(
-                                    count = inactiveUserCount,
-                                    color = AppColors.redMain
+                                    count = activeUserCount,
+                                    color = AppColors.accent
                                 )
+
+                                if (idleUserCount > 0) {
+                                    Spacer(Modifier.size(8.dp))
+                                    MapUserCountElement(
+                                        count = idleUserCount,
+                                        color = AppColors.highlightGold
+                                    )
+                                }
+
+                                if (inactiveUserCount > 0) {
+                                    Spacer(Modifier.size(8.dp))
+                                    MapUserCountElement(
+                                        count = inactiveUserCount,
+                                        color = AppColors.redMain
+                                    )
+                                }
                             }
                         }
-                    }
 
-                    Spacer(Modifier.size(10.dp))
+                        Spacer(Modifier.size(10.dp))
 
-                    CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.disabled) {
-                        Icon(
-                            painter = CoreAppIcons.MapsHomeWork.asPainterResource(),
-                            modifier = Modifier.size(16.dp),
-                            contentDescription = null
-                        )
-                        Spacer(Modifier.size(2.dp))
-                        Text(
-                            text = "$placesCount",
-                            style = MaterialTheme.typography.caption.copy(fontWeight = FontWeight.Bold),
-                            modifier = Modifier
-                        )
+                        CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.disabled) {
+                            Icon(
+                                painter = CoreAppIcons.MapsHomeWork.asPainterResource(),
+                                modifier = Modifier.size(16.dp),
+                                contentDescription = null
+                            )
+                            Spacer(Modifier.size(2.dp))
+                            Text(
+                                text = "$placesCount",
+                                style = MaterialTheme.typography.caption.copy(fontWeight = FontWeight.Bold),
+                                modifier = Modifier
+                            )
+                        }
                     }
                 }
             }
