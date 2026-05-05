@@ -133,10 +133,11 @@ class UpdateUserDataUseCase constructor(
             val wasDeviceSynced = appPrefs.wasDeviceEverSynced
             val unifiedPushPrefsUnsynced = appPrefs.unifiedPushEndpointConfigUnsynced
             val unifiedPushPrefsSynced = appPrefs.unifiedPushEndpointConfigSynced
+            val currentDevicePushConfig = PushProviderEndpointConfig.get(personalSpaceRepo.personalSpaceState.value.data?.currentDevice?.pushProviderConfig)
 
             val pushProviderConfig = when (pushProvider) {
                 PushProvider.PARALINO -> {
-                    PushProviderEndpointConfig.get(personalSpaceRepo.personalSpaceState.value.data?.currentDevice?.pushProviderConfig)
+                    currentDevicePushConfig
                         ?.takeIf { it.distributor == PushProvider.paralinoDistributorId }
                         ?.copy(isSocketConnection = appPrefs.paralinoSocketConnectionType == ParalinoSocketConnectionType.REALTIME)
                         ?: PushProviderEndpointConfig(
@@ -165,11 +166,12 @@ class UpdateUserDataUseCase constructor(
 
 
             val updatePushProviderConfig = when (pushProvider) {
-                PushProvider.DEVICE_NATIVE,
-                PushProvider.NOT_SET -> true
+                PushProvider.DEVICE_NATIVE -> false
+                PushProvider.NOT_SET -> {
+                    currentDevicePushConfig != null
+                }
 
                 PushProvider.PARALINO -> {
-                    val currentDevicePushConfig = PushProviderEndpointConfig.get(personalSpaceRepo.personalSpaceState.value.data?.currentDevice?.pushProviderConfig)
                     val createdAtOld = currentDevicePushConfig?.createdAt?.isoWithOffsetToInstant()?.isOlderThan(30.days) ?: true
                     val connectionTypeChanged = currentDevicePushConfig?.isSocketConnection != pushProviderConfig?.isSocketConnection
                     createdAtOld || connectionTypeChanged
@@ -212,7 +214,7 @@ class UpdateUserDataUseCase constructor(
                 pushToken = appPrefs.pushTokenSynced.takeIf { it.isNotBlank() },
                 locationPushToken = appPrefs.locationPushTokenSynced.takeIf { it.isNotBlank() },
                 pushProvider = personalSpaceRepo.personalSpaceState.value.data?.currentDevice?.pushProvider ?: PushProvider.default,
-                pushProviderConfig = PushProviderEndpointConfig.get(personalSpaceRepo.personalSpaceState.value.data?.currentDevice?.pushProviderConfig),
+                pushProviderConfig = currentDevicePushConfig,
                 updatePushProviderConfig = false
             )
 
