@@ -9,6 +9,7 @@ import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.base.AppConfigRepository
 import app.paralino.core.repo.location.LocationPerformanceManager
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
@@ -42,6 +43,19 @@ class LocationSaveEventProcessingEngine(
                 AppHost.IOS_LOCATION_EXTENSION -> 2.seconds
             }
         }
+
+    override fun start(pendingLocationFlow: StateFlow<LocationDataModel?>) {
+        when (appConfig.appHost) {
+            AppHost.MAIN_APP,
+            AppHost.IOS_NOTIFICATION_EXTENSION -> {
+                super.start(pendingLocationFlow)
+            }
+
+            AppHost.IOS_LOCATION_EXTENSION -> {
+                return
+            }
+        }
+    }
 
     override fun eventAction(locationData: LocationDataModel) {
         locationCacheRepo.updateCache(data = locationData)

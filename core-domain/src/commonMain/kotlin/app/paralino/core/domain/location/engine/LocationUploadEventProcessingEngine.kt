@@ -52,7 +52,10 @@ class LocationUploadEventProcessingEngine(
     override fun eventAction(locationData: LocationDataModel) {
         scopeProvider.userSessionIOScope.launch {
             try {
-                checkAndUploadLocation(data = locationData, saveLocally = false)
+                checkAndUploadLocation(
+                    data = locationData,
+                    saveLocally = appConfig.appHost == AppHost.IOS_LOCATION_EXTENSION
+                )
             } catch (e: Exception) {
 //              lastLocationPush.update { null }
                 logg.w(

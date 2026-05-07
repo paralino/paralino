@@ -29,7 +29,7 @@ abstract class ILocationEventProcessingEngine(
     abstract val processingRate: Duration
     protected abstract fun eventAction(locationData: LocationDataModel)
 
-    fun start(
+    open fun start(
         pendingLocationFlow: StateFlow<LocationDataModel?>
     ) {
         eventMonitoringJob?.cancel()
