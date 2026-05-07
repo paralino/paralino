@@ -1,13 +1,24 @@
 package app.paralino.core.repo
 
-import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.models.Resource
 import app.paralino.core.models.base.GroupOrSpaceId
 import app.paralino.core.models.data
 import app.paralino.core.models.location.LocationSharingContract
 import app.paralino.core.models.toResource
+import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.repo.location.SharingContractsLocalDataSource
-import kotlinx.coroutines.flow.*
+import app.paralino.core.utils.extensions.nowUTC
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 
 class LocationSharingManager(
     private val scopeProvider: ICoroutineScopeProvider,
@@ -52,8 +63,12 @@ class LocationSharingManager(
         }.distinctUntilChanged()
     }
 
-    suspend fun unfilteredContractForGroup(id: GroupOrSpaceId): LocationSharingContract? {
+    suspend fun getUnfilteredContractForGroupOnce(id: GroupOrSpaceId): LocationSharingContract? {
         return contractsDataSource.getContractOnce(groupId = id.id)
+    }
+
+    fun getUnfilteredContractForGroup(id: GroupOrSpaceId): Flow<LocationSharingContract?> {
+        return contractsDataSource.getContract(groupId = id.id)
     }
 
     suspend fun currentSharingContractForGroup(id: GroupOrSpaceId): LocationSharingContract? {

@@ -37,7 +37,7 @@ class RevokeDeviceActiveStatusUseCase(
                     }
                 }
                 .filter { location ->
-                    val sharingContract = sharingManager.unfilteredContractForGroup(id = location.groupOrSpaceId)
+                    val sharingContract = sharingManager.getUnfilteredContractForGroupOnce(id = location.groupOrSpaceId)
                     val sharingActive = sharingContract?.asValidContract() != null
 
                     val statusActive = location.locationAwareStatusType?.let {

@@ -71,7 +71,7 @@ class MemberDeviceStatusProvider(
         groupId: GroupOrSpaceId,
         contract: LocationSharingContract? = null
     ): MemberDeviceStatus {
-        val sharingContract = contract ?: locationSharingManager.unfilteredContractForGroup(groupId)
+        val sharingContract = contract ?: locationSharingManager.getUnfilteredContractForGroupOnce(groupId)
         val validContract = sharingContract?.asValidContract()
         val sharingBattery = validContract?.shareBattery == true
         val sharingNetwork = validContract?.shareNetwork == true

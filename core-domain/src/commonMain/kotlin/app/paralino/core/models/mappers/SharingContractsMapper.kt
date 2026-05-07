@@ -17,6 +17,8 @@ object SharingContractsMapper {
             approximateLocationInMeters = model.approximateLocationInMeters,
             shareDeviceStatus = model.shareDeviceStatus,
             saveToHistory = model.saveToHistory,
+            isNotifyOthersOn = model.isNotifyOthersOn,
+            sharingDurationPreset = model.sharingDurationPreset,
             isEnabled = model.isEnabled
         )
     }
@@ -33,6 +35,8 @@ object SharingContractsMapper {
             approximateLocationInMeters = model.approximateLocationInMeters,
             shareDeviceStatus = model.shareDeviceStatus,
             saveToHistory = model.saveToHistory,
+            isNotifyOthersOn = model.isNotifyOthersOn,
+            sharingDurationPreset = model.sharingDurationPreset,
             isEnabled = model.isEnabled
         )
     }

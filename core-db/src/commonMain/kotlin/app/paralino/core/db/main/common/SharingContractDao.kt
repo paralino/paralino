@@ -12,6 +12,9 @@ interface SharingContractDao {
     @Query("SELECT * FROM sharingContractEntity WHERE groupId = :groupId")
     suspend fun getContractOnce(groupId: String): SharingContractEntity?
 
+    @Query("SELECT * FROM sharingContractEntity WHERE groupId = :groupId")
+    fun getContract(groupId: String): Flow<SharingContractEntity?>
+
     @Query("SELECT * FROM sharingContractEntity")
     fun getAllContracts(): Flow<List<SharingContractEntity>>
 
