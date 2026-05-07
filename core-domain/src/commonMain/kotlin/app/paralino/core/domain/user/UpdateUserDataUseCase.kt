@@ -250,7 +250,7 @@ class UpdateUserDataUseCase constructor(
                 appPrefs.pushTokenSynced = pendingState.pushToken ?: ""
 
                 appPrefs.locationPushTokenUnsynced = ""
-                appPrefs.locationPushTokenSynced = pendingState.pushToken ?: ""
+                appPrefs.locationPushTokenSynced = pendingState.locationPushToken ?: ""
 
                 appPrefs.unifiedPushEndpointConfigUnsynced = null
                 appPrefs.unifiedPushEndpointConfigSynced = if (pendingState.updatePushProviderConfig) unifiedPushPrefsUnsynced else unifiedPushPrefsSynced
