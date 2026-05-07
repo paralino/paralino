@@ -31,6 +31,8 @@ interface SharingContractDao {
         }
     }
 
+    @Query("UPDATE OR IGNORE sharingContractEntity SET isEnabled = 0")
+    suspend fun cancelAllContracts()
 
     @Query("DELETE FROM sharingContractEntity WHERE groupId = :groupId")
     suspend fun deleteContract(groupId: String)

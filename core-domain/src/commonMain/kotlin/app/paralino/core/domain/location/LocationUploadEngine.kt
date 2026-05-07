@@ -69,6 +69,7 @@ class LocationUploadEngine constructor(
         }
 
         locationPerformanceManager.checkPerformanceResetState()
+        locationSharingManager.refreshAllContracts()
     }
 
     suspend fun updateDeviceStatusOnly(tryToFetchCachedLocation: Boolean = true) {

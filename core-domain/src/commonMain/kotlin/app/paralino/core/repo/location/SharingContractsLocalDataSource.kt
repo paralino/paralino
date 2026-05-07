@@ -36,6 +36,10 @@ class SharingContractsLocalDataSource(
         database.sharingContractsDao.cancelContract(id)
     }
 
+    suspend fun cancelAllContracts() {
+        database.sharingContractsDao.cancelAllContracts()
+    }
+
     suspend fun deleteContract(id: String) {
         database.sharingContractsDao.deleteContract(id)
     }

@@ -14,9 +14,16 @@ class LocationSharingManager(
     private val contractsDataSource: SharingContractsLocalDataSource
 ) {
 
+    private val refreshTime = MutableStateFlow(nowUTC())
+
     val allContractsFlow: StateFlow<Resource<List<LocationSharingContract>>> =
-        contractsDataSource.getAllContracts()
-            .map { it.mapNotNull { it.asValidContract() }.toResource() }
+        combine(
+            refreshTime,
+            contractsDataSource.getAllContracts()
+                .map { it.mapNotNull { it.asValidContract() }.toResource() }
+        ) { _, contracts ->
+            contracts
+        }
             .stateIn(
                 scopeProvider.defaultIOScope,
                 SharingStarted.Eagerly,
@@ -41,7 +48,7 @@ class LocationSharingManager(
 
     fun sharingContractForGroup(id: GroupOrSpaceId): Flow<LocationSharingContract?> {
         return allContractsFlow.map {
-            it.data?.firstOrNull { it.groupOrSpaceId == id }
+            it.data?.firstOrNull { it.groupOrSpaceId == id }?.asValidContract()
         }.distinctUntilChanged()
     }
 
@@ -60,11 +67,13 @@ class LocationSharingManager(
     }
 
     fun isSharingActiveMaybe(): Boolean {
-        return sharingStatus.value.data == true
+        return allContractsFlow.value.data?.any {
+            it.asValidContract() != null
+        } ?: false
     }
 
     suspend fun isSharingActive(): Boolean {
-        return sharingStatus.value.data ?: allValidContracts().isNotEmpty()
+        return allValidContracts().isNotEmpty()
     }
 
     fun isSharingActiveForGroupMaybe(id: GroupOrSpaceId): Boolean {
@@ -87,6 +96,14 @@ class LocationSharingManager(
         } else {
             contractsDataSource.cancelContract(id = groupId.id)
         }
+    }
+
+    suspend fun cancelAllContracts() {
+        contractsDataSource.cancelAllContracts()
+    }
+
+    fun refreshAllContracts() {
+        refreshTime.update { nowUTC() }
     }
 
     suspend fun allValidContracts(): List<LocationSharingContract> {

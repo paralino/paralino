@@ -243,6 +243,7 @@ class LocationService : Service() {
                     message = "Error saving saving location - sharing expired"
                 )
                 // We can stop service since all sharing contracts are expired
+                locationSharingManager.cancelAllContracts()
                 stopAll()
             } catch (e: Exception) {
                 logg.w(
