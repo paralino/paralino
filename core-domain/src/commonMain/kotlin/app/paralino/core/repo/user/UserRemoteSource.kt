@@ -194,12 +194,10 @@ class UserRemoteSource constructor(
     }
 
     suspend fun logoutAllButCurrentSession(): UserSession {
-        // TODO reenable forced session renewal when fixed on Appwrite
         val allSessions = getAllSessions()
         if (allSessions.size <= 1) {
             logg.v("account_session", "No other sessions to revoke, renew current one")
-            return getCurrentSession()
-//            return renewCurrentSession()
+            return renewCurrentSession()
         }
 
         allSessions.forEach { session ->
@@ -208,7 +206,6 @@ class UserRemoteSource constructor(
             }
         }
 
-        return getCurrentSession()
-//        return renewCurrentSession()
+        return renewCurrentSession()
     }
 }
