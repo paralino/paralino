@@ -49,6 +49,8 @@ import app.paralino.core.domain.crypto.user.IPersonalDeviceCryptoKeyRotation
 import app.paralino.core.domain.crypto.group.MemberCryptoKeyRotation
 import app.paralino.core.domain.crypto.group.MemberDeviceKeyRotation
 import app.paralino.core.domain.crypto.user.PersonalDeviceCryptoKeyRotation
+import app.paralino.core.domain.location.BatteryAlertUploadEngine
+import app.paralino.core.domain.location.IBatteryAlertUploadEngine
 import app.paralino.core.domain.location.IReRegisterDeviceUseCase
 import app.paralino.core.domain.location.ReRegisterDeviceUseCase
 import app.paralino.core.domain.location.history.ILocationHistoryUploadEngine
@@ -194,6 +196,7 @@ object KoinSetup {
         single { ReRegisterDeviceUseCase(get(), get()) } bind IReRegisterDeviceUseCase::class
         single { PlacesActivityProcessor(get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) } bind IPlacesActivityProcessor::class
         single { LocationHistoryUploadEngine(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) } bind ILocationHistoryUploadEngine::class
+        single { BatteryAlertUploadEngine(get(), get(), get(), get(), get()) } bind IBatteryAlertUploadEngine::class
 
         single {
             val appFlavor = when (BuildConfig.FLAVOR) {

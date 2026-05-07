@@ -1,6 +1,6 @@
 package app.paralino.core.domain.location.engine
 
-import app.paralino.core.domain.location.BatteryAlertUploadEngine
+import app.paralino.core.domain.location.IBatteryAlertUploadEngine
 import app.paralino.core.domain.location.SaveLocationUseCase
 import app.paralino.core.domain.location.history.SavePendingLocationUseCase
 import app.paralino.core.logg
@@ -26,7 +26,7 @@ class LocationUploadEventProcessingEngine(
     private val saveLocationUseCase: SaveLocationUseCase,
     private val savePendingLocationUseCase: SavePendingLocationUseCase,
     private val placesActivityProcessor: IPlacesActivityProcessor,
-    private val batteryAlertUploadEngine: BatteryAlertUploadEngine,
+    private val batteryAlertUploadEngine: IBatteryAlertUploadEngine,
 ) : ILocationEventProcessingEngine(scope = scopeProvider.userSessionIOScope) {
     override val tag: String = "upload"
     override val processingRate: Duration

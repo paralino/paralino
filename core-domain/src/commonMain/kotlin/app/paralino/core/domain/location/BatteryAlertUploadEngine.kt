@@ -20,17 +20,25 @@ import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.hours
 
+abstract class IBatteryAlertUploadEngine: LimitedExecutionRepository() {
+    abstract fun sendBatteryAlert(payloads: List<MemberGroupId>)
+}
+
+class IOSLSEBatteryAlertUploadEngine : IBatteryAlertUploadEngine() {
+    override fun sendBatteryAlert(payloads: List<MemberGroupId>) {}
+}
+
 class BatteryAlertUploadEngine(
     private val functionsApi: IFunctionsApi,
     private val appDatabase: MainDatabaseHelper,
     private val locationSharingManager: LocationSharingManager,
     private val scopeProvider: ICoroutineScopeProvider,
     private val appPrefs: AppPrefs
-) : LimitedExecutionRepository() {
+) : IBatteryAlertUploadEngine() {
 
     private val executionKey = "batteryAlerts"
 
-    fun sendBatteryAlert(
+    override fun sendBatteryAlert(
         payloads: List<MemberGroupId>
     ) {
         scopeProvider.userSessionIOScope.launch {

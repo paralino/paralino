@@ -13,13 +13,16 @@ import app.paralino.core.db.logs.AppLogsDatabase
 import app.paralino.core.db.main.AppMainDatabase
 import app.paralino.core.domain.crypto.group.IMemberCryptoKeyRotation
 import app.paralino.core.domain.crypto.group.IMemberDeviceKeyRotation
-import app.paralino.core.domain.crypto.user.IPersonalDeviceCryptoKeyRotation
 import app.paralino.core.domain.crypto.group.MemberCryptoKeyRotation
 import app.paralino.core.domain.crypto.group.MemberDeviceKeyRotation
 import app.paralino.core.domain.crypto.group.NoOpMemberCryptoKeyRotation
 import app.paralino.core.domain.crypto.group.NoOpMemberDeviceKeyRotation
+import app.paralino.core.domain.crypto.user.IPersonalDeviceCryptoKeyRotation
 import app.paralino.core.domain.crypto.user.NoOpPersonalDeviceKeyRotation
 import app.paralino.core.domain.crypto.user.PersonalDeviceCryptoKeyRotation
+import app.paralino.core.domain.location.BatteryAlertUploadEngine
+import app.paralino.core.domain.location.IBatteryAlertUploadEngine
+import app.paralino.core.domain.location.IOSLSEBatteryAlertUploadEngine
 import app.paralino.core.domain.location.IReRegisterDeviceUseCase
 import app.paralino.core.domain.location.LocationCacheRepository
 import app.paralino.core.domain.location.NoOpReRegisterDeviceUseCase
@@ -37,15 +40,17 @@ import app.paralino.core.domain.user.UserSessionMonitor
 import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.AppHost
 import app.paralino.core.models.base.asGroupOrSpaceId
+import app.paralino.core.models.settings.RawPresentationDataType
 import app.paralino.core.notifications.IOSNSEPlaceCreatedNotificationProcessor
 import app.paralino.core.notifications.IOSNSEPushNotificationHandler
+import app.paralino.core.presentation.billing.BillingScreenSourceType
+import app.paralino.core.presentation.common.NetworkQualityMonitor
+import app.paralino.core.presentation.groups.add_member.MemberInviteViewModel
 import app.paralino.core.presentation.groups.detail.GroupDetailViewModel
 import app.paralino.core.presentation.groups.edit.CreateGroupViewModel
 import app.paralino.core.presentation.groups.settings.BatteryNotificationsViewModel
 import app.paralino.core.presentation.groups.settings.GroupSettingsViewModel
 import app.paralino.core.presentation.history.LocationHistoryDeleteViewModel
-import app.paralino.core.presentation.groups.add_member.MemberInviteViewModel
-import app.paralino.core.presentation.paralinoid.PersonalCodeViewModel
 import app.paralino.core.presentation.login.LoggedOutViewModel
 import app.paralino.core.presentation.login.LoginScreenUiType
 import app.paralino.core.presentation.login.LoginViewModel
@@ -57,6 +62,7 @@ import app.paralino.core.presentation.main.MainViewModel
 import app.paralino.core.presentation.map.MapHomeViewModel
 import app.paralino.core.presentation.onboarding.AccountOnboardingViewModel
 import app.paralino.core.presentation.onboarding.WelcomeOnboardingViewModel
+import app.paralino.core.presentation.paralinoid.PersonalCodeViewModel
 import app.paralino.core.presentation.personal_space.PersonalSpaceViewModel
 import app.paralino.core.presentation.personal_space.settings.PersonalSpaceSettingsViewModel
 import app.paralino.core.presentation.places.create.CreatePlaceViewModel
@@ -64,7 +70,6 @@ import app.paralino.core.presentation.places.detail.PlaceDetailViewModel
 import app.paralino.core.presentation.places.detail.PlaceSensitivityViewModel
 import app.paralino.core.presentation.places.list.PlacesViewModel
 import app.paralino.core.presentation.rawdata.RawDataPresentationViewModel
-import app.paralino.core.models.settings.RawPresentationDataType
 import app.paralino.core.presentation.settings.SettingsViewModel
 import app.paralino.core.presentation.settings.appstatus.AppStatusDebugViewModel
 import app.paralino.core.presentation.settings.billing.PaywallViewModel
@@ -78,10 +83,10 @@ import app.paralino.core.presentation.settings.emailchange.ChangeEmailViewModel
 import app.paralino.core.presentation.settings.general.GeneralInfoViewModel
 import app.paralino.core.presentation.settings.generic.AppSettingsViewModel
 import app.paralino.core.presentation.settings.generic.DefaultNavigationAppViewModel
-import app.paralino.core.presentation.settings.generic.maps.MapInteractionsViewModel
 import app.paralino.core.presentation.settings.generic.MeasurementSystemViewModel
 import app.paralino.core.presentation.settings.generic.NotificationsGroupingViewModel
 import app.paralino.core.presentation.settings.generic.PlaceSearchSettingsViewModel
+import app.paralino.core.presentation.settings.generic.maps.MapInteractionsViewModel
 import app.paralino.core.presentation.settings.location.LocationSettingsViewModel
 import app.paralino.core.presentation.settings.passwordchange.ChangePasswordViewModel
 import app.paralino.core.presentation.share.SharingStartViewModel
@@ -110,8 +115,6 @@ import app.paralino.core.repo.places.PlacesActivityProcessor
 import app.paralino.core.repo.places.PlacesRepository
 import app.paralino.core.repo.user.IPushProviderManager
 import app.paralino.core.repo.user.UserConfigRepository
-import app.paralino.core.presentation.billing.BillingScreenSourceType
-import app.paralino.core.presentation.common.NetworkQualityMonitor
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 import org.koin.core.module.Module
@@ -195,6 +198,7 @@ object KoinIOS {
                             single { ReRegisterDeviceUseCase(get(), get()) } bind IReRegisterDeviceUseCase::class
                             single { PlacesActivityProcessor(get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) } bind IPlacesActivityProcessor::class
                             single { LocationHistoryUploadEngine(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) } bind ILocationHistoryUploadEngine::class
+                            single { BatteryAlertUploadEngine(get(), get(), get(), get(), get()) } bind IBatteryAlertUploadEngine::class
                         }
                         else -> {
                             single { NoOpMemberCryptoKeyRotation() } bind IMemberCryptoKeyRotation::class
@@ -203,6 +207,7 @@ object KoinIOS {
                             single { NoOpReRegisterDeviceUseCase() } bind IReRegisterDeviceUseCase::class
                             single { IOSLSEPlacesActivityProcessor() } bind IPlacesActivityProcessor::class
                             single { IOSLocationHistoryUploadEngine() } bind ILocationHistoryUploadEngine::class
+                            single { IOSLSEBatteryAlertUploadEngine() } bind IBatteryAlertUploadEngine::class
                         }
                     }
                 }
