@@ -88,6 +88,7 @@ import app.paralino.core.domain.user.UpdateUserDataUseCase
 import app.paralino.core.domain.user.UserCryptoKeyRefreshUseCase
 import app.paralino.core.domain.user.UserSessionMonitor
 import app.paralino.core.models.AppBuildConfig
+import app.paralino.core.models.base.DeviceType
 import app.paralino.core.models.mappers.GroupKeysMapper
 import app.paralino.core.models.mappers.GroupMapperCore
 import app.paralino.core.models.mappers.GroupPlaceMapperLocal
@@ -198,6 +199,15 @@ object ParalinoCore {
         if (appPrefs.errorReportingID.isBlank()) {
             val cryptoCore = koinApp.koin.get<CryptoCore>()
             appPrefs.errorReportingID = cryptoCore.randomId(length = 32, alphabet = AlphabetType.EXTENDED)
+        }
+
+        if (deviceApiProvider.deviceType == DeviceType.iOS) {
+            val previousAppVersion = appPrefs.previousAppVersionNumber
+            if (previousAppVersion != null && previousAppVersion < 60) {
+                // invalidate location push tokens so they regenerate
+                appPrefs.locationPushTokenSynced = ""
+                appPrefs.locationPushTokenUnsynced = ""
+            }
         }
 
         if (appPrefs.currentAppVersionNumber != deviceApiProvider.appVersionCode) {
