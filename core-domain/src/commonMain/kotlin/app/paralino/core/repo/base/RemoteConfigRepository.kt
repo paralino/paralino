@@ -126,6 +126,10 @@ class RemoteConfigRepository(
             DeviceType.Android -> configData.minSoftVersionAndroid
             DeviceType.iOS -> configData.minSoftVersionIOS
         }
+        val newSoftVersion = when (deviceApiProvider.deviceType) {
+            DeviceType.Android -> configData.newSoftVersionAndroid
+            DeviceType.iOS -> configData.newSoftVersionIOS
+        }
         val newVersion = when (deviceApiProvider.deviceType) {
             DeviceType.Android -> configData.newVersionAndroid
             DeviceType.iOS -> configData.newVersionIOS
@@ -139,6 +143,7 @@ class RemoteConfigRepository(
                 AppUpdateType.SOFT(configData)
             }
             currentVersion < newVersion -> AppUpdateType.PASSIVE(configData)
+            currentVersion < newSoftVersion -> AppUpdateType.PASSIVE(configData)
 
             else -> AppUpdateType.NONE(configData)
         }
