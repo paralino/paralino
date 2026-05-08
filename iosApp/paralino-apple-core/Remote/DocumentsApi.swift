@@ -72,7 +72,8 @@ class DocumentsApi: IDocumentApiIOS {
                 let results = try await module.tablesDB.listRows(
                     databaseId: databaseType.id,
                     tableId: collectionId,
-                    queries: mappedQueries
+                    queries: mappedQueries,
+                    total: false
                 )
                 
                 let shouldLoadMore = onNewValues(results.rows.map { try! $0.parseRow() }) == true

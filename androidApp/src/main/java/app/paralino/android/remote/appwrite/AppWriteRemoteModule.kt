@@ -6,7 +6,7 @@ import app.paralino.core.domain.user.UserSessionMonitor
 import app.paralino.core.provider.isConnectionError
 import app.paralino.core.provider.isSocketTimeout
 import app.paralino.core.repo.base.AppConfigRepository
-import app.paralino.core.utils.NetworkQualityMonitor
+import app.paralino.core.presentation.common.NetworkQualityMonitor
 import app.paralino.core.utils.exceptions.BaseRemoteException
 import app.paralino.core.utils.exceptions.RemoteConnectionException
 import io.appwrite.Client

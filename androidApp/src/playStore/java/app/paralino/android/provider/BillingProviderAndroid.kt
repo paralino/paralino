@@ -103,10 +103,16 @@ class BillingProviderAndroid(
             return true
         }
 
+        val billingRCApiKey = appConfig.billingRCApiKey
+
+        if (billingRCApiKey.isNullOrBlank()) {
+            throw IllegalArgumentException("Missing RC billing key")
+        }
+
         Purchases.configure(
             PurchasesConfiguration.Builder(
                 context = appClass.applicationContext,
-                apiKey = appConfig.billingRCApiKey
+                apiKey = billingRCApiKey
             )
                 .appUserID(appUserID = billingUserId)
                 .build()

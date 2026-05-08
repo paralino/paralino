@@ -21,7 +21,7 @@ import androidx.core.graphics.applyCanvas
 import app.paralino.core.presentation.map.MapMarkerStyle
 import app.paralino.core.presentation.map.MapPinData
 import app.paralino.core.presentation.map.MapPinType
-import app.paralino.core.ui.map.MapMarkerContent
+import app.paralino.core.ui.components.MapMarkerContent
 import app.paralino.core.ui.theme.AppColors
 import org.maplibre.android.geometry.LatLng
 import org.maplibre.compose.expressions.dsl.const

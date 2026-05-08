@@ -43,12 +43,14 @@ import app.paralino.core.db.MainDatabaseHelper
 import app.paralino.core.db.SqlDriverFactory
 import app.paralino.core.db.logs.AppLogsDatabase
 import app.paralino.core.db.main.AppMainDatabase
-import app.paralino.core.domain.crypto.IMemberCryptoKeyRotation
-import app.paralino.core.domain.crypto.IMemberDeviceKeyRotation
-import app.paralino.core.domain.crypto.IPersonalDeviceCryptoKeyRotation
-import app.paralino.core.domain.crypto.MemberCryptoKeyRotation
-import app.paralino.core.domain.crypto.MemberDeviceKeyRotation
-import app.paralino.core.domain.crypto.PersonalDeviceCryptoKeyRotation
+import app.paralino.core.domain.crypto.group.IMemberCryptoKeyRotation
+import app.paralino.core.domain.crypto.group.IMemberDeviceKeyRotation
+import app.paralino.core.domain.crypto.user.IPersonalDeviceCryptoKeyRotation
+import app.paralino.core.domain.crypto.group.MemberCryptoKeyRotation
+import app.paralino.core.domain.crypto.group.MemberDeviceKeyRotation
+import app.paralino.core.domain.crypto.user.PersonalDeviceCryptoKeyRotation
+import app.paralino.core.domain.location.BatteryAlertUploadEngine
+import app.paralino.core.domain.location.IBatteryAlertUploadEngine
 import app.paralino.core.domain.location.IReRegisterDeviceUseCase
 import app.paralino.core.domain.location.ReRegisterDeviceUseCase
 import app.paralino.core.domain.location.history.ILocationHistoryUploadEngine
@@ -56,17 +58,19 @@ import app.paralino.core.domain.location.history.LocationHistoryUploadEngine
 import app.paralino.core.domain.notifications.IGroupActivityNotificationPresenter
 import app.paralino.core.domain.notifications.IInfoMessagesNotificationPresenter
 import app.paralino.core.domain.notifications.IPlaceActivityNotificationPresenter
+import app.paralino.core.models.ApiServerConfig
 import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.AppFlavor
 import app.paralino.core.models.AppHost
+import app.paralino.core.models.base.BackendResourceIDs
 import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.presentation.groups.detail.GroupDetailViewModel
 import app.paralino.core.presentation.groups.edit.CreateGroupViewModel
 import app.paralino.core.presentation.groups.settings.BatteryNotificationsViewModel
 import app.paralino.core.presentation.groups.settings.GroupSettingsViewModel
 import app.paralino.core.presentation.history.LocationHistoryDeleteViewModel
-import app.paralino.core.presentation.invite.input.MemberInviteViewModel
-import app.paralino.core.presentation.invite.manage.PersonalCodeViewModel
+import app.paralino.core.presentation.groups.add_member.MemberInviteViewModel
+import app.paralino.core.presentation.paralinoid.PersonalCodeViewModel
 import app.paralino.core.presentation.login.LoggedOutViewModel
 import app.paralino.core.presentation.login.LoginScreenUiType
 import app.paralino.core.presentation.login.LoginViewModel
@@ -85,7 +89,7 @@ import app.paralino.core.presentation.places.detail.PlaceDetailViewModel
 import app.paralino.core.presentation.places.detail.PlaceSensitivityViewModel
 import app.paralino.core.presentation.places.list.PlacesViewModel
 import app.paralino.core.presentation.rawdata.RawDataPresentationViewModel
-import app.paralino.core.presentation.rawdata.RawPresentationDataType
+import app.paralino.core.models.settings.RawPresentationDataType
 import app.paralino.core.presentation.settings.SettingsViewModel
 import app.paralino.core.presentation.settings.appstatus.AppStatusDebugViewModel
 import app.paralino.core.presentation.settings.billing.PaywallViewModel
@@ -127,7 +131,7 @@ import app.paralino.core.repo.places.PlacesActivityProcessor
 import app.paralino.core.repo.user.IExportPersonalLocationHistoryUseCase
 import app.paralino.core.repo.user.IImportPersonalLocationHistoryUseCase
 import app.paralino.core.repo.user.IPushProviderManager
-import app.paralino.core.ui.settings.billing.BillingScreenSourceType
+import app.paralino.core.presentation.billing.BillingScreenSourceType
 import org.koin.android.ext.koin.androidApplication
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.dsl.viewModel
@@ -192,12 +196,21 @@ object KoinSetup {
         single { ReRegisterDeviceUseCase(get(), get()) } bind IReRegisterDeviceUseCase::class
         single { PlacesActivityProcessor(get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) } bind IPlacesActivityProcessor::class
         single { LocationHistoryUploadEngine(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) } bind ILocationHistoryUploadEngine::class
+        single { BatteryAlertUploadEngine(get(), get(), get(), get(), get()) } bind IBatteryAlertUploadEngine::class
 
         single {
+            val appFlavor = when (BuildConfig.FLAVOR) {
+                "direct" -> AppFlavor.ANDROID_DIRECT
+                "playStore" -> AppFlavor.ANDROID_GOOGLE
+                else -> throw IllegalArgumentException("Wrong app flavor")
+            }
             AppBuildConfig(
-                serverUrl = BuildConfig.serverUrl,
-                projectId = BuildConfig.serverKey,
-                publicServerUrl = BuildConfig.publicServerUrl,
+                prodServerConfig = BackendResourceIDs.productionServerConfig,
+                devServerConfig = ApiServerConfig(
+                    serverUrl = BuildConfig.devServerUrl,
+                    projectId = BuildConfig.devServerKey,
+                    publicServerUrl = BuildConfig.devPublicServerUrl,
+                ),
                 billingRCApiKey = BuildConfig.revenueCatApiKey,
                 iOSTeamId = "",
                 iOSAppGroup = "",
@@ -207,13 +220,9 @@ object KoinSetup {
                 hasPreviewFeatures = BuildConfig.internalTesting,
                 logToConsole = BuildConfig.forceLogToSystem,
                 logErrorsToRemote = true,
-                hasGoogleMaps = BuildConfig.hasGoogleMaps,
-                hasNotificationSocketService = BuildConfig.hasNotificationSocketService,
-                appFlavor = when (BuildConfig.FLAVOR) {
-                    "direct" -> AppFlavor.ANDROID_DIRECT
-                    "playStore" -> AppFlavor.ANDROID_GOOGLE
-                    else -> throw IllegalArgumentException("Wrong app flavor")
-                }
+                hasGoogleMaps = appFlavor == AppFlavor.ANDROID_GOOGLE,
+                hasNotificationSocketService = appFlavor == AppFlavor.ANDROID_DIRECT,
+                appFlavor = appFlavor
             )
         }
         single {

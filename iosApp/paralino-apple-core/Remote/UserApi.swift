@@ -26,7 +26,7 @@ class UserApi: IUserApiIOS {
     
     func confirmEmail(userId: String, secret: String) async throws -> Payload<KotlinUnit> {
         await remoteModule.executeUserApi { module in
-            let _ = try await module.account.updateVerification(userId: userId, secret: secret)
+            let _ = try await module.account.updateEmailVerification(userId: userId, secret: secret)
             return KotlinUnit()
         }
     }
@@ -65,7 +65,7 @@ class UserApi: IUserApiIOS {
     
     func doInitEmailVerification() async throws -> Payload<KotlinUnit> {
         return await remoteModule.executeUserApi { module in
-            let _ = try await module.account.createVerification(url: module.appConfig.resourceIds.emailConfirmationUrl)
+            let _ = try await module.account.createEmailVerification(url: module.appConfig.resourceIds.emailConfirmationUrl)
             return KotlinUnit()
         }
     }

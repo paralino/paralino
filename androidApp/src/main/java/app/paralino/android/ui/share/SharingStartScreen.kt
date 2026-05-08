@@ -19,7 +19,7 @@ import app.paralino.core.MR
 import app.paralino.core.presentation.share.SharingStartViewModel
 import app.paralino.core.ui.components.DefaultToolbar
 import app.paralino.core.ui.components.ToolbarButtons
-import app.paralino.core.ui.settings.billing.BillingScreenSourceType
+import app.paralino.core.presentation.billing.BillingScreenSourceType
 import app.paralino.core.ui.share.SharingStartScreenCore
 import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.launch
@@ -125,7 +125,11 @@ fun SharingStartScreen(
             askLocationService = { permissionHandler.askLocationService() },
             askLocationPermission = { permissionHandler.askLocationPermission() },
             askBackgroundLocationPermission = { permissionHandler.askBackgroundLocationPermission() },
-            askBackgroundAccessPermission = { permissionHandler.askUnrestrictedBackgroundAccess(forcePrompt = true) },
+            askBackgroundAccessPermission = {
+                permissionHandler.askUnrestrictedBackgroundAccess(
+                    forcePrompt = true
+                )
+            },
             openSubscriptions = {
                 appState.navController.navigate(AppScreen.MainHome.BillingPaywall.route())
             }

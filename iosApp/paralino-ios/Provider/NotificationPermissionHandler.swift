@@ -43,7 +43,7 @@ class NotificationPermissionHandler {
                     )
                     DispatchQueue.main.async {
                         messageDispather.showSnackbarForResult(data: data) { result, error in
-                            if result?.result == MaterialSnackbarResult.actionperformed {
+                            if result?.result == AppSnackbarResultType.actionperformed {
                                 self.requested = true
                                 self.openAppSettingsPage()
                             }

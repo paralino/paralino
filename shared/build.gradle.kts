@@ -1,11 +1,6 @@
-import com.codingfeline.buildkonfig.compiler.FieldSpec
 import org.gradle.kotlin.dsl.aboutLibraries
-import org.jetbrains.kotlin.daemon.common.trimQuotes
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
-import java.io.FileInputStream
-import java.io.FileNotFoundException
-import java.util.Properties
 
 plugins {
     alias(libs.plugins.android.multiplatformLibrary)
@@ -13,10 +8,7 @@ plugins {
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.kotlin.serialization)
-    alias(libs.plugins.buildkonfig)
     alias(libs.plugins.moko.resources)
-    alias(libs.plugins.ksp)
-    alias(libs.plugins.androidx.room)
     alias(libs.plugins.aboutlibraries)
 }
 
@@ -40,7 +32,14 @@ kotlin {
             isStatic = true
 
             // required so iOS app can use resource directly in Swift code
-            export(project(":moko"))
+            export(project(":core-base"))
+            export(project(":core-domain"))
+            export(project(":core-presentation-common"))
+            export(project(":core-presentation-details"))
+            export(project(":core-presentation-map"))
+            export(project(":core-presentation-settings"))
+            export(project(":core-presentation-onboarding"))
+            export(project(":core-resources-moko"))
             export(libs.moko.resources)
         }
     }
@@ -49,44 +48,31 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
-            implementation(libs.jetbrains.compose.runtime)
-            implementation(libs.jetbrains.compose.foundation)
-            implementation(libs.jetbrains.compose.material)
-            api(libs.jetbrains.compose.components.resources)
-            api(project(":moko"))
-            api(libs.kotlinx.coroutines.core)
-            api(libs.kotlinx.datetime)
-            api(libs.kotlinx.serialization.json)
-            implementation(project.dependencies.platform(libs.koin.bom))
-            implementation(libs.koin.core)
-            implementation(libs.multiplatform.settings.coroutines)
-            implementation(libs.multiplatform.settings)
-            api(libs.network.ktor.client.core)
-            api(libs.network.ktor.client.logging)
-            api(libs.network.ktor.content.negotiation)
-            implementation(libs.network.ktor.serialization)
-            implementation(libs.androidx.room.runtime)
-            implementation(libs.sqlite.bundled)
-            implementation(libs.aboutLibraries.core)
-            implementation(libs.aboutLibraries.compose)
+            api(project(":core-base"))
+            api(project(":core-db"))
+            api(project(":core-domain"))
+            api(project(":core-presentation-common"))
+            api(project(":core-presentation-details"))
+            api(project(":core-presentation-map"))
+            api(project(":core-presentation-settings"))
+            api(project(":core-presentation-onboarding"))
+            api(project(":core-resources-icons"))
+            api(project(":core-resources-moko"))
+            api(project(":core-ui-common"))
+            api(project(":core-ui-details"))
+            api(project(":core-ui-map"))
+            api(project(":core-ui-onboarding"))
+            api(project(":core-ui-settings"))
         }
 
         androidMain.dependencies {
             implementation(project.dependencies.platform(libs.koin.bom))
             api(libs.koin.android)
             api(libs.lifecycle.viewmodel.ktx)
-            implementation(libs.androidx.preference.ktx)
-            implementation(libs.androidx.security.crypto.ktx)
             api(libs.activity.compose)
             api(libs.appcompat)
             api(libs.androidx.core.ktx)
             api(libs.kotlinx.coroutines.android)
-            implementation(libs.network.ktor.client.okhttp)
-        }
-
-        iosMain.get().dependsOn(commonMain.get())
-        iosMain.dependencies {
-            implementation(libs.network.ktor.client.darwin)
         }
     }
 
@@ -96,38 +82,6 @@ kotlin {
     }
 
     jvmToolchain(21)
-}
-
-dependencies {
-    add("kspAndroid", libs.androidx.room.compiler)
-    add("kspIosSimulatorArm64", libs.androidx.room.compiler)
-    add("kspIosX64", libs.androidx.room.compiler)
-    add("kspIosArm64", libs.androidx.room.compiler)
-}
-
-room {
-    schemaDirectory("$projectDir/schemas")
-}
-
-buildkonfig {
-    packageName = "app.paralino.core"
-    exposeObjectWithName = "BuildKonfig"
-
-    val propsFile = rootProject.file("user.properties")
-    if (!propsFile.exists()) {
-        throw FileNotFoundException("user.properties file not found")
-    }
-
-    val props = Properties()
-    props.load(FileInputStream(propsFile))
-
-    defaultConfigs {}
-
-    targetConfigs {
-        create("ios") {
-            buildConfigField(FieldSpec.Type.STRING, "glitchTipDSN", props.getProperty("glitchTipDSNiOS").trimQuotes())
-        }
-    }
 }
 
 aboutLibraries {

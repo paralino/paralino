@@ -1,0 +1,468 @@
+package app.paralino.core.domain.crypto.group
+
+import app.paralino.core.crypto.CryptoCore
+import app.paralino.core.crypto.GroupMasterKey
+import app.paralino.core.crypto.GroupMemberMainPublicKey
+import app.paralino.core.crypto.HashType
+import app.paralino.core.crypto.UserGroupPersonalKeyPair
+import app.paralino.core.domain.crypto.user.CryptoUserKeysLocalSource
+import app.paralino.core.db.AppPrefs
+import app.paralino.core.logg
+import app.paralino.core.models.group.GroupIntegrity
+import app.paralino.core.models.group.UserGroup
+import app.paralino.core.models.group.UserGroupWithMembers
+import app.paralino.core.models.location.UserDeviceModel
+import app.paralino.core.models.raw.GroupSettingsRaw
+import app.paralino.core.models.raw.MemberDocumentRaw
+import app.paralino.core.utils.BaseRemoteModule
+
+class GroupValidityVerification(
+    private val cryptoKEKRepo: CryptoKEKLocalRepository,
+    private val cryptoCore: CryptoCore,
+    private val userKeyRepo: CryptoUserKeysLocalSource,
+    private val appPrefs: AppPrefs
+) {
+
+    private suspend fun verifyUser(
+        memberUserId: String,
+        memberVerification: String,
+        groupKey: GroupMasterKey,
+        groupOwnerPublicKey: GroupMemberMainPublicKey,
+        memberPublicKey: GroupMemberMainPublicKey,
+        memberGroupSettings: GroupSettingsRaw?,
+    ): VerificationResult {
+        val verificationErrors = mutableListOf<VerificationResultError>()
+        try {
+            when (groupOwnerPublicKey) {
+                is GroupMemberMainPublicKey.Error.InvalidPersonalKeyPair -> {
+                    when (groupOwnerPublicKey.reason) {
+                        UserGroupPersonalKeyPair.Error.Invalid -> VerificationResultError.GROUP_OWNER_INVALID_PERSONAL_KEY
+                        UserGroupPersonalKeyPair.Error.Missing -> VerificationResultError.GROUP_OWNER_MISSING_PERSONAL_KEY
+                    }
+                }
+
+                GroupMemberMainPublicKey.Error.InvalidPublicKey -> VerificationResultError.GROUP_OWNER_INVALID_PUBLIC_KEY
+                GroupMemberMainPublicKey.Error.Missing -> VerificationResultError.GROUP_OWNER_MISSING_PUBLIC_KEY
+                GroupMemberMainPublicKey.Error.UnverifiedPublicKey -> VerificationResultError.GROUP_OWNER_UNVERIFIED_PUBLIC_KEY
+                GroupMemberMainPublicKey.Error.WrongIdentity -> VerificationResultError.GROUP_OWNER_WRONG_IDENTITY
+                GroupMemberMainPublicKey.Error.WrongPublicKey -> VerificationResultError.GROUP_OWNER_WRONG_PUBLIC_KEY
+                is GroupMemberMainPublicKey.Valid -> null
+            }?.also { verificationErrors.add(it) }
+
+            when (memberPublicKey) {
+                is GroupMemberMainPublicKey.Error.InvalidPersonalKeyPair -> {
+                    when (memberPublicKey.reason) {
+                        UserGroupPersonalKeyPair.Error.Invalid -> VerificationResultError.MEMBER_INVALID_PERSONAL_KEY
+                        UserGroupPersonalKeyPair.Error.Missing -> VerificationResultError.MEMBER_MISSING_PERSONAL_KEY
+                    }
+                }
+
+                GroupMemberMainPublicKey.Error.InvalidPublicKey -> VerificationResultError.MEMBER_INVALID_PUBLIC_KEY
+                GroupMemberMainPublicKey.Error.Missing -> VerificationResultError.MEMBER_MISSING_PUBLIC_KEY
+                GroupMemberMainPublicKey.Error.UnverifiedPublicKey -> VerificationResultError.MEMBER_UNVERIFIED_PUBLIC_KEY
+                GroupMemberMainPublicKey.Error.WrongIdentity -> VerificationResultError.MEMBER_WRONG_IDENTITY
+                GroupMemberMainPublicKey.Error.WrongPublicKey -> VerificationResultError.MEMBER_WRONG_PUBLIC_KEY
+                is GroupMemberMainPublicKey.Valid -> null
+            }?.also { verificationErrors.add(it) }
+
+            when (groupKey) {
+                GroupMasterKey.Error.Invalid -> VerificationResultError.GROUP_KEY_INVALID
+                is GroupMasterKey.Error.InvalidOwnerPublicKey -> {
+                    when (groupKey.reason) {
+                        is GroupMemberMainPublicKey.Error.InvalidPersonalKeyPair -> {
+                            when (groupKey.reason.reason) {
+                                UserGroupPersonalKeyPair.Error.Invalid -> VerificationResultError.GROUP_KEY_INVALID_PERSONAL_KEY
+                                UserGroupPersonalKeyPair.Error.Missing -> VerificationResultError.GROUP_KEY_MISSING_PERSONAL_KEY
+                            }
+                        }
+
+                        GroupMemberMainPublicKey.Error.InvalidPublicKey -> VerificationResultError.GROUP_KEY_INVALID_PUBLIC_KEY
+                        GroupMemberMainPublicKey.Error.Missing -> VerificationResultError.GROUP_KEY_MISSING_PUBLIC_KEY
+                        GroupMemberMainPublicKey.Error.UnverifiedPublicKey -> VerificationResultError.GROUP_KEY_UNVERIFIED_PUBLIC_KEY
+                        GroupMemberMainPublicKey.Error.WrongIdentity -> VerificationResultError.GROUP_KEY_WRONG_IDENTITY
+                        GroupMemberMainPublicKey.Error.WrongPublicKey -> VerificationResultError.GROUP_KEY_WRONG_PUBLIC_KEY
+                    }
+                }
+
+                is GroupMasterKey.Error.InvalidPersonalKeyPair -> {
+                    when (groupKey.reason) {
+                        UserGroupPersonalKeyPair.Error.Invalid -> VerificationResultError.GROUP_KEY_INVALID_PERSONAL_KEY
+                        UserGroupPersonalKeyPair.Error.Missing -> VerificationResultError.GROUP_KEY_MISSING_PERSONAL_KEY
+                    }
+                }
+
+                GroupMasterKey.Error.Missing -> VerificationResultError.GROUP_KEY_MISSING
+                is GroupMasterKey.Valid -> null
+            }?.also { verificationErrors.add(it) }
+
+
+            val verification = try {
+                if (memberVerification.isBlank()) {
+                    verificationErrors.add(VerificationResultError.MEMBER_VERIFICATION_MISSING)
+                } else if (groupOwnerPublicKey is GroupMemberMainPublicKey.Valid) {
+                    cryptoCore.verifySignature(
+                        data = memberVerification,
+                        publicKey = groupOwnerPublicKey.identityKey.key
+                    ) ?: let {
+                        verificationErrors.add(VerificationResultError.WRONG_MEMBER_VERIFICATION_SIGNATURE)
+                        null
+                    }
+                } else {
+                    verificationErrors.add(VerificationResultError.GROUP_OWNER_MISSING_PUBLIC_KEY)
+                    null
+                }
+            } catch (e: Exception) {
+                verificationErrors.add(VerificationResultError.WRONG_MEMBER_VERIFICATION_FORM)
+                null
+            }
+
+            if (memberPublicKey is GroupMemberMainPublicKey.Valid) {
+                val hash = cryptoCore.hashProvider.computeHash(
+                    data = memberPublicKey.identityKey.key,
+                    type = HashType.GENERIC_256
+                )
+
+                if (verification != hash) {
+                    verificationErrors.add(VerificationResultError.WRONG_OWNER_VERIFICATION)
+                }
+            } else {
+                verificationErrors.add(VerificationResultError.MEMBER_MISSING_PUBLIC_KEY)
+            }
+
+            if (memberUserId == appPrefs.userId) {
+                if (memberGroupSettings == null) {
+                    verificationErrors.add(VerificationResultError.MISSING_MEMBER_SETTINGS)
+                } else {
+                    if (memberGroupSettings.memberIntegrity.isBlank()) {
+                        verificationErrors.add(VerificationResultError.MISSING_MEMBER_INTEGRITY)
+                    } else {
+                        try {
+                            cryptoCore.decryptDataWithKey(
+                                data = memberGroupSettings.memberIntegrity,
+                                key = userKeyRepo.personalKey(version = memberGroupSettings.memberIntegrityUserKeyVersion).key,
+                            ).let {
+                                try {
+                                    BaseRemoteModule.formatter.decodeFromString<GroupIntegrity>(it)
+                                } catch (e: Exception) {
+                                    verificationErrors.add(VerificationResultError.INVALID_MEMBER_INTEGRITY_FORMAT)
+                                }
+                            }
+                        } catch (e: Exception) {
+                            verificationErrors.add(VerificationResultError.WRONG_MEMBER_INTEGRITY)
+                        }
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            logg.tag("crypto_verification").e("Can not verify member", e)
+            verificationErrors.add(VerificationResultError.GENERIC_ERROR)
+        }
+
+        if (verificationErrors.isEmpty()) {
+            return VerificationResult.Verified
+        } else {
+            return VerificationResult.Unverified(errors = verificationErrors)
+        }
+    }
+
+    suspend fun verifyGroupMember(
+        member: MemberDocumentRaw,
+        groupKey: GroupMasterKey,
+        groupOwnerId: String
+    ): VerificationResult {
+        val groupOwnerPublicKey = cryptoKEKRepo.getMemberPublicKey(
+            groupId = member.groupId,
+            memberUserId = groupOwnerId
+        )
+        val memberPublicKey = cryptoKEKRepo.getMemberPublicKey(
+            groupId = member.groupId,
+            memberUserId = member.ownerUserId
+        )
+        return verifyUser(
+            memberUserId = member.ownerUserId,
+            memberVerification = member.verification,
+            groupKey = groupKey,
+            groupOwnerPublicKey = groupOwnerPublicKey,
+            memberPublicKey = memberPublicKey,
+            memberGroupSettings = member.settingsRaw
+        )
+    }
+
+    suspend fun checkIntegrityForGroupKey(group: UserGroupWithMembers): IntegrityResult {
+        val ownerSettings = group
+            .takeIf { it.isCurrentUserOwner }
+            ?.members
+            ?.firstOrNull { it.member.userId == appPrefs.userId }
+            ?.member?.settings
+            ?: return IntegrityResult.CORRUPTED
+
+        if (ownerSettings.groupIntegrity.isNullOrBlank()) {
+            // allow missing integrity for now
+            logg.tag("integrity_check_group").v("VALID_CHANGED (empty) for ${group.id}")
+            return IntegrityResult.MISSING
+        }
+
+        val integrity = getIntegrity(
+            groupId = group.group.id,
+            serverIntegrity = group.group.serverIntegrity,
+            myIntegrity = ownerSettings.groupIntegrity,
+            userKeyVersion = ownerSettings.groupIntegrityUserKeyVersion,
+            memberVerifications = group.members.map { it.member.verification },
+            forGroup = true
+        )
+            ?: return IntegrityResult.CORRUPTED
+
+        if (integrity.first.isValidForGroup(integrity.second)) {
+            logg.tag("integrity_check_group").v("VALID for ${group.id}")
+            return IntegrityResult.VALID
+        } else if (integrity.first.signature != integrity.second) {
+            logg.tag("integrity_check_group").v("VALID_CHANGED for ${group.id}")
+            return IntegrityResult.VALID_CHANGED
+        } else {
+            logg.tag("integrity_check_group").v("VALID_EXPIRED for ${group.id}")
+            return IntegrityResult.VALID_EXPIRED
+        }
+    }
+
+    suspend fun checkIntegrityForMemberKey(group: UserGroupWithMembers): IntegrityResult {
+        val mySettings = group.members.firstOrNull { it.member.userId == appPrefs.userId }?.member?.settings
+        val integrity = getIntegrity(
+            groupId = group.group.id,
+            serverIntegrity = group.group.serverIntegrity,
+            myIntegrity = mySettings?.memberIntegrity,
+            userKeyVersion = mySettings?.memberIntegrityUserKeyVersion,
+            memberVerifications = group.members.map { it.member.verification },
+            forGroup = false
+        )
+            ?: return IntegrityResult.CORRUPTED
+
+        if (integrity.first.isValidForMember(integrity.second)) {
+            logg.tag("integrity_check_member").v("VALID for ${group.id}")
+            return IntegrityResult.VALID
+        } else if (integrity.first.signature != integrity.second) {
+            logg.tag("integrity_check_member").v("VALID_CHANGED for ${group.id}")
+            return IntegrityResult.VALID_CHANGED
+        } else {
+            logg.tag("integrity_check_member").v("VALID_EXPIRED for ${group.id}")
+            return IntegrityResult.VALID_EXPIRED
+        }
+    }
+
+    suspend fun checkIntegrityForDeviceKey(group: UserGroupWithMembers): IntegrityResult {
+        val keyIntegrity = cryptoKEKRepo.getDeviceIntegrityForGroup(groupId = group.id)
+
+        if (keyIntegrity?.integrity.isNullOrBlank()) {
+            logg.tag("integrity_check_device").v("MISSING for ${group.id} (missing)")
+            return IntegrityResult.MISSING
+        }
+
+        if (keyIntegrity.safetySignature != null) {
+            val member = group.currentUserMember ?: return IntegrityResult.CORRUPTED
+            val publicKey = cryptoKEKRepo.getMemberPublicKey(groupId = group.id, memberUserId = member.userId)
+
+            if (publicKey !is GroupMemberMainPublicKey.Valid) {
+                logg.tag("integrity_check_device").e("Member public key is not valid for ${group.id}")
+                return IntegrityResult.CORRUPTED
+            }
+
+            val safetySignature = GroupIntegrity.createDeviceSafetySignature(
+                hashProvider = cryptoCore.hashProvider,
+                groupId = group.id,
+                memberId = member.id,
+                memberVerification = member.verification,
+                identityKey = publicKey.identityKey.key,
+                membershipKey = publicKey.membershipKey,
+            )
+
+            if (safetySignature != keyIntegrity.safetySignature) {
+                logg.tag("integrity_check_device").e("Device safety signature is not valid for ${group.id}")
+                return IntegrityResult.CORRUPTED
+            }
+        }
+
+        val integrity = getIntegrity(
+            groupId = group.group.id,
+            serverIntegrity = group.group.serverIntegrity,
+            myIntegrity = keyIntegrity.integrity,
+            userKeyVersion = keyIntegrity.userKeyVersion,
+            memberVerifications = group.members.map { it.member.verification },
+            forGroup = false
+        )
+            ?: return IntegrityResult.CORRUPTED
+
+        if (integrity.first.isValidForDevice(integrity.second)) {
+            logg.tag("integrity_check_device").v("VALID for ${group.id}")
+            return IntegrityResult.VALID
+        } else if (integrity.first.signature != integrity.second) {
+            logg.tag("integrity_check_device").v("VALID_CHANGED for ${group.id}")
+            return IntegrityResult.VALID_CHANGED
+        } else {
+            logg.tag("integrity_check_device").v("VALID_EXPIRED for ${group.id}")
+            return IntegrityResult.VALID_EXPIRED
+        }
+    }
+
+    suspend fun checkIntegrityForPersonalSpace(currentDevice: UserDeviceModel?): IntegrityResult {
+        val groupId = UserGroup.groupPersonalDevicesId
+        val currentDevice = currentDevice ?: return IntegrityResult.CORRUPTED
+        val keyIntegrity = cryptoKEKRepo.getDeviceIntegrityForGroup(groupId = groupId)
+
+        if (keyIntegrity?.integrity.isNullOrBlank()) {
+            logg.tag("integrity_check_device").v("MISSING for ${groupId} (missing)")
+            return IntegrityResult.MISSING
+        }
+
+        // INFO: not using safetySignature here since it is only used for groups
+
+        val integrity = getIntegrity(
+            groupId = groupId,
+            serverIntegrity = currentDevice.sessionId ?: "",
+            myIntegrity = keyIntegrity.integrity,
+            userKeyVersion = keyIntegrity.userKeyVersion,
+            memberVerifications = listOf(userKeyRepo.signatureKeyPair().publicKey),
+            forGroup = false
+        )
+            ?: return IntegrityResult.CORRUPTED
+
+        if (integrity.first.isValidForPersonalSpace(integrity.second)) {
+            logg.tag("integrity_check_device").v("VALID for ${groupId}")
+            return IntegrityResult.VALID
+        } else if (integrity.first.signature != integrity.second) {
+            logg.tag("integrity_check_device").v("VALID_CHANGED for ${groupId}")
+            return IntegrityResult.VALID_CHANGED
+        } else {
+            logg.tag("integrity_check_device").v("VALID_EXPIRED for ${groupId}")
+            return IntegrityResult.VALID_EXPIRED
+        }
+    }
+
+    private suspend fun getIntegrity(
+        groupId: String,
+        serverIntegrity: String,
+        myIntegrity: String?,
+        userKeyVersion: Long?,
+        memberVerifications: List<String>,
+        forGroup: Boolean,
+    ): Pair<GroupIntegrity, String>? {
+        val tag = "integrity_check${if (forGroup) "_group" else "_member"}"
+        if (myIntegrity.isNullOrBlank()) {
+            logg.tag(tag).w("CORRUPTED for $groupId - Missing own integrity")
+            return null
+        }
+
+        val remoteIntegrity = try {
+            cryptoCore.decryptDataWithKey(
+                data = myIntegrity,
+                key = userKeyRepo.personalKey(version = userKeyVersion).key
+            ).let { BaseRemoteModule.formatter.decodeFromString<GroupIntegrity>(it) }
+        } catch (e: Exception) {
+            logg.tag(tag).w("CORRUPTED for $groupId - Error parsing: ${e.message}")
+            return null
+        }
+
+        val realIntegritySignature = try {
+            GroupIntegrity.createSignature(
+                hashProvider = cryptoCore.hashProvider,
+                serverIntegrity = serverIntegrity,
+                memberVerifications = memberVerifications,
+                encryptedMemberPublicKeys = if (groupId == UserGroup.groupPersonalDevicesId) {
+                    listOf(userKeyRepo.signatureKeyPair().publicKey)
+                } else {
+                    cryptoKEKRepo.getAllEncryptedMembershipPublicKeys(groupId = groupId)
+                }
+            )
+        } catch (e: Exception) {
+            logg.tag(tag).w("CORRUPTED for $groupId - Generic error: ${e.message}")
+            return null
+        }
+
+        return remoteIntegrity to realIntegritySignature
+    }
+}
+
+enum class IntegrityResult {
+    VALID,
+    VALID_EXPIRED,
+    VALID_CHANGED,
+    MISSING,
+    CORRUPTED;
+
+    fun shouldChange(
+        force: Boolean,
+        isSharingActive: Boolean
+    ): Boolean {
+        return when (this) {
+            IntegrityResult.VALID -> force
+            IntegrityResult.VALID_EXPIRED -> true
+            IntegrityResult.VALID_CHANGED -> true
+            IntegrityResult.MISSING -> isSharingActive
+            IntegrityResult.CORRUPTED -> false
+        }
+    }
+}
+
+sealed interface VerificationResult {
+    data object Verified : VerificationResult
+    data class Unverified(val errors: List<VerificationResultError>) : VerificationResult {
+        override fun toString(): String {
+            return "Unverified(${errors.joinToString(separator = ", ")})"
+        }
+    }
+
+    fun isVerified(includeMemberVerification: Boolean): Boolean {
+        when (this) {
+            is Unverified -> {
+                if (includeMemberVerification) {
+                    return false
+                } else {
+                    return errors.none {
+                        it != VerificationResultError.MEMBER_VERIFICATION_MISSING
+                                && it != VerificationResultError.WRONG_OWNER_VERIFICATION
+                                && it != VerificationResultError.WRONG_MEMBER_VERIFICATION_SIGNATURE
+                                && it != VerificationResultError.WRONG_MEMBER_VERIFICATION_FORM
+                    }
+                }
+            }
+            Verified -> return true
+        }
+    }
+}
+
+enum class VerificationResultError {
+    MEMBER_INVALID_PUBLIC_KEY,
+    MEMBER_MISSING_PUBLIC_KEY,
+    MEMBER_WRONG_PUBLIC_KEY,
+    MEMBER_UNVERIFIED_PUBLIC_KEY,
+    MEMBER_WRONG_IDENTITY,
+    MEMBER_MISSING_PERSONAL_KEY,
+    MEMBER_INVALID_PERSONAL_KEY,
+
+    GROUP_OWNER_INVALID_PUBLIC_KEY,
+    GROUP_OWNER_MISSING_PUBLIC_KEY,
+    GROUP_OWNER_WRONG_PUBLIC_KEY,
+    GROUP_OWNER_UNVERIFIED_PUBLIC_KEY,
+    GROUP_OWNER_WRONG_IDENTITY,
+    GROUP_OWNER_MISSING_PERSONAL_KEY,
+    GROUP_OWNER_INVALID_PERSONAL_KEY,
+
+    GROUP_KEY_INVALID_PUBLIC_KEY,
+    GROUP_KEY_MISSING_PUBLIC_KEY,
+    GROUP_KEY_WRONG_PUBLIC_KEY,
+    GROUP_KEY_UNVERIFIED_PUBLIC_KEY,
+    GROUP_KEY_WRONG_IDENTITY,
+    GROUP_KEY_MISSING_PERSONAL_KEY,
+    GROUP_KEY_INVALID_PERSONAL_KEY,
+    GROUP_KEY_INVALID,
+    GROUP_KEY_MISSING,
+
+    MEMBER_VERIFICATION_MISSING,
+    WRONG_OWNER_VERIFICATION,
+    WRONG_MEMBER_VERIFICATION_SIGNATURE,
+    WRONG_MEMBER_VERIFICATION_FORM,
+
+    MISSING_MEMBER_SETTINGS,
+    MISSING_MEMBER_INTEGRITY,
+    WRONG_MEMBER_INTEGRITY,
+    INVALID_MEMBER_INTEGRITY_FORMAT,
+    GENERIC_ERROR
+}

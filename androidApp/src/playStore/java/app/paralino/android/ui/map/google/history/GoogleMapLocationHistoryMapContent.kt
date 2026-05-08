@@ -36,9 +36,8 @@ import app.paralino.android.ui.map.google.GoogleMapUiControlledData
 import app.paralino.android.ui.map.google.defaultGoogleMapProperties
 import app.paralino.android.ui.map.google.defaultGoogleMapUiSettings
 import app.paralino.android.ui.map.google.refocus
+import app.paralino.core.models.location.LocationHistoryPointState
 import app.paralino.core.presentation.history.LocationHistoryDataViewType
-import app.paralino.core.presentation.history.LocationHistoryPointState
-import app.paralino.core.presentation.history.LocationHistoryScreenFocusType
 import app.paralino.core.presentation.history.LocationHistoryScreenUiState
 import app.paralino.core.presentation.history.LocationHistoryUiEvent
 import app.paralino.core.presentation.map.MapPinData

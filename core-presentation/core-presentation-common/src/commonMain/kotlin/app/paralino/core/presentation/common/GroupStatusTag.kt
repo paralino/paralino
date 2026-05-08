@@ -1,0 +1,20 @@
+package app.paralino.core.presentation.common
+
+enum class GroupStatusTagType {
+    SHARING_ACTIVE,
+    SHARING_ACTIVE_NO_LOCATION,
+    SHARING_ACTIVE_NOT_ACCURATE,
+    UNVERIFIED,
+    INACTIVE,
+    INACTIVE_NOT_ACCURATE,
+    NOT_SHARING,
+    OFFLINE,
+    GPS_OFF,
+    BATTERY_SAVING,
+    IDLE,
+    IDLE_NO_LOCATION,
+    IDLE_NOT_ACCURATE,
+    TOO_MANY_REQUESTS,
+    OVER_LIMITS,
+    MISSING_PERMISSION;
+}

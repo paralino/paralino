@@ -17,7 +17,7 @@ import app.paralino.core.models.base.BackendResourceIDs
 import app.paralino.core.presentation.settings.billing.PaywallScreenUiEvent
 import app.paralino.core.presentation.settings.billing.PaywallViewModel
 import app.paralino.core.presentation.settings.billing.PurchaseErrorException
-import app.paralino.core.ui.settings.billing.BillingScreenSourceType
+import app.paralino.core.presentation.billing.BillingScreenSourceType
 import app.paralino.core.ui.settings.billing.PaywallScreenCore
 import app.paralino.core.utils.extensions.getActivity
 import kotlinx.coroutines.launch

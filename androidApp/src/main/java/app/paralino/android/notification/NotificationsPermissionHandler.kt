@@ -15,9 +15,9 @@ import app.paralino.core.MR
 import app.paralino.core.presentation.common.ICoreMessageDispatcher
 import app.paralino.core.provider.INotificationStatusProvider
 import app.paralino.core.provider.NotificationPermissionResultEvent
-import app.paralino.core.ui.components.AppSnackbarData
-import app.paralino.core.ui.components.SnackbarDuration
-import app.paralino.core.ui.components.onAction
+import app.paralino.core.presentation.common.AppSnackbarData
+import app.paralino.core.presentation.common.SnackbarDuration
+import app.paralino.core.presentation.common.onAction
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.MultiplePermissionsState
 import com.google.accompanist.permissions.rememberMultiplePermissionsState

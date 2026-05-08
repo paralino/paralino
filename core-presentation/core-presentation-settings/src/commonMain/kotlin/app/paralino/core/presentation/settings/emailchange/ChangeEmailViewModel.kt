@@ -1,0 +1,144 @@
+package app.paralino.core.presentation.settings.emailchange
+
+import app.paralino.core.MR
+import app.paralino.core.domain.user.ChangeCredentialsStep
+import app.paralino.core.domain.user.ChangeCredentialsUseCase
+import app.paralino.core.models.Payload
+import app.paralino.core.models.data
+import app.paralino.core.presentation.CoreViewModel
+import app.paralino.core.models.settings.FormValidation
+import app.paralino.core.provider.ICoroutineScopeProvider
+import app.paralino.core.provider.localizedString
+import app.paralino.core.repo.user.UserRepository
+import app.paralino.core.utils.exceptions.ConflictException
+import app.paralino.core.utils.exceptions.RemoteConnectionException
+import app.paralino.core.utils.exceptions.UnauthorizedException
+import app.paralino.core.utils.exceptions.asRemoteException
+import app.paralino.core.utils.extensions.errorString
+import app.paralino.core.utils.extensions.getFormValidationErrorText
+import app.paralino.core.utils.extensions.mapToPayload
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeout
+import kotlin.time.Duration.Companion.seconds
+
+class ChangeEmailViewModel(
+    private val userRepo: UserRepository,
+    private val changeCredentials: ChangeCredentialsUseCase,
+    private val scopeProvider: ICoroutineScopeProvider
+) : CoreViewModel() {
+
+    private val _uiState = MutableStateFlow(
+        ChangeEmailScreenState(
+            currentEmail = userRepo.cachedUser?.email ?: ""
+        )
+    )
+    val uiState: StateFlow<ChangeEmailScreenState> = _uiState
+    val canNavigateBack: Flow<Boolean> = _uiState.map {
+        it.actionLoading != true
+    }
+
+    private val _eventChannel = Channel<ChangeEmailScreenEvent?>()
+    val events = _eventChannel.receiveAsFlow()
+
+    init {
+        coroutineScope.launch(Dispatchers.IO) {
+            try {
+                withTimeout(10.seconds) {
+                    userRepo.refreshUserIfAvailable()
+                }
+            } catch (e: Exception) {
+                showSnackbar(RemoteConnectionException("Connection error", code = null).errorString())
+            }
+        }
+
+        userRepo.localUser
+            .onEach {
+                it.data?.let { user ->
+                    _uiState.update { it.copy(currentEmail = user.email) }
+                }
+            }
+            .launchIn(coroutineScope)
+    }
+
+    fun proceed() {
+        if (_uiState.value.actionLoading == true || changeCredentials.isProcessingAny()) return
+
+        val email = _uiState.value.email
+        val password = _uiState.value.password
+
+        val emailValidation = FormValidation.Email.validate(email)
+
+        // only validating input, password does not change
+        val passwordValidation = FormValidation.TextNotEmpty.validate(password)
+
+        _uiState.update {
+            it.copy(
+                hasPasswordError = !passwordValidation.result,
+                hasEmailError = !emailValidation.result
+            )
+        }
+
+        if (!emailValidation.result) {
+            showSnackbar(getFormValidationErrorText(validation = emailValidation.type))
+        } else if (!passwordValidation.result) {
+            showSnackbar(getFormValidationErrorText(validation = passwordValidation.type))
+        } else if (!changeCredentials.isProcessingAny()) {
+            changeCredentials.changeEmail(email = email, password = password)
+                .mapToPayload { it }
+                .onEach { result ->
+                    when (result) {
+                        Payload.Loading -> {
+                            _uiState.update { it.copy(actionLoading = true) }
+                        }
+
+                        is Payload.Error -> {
+                            _uiState.update { it.copy(actionLoading = null, credentialsStep = null) }
+                            if (result.exception.asRemoteException() is ConflictException) {
+                                showSnackbar(MR.strings.form_invalid_email_conflict_description.localizedString())
+                            } else if (result.exception.asRemoteException() is UnauthorizedException) {
+                                showSnackbar(MR.strings.form_invalid_credentials_description.localizedString())
+                            } else {
+                                showSnackbar(result.exception.errorString())
+                            }
+                        }
+
+                        is Payload.Success -> {
+                            _uiState.update {
+                                it.copy(
+                                    actionLoading = result.data != ChangeCredentialsStep.DONE,
+                                    credentialsStep = result.data
+                                )
+                            }
+                            if (result.data == ChangeCredentialsStep.DONE) {
+                                delay(400)
+                                _eventChannel.send(ChangeEmailScreenEvent.EmailChanged)
+                            }
+                        }
+                    }
+                }
+                .launchIn(scopeProvider.userSessionIOScope)
+        }
+    }
+
+    fun onEmailChange(email: String) {
+        if (_uiState.value.actionLoading == true) return
+        _uiState.update { it.copy(email = email, hasEmailError = false) }
+    }
+
+    fun onPasswordChange(password: String) {
+        if (_uiState.value.actionLoading == true) return
+        _uiState.update { it.copy(password = password, hasPasswordError = false) }
+    }
+}

@@ -13,7 +13,7 @@ import app.paralino.core.models.base.BackendResourceIDs
 import app.paralino.core.presentation.settings.billing.SubscriptionViewModel
 import app.paralino.core.ui.components.DefaultToolbar
 import app.paralino.core.ui.components.ToolbarButtons
-import app.paralino.core.ui.settings.billing.BillingScreenSourceType
+import app.paralino.core.presentation.billing.BillingScreenSourceType
 import app.paralino.core.ui.settings.billing.SubscriptionScreenCore
 import dev.icerock.moko.resources.compose.stringResource
 import org.koin.androidx.compose.koinViewModel

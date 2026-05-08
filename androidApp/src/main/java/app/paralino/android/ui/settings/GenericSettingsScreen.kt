@@ -24,7 +24,7 @@ import app.paralino.core.presentation.settings.generic.GenericSettingsScreenUiEv
 import app.paralino.core.ui.components.DefaultToolbar
 import app.paralino.core.ui.components.ToolbarButtons
 import app.paralino.core.ui.settings.GenericSettingsScreenCore
-import app.paralino.core.ui.settings.billing.BillingScreenSourceType
+import app.paralino.core.presentation.billing.BillingScreenSourceType
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
@@ -82,7 +82,13 @@ fun GenericSettingsScreen(
                         isSatelliteMode = false,
                         canTapOnCircles = true,
                         onMapCameraSettled = {},
-                        onMapInteraction = { vm.onEvent(GenericSettingsScreenUiEvent.OnMapInteraction(isTouchingMap = it)) },
+                        onMapInteraction = {
+                            vm.onEvent(
+                                GenericSettingsScreenUiEvent.OnMapInteraction(
+                                    isTouchingMap = it
+                                )
+                            )
+                        },
                         onMapTap = { lat, lng -> },
                         onMapLongPress = { lat, lng -> }
                     )
@@ -95,7 +101,11 @@ fun GenericSettingsScreen(
                 context.openNotificationChannelSettings(PushServiceNotificationHandler.channelId)
             },
             askNotificationPermission = { notificationPermissionHandler?.askNotificationPermission() },
-            askBackgroundAccessPermission = { locationPermissionHandler?.askUnrestrictedBackgroundAccess(forcePrompt = true) }
+            askBackgroundAccessPermission = {
+                locationPermissionHandler?.askUnrestrictedBackgroundAccess(
+                    forcePrompt = true
+                )
+            }
         )
     }
 }

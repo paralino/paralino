@@ -10,25 +10,50 @@ import MapKit
 import shared
 import UIKit
 
+private struct PinShape: Shape {
+    func path(in rect: CGRect) -> Path {
+        let totalSize = min(rect.width, rect.height)
+        let pointerHeight = totalSize * 0.1
+        let circleRadius = (totalSize / 2.0) * 0.9
+        let circleCenterY = circleRadius
+        let circleBottomY = circleCenterY + circleRadius
+        let centerX = totalSize / 2.0
+
+        var path = Path()
+
+        path.addEllipse(in: CGRect(
+            x: centerX - circleRadius,
+            y: circleCenterY - circleRadius,
+            width: circleRadius * 2,
+            height: circleRadius * 2
+        ))
+
+        let triangleHalfWidth = circleRadius * 0.45
+        let triangleOverlap = pointerHeight * 0.8
+        path.move(to: CGPoint(x: centerX, y: circleBottomY + pointerHeight))
+        path.addLine(to: CGPoint(x: centerX - triangleHalfWidth, y: circleBottomY - triangleOverlap))
+        path.addLine(to: CGPoint(x: centerX + triangleHalfWidth, y: circleBottomY - triangleOverlap))
+        path.closeSubpath()
+
+        return path
+    }
+}
+
 struct MapMarker: View {
     @ObservedObject var markerItem: MapAnnotatedItem
     
-//    private var pinData: MapPinData { markerItem.data }
     // make every pin size slightly larger on iOS
     private var pinSize: Double { CGFloat(markerItem.data.getPinSize()) * 1.2 }
     
     var body: some View {
         let vii = ZStack(alignment: .top) {
             if markerItem.data.markerStyle == MapMarkerStyle.pin {
-                Image(resource: MR.shared.images.ic_pin_bubble)
-                    .resizable()
-                    .renderingMode(.template)
-                    .aspectRatio(contentMode: .fill)
+                PinShape()
+                    .fill(markerItem.data.active ? Color.accentDark : Color.themeSecondary)
                     .frame(width: pinSize, height: pinSize)
-                    .foregroundColor(markerItem.data.active ? Color.accentDark : Color.gray)
             }
             
-            let maxSize: CGFloat = markerItem.data.markerStyle == MapMarkerStyle.pin ? 0.92 : 1.0
+            let maxSize: CGFloat = markerItem.data.markerStyle == MapMarkerStyle.pin ? 0.9 : 1.0
             let realSize = pinSize * maxSize
             
             ZStack(alignment: .center) {
@@ -37,10 +62,10 @@ struct MapMarker: View {
                     useBackgroundForEmoji: true,
                     imageScale: 0.75
                 )
-                .frame(width: realSize * 0.7, height: realSize * 0.7)
+                .frame(width: realSize * 0.85, height: realSize * 0.85)
                 .clipShape(Circle())
                 .overlay(
-                    Circle().stroke(Color.themeSecondary, lineWidth: 2)
+                    Circle().stroke(Color.themeSurface, lineWidth: 2)
                 )
             }
             .frame(width: realSize, height: realSize)

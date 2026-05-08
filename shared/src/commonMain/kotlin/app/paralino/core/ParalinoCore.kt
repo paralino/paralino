@@ -3,19 +3,19 @@ package app.paralino.core
 import app.paralino.core.app_rating.AppRatingManager
 import app.paralino.core.crypto.AlphabetType
 import app.paralino.core.crypto.CryptoCore
-import app.paralino.core.crypto.group.CryptoKEKLocalRepository
-import app.paralino.core.crypto.group.CryptoKEKRefreshUseCase
-import app.paralino.core.crypto.group.CryptoKeyLocalDataSource
-import app.paralino.core.crypto.group.CryptoKeyRemoteDataSource
-import app.paralino.core.crypto.user.CryptoAccountOperationV1
-import app.paralino.core.crypto.user.CryptoAccountOperationV2
-import app.paralino.core.crypto.user.CryptoUserKeysLocalSource
-import app.paralino.core.crypto.user.CryptoUserKeysRemoteSource
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.LimitedExecutionParentManager
-import app.paralino.core.domain.crypto.GroupCryptoKeyRotation
-import app.paralino.core.domain.crypto.GroupValidityVerification
 import app.paralino.core.domain.crypto.RawCryptoPresentation
+import app.paralino.core.domain.crypto.group.CryptoKEKLocalRepository
+import app.paralino.core.domain.crypto.group.CryptoKEKRefreshUseCase
+import app.paralino.core.domain.crypto.group.CryptoKeyLocalDataSource
+import app.paralino.core.domain.crypto.group.CryptoKeyRemoteDataSource
+import app.paralino.core.domain.crypto.group.GroupCryptoKeyRotation
+import app.paralino.core.domain.crypto.group.GroupValidityVerification
+import app.paralino.core.domain.crypto.user.CryptoAccountOperationV1
+import app.paralino.core.domain.crypto.user.CryptoAccountOperationV2
+import app.paralino.core.domain.crypto.user.CryptoUserKeysLocalSource
+import app.paralino.core.domain.crypto.user.CryptoUserKeysRemoteSource
 import app.paralino.core.domain.group.GroupBatterySettingsUpdateUseCase
 import app.paralino.core.domain.group.GroupCreateUseCase
 import app.paralino.core.domain.group.GroupMemberAddUseCase
@@ -26,7 +26,6 @@ import app.paralino.core.domain.group.GroupRemoveUseCase
 import app.paralino.core.domain.group.PlaceAddressSearchUseCase
 import app.paralino.core.domain.group.PlaceAlertsSettingsUpdateUseCase
 import app.paralino.core.domain.location.ActiveSharingEngine
-import app.paralino.core.domain.location.BatteryAlertUploadEngine
 import app.paralino.core.domain.location.ClearUserLocationUseCase
 import app.paralino.core.domain.location.GeofenceRegistrationMonitor
 import app.paralino.core.domain.location.GetMemberWithLocationsUseCase
@@ -89,6 +88,7 @@ import app.paralino.core.domain.user.UpdateUserDataUseCase
 import app.paralino.core.domain.user.UserCryptoKeyRefreshUseCase
 import app.paralino.core.domain.user.UserSessionMonitor
 import app.paralino.core.models.AppBuildConfig
+import app.paralino.core.models.base.DeviceType
 import app.paralino.core.models.mappers.GroupKeysMapper
 import app.paralino.core.models.mappers.GroupMapperCore
 import app.paralino.core.models.mappers.GroupPlaceMapperLocal
@@ -107,6 +107,7 @@ import app.paralino.core.models.mappers.UserDeviceMapper
 import app.paralino.core.models.mappers.UserKeyMapperCore
 import app.paralino.core.models.mappers.UserMapperCore
 import app.paralino.core.models.mappers.UserMapperLocal
+import app.paralino.core.presentation.common.NetworkQualityMonitor
 import app.paralino.core.provider.ICrashReportingLogr
 import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.provider.InAppLogger
@@ -139,7 +140,6 @@ import app.paralino.core.repo.user.UserLocalDataSource
 import app.paralino.core.repo.user.UserPersonalSpaceLocalDataSource
 import app.paralino.core.repo.user.UserRemoteSource
 import app.paralino.core.repo.user.UserRepository
-import app.paralino.core.utils.NetworkQualityMonitor
 import org.koin.core.KoinApplication
 import org.koin.core.context.startKoin
 import org.koin.core.module.Module
@@ -201,6 +201,15 @@ object ParalinoCore {
             appPrefs.errorReportingID = cryptoCore.randomId(length = 32, alphabet = AlphabetType.EXTENDED)
         }
 
+        if (deviceApiProvider.deviceType == DeviceType.iOS) {
+            val previousAppVersion = appPrefs.previousAppVersionNumber
+            if (previousAppVersion != null && previousAppVersion < 60) {
+                // invalidate location push tokens so they regenerate
+                appPrefs.locationPushTokenSynced = ""
+                appPrefs.locationPushTokenUnsynced = ""
+            }
+        }
+
         if (appPrefs.currentAppVersionNumber != deviceApiProvider.appVersionCode) {
             appPrefs.previousAppVersionNumber = appPrefs.currentAppVersionNumber
             appPrefs.currentAppVersionNumber = deviceApiProvider.appVersionCode
@@ -208,7 +217,7 @@ object ParalinoCore {
 
         logr.i("paralino_core", "Paralino core initialized: ${deviceApiProvider.clientHeaderValue}")
 
-        if (appBuildConfig.serverUrl.isBlank() || appBuildConfig.projectId.isBlank()) {
+        if (appBuildConfig.apiServerConfig.serverUrl.isBlank() || appBuildConfig.apiServerConfig.projectId.isBlank()) {
             logg.e("ERROR", "Server config invalid - missing endpoint or projectId")
         }
     }
@@ -322,7 +331,6 @@ val coreModule = module {
     single { LocationSaveEventProcessingEngine(get(), get(), get(), get(), get(), get(), get()) }
     single { LocationUploadEventProcessingEngine(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { HandleGetLocationPayloadRequest(get(), get(), get(), get()) }
-    single { BatteryAlertUploadEngine(get(), get(), get(), get(), get()) }
     single { LocationCacheRepository() }
     single { PlacesRepository(get(), get(), get(), get(), get(), get()) }
     single { RemoteConfigRepository(get(), get(), get(), get()) }
