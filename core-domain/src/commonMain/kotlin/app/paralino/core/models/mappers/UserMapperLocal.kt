@@ -1,5 +1,6 @@
 package app.paralino.core.models.mappers
 
+import app.paralino.core.db.AppPrefs
 import app.paralino.core.db.main.blocklist.BlocklistEntity
 import app.paralino.core.db.main.user.SubscriptionPlanEntity
 import app.paralino.core.db.main.user.UserEntity
@@ -15,6 +16,7 @@ import app.paralino.core.utils.extensions.isoWithOffsetToInstant
 
 class UserMapperLocal constructor(
     val coreMapper: UserMapperCore,
+    private val appPrefs: AppPrefs,
 ) {
 
     suspend fun local2Core(model: UserEntity): UserMe {
@@ -28,7 +30,7 @@ class UserMapperLocal constructor(
     fun local2Remote(model: UserEntity): UserMeRaw {
         return UserMeRaw(
             id = model.id,
-            email = model.email,
+            email = appPrefs.email,
             registration = model.registration,
             emailVerification = model.emailVerification,
             passwordUpdate = model.passwordUpdate,
@@ -43,7 +45,6 @@ class UserMapperLocal constructor(
     fun remote2Local(model: UserMeRaw): UserEntity {
         return UserEntity(
             id = model.id,
-            email = model.email,
             registration = model.registration,
             emailVerification = model.emailVerification,
             passwordUpdate = model.passwordUpdate,

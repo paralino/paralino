@@ -7,7 +7,6 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "userEntity")
 data class UserEntity(
     @PrimaryKey val id: String,
-    @ColumnInfo(name = "email") val email: String,
     @ColumnInfo(name = "registration") val registration: String,
     @ColumnInfo(name = "emailVerification") val emailVerification: Boolean,
     @ColumnInfo(name = "passwordUpdate") val passwordUpdate: String?,
