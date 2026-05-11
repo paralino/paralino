@@ -29,7 +29,8 @@ kotlin {
             implementation(libs.kotlinx.datetime)
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.aboutLibraries.core)
-            implementation(libs.aboutLibraries.compose)
+            implementation(libs.aboutLibraries.compose.core)
+            implementation(libs.aboutLibraries.compose.m2)
             // koin only used here because of BaseRepository, remove at some point to slim down dependencies
             implementation(project.dependencies.platform(libs.koin.bom))
             implementation(libs.koin.core)

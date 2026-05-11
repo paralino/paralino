@@ -16,6 +16,7 @@ kotlin {
         minSdk = 29
         compilerOptions.jvmTarget = JvmTarget.JVM_17
         compilerOptions.optIn.add("kotlin.RequiresOptIn")
+        androidResources.enable = true
     }
 
     iosX64()
@@ -32,7 +33,8 @@ kotlin {
             implementation(libs.jetbrains.compose.components.resources)
             implementation(libs.kotlinx.datetime)
             implementation(libs.aboutLibraries.core)
-            implementation(libs.aboutLibraries.compose)
+            implementation(libs.aboutLibraries.compose.core)
+            implementation(libs.aboutLibraries.compose.m2)
             implementation(project(":core-base"))
             implementation(project(":core-db"))
             implementation(project(":core-domain"))
