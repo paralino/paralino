@@ -202,8 +202,8 @@ object ParalinoCore {
         }
 
         if (deviceApiProvider.deviceType == DeviceType.iOS) {
-            val previousAppVersion = appPrefs.previousAppVersionNumber
-            if (previousAppVersion != null && previousAppVersion < 60) {
+            val currentAppVersion = appPrefs.currentAppVersionNumber
+            if (currentAppVersion != null && currentAppVersion < 60) {
                 // invalidate location push tokens so they regenerate
                 appPrefs.locationPushTokenSynced = ""
                 appPrefs.locationPushTokenUnsynced = ""
