@@ -28,11 +28,11 @@
 
         <receiver
             android:name=".app_update.InstallRequestReceiver"
-            android:exported="true" />
+            android:exported="false" />
 
         <receiver
             android:name=".app_update.InstalledReceiver"
-            android:exported="true">
+            android:exported="false">
             <intent-filter>
                 <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
             </intent-filter>

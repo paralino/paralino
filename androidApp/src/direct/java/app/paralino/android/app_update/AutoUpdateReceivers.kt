@@ -6,9 +6,14 @@ import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.pm.ApplicationInfo
 import android.content.pm.PackageInstaller
+import android.content.pm.PackageManager
+import android.content.pm.ResolveInfo
 import android.media.RingtoneManager
+import android.os.Build
 import androidx.core.app.NotificationCompat
+import androidx.core.content.IntentCompat
 import app.paralino.android.R
 import app.paralino.android.ui.main.MainActivity
 import app.paralino.core.MR
@@ -49,13 +54,36 @@ class InstallRequestReceiver : BroadcastReceiver() {
             return
         }
 
+        if (!intentTargetsParalinoPackage(intent, context.packageName)) {
+            logg.w("app_update", "Ignored install broadcast: unexpected target package")
+            updateComponent.appUpdateManager.cancelUpdate()
+            return
+        }
+
         when (val status = intent.getIntExtra(PackageInstaller.EXTRA_STATUS, -1)) {
             PackageInstaller.STATUS_PENDING_USER_ACTION -> {
                 logg.i("app_update", "Request app install - pending user action")
-                intent.getParcelableExtra<Intent>(Intent.EXTRA_INTENT)?.let {
-                    context.startActivity(it.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
-                } ?: let {
-                    updateComponent.appUpdateManager.cancelUpdate()
+                val confirmationIntent = IntentCompat.getParcelableExtra(
+                    intent,
+                    Intent.EXTRA_INTENT,
+                    Intent::class.java,
+                )
+                when {
+                    confirmationIntent == null -> {
+                        updateComponent.appUpdateManager.cancelUpdate()
+                    }
+
+                    confirmationIntent.safeToLaunchAsInstallerConfirmation(context) -> {
+                        context.startActivity(confirmationIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+                    }
+
+                    else -> {
+                        logg.w(
+                            "app_update",
+                            "Ignoring EXTRA_INTENT: not resolved to system package installer UI",
+                        )
+                        updateComponent.appUpdateManager.cancelUpdate()
+                    }
                 }
             }
 
@@ -74,6 +102,38 @@ class InstallRequestReceiver : BroadcastReceiver() {
                 updateComponent.appUpdateManager.cancelUpdate()
             }
         }
+    }
+}
+
+private fun intentTargetsParalinoPackage(intent: Intent, packageName: String): Boolean {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) return true
+    val targetPkg = intent.getStringExtra(PackageInstaller.EXTRA_PACKAGE_NAME) ?: return true
+    return targetPkg == packageName
+}
+
+private fun Intent.safeToLaunchAsInstallerConfirmation(context: Context): Boolean {
+    val resolved = context.resolveInstallationUiActivity(this) ?: return false
+    val pkg = resolved.activityInfo.packageName
+    val flags = try {
+        @Suppress("DEPRECATION")
+        context.packageManager.getApplicationInfo(pkg, 0).flags
+    } catch (_: PackageManager.NameNotFoundException) {
+        return false
+    }
+    val isSystem = (flags and ApplicationInfo.FLAG_SYSTEM) != 0 ||
+            (flags and ApplicationInfo.FLAG_UPDATED_SYSTEM_APP) != 0
+    return isSystem
+}
+
+private fun Context.resolveInstallationUiActivity(intent: Intent): ResolveInfo? {
+    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        packageManager.resolveActivity(
+            intent,
+            PackageManager.ResolveInfoFlags.of(PackageManager.MATCH_DEFAULT_ONLY.toLong()),
+        )
+    } else {
+        @Suppress("DEPRECATION")
+        packageManager.resolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY)
     }
 }
 
