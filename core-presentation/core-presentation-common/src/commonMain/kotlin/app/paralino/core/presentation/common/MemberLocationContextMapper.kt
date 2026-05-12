@@ -25,6 +25,18 @@ class MemberLocationContextMapper(
         }
     }
 
+    fun enrichMemberLocationState(
+        location: GroupMemberItemLocationState,
+        places: List<PlaceListItemData>,
+        myLocation: LocationDataModel?,
+    ): List<GroupMemberItemLocationState> {
+        return enrichMemberLocationStates(
+            locations = listOf(location),
+            places = places,
+            myLocation = myLocation
+        )
+    }
+
     fun enrichMemberLocationStates(
         locations: List<GroupMemberItemLocationState>,
         places: List<PlaceListItemData>,

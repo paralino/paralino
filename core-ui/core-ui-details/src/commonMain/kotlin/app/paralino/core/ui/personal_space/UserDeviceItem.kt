@@ -48,6 +48,7 @@ import app.paralino.core.resources.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.groups.GroupStatusTagContent
 import app.paralino.core.ui.groups.components.GroupMemberActionButton
 import app.paralino.core.ui.groups.components.GroupMemberDeviceDataFlowRow
+import app.paralino.core.ui.groups.components.MemberLocationDistanceFromMeIndicator
 import app.paralino.core.ui.groups.toStatusTagType
 import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.utils.extensions.annotatedBoldCompose
@@ -289,6 +290,10 @@ fun UserDeviceItem(
                             )
                         }
                     }
+
+                    MemberLocationDistanceFromMeIndicator(
+                        distanceText = state.device?.location?.distancePlaceText,
+                    )
 
                     GroupMemberDeviceDataFlowRow(
                         modifier = Modifier.padding(top = 2.dp),
