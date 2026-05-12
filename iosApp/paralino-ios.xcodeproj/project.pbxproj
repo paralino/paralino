@@ -36,6 +36,7 @@
 		25592FB02D11E370003EECCB /* AppRatingPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25592FAF2D11E370003EECCB /* AppRatingPresenter.swift */; };
 		25592FB22D11EAA7003EECCB /* WelcomeOnboardingScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25592FB12D11EAA0003EECCB /* WelcomeOnboardingScreen.swift */; };
 		255B0CA12E203D95001426C3 /* HistoryMapMarker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 255B0CA02E203D95001426C3 /* HistoryMapMarker.swift */; };
+		255B0CA82E203D97001426C3 /* HistoryStartStopMapMarker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 255B0CA72E203D97001426C3 /* HistoryStartStopMapMarker.swift */; };
 		255B0CA42E20568C001426C3 /* HistoryClusterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 255B0CA22E20568C001426C3 /* HistoryClusterView.swift */; };
 		255B0CA52E20568C001426C3 /* SwiftUIHistoryClusterAnnotationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 255B0CA32E20568C001426C3 /* SwiftUIHistoryClusterAnnotationView.swift */; };
 		2565B5A82CD8D2C8006DFB88 /* LicencesScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2565B5A72CD8D2C2006DFB88 /* LicencesScreen.swift */; };
@@ -209,6 +210,7 @@
 		25592FAF2D11E370003EECCB /* AppRatingPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppRatingPresenter.swift; sourceTree = "<group>"; };
 		25592FB12D11EAA0003EECCB /* WelcomeOnboardingScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeOnboardingScreen.swift; sourceTree = "<group>"; };
 		255B0CA02E203D95001426C3 /* HistoryMapMarker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryMapMarker.swift; sourceTree = "<group>"; };
+		255B0CA72E203D97001426C3 /* HistoryStartStopMapMarker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryStartStopMapMarker.swift; sourceTree = "<group>"; };
 		255B0CA22E20568C001426C3 /* HistoryClusterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryClusterView.swift; sourceTree = "<group>"; };
 		255B0CA32E20568C001426C3 /* SwiftUIHistoryClusterAnnotationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftUIHistoryClusterAnnotationView.swift; sourceTree = "<group>"; };
 		2565B5A72CD8D2C2006DFB88 /* LicencesScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LicencesScreen.swift; sourceTree = "<group>"; };
@@ -575,6 +577,7 @@
 				25EFDE292A5B0DCA00522293 /* GroupListItem.swift */,
 				25EFDE2F2A5B45C300522293 /* MapMarker.swift */,
 				255B0CA02E203D95001426C3 /* HistoryMapMarker.swift */,
+				255B0CA72E203D97001426C3 /* HistoryStartStopMapMarker.swift */,
 				25395C1E2B630042000394DA /* BaseMapObservableObject.swift */,
 			);
 			path = Map;
@@ -1132,6 +1135,7 @@
 				256C5A5B29E8938900FCF0B7 /* MainAppObject.swift in Sources */,
 				25C9E5672CCB75C200C3C58A /* LocationPermissionHandler.swift in Sources */,
 				255B0CA12E203D95001426C3 /* HistoryMapMarker.swift in Sources */,
+				255B0CA82E203D97001426C3 /* HistoryStartStopMapMarker.swift in Sources */,
 				25C9E5692CD0300E00C3C58A /* LoadingOverlay.swift in Sources */,
 				25A228682CC7F7D0004577BE /* MapComponentVC.swift in Sources */,
 				25F8DB902DB91268007AECEB /* AppSettingsScreen.swift in Sources */,
