@@ -252,7 +252,7 @@ fun GroupMemberWithLocations(
                     state.filteredLastPing != null && (!expanded || !state.allowShowingDevices)
 
                 FlowRow(
-                    horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.Start),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.Start),
                     verticalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterVertically)
                 ) {
                     CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
@@ -278,6 +278,7 @@ fun GroupMemberWithLocations(
 
                     state.toStatusTagType(expanded = expanded)?.let {
                         Row(
+                            modifier = Modifier.align(Alignment.CenterVertically),
                             horizontalArrangement = Arrangement.spacedBy(4.dp, Alignment.Start)
                         ) {
                             GroupStatusTagContent(it)
@@ -285,7 +286,10 @@ fun GroupMemberWithLocations(
                     }
 
                     if (isLastPingVisible) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
+                        Row(
+                            modifier = Modifier.align(Alignment.CenterVertically),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
                             Icon(
                                 painter = CoreAppIcons.AccessTime.asPainterResource(),
                                 tint = MaterialTheme.colors.onSurface.copy(alpha = 0.5f),
@@ -310,7 +314,10 @@ fun GroupMemberWithLocations(
                 }
 
                 if (isLastPingVisible) {
-                    MemberLocationDistanceFromMeIndicator(distanceText = singleVisibleLocation?.distancePlaceText)
+                    MemberLocationDistanceFromMeIndicator(
+                        modifier = Modifier.padding(top = 2.dp),
+                        distanceText = singleVisibleLocation?.distancePlaceText
+                    )
                     GroupMemberDeviceDataFlowRow(
                         modifier = Modifier.padding(top = 2.dp),
                         state = singleVisibleLocation,
@@ -748,7 +755,10 @@ private fun GroupMemberLocationChild(
                         )
                     }
                 } else {
-                    MemberLocationDistanceFromMeIndicator(distanceText = visibleLocationState?.distancePlaceText)
+                    MemberLocationDistanceFromMeIndicator(
+                        distanceText = visibleLocationState?.distancePlaceText,
+                        iconSize = 14.dp
+                    )
                     GroupMemberDeviceDataRowContent(
                         state = visibleLocationState,
                         isBatteryVisible = true
@@ -757,7 +767,10 @@ private fun GroupMemberLocationChild(
             }
 
             if (state.lastLocationPing != null) {
-                MemberLocationDistanceFromMeIndicator(distanceText = visibleLocationState?.distancePlaceText)
+                MemberLocationDistanceFromMeIndicator(
+                    distanceText = visibleLocationState?.distancePlaceText,
+                    iconSize = 14.dp
+                )
                 GroupMemberDeviceDataFlowRow(
                     modifier = Modifier,
                     state = visibleLocationState,
@@ -1134,14 +1147,27 @@ private fun LocationRequestItem(
 fun MemberLocationDistanceFromMeIndicator(
     modifier: Modifier = Modifier,
     distanceText: String?,
+    iconSize: Dp = 16.dp
 ) {
     val text = distanceText?.takeIf { it.isNotBlank() } ?: return
-    Text(
+    val tint = MaterialTheme.colors.onSurface.copy(alpha = 0.5f)
+    Row(
         modifier = modifier,
-        text = text,
-        style = MaterialTheme.typography.caption,
-        color = MaterialTheme.colors.onSurface.copy(alpha = 0.5f),
-    )
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(4.dp, Alignment.Start),
+    ) {
+        Icon(
+            painter = CoreAppIcons.LocationOn.asPainterResource(),
+            contentDescription = null,
+            tint = tint,
+            modifier = Modifier.size(iconSize),
+        )
+        Text(
+            text = text,
+            style = MaterialTheme.typography.caption,
+            color = tint,
+        )
+    }
 }
 
 @Composable

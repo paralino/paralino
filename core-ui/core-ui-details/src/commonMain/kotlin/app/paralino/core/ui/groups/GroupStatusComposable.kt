@@ -2,6 +2,7 @@ package app.paralino.core.ui.groups
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.RowScope
@@ -63,8 +64,7 @@ fun RowScope.GroupStatusTagContent(
 
         GroupStatusTagType.INACTIVE,
         GroupStatusTagType.NOT_SHARING,
-        GroupStatusTagType.OFFLINE,
-        null -> MaterialTheme.colors.secondary
+        GroupStatusTagType.OFFLINE -> MaterialTheme.colors.secondary
     }
 
     val tagBackgroundColor = when (status) {
@@ -99,17 +99,16 @@ fun RowScope.GroupStatusTagContent(
         GroupStatusTagType.TOO_MANY_REQUESTS -> stringResource(resource = MR.strings.group_members_status_too_many_requests)
         GroupStatusTagType.IDLE,
         GroupStatusTagType.IDLE_NO_LOCATION -> stringResource(resource = MR.strings.group_members_status_throttle)
-
-        null -> ""
     }
 
     val tagIcon = when (status) {
         GroupStatusTagType.SHARING_ACTIVE,
-        GroupStatusTagType.SHARING_ACTIVE_NO_LOCATION,
         GroupStatusTagType.SHARING_ACTIVE_NOT_ACCURATE,
         GroupStatusTagType.IDLE_NOT_ACCURATE,
         GroupStatusTagType.INACTIVE_NOT_ACCURATE,
-        GroupStatusTagType.IDLE -> CoreAppIcons.LocationOn.asPainterResource()
+        GroupStatusTagType.IDLE -> null
+
+        GroupStatusTagType.SHARING_ACTIVE_NO_LOCATION -> CoreAppIcons.ShareLocation.asPainterResource()
 
         GroupStatusTagType.GPS_OFF,
         GroupStatusTagType.MISSING_PERMISSION,
@@ -124,28 +123,34 @@ fun RowScope.GroupStatusTagContent(
         GroupStatusTagType.IDLE_NO_LOCATION,
         GroupStatusTagType.OFFLINE,
         GroupStatusTagType.NOT_SHARING -> null
-
-        null -> null
     }
 
-    if (tagIcon != null) {
-        Icon(
-            painter = tagIcon,
-            modifier = Modifier.size(16.dp).align(Alignment.CenterVertically),
-            tint = tagIconColor,
-            contentDescription = null
-        )
-    }
+    val hasLoadingProgress = status == GroupStatusTagType.SHARING_ACTIVE_NO_LOCATION ||
+            status == GroupStatusTagType.IDLE_NOT_ACCURATE ||
+            status == GroupStatusTagType.SHARING_ACTIVE_NOT_ACCURATE
 
-    if (status == GroupStatusTagType.SHARING_ACTIVE_NO_LOCATION ||
-        status == GroupStatusTagType.IDLE_NOT_ACCURATE ||
-        status == GroupStatusTagType.SHARING_ACTIVE_NOT_ACCURATE
-    ) {
-        CircularProgressIndicator(
-            modifier = Modifier.size(16.dp).align(Alignment.CenterVertically),
-            strokeWidth = 2.dp,
-            color = tagIconColor
-        )
+    if (tagIcon != null || hasLoadingProgress) {
+        Box(
+            modifier = Modifier.align(Alignment.CenterVertically),
+            contentAlignment = Alignment.Center
+        ) {
+            if (tagIcon != null) {
+                Icon(
+                    painter = tagIcon,
+                    modifier = Modifier.size(18.dp),
+                    tint = tagIconColor,
+                    contentDescription = null
+                )
+            }
+
+            if (hasLoadingProgress) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(15.dp),
+                    strokeWidth = 2.dp,
+                    color = tagIconColor
+                )
+            }
+        }
     }
 
     if (tagText.isNotBlank()) {
