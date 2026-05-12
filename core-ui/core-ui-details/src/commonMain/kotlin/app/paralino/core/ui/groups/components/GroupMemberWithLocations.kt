@@ -295,6 +295,7 @@ fun GroupMemberWithLocations(
                             )
                         }
                     } else {
+                        MemberLocationDistanceFromMeIndicator(distanceText = singleVisibleLocation?.distancePlaceText)
                         GroupMemberDeviceDataRowContent(
                             state = singleVisibleLocation,
                             isBatteryVisible = (!expanded || !state.allowShowingDevices)
@@ -303,6 +304,7 @@ fun GroupMemberWithLocations(
                 }
 
                 if (isLastPingVisible) {
+                    MemberLocationDistanceFromMeIndicator(distanceText = singleVisibleLocation?.distancePlaceText)
                     GroupMemberDeviceDataFlowRow(
                         modifier = Modifier.padding(top = 2.dp),
                         state = singleVisibleLocation,
@@ -657,6 +659,7 @@ private fun GroupMemberLocationChild(
     onClick: (GroupMemberItemLocationState) -> Unit,
     onDelete: (GroupMemberItemLocationState) -> Unit
 ) {
+    val visibleLocationState = remember(state.visibility) { state.takeIf { it.visibility.isVisible() } }
     Row(
         modifier = modifier
             .fillMaxWidth()
@@ -739,17 +742,19 @@ private fun GroupMemberLocationChild(
                         )
                     }
                 } else {
+                    MemberLocationDistanceFromMeIndicator(distanceText = visibleLocationState?.distancePlaceText)
                     GroupMemberDeviceDataRowContent(
-                        state = state,
+                        state = visibleLocationState,
                         isBatteryVisible = true
                     )
                 }
             }
 
             if (state.lastLocationPing != null) {
+                MemberLocationDistanceFromMeIndicator(distanceText = visibleLocationState?.distancePlaceText)
                 GroupMemberDeviceDataFlowRow(
                     modifier = Modifier,
-                    state = state,
+                    state = visibleLocationState,
                     isBatteryVisible = true
                 )
             }
@@ -1117,6 +1122,20 @@ private fun LocationRequestItem(
             )
         }
     }
+}
+
+@Composable
+fun MemberLocationDistanceFromMeIndicator(
+    modifier: Modifier = Modifier,
+    distanceText: String?,
+) {
+    val text = distanceText?.takeIf { it.isNotBlank() } ?: return
+    Text(
+        modifier = modifier,
+        text = text,
+        style = MaterialTheme.typography.caption,
+        color = MaterialTheme.colors.onSurface.copy(alpha = 0.5f),
+    )
 }
 
 @Composable
