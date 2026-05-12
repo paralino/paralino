@@ -1,8 +1,11 @@
 package app.paralino.core.presentation.common
 
+import app.paralino.core.MR
 import app.paralino.core.models.location.LocationDataModel
 import app.paralino.core.provider.DistanceType
+import app.paralino.core.provider.FormattingFractionsMode
 import app.paralino.core.provider.IValueFormatter
+import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.location.IGeofenceManager
 import kotlin.math.roundToInt
 
@@ -101,9 +104,12 @@ class MemberLocationContextMapper(
         )
         if (meters < 80) return null
         val coercedMeters = ((meters / 30).roundToInt() * 30).toDouble()
-        return valueFormatter.getDistanceSmall(
+        val formattedDistance = valueFormatter.getDistanceSmall(
             meters = coercedMeters,
             distanceType = DistanceType.DISTANCE,
+            fractionsMode = FormattingFractionsMode.MINIMAL
         )
+
+        return MR.strings.group_members_status_distanceFromMe.localizedString(formattedDistance)
     }
 }

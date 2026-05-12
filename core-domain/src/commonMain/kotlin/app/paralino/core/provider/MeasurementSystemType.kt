@@ -18,3 +18,7 @@ enum class DistanceType constructor(val key: String) {
     ELEVATION("elevation"),
     DISTANCE("distance");
 }
+
+enum class FormattingFractionsMode {
+    DEFAULT, MINIMAL, NO_FRACTIONS;
+}
