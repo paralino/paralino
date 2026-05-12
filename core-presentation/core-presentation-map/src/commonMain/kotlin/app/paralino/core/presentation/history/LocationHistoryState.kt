@@ -294,7 +294,7 @@ data class LocationHistoryScreenState(
                 isLoadingLocations = true,
                 isLoadingData = true,
                 showPolyline = true,
-                showPins = true,
+                showPins = false,
                 clusteringPinsMode = LocationHistoryClusteringPinsViewMode.DEFAULT_CLUSTERING,
                 isFilterOpened = false,
                 locations = emptyList(),
