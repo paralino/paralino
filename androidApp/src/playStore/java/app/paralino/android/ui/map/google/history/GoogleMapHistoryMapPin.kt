@@ -5,6 +5,7 @@ import androidx.compose.ui.geometry.Offset
 import app.paralino.android.ui.map.google.rememberComposeBitmapDescriptor
 import app.paralino.core.models.location.LocationHistoryPointState
 import app.paralino.core.ui.map.HistoryMapIcon
+import app.paralino.core.ui.map.StartStopHistoryMapIcon
 import app.paralino.core.utils.extensions.isLocationInaccurate
 import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.LatLng
@@ -41,6 +42,31 @@ fun GoogleMapHistoryMapPin(
 }
 
 @Composable
+fun GoogleMapHistoryStartStopMapPin(
+    pointId: String,
+    content: String,
+    position: LatLng,
+    zIndex: Float,
+    onClick: (String) -> Unit
+) {
+    val markerState = rememberUpdatedMarkerState(position = position)
+
+    MarkerInfoWindow(
+        state = markerState,
+        tag = pointId,
+        anchor = Offset(0.5f, 0.5f),
+        onClick = {
+            onClick(pointId)
+            true
+        },
+        infoWindowAnchor = Offset(0.5f, 0f),
+        icon = startStopMarkerIcon(content = content),
+        zIndex = zIndex,
+        content = null
+    )
+}
+
+@Composable
 private fun mapMarkerIcon(
     isAccurate: Boolean,
     isClustered: Boolean
@@ -52,6 +78,13 @@ private fun mapMarkerIcon(
             isAccurate = isAccurate,
             isClustered = isClustered
         )
+    }
+}
+
+@Composable
+private fun startStopMarkerIcon(content: String): BitmapDescriptor? {
+    return rememberComposeBitmapDescriptor(content) {
+        StartStopHistoryMapIcon(content = content)
     }
 }
 
