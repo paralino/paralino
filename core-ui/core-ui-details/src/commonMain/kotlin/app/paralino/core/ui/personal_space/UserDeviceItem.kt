@@ -145,9 +145,14 @@ fun UserDeviceItem(
                         modifier = Modifier
                             .size(14.dp)
                             .conditional(
-                                value = state.device?.location?.onlineStatus == MemberDeviceOnlineStatusType.ONLINE
+                                value = state.device?.location?.onlineStatus?.isOnlineOrMaybeOnline == true
                             ) {
-                                pulsate()
+                                pulsate(
+                                    pulseAmount = when(state.device?.location?.onlineStatus) {
+                                        MemberDeviceOnlineStatusType.ONLINE -> 1.2f
+                                        else -> 1f
+                                    }
+                                )
                             }
                             .align(Alignment.TopStart)
                             .offset(x = (-4).dp, y = (-4).dp)
@@ -167,7 +172,8 @@ fun UserDeviceItem(
                             .padding(1.dp)
                             .background(
                                 color = when (state.device?.location?.onlineStatus) {
-                                    MemberDeviceOnlineStatusType.ONLINE -> AppColors.accent
+                                    MemberDeviceOnlineStatusType.ONLINE,
+                                    MemberDeviceOnlineStatusType.ONLINE_MAYBE -> AppColors.accent
                                     MemberDeviceOnlineStatusType.BUSY -> AppColors.highlightGold
                                     MemberDeviceOnlineStatusType.OFFLINE -> Color.Gray
                                     MemberDeviceOnlineStatusType.UNKNOWN,

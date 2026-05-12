@@ -143,9 +143,14 @@ fun GroupMemberWithLocations(
                     modifier = Modifier
                         .size(14.dp)
                         .conditional(
-                            value = state.singleVisibleLocation?.onlineStatus == MemberDeviceOnlineStatusType.ONLINE
+                            value = state.singleVisibleLocation?.onlineStatus?.isOnlineOrMaybeOnline == true
                         ) {
-                            pulsate()
+                            pulsate(
+                                pulseAmount = when(state.singleVisibleLocation?.onlineStatus) {
+                                    MemberDeviceOnlineStatusType.ONLINE -> 1.2f
+                                    else -> 1f
+                                }
+                            )
                         }
                         .align(Alignment.TopStart)
                         .offset(x = (-4).dp, y = (-4).dp)
@@ -165,7 +170,8 @@ fun GroupMemberWithLocations(
                         .padding(1.dp)
                         .background(
                             color = when (state.singleVisibleLocation?.onlineStatus) {
-                                MemberDeviceOnlineStatusType.ONLINE -> AppColors.accent
+                                MemberDeviceOnlineStatusType.ONLINE,
+                                MemberDeviceOnlineStatusType.ONLINE_MAYBE -> AppColors.accent
                                 MemberDeviceOnlineStatusType.BUSY -> AppColors.highlightGold
                                 MemberDeviceOnlineStatusType.OFFLINE -> Color.Gray
                                 MemberDeviceOnlineStatusType.UNKNOWN,
