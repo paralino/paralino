@@ -111,7 +111,7 @@ sealed class DeeplinkType() {
                 return null
             }
             val isValidDeeplink =
-                data.host.endsWith(host) || (data.protocol.name == "paralino" && data.host == "app")
+                (data.host == host || data.host.endsWith(".$host")) || (data.protocol.name == "paralino" && data.host == "app")
 
             if (!isValidDeeplink) return null
 

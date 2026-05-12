@@ -132,7 +132,7 @@ class LocationServiceLauncher(
             )
             _pendingNotificationsChannel.trySend(null)
         } catch (e: Exception) {
-            logg.e(
+            logg.w(
                 tag = "location_service",
                 message = "Can not start location service from $action",
                 t = e
