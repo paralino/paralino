@@ -6,6 +6,7 @@ import app.paralino.core.app_rating.AppRatingSource
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.group.GroupMemberRemoveUseCase
 import app.paralino.core.domain.group.GroupPreRefreshUseCase
+import app.paralino.core.domain.location.LocationCacheRepository
 import app.paralino.core.domain.location.MemberDeviceStatusProcessor
 import app.paralino.core.domain.user.PremiumStatusLimitState
 import app.paralino.core.domain.user.PremiumStatusManager
@@ -18,14 +19,20 @@ import app.paralino.core.models.group.UserGroupWithMetadata
 import app.paralino.core.models.mapSuccess
 import app.paralino.core.models.user.BlocklistType
 import app.paralino.core.presentation.CoreViewModel
+import app.paralino.core.presentation.common.AppSnackbarData
 import app.paralino.core.presentation.common.GroupMemberItemEvent
 import app.paralino.core.presentation.common.GroupMemberItemLocationState
 import app.paralino.core.presentation.common.GroupMemberItemStateWithLocations
 import app.paralino.core.presentation.common.GroupMemberState
+import app.paralino.core.presentation.common.MainAlertDialog
 import app.paralino.core.presentation.common.MemberActionItemState
 import app.paralino.core.presentation.common.MemberActionType
 import app.paralino.core.presentation.common.MemberActionsState
+import app.paralino.core.presentation.common.MemberLocationContextMapper
 import app.paralino.core.presentation.common.MemberLocationVisibilityType
+import app.paralino.core.presentation.common.PlaceListItemData
+import app.paralino.core.presentation.common.SnackbarDuration
+import app.paralino.core.presentation.common.onAction
 import app.paralino.core.presentation.groups.detail.GroupDetailScreenEvent.OpenRawMemberData
 import app.paralino.core.provider.DistanceType
 import app.paralino.core.provider.IDeviceApiProvider
@@ -35,17 +42,16 @@ import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.base.AppConfigRepository
 import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.group.UserGroupLocalDataSource
+import app.paralino.core.repo.location.IGeofenceManager
 import app.paralino.core.repo.places.PlaceActivityDataSource
+import app.paralino.core.repo.places.PlacesRepository
 import app.paralino.core.repo.user.UserRepository
-import app.paralino.core.presentation.common.AppSnackbarData
-import app.paralino.core.presentation.common.SnackbarDuration
-import app.paralino.core.presentation.common.MainAlertDialog
-import app.paralino.core.presentation.common.onAction
 import app.paralino.core.utils.ConditionErrorType
 import app.paralino.core.utils.MandatoryBackgroundLocationSharingConditionType
 import app.paralino.core.utils.MandatoryForegroundLocationSharingConditionType
 import app.paralino.core.utils.exceptions.NotFoundException
 import app.paralino.core.utils.exceptions.asRemoteException
+import app.paralino.core.utils.extensions.combine
 import app.paralino.core.utils.extensions.errorString
 import app.paralino.core.utils.extensions.mapToPayload
 import kotlinx.coroutines.Dispatchers
@@ -54,7 +60,6 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flow
@@ -80,8 +85,16 @@ class GroupDetailViewModel(
     val deviceApiProvider: IDeviceApiProvider,
     private val appPrefs: AppPrefs,
     private val appConfig: AppConfigRepository,
-    private val appRatingManager: AppRatingManager
+    private val appRatingManager: AppRatingManager,
+    private val geofenceManager: IGeofenceManager,
+    private val placesRepo: PlacesRepository,
+    private val locationCacheRepository: LocationCacheRepository,
 ) : CoreViewModel() {
+
+    private val memberLocationContextMapper = MemberLocationContextMapper(
+        geofenceManager = geofenceManager,
+        valueFormatter = valueFormatter,
+    )
 
     private val groupData = MutableStateFlow<UserGroupWithMembers?>(null)
     private val groupWithMetadata = MutableStateFlow<UserGroupWithMetadata?>(null)
@@ -98,9 +111,14 @@ class GroupDetailViewModel(
             deviceApiProvider.deviceStatus,
             groupRefresh.getAndRefreshGroupWithMembers(groupId),
             sharingManager.sharingContractForGroup(groupId.asGroupOrSpaceId()),
-            userRepo.getBlocklistLocally()
-        ) { deviceStatus, group, sharingStatus, blocklist ->
+            userRepo.getBlocklistLocally(),
+            placesRepo.getPlacesForGroupLocally(groupId),
+            locationCacheRepository.lastLocationFlow,
+        ) { deviceStatus, group, sharingStatus, blocklist, places, myLocation ->
             groupData.update { group }
+            val placesData = places
+                .filter { it.data.data?.lat != null && it.data.data?.lng != null }
+                .map { PlaceListItemData(it) }
             val members = group.members
                 .sortedBy { it.member.name }
                 .sortedBy { it.member.userId != appPrefs.userId }
@@ -113,8 +131,7 @@ class GroupDetailViewModel(
                         isCurrentUser = member.member.userId == appPrefs.userId,
                         canHaveExpandButton = true
                     )
-                    GroupMemberItemStateWithLocations(
-                        memberState = memberState,
+                    val locations = memberLocationContextMapper.enrichMemberLocationStates(
                         locations = member.locations.map {
                             GroupMemberItemLocationState(
                                 memberLocation = it,
@@ -126,6 +143,12 @@ class GroupDetailViewModel(
                                 visibility = MemberLocationVisibilityType.VISIBLE_ALWAYS
                             )
                         },
+                        places = placesData,
+                        myLocation = myLocation,
+                    )
+                    GroupMemberItemStateWithLocations(
+                        memberState = memberState,
+                        locations = locations,
                         actions = MemberActionsState(
                             deleteMember = takeIf { group.isCurrentUserOwner && member.member.userId != group.ownerUserId }?.let {
                                 MemberActionItemState(MemberActionType.DELETE_MEMBER)

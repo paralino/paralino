@@ -33,6 +33,7 @@ import app.paralino.core.presentation.common.MemberActionItemState
 import app.paralino.core.presentation.common.MemberActionType
 import app.paralino.core.presentation.common.MemberActionsState
 import app.paralino.core.presentation.common.MemberLocationVisibilityType
+import app.paralino.core.presentation.common.MemberLocationContextMapper
 import app.paralino.core.presentation.common.MemberNavigateItemState
 import app.paralino.core.presentation.common.PlaceListItemData
 import app.paralino.core.utils.Emojis
@@ -53,7 +54,7 @@ class MapStateMapper(
     geofenceManager: IGeofenceManager,
 ) {
 
-    private val memberLocationContextMapper = MapMemberLocationContextMapper(
+    private val memberLocationContextMapper = MemberLocationContextMapper(
         geofenceManager = geofenceManager,
         valueFormatter = valueFormatter,
     )
@@ -135,7 +136,7 @@ class MapStateMapper(
             .filter { it.data.data?.lat != null && it.data.data?.lng != null }
             .map { PlaceListItemData(it) }
 
-        val membersData = memberLocationContextMapper.enrich(
+        val membersData = memberLocationContextMapper.enrichOneLocationMemberItems(
             members = buildMembersData(
                 groupOrSpace = groupOrSpace,
                 groupPlanConfig = planConfig,
