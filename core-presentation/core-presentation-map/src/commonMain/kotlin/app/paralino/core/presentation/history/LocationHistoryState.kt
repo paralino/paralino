@@ -16,6 +16,7 @@ import app.paralino.core.presentation.common.MainAlertDialog
 import app.paralino.core.presentation.common.MemberActionItemState
 import app.paralino.core.presentation.common.MemberActionType
 import app.paralino.core.presentation.common.MemberNavigateItemState
+import app.paralino.core.presentation.history.LocationHistoryShowPinsViewMode
 import app.paralino.core.presentation.map.MapHomeScreenEvent
 import app.paralino.core.presentation.map.MapPinData
 import app.paralino.core.provider.current
@@ -46,7 +47,7 @@ data class LocationHistoryScreenState(
     val isLoadingData: Boolean,
     val isLoadingLocations: Boolean,
     val showPolyline: Boolean,
-    val showPins: Boolean,
+    val showPinsMode: LocationHistoryShowPinsViewMode,
     val showInaccurateLocations: Boolean,
     val clusteringPinsMode: LocationHistoryClusteringPinsViewMode,
     val clusteringPointsMode: LocationHistoryClusteringPointsViewMode,
@@ -272,6 +273,17 @@ data class LocationHistoryScreenState(
         emptyList()
     }
 
+    val showPins: Boolean = when (showPinsMode) {
+        LocationHistoryShowPinsViewMode.DEFAULT -> {
+            when (dataViewType) {
+                LocationHistoryDataViewType.LocationPoint -> true
+                LocationHistoryDataViewType.Stats -> false
+            }
+        }
+        LocationHistoryShowPinsViewMode.VISIBLE -> true
+        LocationHistoryShowPinsViewMode.HIDDEN -> false
+    }
+
     fun canSelectDate(date: LocalDate): Boolean {
         val now = nowUTC().toLocalDateTime(TimeZone.currentSystemDefault()).date
 
@@ -304,7 +316,7 @@ data class LocationHistoryScreenState(
                 isLoadingLocations = true,
                 isLoadingData = true,
                 showPolyline = true,
-                showPins = false,
+                showPinsMode = LocationHistoryShowPinsViewMode.DEFAULT,
                 showInaccurateLocations = true,
                 clusteringPinsMode = LocationHistoryClusteringPinsViewMode.DEFAULT_CLUSTERING,
                 isFilterOpened = false,
@@ -481,6 +493,12 @@ enum class LocationHistoryClusteringPinsViewMode {
     DETAILED;
 
     val isClusteringOn: Boolean get() = this == DEFAULT_CLUSTERING || this == CLUSTERING
+}
+
+enum class LocationHistoryShowPinsViewMode {
+    DEFAULT,
+    VISIBLE,
+    HIDDEN;
 }
 
 sealed interface LocationHistoryScreenFocusType {
