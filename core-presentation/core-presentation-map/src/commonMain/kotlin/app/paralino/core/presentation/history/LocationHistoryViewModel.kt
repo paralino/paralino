@@ -576,6 +576,12 @@ class LocationHistoryViewModelController(
                 }
             }
 
+            LocationHistoryUiEvent.ToggleShowInaccurateLocation -> {
+                _uiState.update {
+                    it.copy(showInaccurateLocations = !it.showInaccurateLocations)
+                }
+            }
+
             is LocationHistoryUiEvent.ExpandCluster -> {
                 _uiState.update {
                     it.copy(
