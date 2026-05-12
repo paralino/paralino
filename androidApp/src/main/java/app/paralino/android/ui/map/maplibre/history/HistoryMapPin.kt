@@ -44,7 +44,7 @@ fun MapLibreHistoryMarkerComposable(
                 test = get("isInaccurate").asBoolean(),
                 output = image(
                     historyMarkerIcon(
-                        isAccurate = true,
+                        isAccurate = false,
                         isClustered = false
                     )
                 )
