@@ -48,6 +48,7 @@ import app.paralino.core.resources.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.groups.GroupStatusTagContent
 import app.paralino.core.ui.groups.components.GroupMemberActionButton
 import app.paralino.core.ui.groups.components.GroupMemberDeviceDataFlowRow
+import app.paralino.core.ui.groups.components.MemberLocationDistanceFromMeIndicator
 import app.paralino.core.ui.groups.toStatusTagType
 import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.utils.extensions.annotatedBoldCompose
@@ -144,9 +145,14 @@ fun UserDeviceItem(
                         modifier = Modifier
                             .size(14.dp)
                             .conditional(
-                                value = state.device?.location?.onlineStatus == MemberDeviceOnlineStatusType.ONLINE
+                                value = state.device?.location?.onlineStatus?.isOnlineOrMaybeOnline == true
                             ) {
-                                pulsate()
+                                pulsate(
+                                    pulseAmount = when(state.device?.location?.onlineStatus) {
+                                        MemberDeviceOnlineStatusType.ONLINE -> 1.2f
+                                        else -> 1f
+                                    }
+                                )
                             }
                             .align(Alignment.TopStart)
                             .offset(x = (-4).dp, y = (-4).dp)
@@ -166,7 +172,8 @@ fun UserDeviceItem(
                             .padding(1.dp)
                             .background(
                                 color = when (state.device?.location?.onlineStatus) {
-                                    MemberDeviceOnlineStatusType.ONLINE -> AppColors.accent
+                                    MemberDeviceOnlineStatusType.ONLINE,
+                                    MemberDeviceOnlineStatusType.ONLINE_MAYBE -> AppColors.accent
                                     MemberDeviceOnlineStatusType.BUSY -> AppColors.highlightGold
                                     MemberDeviceOnlineStatusType.OFFLINE -> Color.Gray
                                     MemberDeviceOnlineStatusType.UNKNOWN,
@@ -289,6 +296,10 @@ fun UserDeviceItem(
                             )
                         }
                     }
+
+                    MemberLocationDistanceFromMeIndicator(
+                        distanceText = state.device?.location?.distancePlaceText,
+                    )
 
                     GroupMemberDeviceDataFlowRow(
                         modifier = Modifier.padding(top = 2.dp),

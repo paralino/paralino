@@ -324,6 +324,8 @@ private fun createDummyLocationState(
         onlineStatus = onlineStatus,
         networkType = networkType,
         signalStrength = signalStrength,
-        visibility = MemberLocationVisibilityType.VISIBLE_ALWAYS
+        visibility = MemberLocationVisibilityType.VISIBLE_ALWAYS,
+        distanceFromMeText = null,
+        atPlace = null
     )
 }

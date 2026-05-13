@@ -98,6 +98,7 @@ data class MemberDeviceStatus constructor(
             isOlderThan(3.hours) -> MemberDeviceOnlineStatusType.UNKNOWN
             isOlderThan(10.minutes) -> MemberDeviceOnlineStatusType.OFFLINE
             isOlderThan(20.seconds) -> MemberDeviceOnlineStatusType.BUSY
+            isOlderThan(10.seconds) -> MemberDeviceOnlineStatusType.ONLINE_MAYBE
             else -> MemberDeviceOnlineStatusType.ONLINE
         }
     }
@@ -117,7 +118,9 @@ data class MemberDeviceStatus constructor(
 }
 
 enum class MemberDeviceOnlineStatusType {
-    ONLINE, BUSY, OFFLINE, UNKNOWN
+    ONLINE, ONLINE_MAYBE, BUSY, OFFLINE, UNKNOWN;
+
+    val isOnlineOrMaybeOnline: Boolean get() = this == ONLINE || this == ONLINE_MAYBE
 }
 
 enum class MemberDeviceStatusType constructor(val id: String) {

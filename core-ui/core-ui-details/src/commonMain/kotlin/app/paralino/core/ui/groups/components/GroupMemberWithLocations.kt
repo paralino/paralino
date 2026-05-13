@@ -143,9 +143,14 @@ fun GroupMemberWithLocations(
                     modifier = Modifier
                         .size(14.dp)
                         .conditional(
-                            value = state.singleVisibleLocation?.onlineStatus == MemberDeviceOnlineStatusType.ONLINE
+                            value = state.singleVisibleLocation?.onlineStatus?.isOnlineOrMaybeOnline == true
                         ) {
-                            pulsate()
+                            pulsate(
+                                pulseAmount = when(state.singleVisibleLocation?.onlineStatus) {
+                                    MemberDeviceOnlineStatusType.ONLINE -> 1.2f
+                                    else -> 1f
+                                }
+                            )
                         }
                         .align(Alignment.TopStart)
                         .offset(x = (-4).dp, y = (-4).dp)
@@ -165,7 +170,8 @@ fun GroupMemberWithLocations(
                         .padding(1.dp)
                         .background(
                             color = when (state.singleVisibleLocation?.onlineStatus) {
-                                MemberDeviceOnlineStatusType.ONLINE -> AppColors.accent
+                                MemberDeviceOnlineStatusType.ONLINE,
+                                MemberDeviceOnlineStatusType.ONLINE_MAYBE -> AppColors.accent
                                 MemberDeviceOnlineStatusType.BUSY -> AppColors.highlightGold
                                 MemberDeviceOnlineStatusType.OFFLINE -> Color.Gray
                                 MemberDeviceOnlineStatusType.UNKNOWN,
@@ -246,7 +252,7 @@ fun GroupMemberWithLocations(
                     state.filteredLastPing != null && (!expanded || !state.allowShowingDevices)
 
                 FlowRow(
-                    horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.Start),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.Start),
                     verticalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterVertically)
                 ) {
                     CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
@@ -272,6 +278,7 @@ fun GroupMemberWithLocations(
 
                     state.toStatusTagType(expanded = expanded)?.let {
                         Row(
+                            modifier = Modifier.align(Alignment.CenterVertically),
                             horizontalArrangement = Arrangement.spacedBy(4.dp, Alignment.Start)
                         ) {
                             GroupStatusTagContent(it)
@@ -279,7 +286,10 @@ fun GroupMemberWithLocations(
                     }
 
                     if (isLastPingVisible) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
+                        Row(
+                            modifier = Modifier.align(Alignment.CenterVertically),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
                             Icon(
                                 painter = CoreAppIcons.AccessTime.asPainterResource(),
                                 tint = MaterialTheme.colors.onSurface.copy(alpha = 0.5f),
@@ -295,6 +305,7 @@ fun GroupMemberWithLocations(
                             )
                         }
                     } else {
+                        MemberLocationDistanceFromMeIndicator(distanceText = singleVisibleLocation?.distancePlaceText)
                         GroupMemberDeviceDataRowContent(
                             state = singleVisibleLocation,
                             isBatteryVisible = (!expanded || !state.allowShowingDevices)
@@ -303,6 +314,10 @@ fun GroupMemberWithLocations(
                 }
 
                 if (isLastPingVisible) {
+                    MemberLocationDistanceFromMeIndicator(
+                        modifier = Modifier.padding(top = 2.dp),
+                        distanceText = singleVisibleLocation?.distancePlaceText
+                    )
                     GroupMemberDeviceDataFlowRow(
                         modifier = Modifier.padding(top = 2.dp),
                         state = singleVisibleLocation,
@@ -657,6 +672,7 @@ private fun GroupMemberLocationChild(
     onClick: (GroupMemberItemLocationState) -> Unit,
     onDelete: (GroupMemberItemLocationState) -> Unit
 ) {
+    val visibleLocationState = remember(state.visibility) { state.takeIf { it.visibility.isVisible() } }
     Row(
         modifier = modifier
             .fillMaxWidth()
@@ -739,17 +755,25 @@ private fun GroupMemberLocationChild(
                         )
                     }
                 } else {
+                    MemberLocationDistanceFromMeIndicator(
+                        distanceText = visibleLocationState?.distancePlaceText,
+                        iconSize = 14.dp
+                    )
                     GroupMemberDeviceDataRowContent(
-                        state = state,
+                        state = visibleLocationState,
                         isBatteryVisible = true
                     )
                 }
             }
 
             if (state.lastLocationPing != null) {
+                MemberLocationDistanceFromMeIndicator(
+                    distanceText = visibleLocationState?.distancePlaceText,
+                    iconSize = 14.dp
+                )
                 GroupMemberDeviceDataFlowRow(
                     modifier = Modifier,
-                    state = state,
+                    state = visibleLocationState,
                     isBatteryVisible = true
                 )
             }
@@ -1116,6 +1140,33 @@ private fun LocationRequestItem(
                 contentDescription = null
             )
         }
+    }
+}
+
+@Composable
+fun MemberLocationDistanceFromMeIndicator(
+    modifier: Modifier = Modifier,
+    distanceText: String?,
+    iconSize: Dp = 16.dp
+) {
+    val text = distanceText?.takeIf { it.isNotBlank() } ?: return
+    val tint = MaterialTheme.colors.onSurface.copy(alpha = 0.5f)
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(4.dp, Alignment.Start),
+    ) {
+        Icon(
+            painter = CoreAppIcons.LocationOn.asPainterResource(),
+            contentDescription = null,
+            tint = tint,
+            modifier = Modifier.size(iconSize),
+        )
+        Text(
+            text = text,
+            style = MaterialTheme.typography.caption,
+            color = tint,
+        )
     }
 }
 

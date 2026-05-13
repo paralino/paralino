@@ -37,14 +37,28 @@ abstract class IValueFormatter {
         meters: Double,
         distanceType: DistanceType,
         measurementSystem: MeasurementSystemType? = null,
+        fractionsMode: FormattingFractionsMode = FormattingFractionsMode.DEFAULT,
     ): String {
         return when (measurementSystem ?: this.measurementSystem) {
             MeasurementSystemType.METRIC -> {
                 if (meters.toInt() < 1000) {
-                    val value = formatNumber(meters, minFractions = 0, maxFractions = 0)
+                    val value = formatNumber(number = meters, minFractions = 0, maxFractions = 0)
                     MR.strings.placeholder_unit_meter.localizedString(value)
                 } else {
-                    val value = formatNumber(meters / 1000, minFractions = 0, maxFractions = 2)
+                    val maxFractions = when (fractionsMode) {
+                        FormattingFractionsMode.DEFAULT -> 2
+                        FormattingFractionsMode.MINIMAL -> when {
+                            meters < 100_000 -> 1
+                            else -> 0
+                        }
+
+                        FormattingFractionsMode.NO_FRACTIONS -> 0
+                    }
+                    val value = formatNumber(
+                        number = meters / 1000,
+                        minFractions = 0,
+                        maxFractions = maxFractions
+                    )
                     MR.strings.placeholder_unit_km.localizedString(value)
                 }
             }
@@ -53,18 +67,35 @@ abstract class IValueFormatter {
                 when (distanceType) {
                     DistanceType.ELEVATION -> {
                         val feet = meters * 3.28084
-                        val value = formatNumber(feet, minFractions = 0, maxFractions = 0)
+                        val value = formatNumber(number = feet, minFractions = 0, maxFractions = 0)
                         MR.strings.placeholder_unit_feet.localizedString(value)
                     }
 
                     DistanceType.DISTANCE -> {
                         if (meters / 1000 < kmInMile / 5) { // Less than 1/10 mile
                             val feet = meters * 3.28084
-                            val value = formatNumber(feet, minFractions = 0, maxFractions = 0)
+                            val value = formatNumber(
+                                number = feet,
+                                minFractions = 0,
+                                maxFractions = 0
+                            )
                             MR.strings.placeholder_unit_feet.localizedString(value)
                         } else {
                             val miles = meters / 1000 / kmInMile
-                            val value = formatNumber(miles, minFractions = 0, maxFractions = 2)
+                            val maxFractions = when (fractionsMode) {
+                                FormattingFractionsMode.DEFAULT -> 2
+                                FormattingFractionsMode.MINIMAL -> when {
+                                    miles < 100 -> 1
+                                    else -> 0
+                                }
+
+                                FormattingFractionsMode.NO_FRACTIONS -> 0
+                            }
+                            val value = formatNumber(
+                                number = miles,
+                                minFractions = 0,
+                                maxFractions = maxFractions
+                            )
                             MR.strings.placeholder_unit_mile.localizedString(value)
                         }
                     }

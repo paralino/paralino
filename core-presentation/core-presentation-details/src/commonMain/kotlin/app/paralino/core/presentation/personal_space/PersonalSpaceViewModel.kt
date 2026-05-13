@@ -4,6 +4,7 @@ import app.paralino.core.MR
 import app.paralino.core.app_rating.AppRatingManager
 import app.paralino.core.app_rating.AppRatingSource
 import app.paralino.core.db.AppPrefs
+import app.paralino.core.domain.location.LocationCacheRepository
 import app.paralino.core.domain.location.MemberDeviceStatusProcessor
 import app.paralino.core.domain.user.DeactivatePersonalDeviceUseCase
 import app.paralino.core.domain.user.DeletePersonalDeviceUseCase
@@ -17,6 +18,14 @@ import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.location.UserDeviceModel
 import app.paralino.core.models.user.UserSession
 import app.paralino.core.presentation.CoreViewModel
+import app.paralino.core.presentation.common.AppSnackbarData
+import app.paralino.core.presentation.common.GroupMemberItemLocationState
+import app.paralino.core.presentation.common.MainAlertDialog
+import app.paralino.core.presentation.common.MemberLocationContextMapper
+import app.paralino.core.presentation.common.MemberLocationVisibilityType
+import app.paralino.core.presentation.common.PlaceListItemData
+import app.paralino.core.presentation.common.SnackbarDuration
+import app.paralino.core.presentation.common.onAction
 import app.paralino.core.presentation.groups.detail.LocationSharingState
 import app.paralino.core.provider.DistanceType
 import app.paralino.core.provider.IDeviceApiProvider
@@ -24,16 +33,15 @@ import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.base.RemoteConfigRepository
+import app.paralino.core.repo.location.IGeofenceManager
 import app.paralino.core.repo.places.PlaceActivityDataSource
+import app.paralino.core.repo.places.PlacesRepository
 import app.paralino.core.repo.user.UserPersonalSpaceLocalDataSource
 import app.paralino.core.repo.user.UserRepository
-import app.paralino.core.presentation.common.AppSnackbarData
-import app.paralino.core.presentation.common.SnackbarDuration
-import app.paralino.core.presentation.common.MainAlertDialog
-import app.paralino.core.presentation.common.onAction
 import app.paralino.core.utils.ConditionErrorType
 import app.paralino.core.utils.MandatoryBackgroundLocationSharingConditionType
 import app.paralino.core.utils.MandatoryForegroundLocationSharingConditionType
+import app.paralino.core.utils.extensions.combine
 import app.paralino.core.utils.extensions.errorString
 import app.paralino.core.utils.extensions.isoWithOffsetToInstant
 import app.paralino.core.utils.extensions.mapToPayload
@@ -43,7 +51,6 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flow
@@ -69,11 +76,19 @@ class PersonalSpaceViewModel(
     private val deviceStatusProcessor: MemberDeviceStatusProcessor,
     private val sharingManager: LocationSharingManager,
     private val placeActivityRepo: PlaceActivityDataSource,
+    private val placesRepo: PlacesRepository,
     private val valueFormatter: IValueFormatter,
     val deviceApiProvider: IDeviceApiProvider,
     private val appPrefs: AppPrefs,
-    private val appRatingManager: AppRatingManager
+    private val appRatingManager: AppRatingManager,
+    private val geofenceManager: IGeofenceManager,
+    private val locationCacheRepository: LocationCacheRepository,
 ) : CoreViewModel() {
+
+    private val memberLocationContextMapper = MemberLocationContextMapper(
+        geofenceManager = geofenceManager,
+        valueFormatter = valueFormatter,
+    )
 
     private val _uiState = MutableStateFlow<PersonalSpaceScreenState>(
         PersonalSpaceScreenState(
@@ -110,8 +125,10 @@ class PersonalSpaceViewModel(
             personalSpaceLocal.personalSpaceState.mapNotNull { it.data },
             sharingManager.sharingContractForGroup(UserGroup.groupPersonalDevicesId.asGroupOrSpaceId()),
             userRepo.localUser.mapNotNull { it.data },
-            userRepo.userPlans
-        ) { deviceStatus, personalSpaceData, sharingStatus, user, userPlans ->
+            userRepo.userPlans,
+            placesRepo.getPlacesForGroupLocally(groupId = appPrefs.userId),
+            locationCacheRepository.lastLocationFlow,
+        ) { deviceStatus, personalSpaceData, sharingStatus, user, userPlans, places, myLocation ->
 
             val errors = buildList {
                 sharingStatus?.let { status ->
@@ -161,15 +178,35 @@ class PersonalSpaceViewModel(
 
             val devicesLimit = personalSpaceData.plan.personalDevicesLimit
 
+            val placesData = places
+                .filter { it.data.data?.lat != null && it.data.data?.lng != null }
+                .map { PlaceListItemData(it) }
+
             val devices = personalSpaceData.devices
                 .sortedBy { it.deviceId != appPrefs.deviceId } // Current device first
                 .map { device ->
+                    val isCurrentDevice = device.deviceId == appPrefs.deviceId
                     UserDeviceItemState(
                         device = device,
-                        isCurrentDevice = device.deviceId == appPrefs.deviceId,
+                        location = device.location?.let { location ->
+                            memberLocationContextMapper.enrichMemberLocationState(
+                                location = GroupMemberItemLocationState(
+                                    memberLocation = location,
+                                    name = device.deviceNameOrNull ?: location.name,
+                                    image = null,
+                                    canEdit = true,
+                                    showSpeedAndElevation = false,
+                                    visibility = MemberLocationVisibilityType.VISIBLE_ALWAYS,
+                                    currentDevice = isCurrentDevice,
+                                    formatter = valueFormatter
+                                ),
+                                places = placesData,
+                                myLocation = myLocation,
+                            ).first()
+                        },
+                        isCurrentDevice = isCurrentDevice,
                         deleteAction = if (device.location == null) UserDeviceAction.DeleteDevice() else null,
                         deactivateAction = if (device.location != null) UserDeviceAction.DeactivateDevice() else null,
-                        formatter = valueFormatter
                     )
                 }
 
@@ -406,7 +443,9 @@ class PersonalSpaceViewModel(
                                 delay(200)
                                 _uiState.update {
                                     it.copy(
-                                        alertDialog = MainAlertDialog.DeleteInactiveUserOwnDeviceConfirm(dialog.device)
+                                        alertDialog = MainAlertDialog.DeleteInactiveUserOwnDeviceConfirm(
+                                            dialog.device
+                                        )
                                     )
                                 }
                             }

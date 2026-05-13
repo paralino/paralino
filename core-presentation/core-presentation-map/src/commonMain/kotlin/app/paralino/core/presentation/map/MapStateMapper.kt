@@ -10,6 +10,7 @@ import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.models.data
 import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.location.LocationSharingContract
+import app.paralino.core.models.location.LocationDataModel
 import app.paralino.core.models.location.MemberDeviceStatusType
 import app.paralino.core.models.location.MemberLocation
 import app.paralino.core.models.location.MemberModelWithLocations
@@ -26,11 +27,13 @@ import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.group.UserGroupLocalDataSource
+import app.paralino.core.repo.location.IGeofenceManager
 import app.paralino.core.presentation.common.MainAlertDialog
 import app.paralino.core.presentation.common.MemberActionItemState
 import app.paralino.core.presentation.common.MemberActionType
 import app.paralino.core.presentation.common.MemberActionsState
 import app.paralino.core.presentation.common.MemberLocationVisibilityType
+import app.paralino.core.presentation.common.MemberLocationContextMapper
 import app.paralino.core.presentation.common.MemberNavigateItemState
 import app.paralino.core.presentation.common.PlaceListItemData
 import app.paralino.core.utils.Emojis
@@ -47,8 +50,14 @@ class MapStateMapper(
     private val memberActionHandler: MemberActionHandler,
     private val locationRequestDuration: Duration,
     private val locationRequestDelay: Duration,
-    private val premiumStatusManager: PremiumStatusManager
+    private val premiumStatusManager: PremiumStatusManager,
+    geofenceManager: IGeofenceManager,
 ) {
+
+    private val memberLocationContextMapper = MemberLocationContextMapper(
+        geofenceManager = geofenceManager,
+        valueFormatter = valueFormatter,
+    )
 
     suspend fun buildReadyState(
         groupOrSpace: GroupWithMembersOrUserSpace,
@@ -59,6 +68,7 @@ class MapStateMapper(
         isSatelliteModeEnabled: Boolean,
         alertDialog: MainAlertDialog?,
         isFirstTimeInPersonalSpace: Boolean,
+        myLocation: LocationDataModel?,
     ): MapHomeScreenState.Ready {
         val groupName = when (groupOrSpace) {
             is GroupWithMembersOrUserSpace.Group -> groupOrSpace.group.name
@@ -122,15 +132,19 @@ class MapStateMapper(
 
         val mapInteractionsType = previousState?.mapInteractionType ?: appPrefs.mapInteractions
 
-        val membersData = buildMembersData(
-            groupOrSpace = groupOrSpace,
-            groupPlanConfig = planConfig,
-            previousState = previousState
-        )
-
         val placesData = places
             .filter { it.data.data?.lat != null && it.data.data?.lng != null }
             .map { PlaceListItemData(it) }
+
+        val membersData = memberLocationContextMapper.enrichOneLocationMemberItems(
+            members = buildMembersData(
+                groupOrSpace = groupOrSpace,
+                groupPlanConfig = planConfig,
+                previousState = previousState
+            ),
+            places = placesData,
+            myLocation = myLocation,
+        )
 
         val markers = buildMarkers(
             groupOrSpace = groupOrSpace,

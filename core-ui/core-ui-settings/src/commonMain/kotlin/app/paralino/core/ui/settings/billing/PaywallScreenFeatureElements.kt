@@ -203,7 +203,9 @@ private fun MemberItem(
                 onlineStatus = MemberDeviceOnlineStatusType.BUSY,
                 networkType = NetworkType.G2,
                 signalStrength = NetworkSignalStrength.POOR,
-                visibility = MemberLocationVisibilityType.VISIBLE_ALWAYS
+                visibility = MemberLocationVisibilityType.VISIBLE_ALWAYS,
+                distanceFromMeText = null,
+                atPlace = null
             )
         )
     }
@@ -320,7 +322,9 @@ private fun MemberItemWithLocations(
                 onlineStatus = MemberDeviceOnlineStatusType.ONLINE,
                 networkType = NetworkType.G2,
                 signalStrength = NetworkSignalStrength.POOR,
-                visibility = MemberLocationVisibilityType.VISIBLE_ALWAYS
+                visibility = MemberLocationVisibilityType.VISIBLE_ALWAYS,
+                distanceFromMeText = "250m away",
+                atPlace = null
             ),
             GroupMemberItemLocationState(
                 locationId = "",
@@ -347,7 +351,9 @@ private fun MemberItemWithLocations(
                 onlineStatus = MemberDeviceOnlineStatusType.BUSY,
                 networkType = NetworkType.G4,
                 signalStrength = NetworkSignalStrength.GREAT,
-                visibility = MemberLocationVisibilityType.VISIBLE_ALWAYS
+                visibility = MemberLocationVisibilityType.VISIBLE_ALWAYS,
+                distanceFromMeText = null,
+                atPlace = "Home"
             )
         )
     }

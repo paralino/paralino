@@ -165,7 +165,9 @@ data class GroupMemberItemLocationState constructor(
     val signalStrength: NetworkSignalStrength?,
     val canEdit: Boolean,
     val currentDevice: Boolean,
-    val visibility: MemberLocationVisibilityType
+    val visibility: MemberLocationVisibilityType,
+    val distanceFromMeText: String?,
+    val atPlace: String?,
 ) {
     val keyId = locationId
     constructor(
@@ -205,7 +207,9 @@ data class GroupMemberItemLocationState constructor(
         signalStrength = memberLocation.status.data?.signalStrength,
         canEdit = canEdit,
         currentDevice = currentDevice,
-        visibility = visibility
+        visibility = visibility,
+        distanceFromMeText = null,
+        atPlace = null,
     )
 
     val visibleBatteryLevel: Int? = when(visibility) {
@@ -214,6 +218,11 @@ data class GroupMemberItemLocationState constructor(
         MemberLocationVisibilityType.HIDDEN -> adjustedBatteryLevel
         MemberLocationVisibilityType.MISSING -> adjustedBatteryLevel
     }
+
+    val distancePlaceText: String? = listOfNotNull(
+        atPlace,
+        distanceFromMeText
+    ).takeIf { it.isNotEmpty() }?.joinToString(separator = ", ")
 
     fun asFocusedMarker(): FocusedMarkerData {
         return FocusedMarkerData(markerId = this.keyId, type = MapPinType.MEMBER)

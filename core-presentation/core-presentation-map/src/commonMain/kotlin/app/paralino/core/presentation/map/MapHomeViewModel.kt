@@ -5,6 +5,7 @@ import app.paralino.core.app_rating.AppRatingSource
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.group.GroupPreRefreshUseCase
 import app.paralino.core.domain.location.ClearUserLocationUseCase
+import app.paralino.core.domain.location.LocationCacheRepository
 import app.paralino.core.domain.location.LocationRequestUseCase
 import app.paralino.core.domain.location.history.DeleteLocationHistoryEntryUseCase
 import app.paralino.core.domain.location.history.GetLocationHistoryUseCase
@@ -21,6 +22,7 @@ import app.paralino.core.models.data
 import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.group.UserGroupWithMetadata
 import app.paralino.core.presentation.CoreViewModel
+import app.paralino.core.presentation.common.BottomSheetPickerType
 import app.paralino.core.presentation.history.LocationHistoryScreenEvent
 import app.paralino.core.presentation.history.LocationHistoryScreenUiState
 import app.paralino.core.presentation.history.LocationHistoryUiEvent
@@ -37,7 +39,6 @@ import app.paralino.core.repo.personal_code.PersonalCodesRepository
 import app.paralino.core.repo.places.PlacesRepository
 import app.paralino.core.repo.user.UserPersonalSpaceLocalDataSource
 import app.paralino.core.repo.user.UserRepository
-import app.paralino.core.presentation.common.BottomSheetPickerType
 import app.paralino.core.utils.Emojis
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -83,6 +84,7 @@ class MapHomeViewModel constructor(
     private val refreshLocationHistory: RefreshLocationHistoryUseCase,
     private val deleteLocationHistory: DeleteLocationHistoryEntryUseCase,
     private val geofenceManager: IGeofenceManager,
+    private val locationCacheRepository: LocationCacheRepository,
     private val appPrefs: AppPrefs,
     val deviceApiProvider: IDeviceApiProvider,
     private val valueFormatter: IValueFormatter,
@@ -175,7 +177,8 @@ class MapHomeViewModel constructor(
         memberActionHandler = memberActionHandler,
         locationRequestDuration = locationRequestDuration,
         locationRequestDelay = locationRequestDelay,
-        premiumStatusManager = premiumStatusManager
+        premiumStatusManager = premiumStatusManager,
+        geofenceManager = geofenceManager,
     )
     private val groupsEmptyStateManager = GroupsInitEmptyStateManager(
         userRepo = userRepository,
@@ -402,13 +405,14 @@ class MapHomeViewModel constructor(
     }
 
     private fun loadPersonalSpaceContent(): Flow<MapHomeScreenState> {
-        return combine(
+        return app.paralino.core.utils.extensions.combine(
             uiRefreshPingFlow.filterNotNull(),
             personalSpaceRepo.personalSpaceState.map { it.data },
             placesRepo.getPlacesForGroupLocally(groupId = appPrefs.userId),
             locationFocusManager.getSharingContracts(),
-            userRepository.localUser.map { it.data?.data }.distinctUntilChanged()
-        ) { _, space, places, sharingContracts, userData ->
+            userRepository.localUser.map { it.data?.data }.distinctUntilChanged(),
+            locationCacheRepository.lastLocationFlow,
+        ) { _, space, places, sharingContracts, userData, myLocation ->
 
             if (space == null || userData == null) {
                 val mapProvider = premiumStatusManager.defaultMapProvider()
@@ -435,19 +439,21 @@ class MapHomeViewModel constructor(
                 isSatelliteModeEnabled = _uiState.value.isSatelliteModeEnabled,
                 alertDialog = _uiState.value.alertDialog,
                 isFirstTimeInPersonalSpace = _uiState.value.asReady()?.isFirstTimeInPersonalSpace ?: !appPrefs.didHavePersonalSpaceIntroOnboarding,
+                myLocation = myLocation,
             )
         }
             .flowOn(Dispatchers.IO)
     }
 
     private fun loadGroupContent(groupId: String): Flow<MapHomeScreenState> {
-        return combine(
+        return app.paralino.core.utils.extensions.combine(
             uiRefreshPingFlow.filterNotNull(),
             groupRepo.getGroupWithMembers(groupId = groupId),
             placesRepo.getPlacesForGroupLocally(groupId = groupId),
             locationFocusManager.getSharingContracts(),
-            userRepository.localUser.map { it.data?.data }.distinctUntilChanged()
-        ) { _, group, places, sharingContracts, userData ->
+            userRepository.localUser.map { it.data?.data }.distinctUntilChanged(),
+            locationCacheRepository.lastLocationFlow,
+        ) { _, group, places, sharingContracts, userData, myLocation ->
 
             if (group == null || userData == null) {
                 val mapProvider = premiumStatusManager.defaultMapProvider()
@@ -473,7 +479,8 @@ class MapHomeViewModel constructor(
                     ?.takeIf { it.groupOrSpaceId.id == group.id },
                 isSatelliteModeEnabled = _uiState.value.isSatelliteModeEnabled,
                 alertDialog = _uiState.value.alertDialog,
-                isFirstTimeInPersonalSpace = _uiState.value.asReady()?.isFirstTimeInPersonalSpace ?: !appPrefs.didHavePersonalSpaceIntroOnboarding
+                isFirstTimeInPersonalSpace = _uiState.value.asReady()?.isFirstTimeInPersonalSpace ?: !appPrefs.didHavePersonalSpaceIntroOnboarding,
+                myLocation = myLocation,
             )
         }
             .flatMapLatest { state ->
