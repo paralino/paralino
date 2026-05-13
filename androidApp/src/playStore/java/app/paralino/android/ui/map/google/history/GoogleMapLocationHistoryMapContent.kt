@@ -16,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -191,11 +192,120 @@ fun GoogleMapLocationHistoryMapContent(
     isSatelliteMode: Boolean,
     onEvent: (LocationHistoryUiEvent) -> Unit
 ) {
-    val polylineWidthPixels = with(LocalDensity.current) { 5.dp.toPx() }
+    HistoryPolyline(
+        showPolyline = uiState.showPolyline,
+        selectedLocations = uiState.selectedLocations,
+        isSatelliteMode = isSatelliteMode,
+        onEvent = onEvent
+    )
 
-    when (uiState.dataViewType) {
+    HistoryPins(
+        showAllPins = uiState.showPins,
+        isPinClusteringOn = uiState.clusteringPinsMode.isClusteringOn,
+        selectedLocations = uiState.selectedLocations,
+        onEvent = onEvent
+    )
+
+    SelectedHistoryPointMarker(
+        dataViewType = uiState.dataViewType,
+        selectedMarker = uiState.selectedMapPinData,
+        onEvent = onEvent
+    )
+}
+
+@Composable
+private fun HistoryPolyline(
+    showPolyline: Boolean,
+    selectedLocations: List<LocationHistoryPointState>,
+    isSatelliteMode: Boolean,
+    onEvent: (LocationHistoryUiEvent) -> Unit
+) {
+    val polylineWidthPixels = with(LocalDensity.current) { 5.dp.toPx() }
+    if (showPolyline) {
+        val points = remember(selectedLocations) {
+            selectedLocations.mapNotNull {
+                when (it) {
+                    is LocationHistoryPointState.Cluster -> {
+                        LatLng(it.lat, it.lng)
+                    }
+
+                    is LocationHistoryPointState.Point -> {
+                        it.point.loc?.let {
+                            LatLng(it.lat, it.lng)
+                        }
+                    }
+                }
+            }
+        }
+
+        Polyline(
+            points = points,
+            clickable = true,
+            color = if (isSatelliteMode || isSystemInDarkTheme()) {
+                AppColors.redMain
+            } else {
+                MaterialTheme.colors.primary
+            },
+            pattern = null,
+            startCap = RoundCap(),
+            endCap = RoundCap(),
+            geodesic = false,
+            jointType = JointType.ROUND,
+            tag = "points",
+            visible = true,
+            width = polylineWidthPixels,
+            zIndex = 0f,
+            onClick = {
+                onEvent(
+                    LocationHistoryUiEvent.ChangeMapDataViewType(LocationHistoryDataViewType.LocationPoint)
+                )
+            }
+        )
+    }
+}
+
+@Composable
+private fun HistoryStartStopPointPins(
+    selectedLocations: List<LocationHistoryPointState>,
+    onEvent: (LocationHistoryUiEvent) -> Unit
+) {
+    val startStopLabeled = remember(selectedLocations) {
+        val locations = selectedLocations
+        when {
+            locations.isEmpty() -> emptyList()
+            locations.size == 1 -> listOf(locations.first() to "A")
+            else -> listOf(
+                locations.first() to "A",
+                locations.last() to "B"
+            )
+        }
+    }
+    startStopLabeled.forEach { (state, label) ->
+        key(state.pointId, label) {
+            val lat = state.lat
+            val lng = state.lng
+            if (lat != null && lng != null) {
+                GoogleMapHistoryStartStopMapPin(
+                    pointId = state.pointId,
+                    content = label,
+                    position = LatLng(lat, lng),
+                    zIndex = 1f,
+                    onClick = { onEvent(LocationHistoryUiEvent.OnPointIdClicked(it)) }
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun SelectedHistoryPointMarker(
+    dataViewType: LocationHistoryDataViewType,
+    selectedMarker: MapPinData?,
+    onEvent: (LocationHistoryUiEvent) -> Unit
+) {
+    when (dataViewType) {
         LocationHistoryDataViewType.LocationPoint -> {
-            uiState.selectedMapPinData?.let { point ->
+            selectedMarker?.let { point ->
 
                 val latAnim = animateFloatAsState(
                     targetValue = point.lat.toFloat(),
@@ -239,110 +349,108 @@ fun GoogleMapLocationHistoryMapContent(
 
         LocationHistoryDataViewType.Stats -> {}
     }
+}
 
-    if (uiState.showPolyline) {
-        val points = remember(uiState.selectedLocations) {
-            uiState.selectedLocations.mapNotNull {
-                when (it) {
-                    is LocationHistoryPointState.Cluster -> {
-                        LatLng(it.lat, it.lng)
-                    }
-                    is LocationHistoryPointState.Point -> {
-                        it.point.loc?.let {
-                            LatLng(it.lat, it.lng)
-                        }
-                    }
-                }
-            }
-        }
-
-        Polyline(
-            points = points,
-            clickable = true,
-            color = if (isSatelliteMode || isSystemInDarkTheme()) {
-                AppColors.redMain
-            } else {
-                MaterialTheme.colors.primary
-            },
-            pattern = null,
-            startCap = RoundCap(),
-            endCap = RoundCap(),
-            geodesic = false,
-            jointType = JointType.ROUND,
-            tag = "points",
-            visible = true,
-            width = polylineWidthPixels,
-            zIndex = 0f,
-            onClick = { }
-        )
-    }
-
-    if (uiState.showPins) {
-        if (uiState.clusteringPinsMode.isClusteringOn) {
-            val clusterPoints = remember(uiState.selectedLocations) {
-                uiState.selectedLocations.mapNotNull {
-                    if (it.lat != null && it.lng != null) {
-                        LocationHistoryClusterItem(it)
-                    } else {
-                        null
-                    }
-                }
-            }
-
-            Clustering<LocationHistoryClusterItem>(
-                items = clusterPoints,
-                onClusterClick = {
-                    try {
-                        onEvent(LocationHistoryUiEvent.OnPointClicked(it.items.first().item))
-                    } catch (e: Exception) {
-                    }
-                    false
-                },
-                onClusterItemClick = {
-                    onEvent(LocationHistoryUiEvent.OnPointClicked(it.item))
-                    true
-                },
-                clusterContent = {
-                    Row(
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(8.dp))
-                            .background(AppColors.highlightGold)
-                            .padding(horizontal = 8.dp, vertical = 4.dp),
-                        horizontalArrangement = Arrangement.Center,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = it.size.toString(),
-                            style = MaterialTheme.typography.caption.copy(fontWeight = FontWeight.Bold),
-                            color = AppColors.darkBackground
-                        )
-                    }
-                },
-                clusterContentAnchor = Offset(0.5f, 0.5f),
-                clusterItemContent = {
-                    // Google Map Helper composable effect to set anchoring
-                    ClusteringMarkerProperties(
-                        anchor = it.getAnchor()
-                    )
-                    HistoryMapIcon(
-                        isAccurate = !it.item.accuracy.isLocationInaccurate(),
-                        isClustered = it.item is LocationHistoryPointState.Cluster
-                    )
-                }
+@Composable
+private fun HistoryPins(
+    showAllPins: Boolean,
+    isPinClusteringOn: Boolean,
+    selectedLocations: List<LocationHistoryPointState>,
+    onEvent: (LocationHistoryUiEvent) -> Unit
+) {
+    if (showAllPins) {
+        if (isPinClusteringOn) {
+            ClusteredHistoryPins(
+                selectedLocations = selectedLocations,
+                onEvent = onEvent
             )
         } else {
-            uiState.selectedLocations.forEach { pin ->
-                if (pin.lat != null && pin.lng != null) {
-                    GoogleMapHistoryMapPin(
-                        state = pin,
-                        position = LatLng(pin.lat!!, pin.lng!!),
-                        zIndex = 1f,
-                        onClick = {
-                            onEvent(LocationHistoryUiEvent.OnPointClicked(it))
-                        }
-                    )
-                }
+            UnclusteredHistoryPins(
+                selectedLocations = selectedLocations,
+                onEvent = onEvent
+            )
+        }
+    } else {
+        HistoryStartStopPointPins(
+            selectedLocations = selectedLocations,
+            onEvent = onEvent
+        )
+    }
+}
+
+@Composable
+private fun ClusteredHistoryPins(
+    selectedLocations: List<LocationHistoryPointState>,
+    onEvent: (LocationHistoryUiEvent) -> Unit
+) {
+    val clusterPoints = remember(selectedLocations) {
+        selectedLocations.mapNotNull {
+            if (it.lat != null && it.lng != null) {
+                LocationHistoryClusterItem(it)
+            } else {
+                null
             }
+        }
+    }
+
+    Clustering<LocationHistoryClusterItem>(
+        items = clusterPoints,
+        onClusterClick = {
+            try {
+                onEvent(LocationHistoryUiEvent.OnPointClicked(it.items.first().item))
+            } catch (e: Exception) {
+            }
+            false
+        },
+        onClusterItemClick = {
+            onEvent(LocationHistoryUiEvent.OnPointClicked(it.item))
+            true
+        },
+        clusterContent = {
+            Row(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(AppColors.highlightGold)
+                    .padding(horizontal = 8.dp, vertical = 4.dp),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = it.size.toString(),
+                    style = MaterialTheme.typography.caption.copy(fontWeight = FontWeight.Bold),
+                    color = AppColors.darkBackground
+                )
+            }
+        },
+        clusterContentAnchor = Offset(0.5f, 0.5f),
+        clusterItemContent = {
+            // Google Map Helper composable effect to set anchoring
+            ClusteringMarkerProperties(
+                anchor = it.getAnchor()
+            )
+            HistoryMapIcon(
+                isAccurate = !it.item.accuracy.isLocationInaccurate(),
+                isClustered = it.item is LocationHistoryPointState.Cluster
+            )
+        }
+    )
+}
+
+@Composable
+private fun UnclusteredHistoryPins(
+    selectedLocations: List<LocationHistoryPointState>,
+    onEvent: (LocationHistoryUiEvent) -> Unit
+) {
+    selectedLocations.forEach { pin ->
+        if (pin.lat != null && pin.lng != null) {
+            GoogleMapHistoryMapPin(
+                state = pin,
+                position = LatLng(pin.lat!!, pin.lng!!),
+                zIndex = 1f,
+                onClick = {
+                    onEvent(LocationHistoryUiEvent.OnPointClicked(it))
+                }
+            )
         }
     }
 }

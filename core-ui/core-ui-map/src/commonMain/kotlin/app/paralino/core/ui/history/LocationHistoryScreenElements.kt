@@ -86,6 +86,14 @@ fun LocationHistoryMapCardUi(
             ) {
                 HistoryMapOptionChip(
                     modifier = Modifier.padding(top = 4.dp),
+                    selected = uiState.showInaccurateLocations,
+                    name = stringResource(MR.strings.history_map_options_show_inaccurate),
+                    icon = CoreAppIcons.NotListedLocation.asPainterResource(),
+                    onClick = { onEvent(LocationHistoryUiEvent.ToggleShowInaccurateLocation) }
+                )
+
+                HistoryMapOptionChip(
+                    modifier = Modifier.padding(top = 4.dp),
                     selected = uiState.clusteringPointsMode.isClusteringOn,
                     name = stringResource(MR.strings.history_map_options_location_clustering),
                     icon = CoreAppIcons.TargetCircles.asPainterResource(),

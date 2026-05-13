@@ -16,6 +16,7 @@ class BaseMapObservableObject : ObservableObject {
     @Published var markers: [MapAnnotatedItem] = []
     @Published var polylinePoints: [CLLocationCoordinate2D] = []
     @Published var historyPinMarkers: [HistoryMapMarkerData] = []
+    @Published var historyStartStopPinMarkers: [HistoryStartStopMapMarkerData] = []
     @Published var pendingFocusedMarker: PendingFocusedMarkerData? = nil
     
     @Published var cameraPosition: MapCameraState = MapCameraState(animate: false, cameraRect: MapCameraPosition.automatic.rect)
@@ -29,6 +30,7 @@ class BaseMapObservableObject : ObservableObject {
     
     func onMarkerTap(markerData: MapPinData) {}
     func onHistoryMarkerTap(markerData: HistoryMapMarkerData) {}
+    func onHistoryStartStopMarkerTap(markerData: HistoryStartStopMapMarkerData) {}
     
     func focusToMarker(
         data: FocusedMarkerData?,

@@ -45,6 +45,7 @@ class MapHomeState : BaseMapObservableObject {
                     self?.markers = markers
                     self?.polylinePoints = []
                     self?.historyPinMarkers = []
+                    self?.historyStartStopPinMarkers = []
                     self?.clusterHistoryPins = true
                     self?.pendingFocusedMarker = nil
                     self?.historyUiState = nil
@@ -71,7 +72,7 @@ class MapHomeState : BaseMapObservableObject {
             let previousState = self?.historyUiState
             self?.historyUiState = uiState
             if let state = uiState {
-                
+
                 if state.showPolyline {
                     self?.polylinePoints = state.selectedLocations
                         .compactMap {
@@ -94,8 +95,10 @@ class MapHomeState : BaseMapObservableObject {
                                 nil
                             }
                         }
+                    self?.historyStartStopPinMarkers = []
                 } else {
                     self?.historyPinMarkers = []
+                    self?.historyStartStopPinMarkers = self?.buildHistoryStartStopMarkers(from: state.selectedLocations) ?? []
                 }
                 
                 self?.clusterHistoryPins = state.clusteringPinsMode.isClusteringOn
@@ -130,8 +133,51 @@ class MapHomeState : BaseMapObservableObject {
                         self?.markers = []
                     }
                 }
+            } else {
+                self?.historyPinMarkers = []
+                self?.historyStartStopPinMarkers = []
+                self?.polylinePoints = []
             }
         }
+    }
+
+    private func buildHistoryStartStopMarkers(from locations: [LocationHistoryPointState]) -> [HistoryStartStopMapMarkerData] {
+        if locations.isEmpty {
+            return []
+        }
+        if locations.count == 1 {
+            let p = locations[0]
+            guard let lat = p.lat, let lng = p.lng else { return [] }
+            return [
+                HistoryStartStopMapMarkerData(
+                    pointId: p.pointId,
+                    label: "A",
+                    coordinate: CLLocationCoordinate2D(latitude: lat.doubleValue, longitude: lng.doubleValue)
+                )
+            ]
+        }
+        var result: [HistoryStartStopMapMarkerData] = []
+        let first = locations[0]
+        let last = locations[locations.count - 1]
+        if let lat = first.lat, let lng = first.lng {
+            result.append(
+                HistoryStartStopMapMarkerData(
+                    pointId: first.pointId,
+                    label: "A",
+                    coordinate: CLLocationCoordinate2D(latitude: lat.doubleValue, longitude: lng.doubleValue)
+                )
+            )
+        }
+        if let lat = last.lat, let lng = last.lng {
+            result.append(
+                HistoryStartStopMapMarkerData(
+                    pointId: last.pointId,
+                    label: "B",
+                    coordinate: CLLocationCoordinate2D(latitude: lat.doubleValue, longitude: lng.doubleValue)
+                )
+            )
+        }
+        return result
     }
     
     private func getFocusRegion(_ points: [LocationHistoryPointState]) -> MKMapRect? {
@@ -176,6 +222,10 @@ class MapHomeState : BaseMapObservableObject {
     
     override func onHistoryMarkerTap(markerData: HistoryMapMarkerData) {
         onHistoryEvent(event: LocationHistoryUiEventOnPointClicked(point: markerData.data))
+    }
+
+    override func onHistoryStartStopMarkerTap(markerData: HistoryStartStopMapMarkerData) {
+        onHistoryEvent(event: LocationHistoryUiEventOnPointIdClicked(pointId: markerData.pointId))
     }
     
     func onMapTouch() {

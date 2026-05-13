@@ -38,12 +38,12 @@ import app.paralino.android.ui.map.maplibre.MapLibreMapUiControlledData
 import app.paralino.android.ui.map.maplibre.MapLibreMarkerComposable
 import app.paralino.android.ui.map.maplibre.refocus
 import app.paralino.android.ui.map.maplibre.rememberComposeImageBitmap
-import app.paralino.core.presentation.history.LocationHistoryDataViewType
 import app.paralino.core.models.location.LocationHistoryPointState
+import app.paralino.core.models.settings.MapsSDKProvider
+import app.paralino.core.presentation.history.LocationHistoryDataViewType
 import app.paralino.core.presentation.history.LocationHistoryScreenUiState
 import app.paralino.core.presentation.history.LocationHistoryUiEvent
 import app.paralino.core.presentation.map.MapPinData
-import app.paralino.core.models.settings.MapsSDKProvider
 import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.utils.extensions.isLocationInaccurate
 import kotlinx.coroutines.delay
@@ -244,39 +244,33 @@ fun MapLibreLocationHistoryMapContent(
     isSatelliteMode: Boolean,
     onEvent: (LocationHistoryUiEvent) -> Unit
 ) {
-    val geoData = remember(uiState.selectedLocations) {
-        GeoJsonData.JsonString(
-            FeatureCollection(
-                features = uiState.selectedLocations.mapNotNull { point ->
-                    if (point.lat != null && point.lng != null) {
-                        Feature(
-                            id = JsonPrimitive(point.pointId),
-                            geometry = Point(
-                                Position(
-                                    longitude = point.lng!!,
-                                    latitude = point.lat!!
-                                )
-                            ),
-                            properties = JsonObject(
-                                mapOf(
-                                    "pointId" to JsonPrimitive(point.pointId),
-                                    "isClustered" to JsonPrimitive(point is LocationHistoryPointState.Cluster),
-                                    "isInaccurate" to JsonPrimitive(
-                                        (point as? LocationHistoryPointState.Point)
-                                            ?.accuracy?.isLocationInaccurate()
-                                            ?: false
-                                    ),
-                                )
-                            )
-                        )
-                    } else {
-                        null
-                    }
-                }
-            ).toJson()
-        )
-    }
+    HistoryPolyline(
+        uiState = uiState,
+        isSatelliteMode = isSatelliteMode,
+        onEvent = onEvent
+    )
 
+    HistoryPins(
+        showAllPins = uiState.showPins,
+        isPinClusteringOn = uiState.clusteringPinsMode.isClusteringOn,
+        selectedLocations = uiState.selectedLocations,
+        onEvent = onEvent
+    )
+
+    SelectedHistoryPointMarker(
+        dataViewType = uiState.dataViewType,
+        selectedMarker = uiState.selectedMapPinData,
+        isSatelliteMode = isSatelliteMode,
+        onEvent = onEvent
+    )
+}
+
+@Composable
+private fun HistoryPolyline(
+    uiState: LocationHistoryScreenUiState,
+    isSatelliteMode: Boolean,
+    onEvent: (LocationHistoryUiEvent) -> Unit
+) {
     if (uiState.showPolyline && uiState.selectedLocations.size >= 2) {
         val polylineSource = rememberGeoJsonSource(
             data = remember(uiState.selectedLocations) {
@@ -311,99 +305,82 @@ fun MapLibreLocationHistoryMapContent(
             },
             width = const(5.dp),
             cap = const(LineCap.Round),
-            join = const(LineJoin.Round)
+            join = const(LineJoin.Round),
+            onClick = {
+                onEvent(LocationHistoryUiEvent.ChangeMapDataViewType(LocationHistoryDataViewType.LocationPoint))
+                ClickResult.Consume
+            }
+        )
+    }
+}
+
+@Composable
+private fun HistoryStartStopPointPins(
+    selectedLocations: List<LocationHistoryPointState>,
+    onEvent: (LocationHistoryUiEvent) -> Unit
+) {
+    val startStopPoints = remember(selectedLocations) {
+        val labeledPoints: List<Pair<LocationHistoryPointState, String>> = when {
+            selectedLocations.isEmpty() -> emptyList()
+            selectedLocations.size == 1 -> listOf(selectedLocations.first() to "A")
+            else -> listOf(
+                selectedLocations.first() to "A",
+                selectedLocations.last() to "B"
+            )
+        }
+        GeoJsonData.JsonString(
+            FeatureCollection(
+                features = labeledPoints.mapNotNull { (point, content) ->
+                    val lat = point.lat
+                    val lng = point.lng
+                    if (lat != null && lng != null) {
+                        Feature(
+                            id = JsonPrimitive(point.pointId),
+                            geometry = Point(
+                                Position(
+                                    longitude = lng,
+                                    latitude = lat
+                                )
+                            ),
+                            properties = JsonObject(
+                                mapOf(
+                                    "pointId" to JsonPrimitive(point.pointId),
+                                    "isStartPoint" to JsonPrimitive(content == "A"),
+                                )
+                            )
+                        )
+                    } else {
+                        null
+                    }
+                }
+            ).toJson()
         )
     }
 
-    if (uiState.showPins) {
-        if (uiState.clusteringPinsMode.isClusteringOn && uiState.selectedLocations.isNotEmpty()) {
-            val clusterSource = rememberGeoJsonSource(
-                data = geoData,
-                options = remember {
-                    GeoJsonOptions(
-                        cluster = true,
-                        clusterRadius = 32,
-//                        clusterMinPoints = 1,
-//                        clusterMaxZoom = 24,
-                        maxZoom = SourceDefaults.MAX_ZOOM,
-                        clusterProperties = mapOf(
-                            "pointId" to GeoJsonOptions.ClusterPropertyAggregator(
-                                mapper = get("pointId"),
-                                reducer = get("pointId")
-                            )
-                        )
-                    )
-                }
-            )
-
-            val isDarkMode = isSatelliteMode || isSystemInDarkTheme()
-
-            SymbolLayer(
-                id = "history-clusters",
-                source = clusterSource,
-                iconImage = step(
-                    get("point_count").asNumber(),
-                    fallback = image(clusterIconBitmap(size = 8.dp)),
-                    10 to image(clusterIconBitmap(size = 12.dp)),
-                    100 to image(clusterIconBitmap(size = 18.dp)),
-                    1000 to image(clusterIconBitmap(size = 24.dp)),
-                ),
-                filter = has("point_count"),
-                iconAllowOverlap = const(true),
-                textAllowOverlap = const(true),
-                iconIgnorePlacement = const(true),
-                textIgnorePlacement = const(true),
-                onClick = { features ->
-                    features.firstOrNull()?.let { feature ->
-                        feature.properties?.get("pointId")?.jsonPrimitive?.content?.let {
-                            onEvent(LocationHistoryUiEvent.OnPointIdClicked(it))
-                        }
-                        ClickResult.Consume
-                    } ?: ClickResult.Pass
-                }
-            )
-
-            SymbolLayer(
-                id = "history-cluster-count",
-                source = clusterSource,
-                filter = has("point_count"),
-                textField = get("point_count_abbreviated").asString(),
-                textFont = const(listOf("Noto Sans Regular")),
-                textColor = const(AppColors.darkBackground),
-                iconAllowOverlap = const(true),
-                textAllowOverlap = const(true),
-                iconIgnorePlacement = const(true),
-                textIgnorePlacement = const(true),
-            )
-
-            MapLibreHistoryMarkerComposable(
-                source = clusterSource,
-                canTapOnMarker = true,
-                zIndex = 1f,
-                filter = has("point_count").not(),
-                onClick = {
-                    onEvent(LocationHistoryUiEvent.OnPointIdClicked(it))
-                }
-            )
-        } else {
-            val source = rememberGeoJsonSource(
-                data = geoData,
-                options = remember { GeoJsonOptions() }
-            )
-            MapLibreHistoryMarkerComposable(
-                source = source,
-                canTapOnMarker = true,
-                zIndex = 1f,
-                onClick = {
-                    onEvent(LocationHistoryUiEvent.OnPointIdClicked(it))
-                }
-            )
+    val startStopSource = rememberGeoJsonSource(
+        data = startStopPoints,
+        options = remember { GeoJsonOptions() }
+    )
+    MapLibreHistoryStartStopMarkerComposable(
+        source = startStopSource,
+        canTapOnMarker = true,
+        zIndex = 1f,
+        onClick = {
+            onEvent(LocationHistoryUiEvent.OnPointIdClicked(it))
         }
-    }
+    )
+}
 
-    when (uiState.dataViewType) {
+@Composable
+private fun SelectedHistoryPointMarker(
+    dataViewType: LocationHistoryDataViewType,
+    selectedMarker: MapPinData?,
+    isSatelliteMode: Boolean,
+    onEvent: (LocationHistoryUiEvent) -> Unit
+) {
+    when (dataViewType) {
         LocationHistoryDataViewType.LocationPoint -> {
-            uiState.selectedMapPinData?.let { point ->
+            selectedMarker?.let { point ->
 
                 val latValue = animateFloatAsState(
                     targetValue = point.lat.toFloat(),
@@ -455,6 +432,158 @@ fun MapLibreLocationHistoryMapContent(
 
         LocationHistoryDataViewType.Stats -> {}
     }
+}
+
+@Composable
+private fun HistoryPins(
+    showAllPins: Boolean,
+    isPinClusteringOn: Boolean,
+    selectedLocations: List<LocationHistoryPointState>,
+    onEvent: (LocationHistoryUiEvent) -> Unit
+) {
+    val geoData = remember(selectedLocations) {
+        GeoJsonData.JsonString(
+            FeatureCollection(
+                features = selectedLocations.mapNotNull { point ->
+                    if (point.lat != null && point.lng != null) {
+                        Feature(
+                            id = JsonPrimitive(point.pointId),
+                            geometry = Point(
+                                Position(
+                                    longitude = point.lng!!,
+                                    latitude = point.lat!!
+                                )
+                            ),
+                            properties = JsonObject(
+                                mapOf(
+                                    "pointId" to JsonPrimitive(point.pointId),
+                                    "isClustered" to JsonPrimitive(point is LocationHistoryPointState.Cluster),
+                                    "isInaccurate" to JsonPrimitive(
+                                        (point as? LocationHistoryPointState.Point)
+                                            ?.accuracy?.isLocationInaccurate()
+                                            ?: false
+                                    ),
+                                )
+                            )
+                        )
+                    } else {
+                        null
+                    }
+                }
+            ).toJson()
+        )
+    }
+
+    if (showAllPins) {
+        if (isPinClusteringOn && selectedLocations.isNotEmpty()) {
+            ClusteredHistoryPins(
+                geoData = geoData,
+                onEvent = onEvent
+            )
+        } else {
+            UnclusteredHistoryPins(
+                geoData = geoData,
+                onEvent = onEvent
+            )
+        }
+    } else {
+        HistoryStartStopPointPins(
+            selectedLocations = selectedLocations,
+            onEvent = onEvent
+        )
+    }
+}
+
+@Composable
+private fun ClusteredHistoryPins(
+    geoData: GeoJsonData.JsonString,
+    onEvent: (LocationHistoryUiEvent) -> Unit,
+) {
+    val clusterSource = rememberGeoJsonSource(
+        data = geoData,
+        options = remember {
+            GeoJsonOptions(
+                cluster = true,
+                clusterRadius = 32,
+//                        clusterMinPoints = 1,
+//                        clusterMaxZoom = 24,
+                maxZoom = SourceDefaults.MAX_ZOOM,
+                clusterProperties = mapOf(
+                    "pointId" to GeoJsonOptions.ClusterPropertyAggregator(
+                        mapper = get("pointId"),
+                        reducer = get("pointId")
+                    )
+                )
+            )
+        }
+    )
+
+    SymbolLayer(
+        id = "history-clusters",
+        source = clusterSource,
+        iconImage = step(
+            get("point_count").asNumber(),
+            fallback = image(clusterIconBitmap(size = 8.dp)),
+            10 to image(clusterIconBitmap(size = 12.dp)),
+            100 to image(clusterIconBitmap(size = 18.dp)),
+            1000 to image(clusterIconBitmap(size = 24.dp)),
+        ),
+        filter = has("point_count"),
+        iconAllowOverlap = const(true),
+        textAllowOverlap = const(true),
+        iconIgnorePlacement = const(true),
+        textIgnorePlacement = const(true),
+        onClick = { features ->
+            features.firstOrNull()?.let { feature ->
+                feature.properties?.get("pointId")?.jsonPrimitive?.content?.let {
+                    onEvent(LocationHistoryUiEvent.OnPointIdClicked(it))
+                }
+                ClickResult.Consume
+            } ?: ClickResult.Pass
+        }
+    )
+
+    SymbolLayer(
+        id = "history-cluster-count",
+        source = clusterSource,
+        filter = has("point_count"),
+        textField = get("point_count_abbreviated").asString(),
+        textFont = const(listOf("Noto Sans Regular")),
+        textColor = const(AppColors.darkBackground),
+        iconAllowOverlap = const(true),
+        textAllowOverlap = const(true),
+        iconIgnorePlacement = const(true),
+        textIgnorePlacement = const(true),
+    )
+
+    MapLibreHistoryMarkerComposable(
+        source = clusterSource,
+        canTapOnMarker = true,
+        zIndex = 1f,
+        filter = has("point_count").not(),
+        onClick = {
+            onEvent(LocationHistoryUiEvent.OnPointIdClicked(it))
+        }
+    )
+}
+
+@Composable
+private fun UnclusteredHistoryPins(
+    geoData: GeoJsonData.JsonString,
+    onEvent: (LocationHistoryUiEvent) -> Unit,
+) {
+    val source = rememberGeoJsonSource(
+        data = geoData,
+        options = remember { GeoJsonOptions() }
+    )
+    MapLibreHistoryMarkerComposable(
+        source = source,
+        canTapOnMarker = true,
+        zIndex = 1f,
+        onClick = {
+            onEvent(LocationHistoryUiEvent.OnPointIdClicked(it))
+        }
+    )
 }
 
 @Composable

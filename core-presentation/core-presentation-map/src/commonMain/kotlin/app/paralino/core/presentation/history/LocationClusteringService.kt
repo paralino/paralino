@@ -75,8 +75,8 @@ class LocationClusteringService(
                         timeZone = timeZone,
                         nowDate = nowDate,
                         yesterday = yesterday,
-                    )?.let {
-                        clusters.add(it)
+                    ).let {
+                        clusters.addAll(it)
                     }
                     currentCluster = mutableListOf(point)
                 }
@@ -92,8 +92,8 @@ class LocationClusteringService(
             timeZone = timeZone,
             nowDate = nowDate,
             yesterday = yesterday,
-        )?.let {
-            clusters.add(it)
+        ).let {
+            clusters.addAll(it)
         }
 
         return clusters
@@ -107,8 +107,8 @@ class LocationClusteringService(
         timeZone: TimeZone,
         nowDate: LocalDateTime,
         yesterday: LocalDate
-    ): LocationHistoryPointState? {
-        if (newPoints.size >= 2) {
+    ): List<LocationHistoryPointState> {
+        if (newPoints.size >= 3) {
             val startTime = newPoints.first().point.status.startTime
             val endTime = newPoints.last().point.status.endTime
 
@@ -117,7 +117,7 @@ class LocationClusteringService(
             val locationId = newPoints.first().locationId
             val pointId = newPoints.first().point.properID
 
-            return LocationHistoryPointState.Cluster(
+            val cluster = LocationHistoryPointState.Cluster(
                 locationId = locationId,
                 pointId = pointId,
                 points = newPoints,
@@ -147,11 +147,9 @@ class LocationClusteringService(
                     ?.isExpanded
                     ?: false
             )
-
-        } else if (newPoints.size == 1) {
-            return newPoints.first()
+            return listOf(cluster)
         } else {
-            return null
+            return newPoints
         }
     }
 

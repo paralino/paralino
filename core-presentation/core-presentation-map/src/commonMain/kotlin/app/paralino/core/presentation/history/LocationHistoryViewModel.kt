@@ -559,9 +559,24 @@ class LocationHistoryViewModelController(
             LocationHistoryUiEvent.ToggleShowPins -> {
                 _uiState.update {
                     if (it.showPolyline) {
-                        it.copy(showPins = !it.showPins)
+                        it.copy(
+                            showPinsMode = when (it.showPinsMode) {
+                                LocationHistoryShowPinsViewMode.DEFAULT -> {
+                                    if (it.showPins) {
+                                        LocationHistoryShowPinsViewMode.HIDDEN
+                                    } else {
+                                        LocationHistoryShowPinsViewMode.VISIBLE
+                                    }
+                                }
+                                LocationHistoryShowPinsViewMode.VISIBLE -> LocationHistoryShowPinsViewMode.HIDDEN
+                                LocationHistoryShowPinsViewMode.HIDDEN -> LocationHistoryShowPinsViewMode.VISIBLE
+                            }
+                        )
                     } else {
-                        it.copy(showPolyline = true, showPins = false)
+                        it.copy(
+                            showPolyline = true,
+                            showPinsMode = LocationHistoryShowPinsViewMode.HIDDEN
+                        )
                     }
                 }
             }
@@ -571,8 +586,17 @@ class LocationHistoryViewModelController(
                     if (it.showPins) {
                         it.copy(showPolyline = !it.showPolyline)
                     } else {
-                        it.copy(showPolyline = false, showPins = true)
+                        it.copy(
+                            showPolyline = false,
+                            showPinsMode = LocationHistoryShowPinsViewMode.VISIBLE
+                        )
                     }
+                }
+            }
+
+            LocationHistoryUiEvent.ToggleShowInaccurateLocation -> {
+                _uiState.update {
+                    it.copy(showInaccurateLocations = !it.showInaccurateLocations)
                 }
             }
 

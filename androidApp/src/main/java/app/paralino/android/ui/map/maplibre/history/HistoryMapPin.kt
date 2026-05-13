@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.ImageBitmap
 import app.paralino.android.ui.map.maplibre.rememberComposeImageBitmap
 import app.paralino.core.ui.map.HistoryMapIcon
+import app.paralino.core.ui.map.StartStopHistoryMapIcon
 import kotlinx.serialization.json.jsonPrimitive
 import org.maplibre.compose.expressions.ast.Expression
 import org.maplibre.compose.expressions.dsl.Feature.get
@@ -44,7 +45,7 @@ fun MapLibreHistoryMarkerComposable(
                 test = get("isInaccurate").asBoolean(),
                 output = image(
                     historyMarkerIcon(
-                        isAccurate = true,
+                        isAccurate = false,
                         isClustered = false
                     )
                 )
@@ -80,6 +81,50 @@ fun MapLibreHistoryMarkerComposable(
 }
 
 @Composable
+fun MapLibreHistoryStartStopMarkerComposable(
+    source: Source,
+    canTapOnMarker: Boolean,
+    zIndex: Float,
+    filter: Expression<BooleanValue> = nil(),
+    onClick: (String) -> Unit
+) {
+    SymbolLayer(
+        id = "history-start-stop",
+        source = source,
+        iconImage = switch(
+            condition(
+                test = get("isStartPoint").asBoolean(),
+                output = image(historyStartStopMarkerIcon(content = "A"))
+            ),
+            fallback = image(historyStartStopMarkerIcon(content = "B"))
+        ),
+        iconAllowOverlap = const(true),
+        textAllowOverlap = const(true),
+        iconIgnorePlacement = const(true),
+        textIgnorePlacement = const(true),
+        filter = filter,
+        sortKey = const(zIndex),
+        iconAnchor = const(SymbolAnchor.Center),
+        onClick = if (canTapOnMarker) {
+            { features ->
+                features.firstOrNull()?.let { feature ->
+                    val pointId = feature.properties?.get("pointId")?.jsonPrimitive?.content
+                        ?: feature.id?.jsonPrimitive?.content
+                    if (pointId != null) {
+                        onClick(pointId)
+                        ClickResult.Consume
+                    } else {
+                        ClickResult.Pass
+                    }
+                } ?: ClickResult.Pass
+            }
+        } else {
+            null
+        },
+    )
+}
+
+@Composable
 internal fun historyMarkerIcon(
     isAccurate: Boolean,
     isClustered: Boolean
@@ -91,5 +136,12 @@ internal fun historyMarkerIcon(
             isAccurate = isAccurate,
             isClustered = isClustered
         )
+    }
+}
+
+@Composable
+private fun historyStartStopMarkerIcon(content: String): ImageBitmap {
+    return rememberComposeImageBitmap(content) {
+        StartStopHistoryMapIcon(content = content)
     }
 }

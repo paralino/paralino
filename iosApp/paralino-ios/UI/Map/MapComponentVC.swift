@@ -97,6 +97,13 @@ class MapComponentVC: UIViewController, UIGestureRecognizerDelegate {
                 self?.updateHistoryPoints(self?.mapState?.historyPinMarkers ?? [])
             }
             .store(in: &cancellables)
+
+        mapState?.$historyStartStopPinMarkers
+            .receive(on: RunLoop.main)
+            .sink { [weak self] updated in
+                self?.updateHistoryStartStopPins(updated)
+            }
+            .store(in: &cancellables)
         
         mapState?.$polylinePoints
             .receive(on: RunLoop.main)
@@ -169,7 +176,9 @@ class MapComponentVC: UIViewController, UIGestureRecognizerDelegate {
     
     private func refreshAnnotations() {
         // Get current annotations
-        let currentAnnotations = mapView.annotations.filter { $0 is HistoryMapMarkerData }
+        let currentAnnotations = mapView.annotations.filter {
+            $0 is HistoryMapMarkerData || $0 is HistoryStartStopMapMarkerData
+        }
         let currentOverlays = mapView.overlays.filter { $0 is MKPolyline }
         
         print("Refreshing annotations: \(currentAnnotations.count)")
@@ -265,6 +274,17 @@ class MapComponentVC: UIViewController, UIGestureRecognizerDelegate {
         }
     }
     
+    private func updateHistoryStartStopPins(_ newMarkers: [HistoryStartStopMapMarkerData]) {
+        let existingAnnotations = mapView.annotations.filter { $0 is HistoryStartStopMapMarkerData }
+
+        mapView.removeAnnotations(existingAnnotations)
+        mapView.addAnnotations(newMarkers)
+
+        UIView.animate(withDuration: 0.3) {
+            self.mapView.layoutIfNeeded()
+        }
+    }
+    
     private func updateHistoryPoints(_ newMarkers: [HistoryMapMarkerData]) {
         
         let existingAnnotations = mapView.annotations.filter { $0 is HistoryMapMarkerData }
@@ -321,6 +341,22 @@ extension MapComponentVC: MKMapViewDelegate {
             return clusterView
         }
         
+        // Start / end (A / B) pins when full history pins are hidden
+        if let startStop = annotation as? HistoryStartStopMapMarkerData {
+            let identifier = "HistoryStartStop-\(startStop.id)"
+            var annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: identifier) as? SwiftUIHistoryStartStopMapMarkerView
+
+            if annotationView == nil {
+                annotationView = SwiftUIHistoryStartStopMapMarkerView(annotation: startStop, reuseIdentifier: identifier)
+            }
+
+            annotationView?.clusteringIdentifier = nil
+            annotationView?.annotation = startStop
+            annotationView?.setupSwiftUIView(data: startStop)
+
+            return annotationView
+        }
+
         // Handle history map markers
         if let historyAnnotation = annotation as? HistoryMapMarkerData {
             let identifier = historyAnnotation.id
@@ -388,6 +424,11 @@ extension MapComponentVC: MKMapViewDelegate {
             return
         }
         
+        if let startStop = annotation as? HistoryStartStopMapMarkerData {
+            mapState?.onHistoryStartStopMarkerTap(markerData: startStop)
+            return
+        }
+
         if let customAnnotation = annotation as? MapAnnotatedItem {
             mapState?.onMarkerTap(markerData: customAnnotation.data)
             return
