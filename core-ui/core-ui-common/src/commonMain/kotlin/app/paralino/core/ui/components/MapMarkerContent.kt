@@ -194,7 +194,11 @@ fun MapMarkerInfoWindowContent(
                         icon = CoreAppIcons.NotListedLocation.asPainterResource(),
                         text = {
                             Text(
-                                text = stringResource(resource = MR.strings.group_members_status_location_inaccurate),
+                                text = if (state.isApproximate) {
+                                    stringResource(resource = MR.strings.group_members_status_location_hidden)
+                                } else {
+                                    stringResource(resource = MR.strings.group_members_status_location_inaccurate)
+                                },
                                 fontWeight = FontWeight.SemiBold,
                                 textAlign = TextAlign.Center
                             )

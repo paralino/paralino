@@ -68,6 +68,7 @@ fun PlaceDetailScreenState.makeMapPin(): MapPinData {
         lat = state.lat ?: 0.0,
         lng = state.lng ?: 0.0,
         accuracy = state.radiusMeters.toFloat(),
+        isApproximate = false,
         shouldShowApproximateCircle = true
     )
 }

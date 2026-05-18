@@ -31,4 +31,5 @@ class MainDatabaseHelper(
     val locationHistoryDao by lazy { roomDatabase.locationHistoryDao() }
     val logoutDao by lazy { roomDatabase.logoutDao() }
     val userDeviceDao by lazy { roomDatabase.userDeviceDao() }
+    val approximateSharedLocationDao by lazy { roomDatabase.approximateSharedLocationDao() }
 }

@@ -82,7 +82,8 @@ data class SharingStartScreenState constructor(
                 contract.shareDeviceStatus != shareDeviceStatus ||
                 contract.saveToHistory != saveToHistory ||
                 isNameChanged ||
-                contract.approximateLocationInMeters != approximateLocationValue.meters
+                (contract.approximateLocationInMeters != null) != shareApproximateLocation ||
+                (shareApproximateLocation && contract.approximateLocationInMeters != approximateLocationValue.meters)
     } ?: true
 
     val isStartButtonEnabled =
@@ -98,11 +99,8 @@ data class ApproximateLocationDistancePair(
     val metersForImperial: Double
 ) {
     companion object {
-        val default = ApproximateLocationDistancePair(meters = 1_000, metersForImperial = 1_000.0)
+        val default = ApproximateLocationDistancePair(meters = 2_000, metersForImperial = 1_931.0)
         val pairs = listOf(
-            ApproximateLocationDistancePair(meters = 100, metersForImperial = 91.44),
-            ApproximateLocationDistancePair(meters = 200, metersForImperial = 182.88),
-            ApproximateLocationDistancePair(meters = 300, metersForImperial = 304.8),
             ApproximateLocationDistancePair(meters = 500, metersForImperial = 483.0),
             ApproximateLocationDistancePair(meters = 1_000, metersForImperial = 965.0),
             ApproximateLocationDistancePair(meters = 2_000, metersForImperial = 1_931.0),

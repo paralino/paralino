@@ -27,23 +27,45 @@ fun GroupMemberItemState.toStatusTagType(expanded: Boolean): GroupStatusTagType?
         !expanded || this.locations.isEmpty() || !this.allowShowingDevices -> {
             val tagType = this.statusTag?.toStatusTagType()
             val singleVisibleLocation = this.singleVisibleLocation
-            if (singleVisibleLocation?.accuracyMeters != null && singleVisibleLocation.accuracyMeters.isLocationInaccurate()) {
-                when (tagType) {
-                    GroupStatusTagType.SHARING_ACTIVE,
-                    GroupStatusTagType.SHARING_ACTIVE_NO_LOCATION,
-                    GroupStatusTagType.SHARING_ACTIVE_NOT_ACCURATE -> {
-                        GroupStatusTagType.SHARING_ACTIVE_NOT_ACCURATE
-                    }
+            when {
+                singleVisibleLocation?.isApproximate == true -> {
+                    when (tagType) {
+                        GroupStatusTagType.SHARING_ACTIVE,
+                        GroupStatusTagType.SHARING_ACTIVE_NO_LOCATION,
+                        GroupStatusTagType.SHARING_ACTIVE_NOT_ACCURATE ->
+                            GroupStatusTagType.SHARING_ACTIVE_LOCATION_HIDDEN
 
-                    GroupStatusTagType.IDLE,
-                    GroupStatusTagType.IDLE_NOT_ACCURATE -> {
-                        GroupStatusTagType.IDLE_NOT_ACCURATE
-                    }
+                        GroupStatusTagType.IDLE,
+                        GroupStatusTagType.IDLE_NOT_ACCURATE ->
+                            GroupStatusTagType.IDLE_LOCATION_HIDDEN
 
-                    else -> tagType
+                        GroupStatusTagType.INACTIVE,
+                        GroupStatusTagType.INACTIVE_NOT_ACCURATE ->
+                            GroupStatusTagType.INACTIVE_LOCATION_HIDDEN
+
+                        else -> tagType
+                    }
                 }
-            } else {
-                tagType
+
+                singleVisibleLocation?.accuracyMeters != null &&
+                    singleVisibleLocation.accuracyMeters.isLocationInaccurate() -> {
+                    when (tagType) {
+                        GroupStatusTagType.SHARING_ACTIVE,
+                        GroupStatusTagType.SHARING_ACTIVE_NO_LOCATION,
+                        GroupStatusTagType.SHARING_ACTIVE_NOT_ACCURATE -> {
+                            GroupStatusTagType.SHARING_ACTIVE_NOT_ACCURATE
+                        }
+
+                        GroupStatusTagType.IDLE,
+                        GroupStatusTagType.IDLE_NOT_ACCURATE -> {
+                            GroupStatusTagType.IDLE_NOT_ACCURATE
+                        }
+
+                        else -> tagType
+                    }
+                }
+
+                else -> tagType
             }
         }
 
