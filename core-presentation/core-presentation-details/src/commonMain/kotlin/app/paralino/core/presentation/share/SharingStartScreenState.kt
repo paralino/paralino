@@ -4,8 +4,8 @@ import app.paralino.core.domain.user.PremiumStatusLimitState
 import app.paralino.core.models.Payload
 import app.paralino.core.models.data
 import app.paralino.core.models.location.LocationSharingContract
-import app.paralino.core.presentation.common.GroupItemState
 import app.paralino.core.presentation.common.AlertDialogAction
+import app.paralino.core.presentation.common.GroupItemState
 import app.paralino.core.presentation.common.MainAlertDialog
 import app.paralino.core.utils.ConditionErrorType
 import app.paralino.core.utils.SharingDurationPreset
@@ -18,11 +18,10 @@ data class SharingStartScreenState constructor(
     val formattedEndTime: String? = null,
     val sharingTimeMillis: Long = SharingDurationPreset.premiumPresets.last(),
     val sharingPresetsMillis: List<Long> = SharingDurationPreset.premiumPresets,
-    val approximateLocationMeters: Int = 200,
-    val approximateLocationPresetsMeters: List<Int> = listOf(
-        100, 200, 300, 500, 1000, 2000, 5000, 10000
-    ),
+    val approximateLocationPresets: List<ApproximateLocationDistancePair> = ApproximateLocationDistancePair.pairs,
+    val approximateLocationValue: ApproximateLocationDistancePair = ApproximateLocationDistancePair.default,
     val shareApproximateLocation: Boolean = false,
+    val formattedApproximateLocation: String? = "",
     val shareBattery: Boolean = true,
     val shareSpeed: Boolean = true,
     val shareElevation: Boolean = true,
@@ -32,6 +31,7 @@ data class SharingStartScreenState constructor(
     val saveToHistory: Boolean = true,
     val showNotifyOthers: Boolean = false,
     val showDeviceStatus: Boolean = false,
+    val showApproximateLocation: Boolean = false,
     val showDuration: Boolean = false,
     val showMetadata: Boolean = false,
     val isPremiumSectionVisible: Boolean = false,
@@ -59,11 +59,11 @@ data class SharingStartScreenState constructor(
 
     val approximateLocationIndex: Int
         get() {
-            return approximateLocationPresetsMeters.indexOfFirst { it == approximateLocationMeters }
+            return approximateLocationPresets.indexOfFirst { it.meters == approximateLocationValue.meters }
                 .takeIf { it >= 0 }
-                ?: approximateLocationPresetsMeters.indexOfFirst { approximateLocationMeters < it }
+                ?: approximateLocationPresets.indexOfFirst { approximateLocationValue.meters < it.meters }
                     .takeIf { it >= 0 }
-                ?: approximateLocationPresetsMeters.lastIndex
+                ?: approximateLocationPresets.lastIndex
         }
 
     val errorsAndWarnings = errors + warnings
@@ -81,14 +81,42 @@ data class SharingStartScreenState constructor(
                 contract.shareNetwork != shareNetwork ||
                 contract.shareDeviceStatus != shareDeviceStatus ||
                 contract.saveToHistory != saveToHistory ||
-                isNameChanged
-//                || contract.approximateLocationInMeters != approximateLocationMeters
+                isNameChanged ||
+                contract.approximateLocationInMeters != approximateLocationValue.meters
     } ?: true
 
-    val isStartButtonEnabled = isDifferentThanContract && (premiumStatus is PremiumStatusLimitState.WithinLimits || isDeviceRegistered)
-    val needsPlanUpgrade = premiumStatus is PremiumStatusLimitState.PlanLimitReached && !isDeviceRegistered
+    val isStartButtonEnabled =
+        isDifferentThanContract && (premiumStatus is PremiumStatusLimitState.WithinLimits || isDeviceRegistered)
+    val needsPlanUpgrade =
+        premiumStatus is PremiumStatusLimitState.PlanLimitReached && !isDeviceRegistered
     val shouldUpgradePlan = isOwner && needsPlanUpgrade
     val shouldRegisterDevice = isNameChanged || isTimelineReEnabled || isNewContract
+}
+
+data class ApproximateLocationDistancePair(
+    val meters: Int,
+    val metersForImperial: Double
+) {
+    companion object {
+        val default = ApproximateLocationDistancePair(meters = 1_000, metersForImperial = 1_000.0)
+        val pairs = listOf(
+            ApproximateLocationDistancePair(meters = 100, metersForImperial = 91.44),
+            ApproximateLocationDistancePair(meters = 200, metersForImperial = 182.88),
+            ApproximateLocationDistancePair(meters = 300, metersForImperial = 304.8),
+            ApproximateLocationDistancePair(meters = 500, metersForImperial = 483.0),
+            ApproximateLocationDistancePair(meters = 1_000, metersForImperial = 965.0),
+            ApproximateLocationDistancePair(meters = 2_000, metersForImperial = 1_931.0),
+            ApproximateLocationDistancePair(meters = 5_000, metersForImperial = 4_830.0),
+            ApproximateLocationDistancePair(meters = 10_000, metersForImperial = 9_656.0),
+            ApproximateLocationDistancePair(meters = 15_000, metersForImperial = 14_484.0),
+            ApproximateLocationDistancePair(meters = 20_000, metersForImperial = 19_312.0),
+        )
+
+        fun pairForSelectedMeters(meters: Int): ApproximateLocationDistancePair? {
+            return pairs.firstOrNull { it.meters == meters }
+                ?: pairs.firstOrNull { meters < it.meters }
+        }
+    }
 }
 
 sealed class SharingStartScreenEvent() {

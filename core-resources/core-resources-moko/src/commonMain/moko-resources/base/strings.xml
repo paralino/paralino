@@ -552,6 +552,9 @@
     <string name="groups_sharing_setting_notifyOthers_description">If enabled, group members will receive notification that you started sharing your location.</string>
     <string name="groups_sharing_setting_timeline_title">Location history</string>
     <string name="groups_sharing_setting_timeline_description">If enabled, your location updates will be saved to location history.</string>
+    <string name="groups_sharing_setting_approximateLocation_title">Approximate location</string>
+    <string name="groups_sharing_setting_approximateLocation_description_off">Only share approximate location area even if your location is accurate.</string>
+    <string name="groups_sharing_setting_approximateLocation_description_on">Select the radius of an approximate area. Your precise location will be hidden and replaced by a point somewhere inside the chosen radius.</string>
     <string name="location_sharing_button_start_groups">Start sharing</string>
     <string name="location_sharing_button_start_personal">Start tracking</string>
     <string name="location_sharing_button_stop_groups">Stop sharing</string>

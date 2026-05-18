@@ -597,7 +597,7 @@ fun GroupDetailSharingStatusElement(
 
             if (contract.approximateLocation != null) {
                 Icon(
-                    painter = CoreAppIcons.ShareLocation.asPainterResource(),
+                    painter = CoreAppIcons.NotListedLocation.asPainterResource(),
                     contentDescription = null,
                     modifier = Modifier
                         .padding(start = 5.dp, end = 2.dp)

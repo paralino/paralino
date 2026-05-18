@@ -1,5 +1,6 @@
 package app.paralino.core.ui.components
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateDpAsState
@@ -74,6 +75,7 @@ fun LargeSeekbarSwitch(
     state: LargeSeekbarSwitchState.SeekbarSwitchState,
     title: String,
     description: String? = null,
+    bigTag: String? = null,
     titleStyle: TextStyle = MaterialTheme.typography.body2,
     focusDescription: Boolean = false,
     enabled: Boolean = true,
@@ -104,10 +106,17 @@ fun LargeSeekbarSwitch(
                     onLongClick = onLongClick
                 )
             }
-            .shadow(elevation = elevation, shape = RoundedCornerShape(12.dp), spotColor = Color.DarkGray)
+            .shadow(
+                elevation = elevation,
+                shape = RoundedCornerShape(12.dp),
+                spotColor = Color.DarkGray
+            )
             .clip(RoundedCornerShape(12.dp))
             .background(backgroundColor)
     ) {
+
+        val isSwitchAndSeekOn =
+            state.seekbarState != null && state.switchState != null && state.switchState.checkState
 
         if (state.seekbarState != null && state.switchState?.checkState != false) {
             val seekState = state.seekbarState
@@ -136,7 +145,7 @@ fun LargeSeekbarSwitch(
                     .defaultMinSize(
                         minHeight = size.minHeight
                     )
-                    .fillMaxSize()
+                    .matchParentSize()
                     .swipeable(
                         state = swipeableState,
                         anchors = anchors,
@@ -165,27 +174,47 @@ fun LargeSeekbarSwitch(
                     horizontalArrangement = Arrangement.End,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Icon(
-                        painter = CoreAppIcons.ChevronLeft.asPainterResource(),
-                        contentDescription = null,
-                        modifier = Modifier.size(16.dp),
-                        tint = AppColors.lightSurface
-                    )
-                    Image(
-                        painter = CoreAppIcons.DragIndicator.asPainterResource(),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .width(10.dp)
-                            .height(16.dp),
-                        contentScale = ContentScale.Crop,
-                        colorFilter = ColorFilter.tint(AppColors.lightSurface)
-                    )
-                    Icon(
-                        painter = CoreAppIcons.ChevronRight.asPainterResource(),
-                        contentDescription = null,
-                        modifier = Modifier.size(16.dp),
-                        tint = AppColors.lightSurface
-                    )
+                    Column(
+                        modifier = Modifier.fillMaxHeight(),
+                        verticalArrangement = if (isSwitchAndSeekOn) {
+                            Arrangement.Top
+                        } else {
+                            Arrangement.Center
+                        }
+                    ) {
+                        AnimatedVisibility(
+                            visible = isSwitchAndSeekOn
+                        ) {
+                            Spacer(modifier = Modifier.size(56.dp))
+                        }
+
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                painter = CoreAppIcons.ChevronLeft.asPainterResource(),
+                                contentDescription = null,
+                                modifier = Modifier.size(16.dp),
+                                tint = AppColors.lightSurface.copy(0.8f)
+                            )
+                            Image(
+                                painter = CoreAppIcons.DragIndicator.asPainterResource(),
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .width(10.dp)
+                                    .height(16.dp),
+                                contentScale = ContentScale.Crop,
+                                colorFilter = ColorFilter.tint(AppColors.lightSurface)
+                            )
+                            Icon(
+                                painter = CoreAppIcons.ChevronRight.asPainterResource(),
+                                contentDescription = null,
+                                modifier = Modifier.size(16.dp),
+                                tint = AppColors.lightSurface.copy(0.8f)
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                        }
+                    }
                 }
             }
         }
@@ -228,7 +257,29 @@ fun LargeSeekbarSwitch(
                                 .padding(8.dp),
                             tint = contentColor
                         )
+
+                        if (!bigTag.isNullOrBlank()) {
+                            Column(
+                                modifier = Modifier
+                                    .padding(horizontal = if (hasTopContent) 12.dp else 6.dp)
+                                    .clip(RoundedCornerShape(6.dp))
+                                    .background(backgroundColor.copy(alpha = 0.9f))
+                                    .animateContentSize()
+                                    .padding(vertical = 2.dp, horizontal = 4.dp)
+                            ) {
+                                Text(
+                                    text = bigTag.annotatedBoldCompose(textColor = contentColor),
+                                    maxLines = 2,
+                                    style = MaterialTheme.typography.h6.copy(
+                                        fontWeight = FontWeight.Bold,
+                                        color = contentColor
+                                    )
+                                )
+                            }
+                        }
+
                         Spacer(modifier = Modifier.weight(1f))
+
                     } else {
                         Text(
                             modifier = Modifier
@@ -286,6 +337,9 @@ fun LargeSeekbarSwitch(
 
             Column(
                 modifier = Modifier
+                    .padding(
+                        top = animateDpAsState(if (isSwitchAndSeekOn) 24.dp else 8.dp).value
+                    )
                     .padding(horizontal = if (hasTopContent) 12.dp else 6.dp)
                     .clip(RoundedCornerShape(6.dp))
                     .background(backgroundColor.copy(alpha = 0.9f))
