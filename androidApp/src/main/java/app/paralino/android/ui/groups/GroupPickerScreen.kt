@@ -1,6 +1,5 @@
 package app.paralino.android.ui.groups
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -60,7 +59,7 @@ import app.paralino.core.ui.components.FullWidthActionButton
 import app.paralino.core.ui.components.PlanLimitCount
 import app.paralino.core.ui.components.SettingsSectionHeader
 import app.paralino.core.ui.components.ToolbarButtons
-import app.paralino.core.ui.groups.GroupListItem
+import app.paralino.core.ui.groups.components.GroupListItem
 import app.paralino.core.ui.theme.AppColors
 import dev.icerock.moko.resources.compose.stringResource
 

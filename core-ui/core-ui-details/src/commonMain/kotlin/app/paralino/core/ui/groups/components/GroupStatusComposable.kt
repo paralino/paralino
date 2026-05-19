@@ -1,4 +1,4 @@
-package app.paralino.core.ui.groups
+package app.paralino.core.ui.groups.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement

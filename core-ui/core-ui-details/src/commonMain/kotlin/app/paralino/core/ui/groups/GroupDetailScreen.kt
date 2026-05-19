@@ -2,7 +2,6 @@ package app.paralino.core.ui.groups
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -18,15 +17,12 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.ContentAlpha
-import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
-import androidx.compose.material.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -35,40 +31,34 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import app.paralino.core.MR
 import app.paralino.core.models.Payload
-import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.data
+import app.paralino.core.presentation.common.AlertDialogAction
 import app.paralino.core.presentation.groups.detail.GroupDetailScreenEvent
 import app.paralino.core.presentation.groups.detail.GroupDetailScreenUiEvent
 import app.paralino.core.presentation.groups.detail.GroupDetailViewModel
-import app.paralino.core.presentation.groups.detail.LocationSharingState
 import app.paralino.core.provider.localizedString
-import app.paralino.core.ui.CoreUiState
-import app.paralino.core.ui.components.ConditionErrorItem
 import app.paralino.core.resources.CoreAppIcons
 import app.paralino.core.resources.CoreAppIcons.asPainterResource
+import app.paralino.core.ui.CoreUiState
+import app.paralino.core.ui.components.ConditionErrorItem
 import app.paralino.core.ui.components.DefaultEmptyState
 import app.paralino.core.ui.components.FilledButton
-import app.paralino.core.ui.components.ImageModelImage
-import app.paralino.core.ui.components.LargeSeekbarSwitch
-import app.paralino.core.ui.components.LargeSeekbarSwitchState
 import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.components.NoticeInfoChip
 import app.paralino.core.ui.components.PlanLimitCount
-import app.paralino.core.ui.components.SmallActionButton
-import app.paralino.core.presentation.common.AlertDialogAction
 import app.paralino.core.ui.components.PremiumPlanBannerSmall
+import app.paralino.core.ui.components.SmallActionButton
 import app.paralino.core.ui.components.dialogs.LoadingDialog
 import app.paralino.core.ui.components.dialogs.Show
+import app.paralino.core.ui.groups.components.GroupDetailSharingStatusElement
+import app.paralino.core.ui.groups.components.GroupDetailsHeader
 import app.paralino.core.ui.groups.components.GroupMember
 import app.paralino.core.ui.theme.ButtonStyle
 import app.paralino.core.utils.ConditionErrorType
-import app.paralino.core.utils.extensions.annotatedBoldCompose
 import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.flow.collectLatest
 
@@ -363,254 +353,5 @@ fun GroupDetailScreenCore(
                 )
             }
         }
-    }
-}
-
-@Composable
-fun GroupDetailsHeader(
-    modifier: Modifier = Modifier,
-    groupName: String,
-    groupImage: ImageModel,
-    onMapClick: () -> Unit,
-    onPlacesClick: () -> Unit,
-    onSettingsClick: () -> Unit,
-    onSharingClick: () -> Unit,
-) {
-    Column(
-        modifier = modifier.fillMaxWidth()
-    ) {
-
-        Row(
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            ImageModelImage(
-                imageModel = groupImage,
-                modifier = Modifier
-                    .size(56.dp)
-                    .border(
-                        0.5.dp,
-                        MaterialTheme.colors.secondary.copy(alpha = ContentAlpha.disabled),
-                        RoundedCornerShape(10.dp)
-                    )
-            )
-            Spacer(modifier = Modifier.size(16.dp))
-            Text(
-                text = groupName,
-                style = MaterialTheme.typography.h5.copy(fontWeight = FontWeight.Bold),
-                modifier = Modifier.weight(1f)
-            )
-        }
-
-        Spacer(modifier = Modifier.size(30.dp))
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            LargeSeekbarSwitch(
-                modifier = Modifier
-                    .padding(end = 10.dp)
-                    .fillMaxWidth(0.5f),
-                icon = CoreAppIcons.Map.asPainterResource(),
-                title = stringResource(MR.strings.title_map),
-                description = null,
-                state = LargeSeekbarSwitchState.SeekbarSwitchState(
-                    switchState = LargeSeekbarSwitchState.Switch(
-                        checkState = false,
-                        unCheckedIconRes = CoreAppIcons.ChevronRight
-                    ),
-                    seekbarState = null
-                ),
-                onStateChange = {
-                    onMapClick()
-                }
-            )
-            LargeSeekbarSwitch(
-                modifier = Modifier.fillMaxWidth(),
-                icon = CoreAppIcons.MapsHomeWork.asPainterResource(),
-                title = stringResource(MR.strings.places_list_screen_title),
-                description = null,
-                state = LargeSeekbarSwitchState.SeekbarSwitchState(
-                    switchState = LargeSeekbarSwitchState.Switch(
-                        checkState = false,
-                        unCheckedIconRes = CoreAppIcons.ChevronRight
-                    ),
-                    seekbarState = null
-                ),
-                onStateChange = {
-                    onPlacesClick()
-                }
-            )
-        }
-
-        Spacer(modifier = Modifier.size(10.dp))
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            LargeSeekbarSwitch(
-                modifier = Modifier
-                    .padding(end = 10.dp)
-                    .fillMaxWidth(0.5f),
-                icon = CoreAppIcons.Settings.asPainterResource(),
-                title = stringResource(MR.strings.title_settings),
-                description = null,
-                state = LargeSeekbarSwitchState.SeekbarSwitchState(
-                    switchState = LargeSeekbarSwitchState.Switch(
-                        checkState = false,
-                        unCheckedIconRes = CoreAppIcons.ChevronRight
-                    ),
-                    seekbarState = null
-                ),
-                onStateChange = {
-                    onSettingsClick()
-                }
-            )
-            LargeSeekbarSwitch(
-                modifier = Modifier.fillMaxWidth(),
-                icon = CoreAppIcons.ShareLocation.asPainterResource(),
-                title = stringResource(MR.strings.group_details_sharing_action),
-                description = null,
-                state = LargeSeekbarSwitchState.SeekbarSwitchState(
-                    switchState = LargeSeekbarSwitchState.Switch(
-                        checkState = false,
-                        unCheckedIconRes = CoreAppIcons.ChevronRight
-                    ),
-                    seekbarState = null
-                ),
-                onStateChange = {
-                    onSharingClick()
-                }
-            )
-        }
-
-        Spacer(modifier = Modifier.size(20.dp))
-    }
-}
-
-@Composable
-fun GroupDetailSharingStatusElement(
-    modifier: Modifier = Modifier,
-    contract: LocationSharingState,
-    isPersonalSpace: Boolean
-) {
-    val backgroundColor = MaterialTheme.colors.surface
-    val contentColor = contentColorFor(backgroundColor = backgroundColor)
-    Column(
-        modifier = modifier,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Row(
-            modifier = Modifier
-                .background(
-                    backgroundColor,
-                    RoundedCornerShape(percent = 50)
-                )
-                .padding(horizontal = 8.dp, vertical = 6.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            val sharingTime = contract.endTime
-                ?.let { stringResource(MR.strings.group_details_sharing_status_time, it) }
-                ?: let {
-                    if (isPersonalSpace) {
-                        stringResource(MR.strings.personalSpace_tracking_status_infinite)
-                    } else {
-                        stringResource(MR.strings.group_details_sharing_status_infinite)
-                    }
-                }
-
-            Icon(
-                painter = CoreAppIcons.Timer.asPainterResource(),
-                contentDescription = null,
-                modifier = Modifier.size(14.dp),
-                tint = contentColor
-            )
-            Spacer(modifier = Modifier.size(4.dp))
-            Text(
-                text = sharingTime.annotatedBoldCompose(),
-                style = MaterialTheme.typography.caption.copy(color = contentColor)
-            )
-        }
-
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            if (contract.shareBattery) {
-                Icon(
-                    painter = CoreAppIcons.BatteryChargingFull.asPainterResource(),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .padding(5.dp)
-                        .size(18.dp)
-                )
-            }
-
-            if (contract.shareSpeed) {
-                Icon(
-                    painter = CoreAppIcons.Speed.asPainterResource(),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .padding(5.dp)
-                        .size(18.dp)
-                )
-            }
-
-            if (contract.shareElevation) {
-                Icon(
-                    painter = CoreAppIcons.Elevation.asPainterResource(),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .padding(5.dp)
-                        .size(18.dp)
-                )
-            }
-
-            if (contract.shareNetwork) {
-                Icon(
-                    painter = CoreAppIcons.SignalCell3.asPainterResource(),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .padding(5.dp)
-                        .size(18.dp)
-                )
-            }
-
-            if (contract.shareDeviceStatus) {
-                Icon(
-                    painter = CoreAppIcons.PhoneAndroid.asPainterResource(),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .padding(5.dp)
-                        .size(18.dp)
-                )
-            }
-
-
-            if (contract.saveToHistory) {
-                Icon(
-                    painter = CoreAppIcons.TimelinePathWithPins.asPainterResource(),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .padding(5.dp)
-                        .size(18.dp)
-                )
-            }
-
-            if (contract.approximateLocation != null) {
-                Icon(
-                    painter = CoreAppIcons.NotListedLocation.asPainterResource(),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .padding(start = 5.dp, end = 2.dp)
-                        .padding(vertical = 5.dp)
-                        .size(18.dp)
-                )
-                Text(
-                    text = "(${contract.approximateLocation})",
-                    style = MaterialTheme.typography.overline.copy(letterSpacing = 0.1.sp)
-                )
-                Spacer(modifier = Modifier.size(5.dp))
-            }
-        }
-
     }
 }

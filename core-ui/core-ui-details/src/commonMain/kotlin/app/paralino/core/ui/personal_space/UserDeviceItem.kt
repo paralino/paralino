@@ -45,7 +45,7 @@ import app.paralino.core.presentation.personal_space.UserDeviceItemEvent
 import app.paralino.core.presentation.personal_space.UserDeviceOrSessionItemState
 import app.paralino.core.resources.CoreAppIcons
 import app.paralino.core.resources.CoreAppIcons.asPainterResource
-import app.paralino.core.ui.groups.GroupStatusTagContent
+import app.paralino.core.ui.groups.components.GroupStatusTagContent
 import app.paralino.core.ui.groups.components.GroupMemberActionButton
 import app.paralino.core.ui.groups.components.GroupMemberDeviceDataFlowRow
 import app.paralino.core.ui.groups.components.MemberLocationDistanceFromMeIndicator

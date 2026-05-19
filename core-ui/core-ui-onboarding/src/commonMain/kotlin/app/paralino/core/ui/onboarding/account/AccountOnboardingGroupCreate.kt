@@ -28,7 +28,7 @@ import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.presentation.common.GroupItemState
 import app.paralino.core.provider.localizedString
-import app.paralino.core.ui.groups.GroupListItem
+import app.paralino.core.ui.groups.components.GroupListItem
 import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.extensions.pulsate

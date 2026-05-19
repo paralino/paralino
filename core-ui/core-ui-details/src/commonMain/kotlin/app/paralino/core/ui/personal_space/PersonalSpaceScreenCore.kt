@@ -55,7 +55,7 @@ import app.paralino.core.ui.components.PremiumPlanBannerSmall
 import app.paralino.core.ui.components.SettingsSectionHeader
 import app.paralino.core.ui.components.dialogs.LoadingDialog
 import app.paralino.core.ui.components.dialogs.Show
-import app.paralino.core.ui.groups.GroupDetailSharingStatusElement
+import app.paralino.core.ui.groups.components.GroupDetailSharingStatusElement
 import app.paralino.core.ui.theme.ButtonStyle
 import app.paralino.core.utils.ConditionErrorType
 import dev.icerock.moko.resources.compose.stringResource
