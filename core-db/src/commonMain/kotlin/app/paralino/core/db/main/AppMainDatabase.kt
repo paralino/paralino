@@ -42,6 +42,8 @@ import app.paralino.core.db.main.history.UnconfirmedUploadHistoryDao
 import app.paralino.core.db.main.history.UnsyncedGroupHistoryKeyDao
 import app.paralino.core.db.main.history.UnsyncedGroupHistoryKeyEntity
 import app.paralino.core.db.main.keys.PersonalLocalHistoryKeyEntity
+import app.paralino.core.db.main.location.ApproximateSharedLocationDao
+import app.paralino.core.db.main.location.ApproximateSharedLocationEntity
 import app.paralino.core.db.main.places.PendingPlaceEventsEntity
 import app.paralino.core.db.main.places.PlaceActivityDao
 import app.paralino.core.db.main.places.PlaceActivityEntity
@@ -93,8 +95,9 @@ import kotlinx.coroutines.IO
         GroupLocalHistoryKeyEntity::class,
         UnconfirmedLocationHistoryEntity::class,
         UnsyncedGroupHistoryKeyEntity::class,
+        ApproximateSharedLocationEntity::class,
     ],
-    version = 21,
+    version = 22,
     exportSchema = true
 )
 @ConstructedBy(AppMainDatabaseConstructor::class)
@@ -117,6 +120,7 @@ abstract class AppMainDatabase : RoomDatabase() {
     abstract fun locationHistoryDao(): LocationHistoryDao
     abstract fun unsyncedGroupHistoryKeysDao(): UnsyncedGroupHistoryKeyDao
     abstract fun logoutDao(): LogoutDao
+    abstract fun approximateSharedLocationDao(): ApproximateSharedLocationDao
 
     companion object {
         fun create(builder: SqlDriverFactory): AppMainDatabase {

@@ -369,6 +369,7 @@ data class PlacesEmptyStateMarkers(
         lat = 0.0,
         lng = 0.0,
         accuracy = 10f,
+        isApproximate = false,
         shouldShowApproximateCircle = false
     ),
     val heidi: MapPinData = MapPinData(
@@ -385,6 +386,7 @@ data class PlacesEmptyStateMarkers(
         lat = 0.0,
         lng = 0.0,
         accuracy = 10f,
+        isApproximate = false,
         shouldShowApproximateCircle = false
     ),
     val home: MapPinData = MapPinData(
@@ -401,6 +403,7 @@ data class PlacesEmptyStateMarkers(
         lat = 0.0,
         lng = 0.0,
         accuracy = 100f,
+        isApproximate = false,
         shouldShowApproximateCircle = true
     ),
     val school: MapPinData = MapPinData(
@@ -417,6 +420,7 @@ data class PlacesEmptyStateMarkers(
         lat = 0.0,
         lng = 0.0,
         accuracy = 150f,
+        isApproximate = false,
         shouldShowApproximateCircle = true
     )
 )

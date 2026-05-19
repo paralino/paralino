@@ -27,7 +27,8 @@ data class LocationDataModel constructor(
      * Indicate if location data in this model is fake
      * Used when user clears their location so we put dummy data and encrypt it
      */
-    val isMasked: Boolean = false
+    val isMasked: Boolean = false,
+    val isApproximate: Boolean = false,
 ) {
     val shouldShowApproximateCircle get() = accuracy > 5f
     val isAccurateForPinType get() = accuracy < 50f

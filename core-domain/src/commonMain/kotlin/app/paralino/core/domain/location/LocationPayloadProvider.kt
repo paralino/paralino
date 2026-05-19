@@ -30,6 +30,7 @@ class LocationPayloadProvider(
     private val memberDeviceKeyRotation: IMemberDeviceKeyRotation,
     private val personalDeviceKeyRotation: IPersonalDeviceCryptoKeyRotation,
     private val cryptoCore: CryptoCore,
+    private val approximateLocationObfuscator: ApproximateLocationObfuscator,
 ) {
 
     suspend fun getLocationPayload(
@@ -51,15 +52,31 @@ class LocationPayloadProvider(
             is LocationPayloadStatus.Success -> {
                 val status = memberDeviceStatusProvider.getStatus(groupId = groupId, contract = contract)
                 val locationData = safeLet(data, contract) { data, contract ->
+                    val approximateRadius = contract.approximateLocationInMeters
+                    val isSharingApproximate = approximateRadius != null
+                    val adjustedCoordinates = if (approximateRadius != null) {
+                        approximateLocationObfuscator.obfuscate(
+                            groupId = groupId,
+                            trueLat = data.lat,
+                            trueLng = data.lng,
+                            radiusMeters = approximateRadius
+                        )
+                    } else {
+                        null
+                    }
+
                     LocationDataModel(
                         timeUTC = data.timeUTC,
                         endTimeUTC = contract.endTimeUTC?.takeIf { contract.shareDeviceStatus },
-                        lat = data.lat.roundToPrecision(decimalPlaces = 6),
-                        lng = data.lng.roundToPrecision(decimalPlaces = 6),
-                        accuracy = data.accuracy,
-                        speed = data.speed?.takeIf { contract.shareSpeed && it != 0f },
+                        lat = (adjustedCoordinates?.lat ?: data.lat).roundToPrecision(decimalPlaces = 6),
+                        lng = (adjustedCoordinates?.lng ?: data.lng).roundToPrecision(decimalPlaces = 6),
+                        accuracy = approximateRadius?.toFloat() ?: data.accuracy,
+                        speed = data.speed?.takeIf {
+                            contract.shareSpeed && it != 0f && !isSharingApproximate
+                        },
                         altitude = data.altitude?.takeIf { contract.shareElevation && it != 0f },
-                        isMasked = false
+                        isMasked = false,
+                        isApproximate = isSharingApproximate && contract.shareDeviceStatus,
                     )
                 }
 

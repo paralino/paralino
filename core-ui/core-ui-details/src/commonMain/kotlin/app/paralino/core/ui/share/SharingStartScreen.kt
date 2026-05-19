@@ -101,17 +101,6 @@ fun SharingStartScreenCore(
     var scrollToPosition by remember { mutableStateOf(0F) }
     val scrollState = rememberScrollState()
 
-    val approxLocationSwitchState by rememberSeekbarState(
-        key = state,
-        state = LargeSeekbarSwitchState.SeekbarSwitchState(
-            seekbarState = LargeSeekbarSwitchState.Seekbar(
-                seekbarProgress = state.approximateLocationIndex + 1,
-                seekbarRange = IntRange(1, state.approximateLocationPresetsMeters.size)
-            ),
-            switchState = LargeSeekbarSwitchState.Switch(state.shareApproximateLocation)
-        )
-    )
-
     val seekbarState by rememberSeekbarState(
         key = state,
         state = LargeSeekbarSwitchState.SeekbarSwitchState(
@@ -523,24 +512,6 @@ fun SharingStartScreenCore(
                                     vm.turnOnNetworkSharing(it)
                                 }
                             )
-//                LargeSeekbarSwitch(
-//                    modifier = Modifier.fillMaxWidth(),
-//                    icon = AppIcons.ShareLocation,
-//                    title = stringResource(id = MR.strings.groups_sharing_setting_approximate_location),
-//                    description = if (state.shareApproximateLocation)
-//                        DistanceFormatter.getDistanceSmall(
-//                            LocalContext.current,
-//                            state.approximateLocationMeters.toFloat()
-//                        )
-//                    else null,
-//                    state = approxLocationSwitchState,
-//                    onProgressChange = {
-//                        vm.approximateLocationChanged(it - 1)
-//                    },
-//                    onStateChange = {
-//                        vm.turnOnApproximateLocationSharing(it)
-//                    }
-//                )
                         }
                     }
 
@@ -561,6 +532,43 @@ fun SharingStartScreenCore(
                             vm.turnOnLocationHistory(it)
                         }
                     )
+
+                    if (state.showApproximateLocation) {
+                        Spacer(modifier = Modifier.size(10.dp))
+                        LargeSeekbarSwitch(
+                            modifier = Modifier.fillMaxWidth(),
+                            icon = CoreAppIcons.NotListedLocation.asPainterResource(),
+                            title = stringResource(MR.strings.groups_sharing_setting_approximateLocation_title),
+                            description = if (state.shareApproximateLocation) {
+                                stringResource(MR.strings.groups_sharing_setting_approximateLocation_description_on)
+                            } else {
+                                stringResource(MR.strings.groups_sharing_setting_approximateLocation_description_off)
+                            },
+                            bigTag = if (state.shareApproximateLocation)
+                                state.formattedApproximateLocation
+                            else null,
+                            state = rememberSeekbarState(
+                                key = state,
+                                state = LargeSeekbarSwitchState.SeekbarSwitchState(
+                                    seekbarState = LargeSeekbarSwitchState.Seekbar(
+                                        seekbarProgress = state.approximateLocationIndex + 1,
+                                        seekbarRange = IntRange(
+                                            1,
+                                            state.approximateLocationPresets.size
+                                        )
+                                    ),
+                                    switchState = LargeSeekbarSwitchState.Switch(state.shareApproximateLocation)
+                                )
+                            ).value,
+                            focusDescription = false,
+                            onProgressChange = {
+                                vm.approximateLocationChanged(it - 1)
+                            },
+                            onStateChange = {
+                                vm.turnOnApproximateLocationSharing(it)
+                            }
+                        )
+                    }
 
                     if (state.showDeviceStatus) {
                         Spacer(modifier = Modifier.size(10.dp))

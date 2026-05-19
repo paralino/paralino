@@ -1,6 +1,7 @@
 package app.paralino.core.repo.location
 
 import app.paralino.core.db.MainDatabaseHelper
+import app.paralino.core.domain.location.ApproximateSharedLocationLocalSource
 import app.paralino.core.db.main.groups.MemberEntityBatterySettingsUpdate
 import app.paralino.core.db.main.groups.MemberLocationEntityDataUpdate
 import app.paralino.core.logg
@@ -17,7 +18,8 @@ import kotlinx.coroutines.flow.filterNotNull
 
 class LocationLocalDataSource(
     private val database: MainDatabaseHelper,
-    private val mapper: MemberWithLocationsMapperLocal
+    private val mapper: MemberWithLocationsMapperLocal,
+    private val approximateSharedLocationLocalSource: ApproximateSharedLocationLocalSource,
 ) {
 
     suspend fun createOrUpdateMembersWithoutSettings(vararg data: MemberDocumentRaw) {
@@ -53,6 +55,7 @@ class LocationLocalDataSource(
     }
 
     suspend fun clearMemberLocationData(groupOrSpaceId: GroupOrSpaceId, locationId: String) {
+        approximateSharedLocationLocalSource.delete(groupId = groupOrSpaceId)
         if (groupOrSpaceId.isPersonalSpace) {
             database.userDeviceDao.clearLocationDataForDevice(locationId = locationId)
         } else {

@@ -30,6 +30,8 @@ import app.paralino.core.domain.location.ClearUserLocationUseCase
 import app.paralino.core.domain.location.GeofenceRegistrationMonitor
 import app.paralino.core.domain.location.GetMemberWithLocationsUseCase
 import app.paralino.core.domain.location.LocationCacheRepository
+import app.paralino.core.domain.location.ApproximateLocationObfuscator
+import app.paralino.core.domain.location.ApproximateSharedLocationLocalSource
 import app.paralino.core.domain.location.LocationPayloadProvider
 import app.paralino.core.domain.location.LocationRequestUseCase
 import app.paralino.core.domain.location.LocationUploadEngine
@@ -248,7 +250,9 @@ val mappersModule = module {
 
 val dataSourceModule = module {
     single(createdAtStart = true) { AppPrefs(get()) }
-    single { LocationLocalDataSource(get(), get()) }
+    single { ApproximateSharedLocationLocalSource(get(), get(), get()) }
+    single { ApproximateLocationObfuscator(get(), get(), get()) }
+    single { LocationLocalDataSource(get(), get(), get()) }
     single { SharingContractsLocalDataSource(get(), get()) }
     single { UserLocalDataSource(get(), get()) }
     single { UserPersonalSpaceLocalDataSource(get(), get(), get(), get(), get(), get(), get()) }
@@ -347,7 +351,7 @@ val coreModule = module {
     single { NetworkQualityMonitor() }
     single { AppAccountStateMonitor(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { MemberDeviceStatusProvider(get(), get(), get(), get()) }
-    single { LocationPayloadProvider(get(), get(), get(), get(), get(), get(), get()) }
+    single { LocationPayloadProvider(get(), get(), get(), get(), get(), get(), get(), get()) }
     single { MemberDeviceStatusProcessor(get(), get(), get(), get(), get(), get(), get()) }
     single { RevokeDeviceActiveStatusUseCase(get(), get(), get(), get(), get()) }
     single { UserCryptoKeyRefreshUseCase(get(), get(), get(), get()) }

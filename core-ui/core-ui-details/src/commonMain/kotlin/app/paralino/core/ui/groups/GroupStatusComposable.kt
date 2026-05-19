@@ -48,7 +48,8 @@ fun RowScope.GroupStatusTagContent(
     val tagIconColor = when (status) {
         GroupStatusTagType.SHARING_ACTIVE,
         GroupStatusTagType.SHARING_ACTIVE_NO_LOCATION,
-        GroupStatusTagType.SHARING_ACTIVE_NOT_ACCURATE -> AppColors.accent
+        GroupStatusTagType.SHARING_ACTIVE_NOT_ACCURATE,
+        GroupStatusTagType.SHARING_ACTIVE_LOCATION_HIDDEN -> AppColors.accent
 
         GroupStatusTagType.UNVERIFIED,
         GroupStatusTagType.GPS_OFF,
@@ -60,6 +61,8 @@ fun RowScope.GroupStatusTagContent(
         GroupStatusTagType.IDLE_NO_LOCATION,
         GroupStatusTagType.IDLE_NOT_ACCURATE,
         GroupStatusTagType.INACTIVE_NOT_ACCURATE,
+        GroupStatusTagType.IDLE_LOCATION_HIDDEN,
+        GroupStatusTagType.INACTIVE_LOCATION_HIDDEN,
         GroupStatusTagType.BATTERY_SAVING -> AppColors.highlightGold
 
         GroupStatusTagType.INACTIVE,
@@ -68,14 +71,15 @@ fun RowScope.GroupStatusTagContent(
     }
 
     val tagBackgroundColor = when (status) {
-        GroupStatusTagType.SHARING_ACTIVE_NOT_ACCURATE-> AppColors.highlightGold
+        GroupStatusTagType.SHARING_ACTIVE_NOT_ACCURATE,
+        GroupStatusTagType.SHARING_ACTIVE_LOCATION_HIDDEN -> AppColors.highlightGold
         else -> tagIconColor
     }
 
-    val tagTextColor = when (tagIconColor) {
+    val tagTextColor = when (tagBackgroundColor) {
         AppColors.highlightGold -> AppColors.darkBackground
 
-        else -> MaterialTheme.colors.contentColorFor(tagIconColor)
+        else -> MaterialTheme.colors.contentColorFor(tagBackgroundColor)
             .takeOrElse { MaterialTheme.colors.onPrimary }
     }
 
@@ -86,6 +90,10 @@ fun RowScope.GroupStatusTagContent(
         GroupStatusTagType.INACTIVE_NOT_ACCURATE,
         GroupStatusTagType.SHARING_ACTIVE_NOT_ACCURATE,
         GroupStatusTagType.IDLE_NOT_ACCURATE -> stringResource(resource = MR.strings.group_members_status_location_inaccurate)
+
+        GroupStatusTagType.SHARING_ACTIVE_LOCATION_HIDDEN,
+        GroupStatusTagType.IDLE_LOCATION_HIDDEN,
+        GroupStatusTagType.INACTIVE_LOCATION_HIDDEN -> stringResource(resource = MR.strings.group_members_status_location_hidden)
 
         GroupStatusTagType.OVER_LIMITS -> stringResource(resource = MR.strings.plan_limit_alert_title)
         GroupStatusTagType.UNVERIFIED -> stringResource(resource = MR.strings.dashboard_groups_section_unverified)
@@ -104,8 +112,11 @@ fun RowScope.GroupStatusTagContent(
     val tagIcon = when (status) {
         GroupStatusTagType.SHARING_ACTIVE,
         GroupStatusTagType.SHARING_ACTIVE_NOT_ACCURATE,
+        GroupStatusTagType.SHARING_ACTIVE_LOCATION_HIDDEN,
         GroupStatusTagType.IDLE_NOT_ACCURATE,
+        GroupStatusTagType.IDLE_LOCATION_HIDDEN,
         GroupStatusTagType.INACTIVE_NOT_ACCURATE,
+        GroupStatusTagType.INACTIVE_LOCATION_HIDDEN,
         GroupStatusTagType.IDLE -> null
 
         GroupStatusTagType.SHARING_ACTIVE_NO_LOCATION -> CoreAppIcons.ShareLocation.asPainterResource()

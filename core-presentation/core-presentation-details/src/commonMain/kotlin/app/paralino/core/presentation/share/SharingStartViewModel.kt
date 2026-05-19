@@ -21,8 +21,11 @@ import app.paralino.core.presentation.common.SnackbarDuration
 import app.paralino.core.presentation.common.nameRes
 import app.paralino.core.presentation.common.GroupItemState
 import app.paralino.core.presentation.share.SharingStartScreenEvent.AskForPermission
+import app.paralino.core.provider.DistanceType
+import app.paralino.core.provider.FormattingFractionsMode
 import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.provider.IValueFormatter
+import app.paralino.core.provider.MeasurementSystemType
 import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.base.RemoteConfigRepository
@@ -279,6 +282,7 @@ class SharingStartViewModel(
                     devicesLimit = 0,
                     showNotifyOthers = false,
                     showDeviceStatus = false,
+                    showApproximateLocation = false,
                     isPremiumSectionVisible = false,
                     notifyOthers = false,
                     sharingPresetsMillis = presets
@@ -336,6 +340,7 @@ class SharingStartViewModel(
 
                                 showNotifyOthers = !isSharingActive && (isGroupPremium || group.group.group.isCurrentUserOwner),
                                 showDeviceStatus = true,
+                                showApproximateLocation = true,
                                 showDuration = !isSharingActive,
                                 showMetadata = true,
 
@@ -374,6 +379,7 @@ class SharingStartViewModel(
                                 isDeviceRegistered = isDeviceRegistered,
                                 showNotifyOthers = false,
                                 showDeviceStatus = false,
+                                showApproximateLocation = false,
                                 showDuration = false,
                                 showMetadata = false,
                                 formattedEndTime = endTime,
@@ -417,7 +423,7 @@ class SharingStartViewModel(
                     shareElevation = _uiState.value.shareElevation,
                     shareNetwork = _uiState.value.shareNetwork,
                     shareDeviceStatus = _uiState.value.shareDeviceStatus,
-                    approximateLocationInMeters = _uiState.value.approximateLocationMeters.takeIf { _uiState.value.shareApproximateLocation },
+                    approximateLocationInMeters = _uiState.value.approximateLocationValue.meters.takeIf { _uiState.value.shareApproximateLocation },
                     saveToHistory = _uiState.value.saveToHistory,
                     isNotifyOthersOn = _uiState.value.notifyOthers,
                     sharingDurationPreset = _uiState.value.sharingTimeMillis,
@@ -524,7 +530,7 @@ class SharingStartViewModel(
             shareElevation = _uiState.value.shareElevation,
             shareNetwork = _uiState.value.shareNetwork,
             shareDeviceStatus = _uiState.value.shareDeviceStatus,
-            approximateLocationInMeters = _uiState.value.approximateLocationMeters.takeIf { _uiState.value.shareApproximateLocation },
+            approximateLocationInMeters = _uiState.value.approximateLocationValue.meters.takeIf { _uiState.value.shareApproximateLocation },
             saveToHistory = _uiState.value.saveToHistory,
             isNotifyOthersOn = _uiState.value.notifyOthers,
             sharingDurationPreset = _uiState.value.sharingTimeMillis,
@@ -590,7 +596,17 @@ class SharingStartViewModel(
 
     fun turnOnApproximateLocationSharing(state: Boolean) {
         _uiState.update {
-            it.copy(shareApproximateLocation = state)
+            it.copy(
+                shareApproximateLocation = state,
+                formattedApproximateLocation = valueFormatter.getDistanceSmall(
+                    meters = when (valueFormatter.measurementSystem) {
+                        MeasurementSystemType.METRIC -> it.approximateLocationValue.meters.toDouble()
+                        MeasurementSystemType.IMPERIAL -> it.approximateLocationValue.metersForImperial
+                    },
+                    distanceType = DistanceType.DISTANCE,
+                    fractionsMode = FormattingFractionsMode.MINIMAL
+                )
+            )
         }
     }
 
@@ -602,9 +618,18 @@ class SharingStartViewModel(
 
     fun approximateLocationChanged(index: Int) {
         _uiState.update {
+            val approximateLocationValue = it.approximateLocationPresets.getOrNull(index)
+                ?: it.approximateLocationValue
             it.copy(
-                approximateLocationMeters = it.approximateLocationPresetsMeters.getOrNull(index)
-                    ?: it.approximateLocationMeters
+                approximateLocationValue = approximateLocationValue,
+                formattedApproximateLocation = valueFormatter.getDistanceSmall(
+                    meters = when (valueFormatter.measurementSystem) {
+                        MeasurementSystemType.METRIC -> approximateLocationValue.meters.toDouble()
+                        MeasurementSystemType.IMPERIAL -> approximateLocationValue.metersForImperial
+                    },
+                    distanceType = DistanceType.DISTANCE,
+                    fractionsMode = FormattingFractionsMode.MINIMAL
+                )
             )
         }
     }
@@ -754,6 +779,11 @@ class SharingStartViewModel(
                 ?: this.notifyOthers,
             sharingTimeMillis = unfilteredContract?.sharingDurationPreset
                 ?: this.sharingTimeMillis,
+            shareApproximateLocation = unfilteredContract?.let { it.approximateLocationInMeters != null }
+                ?: this.shareApproximateLocation,
+            approximateLocationValue = unfilteredContract?.approximateLocationInMeters?.let {
+                ApproximateLocationDistancePair.pairForSelectedMeters(meters = it)
+            } ?: this.approximateLocationValue
         )
     }
 }

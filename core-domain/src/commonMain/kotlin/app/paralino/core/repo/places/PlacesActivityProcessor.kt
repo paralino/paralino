@@ -60,8 +60,12 @@ class PlacesActivityProcessor(
 
         placeActivityUploadEngine.syncPendingEventsInBackground()
 
-        val places = local.getAllPlacesOnce().filter {
-            locationSharingManager.isSharingActiveForGroup(it.groupOrSpaceId) && it.canSendAlert
+        val places = local.getAllPlacesOnce().filter { place ->
+            val contract = locationSharingManager.currentSharingContractForGroup(place.groupOrSpaceId)
+            val approximateLocationRadiusCheck = contract?.approximateLocationInMeters?.let {
+                (place.data.data?.radiusMeters ?: 0) > it
+            } ?: true
+            contract != null && approximateLocationRadiusCheck && place.canSendAlert
         }
         places.forEach { place ->
             place.data.data?.let { placeData ->
@@ -589,7 +593,6 @@ class PlacesActivityProcessor(
         // in that case accuracy tends to worsen so in order to check for place exit we want to make sure user definitely left place
         // also adding few meters of buffer to improve filter
         val exitThreshold = when {
-            // TODO check for coarse location
             location.accuracy > 500 -> {
                 // if accuracy is quite bad, only consider exit if user is very far away
                 2000f

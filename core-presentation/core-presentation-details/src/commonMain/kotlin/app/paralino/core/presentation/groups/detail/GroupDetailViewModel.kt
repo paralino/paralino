@@ -34,9 +34,11 @@ import app.paralino.core.presentation.common.PlaceListItemData
 import app.paralino.core.presentation.common.SnackbarDuration
 import app.paralino.core.presentation.common.onAction
 import app.paralino.core.presentation.groups.detail.GroupDetailScreenEvent.OpenRawMemberData
+import app.paralino.core.presentation.share.ApproximateLocationDistancePair
 import app.paralino.core.provider.DistanceType
 import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.provider.IValueFormatter
+import app.paralino.core.provider.MeasurementSystemType
 import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.base.AppConfigRepository
@@ -209,8 +211,13 @@ class GroupDetailViewModel(
                     shareDeviceStatus = it.shareDeviceStatus,
                     saveToHistory = it.saveToHistory,
                     approximateLocation = it.approximateLocationInMeters?.let {
+                        ApproximateLocationDistancePair.pairForSelectedMeters(meters = it)
+                    }?.let {
                         valueFormatter.getDistanceSmall(
-                            meters = it.toDouble(),
+                            meters = when (valueFormatter.measurementSystem) {
+                                MeasurementSystemType.METRIC -> it.meters.toDouble()
+                                MeasurementSystemType.IMPERIAL -> it.metersForImperial
+                            },
                             distanceType = DistanceType.DISTANCE
                         )
                     }

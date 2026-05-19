@@ -21,6 +21,7 @@ data class MapPinData constructor(
     val image: ImageModel?,
     val lat: Double,
     val lng: Double,
+    val isApproximate: Boolean,
     val title: String? = null,
     val timeInfo: String? = null,
     val accuracy: Float = 0f,
@@ -46,6 +47,7 @@ data class MapPinData constructor(
         lat = location.locationData.data!!.lat,
         lng = location.locationData.data!!.lng,
         accuracy = location.locationData.data?.accuracy ?: 0f,
+        isApproximate = location.locationData.data?.isApproximate == true,
         shouldShowApproximateCircle = location.locationData.data?.shouldShowApproximateCircle ?: false
     )
 
@@ -71,6 +73,7 @@ data class MapPinData constructor(
         lat = location.lat,
         lng = location.lng,
         accuracy = location.acc,
+        isApproximate = false,
         shouldShowApproximateCircle = location.acc > 5
     )
 
@@ -96,6 +99,7 @@ data class MapPinData constructor(
         lat = cluster.lat,
         lng = cluster.lng,
         accuracy = cluster.accuracy,
+        isApproximate = false,
         shouldShowApproximateCircle = cluster.accuracy > 5
     )
 

@@ -39,6 +39,9 @@ interface GroupRelatedEntitiesDao {
     @Query("DELETE FROM groupEntity WHERE id = :groupId")
     suspend fun deleteGroup(groupId: String)
 
+    @Query("DELETE FROM approximateSharedLocationEntity WHERE groupId = :groupId")
+    suspend fun deleteApproximateSharedLocationForGroup(groupId: String)
+
     @Query("DELETE FROM groupEntity")
     suspend fun clearAllGroupsObject()
 
@@ -374,6 +377,7 @@ interface GroupRelatedEntitiesDao {
         clearAllUnconfirmedLocationHistoryForGroup(groupId = groupId)
         clearAllLocalHistoryKeysForGroup(groupId = groupId)
         clearAllUnsyncedHistoryKeysForGroup(groupId = groupId)
+        deleteApproximateSharedLocationForGroup(groupId = groupId)
     }
 
     @Transaction
