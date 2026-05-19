@@ -4,12 +4,9 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -18,7 +15,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.ContentAlpha
@@ -31,12 +27,11 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import app.paralino.core.MR
-import app.paralino.core.models.base.ImageModel
 import app.paralino.core.presentation.common.AlertDialogAction
+import app.paralino.core.presentation.groups.detail.GroupSpaceFocusedFeatureChildItem
 import app.paralino.core.presentation.personal_space.PersonalSpaceScreenEvent
 import app.paralino.core.presentation.personal_space.PersonalSpaceScreenUiEvent
 import app.paralino.core.presentation.personal_space.PersonalSpaceViewModel
@@ -46,16 +41,13 @@ import app.paralino.core.resources.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.CoreUiState
 import app.paralino.core.ui.components.ConditionErrorItem
 import app.paralino.core.ui.components.FilledButton
-import app.paralino.core.ui.components.ImageModelImage
-import app.paralino.core.ui.components.LargeSeekbarSwitch
-import app.paralino.core.ui.components.LargeSeekbarSwitchState
 import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.components.NoticeInfoChip
 import app.paralino.core.ui.components.PremiumPlanBannerSmall
 import app.paralino.core.ui.components.SettingsSectionHeader
 import app.paralino.core.ui.components.dialogs.LoadingDialog
 import app.paralino.core.ui.components.dialogs.Show
-import app.paralino.core.ui.groups.components.GroupDetailSharingStatusElement
+import app.paralino.core.ui.groups.components.GroupSpaceDetailsHeader
 import app.paralino.core.ui.theme.ButtonStyle
 import app.paralino.core.utils.ConditionErrorType
 import dev.icerock.moko.resources.compose.stringResource
@@ -71,6 +63,7 @@ fun PersonalSpaceScreenCore(
     openMap: () -> Unit,
     openTimeline: () -> Unit,
     openPlaces: () -> Unit,
+    openPlace: (GroupSpaceFocusedFeatureChildItem) -> Unit,
     openSharing: () -> Unit,
     openPaywall: () -> Unit,
     askNotificationPermission: () -> Unit,
@@ -88,6 +81,7 @@ fun PersonalSpaceScreenCore(
             when (event) {
                 PersonalSpaceScreenEvent.OpenPaywall -> openPaywall()
                 PersonalSpaceScreenEvent.OpenPlaces -> openPlaces()
+                is PersonalSpaceScreenEvent.OpenPlace -> openPlace(event.item)
                 PersonalSpaceScreenEvent.OpenSharingScreen -> openSharing()
                 PersonalSpaceScreenEvent.OpenTimeline -> openTimeline()
                 PersonalSpaceScreenEvent.OpenMap -> openMap()
@@ -216,32 +210,22 @@ fun PersonalSpaceScreenCore(
                     }
                 }
 
-                if (uiState.errors.isNotEmpty())
+                if (uiState.errors.isNotEmpty()) {
                     this.item { Spacer(modifier = Modifier.size(10.dp)) }
-
-                if (uiState.sharingStatus != null) {
-                    this.item(key = "sharing_status") {
-                        Box(
-                            modifier = Modifier.fillMaxWidth(),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            GroupDetailSharingStatusElement(
-                                contract = uiState.sharingStatus!!,
-                                isPersonalSpace = true
-                            )
-                        }
-                    }
-                    this.item { Spacer(modifier = Modifier.size(20.dp)) }
                 }
 
                 this.item(key = "main_header") {
-                    PersonalSpaceHeader(
-                        userName = uiState.userName,
-                        userImage = uiState.userImage,
-                        onSettingsClick = { openSettings() },
+                    GroupSpaceDetailsHeader(
+                        modifier = Modifier.animateItem(),
+                        isPersonalSpace = true,
+                        groupName = uiState.userName,
+                        groupImage = uiState.userImage,
+                        sharingStatus = uiState.sharingStatus,
+                        featurePlaces = uiState.placesFeatureItems,
                         onPlacesClick = { vm.onEvent(PersonalSpaceScreenUiEvent.OpenPlaces) },
-                        onTimelineClick = { vm.onEvent(PersonalSpaceScreenUiEvent.OpenTimeline) },
+                        onPlaceClick = { vm.onEvent(PersonalSpaceScreenUiEvent.OpenPlace(it)) },
                         onMapClick = { vm.onEvent(PersonalSpaceScreenUiEvent.OpenMap) },
+                        onSettingsClick = openSettings,
                         onSharingClick = { vm.onEvent(PersonalSpaceScreenUiEvent.OpenSharingScreen) },
                     )
                 }
@@ -350,131 +334,5 @@ fun PersonalSpaceScreenCore(
 
     if (uiState.loadingAction) {
         LoadingDialog(text = stringResource(MR.strings.login_step_generic_loading), progress = null)
-    }
-}
-
-@Composable
-fun PersonalSpaceHeader(
-    modifier: Modifier = Modifier,
-    userName: String,
-    userImage: ImageModel?,
-    onSettingsClick: () -> Unit,
-    onPlacesClick: () -> Unit,
-    onTimelineClick: () -> Unit,
-    onMapClick: () -> Unit,
-    onSharingClick: () -> Unit,
-) {
-    Column(
-        modifier = modifier.fillMaxWidth()
-    ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            if (userImage != null) {
-                ImageModelImage(
-                    imageModel = userImage,
-                    modifier = Modifier
-                        .size(56.dp)
-                        .border(
-                            0.5.dp,
-                            MaterialTheme.colors.secondary.copy(alpha = ContentAlpha.disabled),
-                            RoundedCornerShape(10.dp)
-                        )
-                )
-                Spacer(modifier = Modifier.size(16.dp))
-            }
-
-            Text(
-                text = userName,
-                style = MaterialTheme.typography.h5.copy(fontWeight = FontWeight.Bold),
-                modifier = Modifier.weight(1f)
-            )
-        }
-
-        Spacer(modifier = Modifier.size(30.dp))
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            LargeSeekbarSwitch(
-                modifier = Modifier
-                    .padding(end = 10.dp)
-                    .fillMaxWidth(0.5f),
-                icon = CoreAppIcons.Map.asPainterResource(),
-                title = stringResource(MR.strings.title_map),
-                description = null,
-                state = LargeSeekbarSwitchState.SeekbarSwitchState(
-                    switchState = LargeSeekbarSwitchState.Switch(
-                        checkState = false,
-                        unCheckedIconRes = CoreAppIcons.ChevronRight
-                    ),
-                    seekbarState = null
-                ),
-                onStateChange = {
-                    onMapClick()
-                }
-            )
-            LargeSeekbarSwitch(
-                modifier = Modifier.fillMaxWidth(),
-                icon = CoreAppIcons.MapsHomeWork.asPainterResource(),
-                title = stringResource(MR.strings.places_list_screen_title),
-                description = null,
-                state = LargeSeekbarSwitchState.SeekbarSwitchState(
-                    switchState = LargeSeekbarSwitchState.Switch(
-                        checkState = false,
-                        unCheckedIconRes = CoreAppIcons.ChevronRight
-                    ),
-                    seekbarState = null
-                ),
-                onStateChange = {
-                    onPlacesClick()
-                }
-            )
-        }
-
-        Spacer(modifier = Modifier.size(10.dp))
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            LargeSeekbarSwitch(
-                modifier = Modifier
-                    .padding(end = 10.dp)
-                    .fillMaxWidth(0.5f),
-                icon = CoreAppIcons.Settings.asPainterResource(),
-                title = stringResource(MR.strings.title_settings),
-                description = null,
-                state = LargeSeekbarSwitchState.SeekbarSwitchState(
-                    switchState = LargeSeekbarSwitchState.Switch(
-                        checkState = false,
-                        unCheckedIconRes = CoreAppIcons.ChevronRight
-                    ),
-                    seekbarState = null
-                ),
-                onStateChange = {
-                    onSettingsClick()
-                }
-            )
-            LargeSeekbarSwitch(
-                modifier = Modifier.fillMaxWidth(),
-                icon = CoreAppIcons.ShareLocation.asPainterResource(),
-                title = stringResource(MR.strings.personalSpace_tracking_title),
-                description = null,
-                state = LargeSeekbarSwitchState.SeekbarSwitchState(
-                    switchState = LargeSeekbarSwitchState.Switch(
-                        checkState = false,
-                        unCheckedIconRes = CoreAppIcons.ChevronRight
-                    ),
-                    seekbarState = null
-                ),
-                onStateChange = {
-                    onSharingClick()
-                }
-            )
-        }
-
-        Spacer(modifier = Modifier.size(20.dp))
     }
 }

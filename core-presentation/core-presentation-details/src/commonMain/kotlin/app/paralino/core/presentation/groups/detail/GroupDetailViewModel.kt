@@ -119,7 +119,7 @@ class GroupDetailViewModel(
         ) { deviceStatus, group, sharingStatus, blocklist, places, myLocation ->
             groupData.update { group }
             val placesData = places
-                .filter { it.data.data?.lat != null && it.data.data?.lng != null }
+                .filter { it.data.data != null }
                 .map { PlaceListItemData(it) }
             val members = group.members
                 .sortedBy { it.member.name }
@@ -224,6 +224,15 @@ class GroupDetailViewModel(
                 )
             }
 
+            val featureItemsPlaces = placesData.map {
+                GroupSpaceFocusedFeatureChildItem(
+                    itemId = it.id,
+                    groupOrSpaceId = it.groupOrSpaceId,
+                    name = it.name,
+                    image = it.image
+                )
+            }
+
             val membersLimit = group.group.membersLimit(remoteConfigRepo.getConfigOnce())
             val currentState = _uiState.value
             GroupDetailScreenState(
@@ -234,6 +243,7 @@ class GroupDetailViewModel(
                 image = group.image,
                 sharingStatus = sharingState,
                 members = members,
+                placesFeatureItems = featureItemsPlaces,
                 focusedMemberId = currentState.data?.focusedMemberId,
                 membersLimit = membersLimit,
                 canShowMembersLimit = group.isCurrentUserOwner || membersLimit < members.size,

@@ -5,7 +5,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -40,6 +39,7 @@ import app.paralino.core.presentation.common.AlertDialogAction
 import app.paralino.core.presentation.groups.detail.GroupDetailScreenEvent
 import app.paralino.core.presentation.groups.detail.GroupDetailScreenUiEvent
 import app.paralino.core.presentation.groups.detail.GroupDetailViewModel
+import app.paralino.core.presentation.groups.detail.GroupSpaceFocusedFeatureChildItem
 import app.paralino.core.provider.localizedString
 import app.paralino.core.resources.CoreAppIcons
 import app.paralino.core.resources.CoreAppIcons.asPainterResource
@@ -54,8 +54,7 @@ import app.paralino.core.ui.components.PremiumPlanBannerSmall
 import app.paralino.core.ui.components.SmallActionButton
 import app.paralino.core.ui.components.dialogs.LoadingDialog
 import app.paralino.core.ui.components.dialogs.Show
-import app.paralino.core.ui.groups.components.GroupDetailSharingStatusElement
-import app.paralino.core.ui.groups.components.GroupDetailsHeader
+import app.paralino.core.ui.groups.components.GroupSpaceDetailsHeader
 import app.paralino.core.ui.groups.components.GroupMember
 import app.paralino.core.ui.theme.ButtonStyle
 import app.paralino.core.utils.ConditionErrorType
@@ -72,6 +71,7 @@ fun GroupDetailScreenCore(
     openMemberAdd: () -> Unit,
     openMap: () -> Unit,
     openPlaces: () -> Unit,
+    openPlace: (GroupSpaceFocusedFeatureChildItem) -> Unit,
     openGroupSettings: () -> Unit,
     openMemberRawData: (String) -> Unit,
     openSharing: () -> Unit,
@@ -238,34 +238,24 @@ fun GroupDetailScreenCore(
                         }
                     }
 
-                    if (state.data.errors.isNotEmpty())
+                    if (state.data.errors.isNotEmpty()) {
                         this.item { Spacer(modifier = Modifier.size(10.dp)) }
-
-                    if (state.data.sharingStatus != null && !state.data.isMemberFocused) {
-                        this.item(key = "sharing_status") {
-                            Box(
-                                modifier = Modifier.fillMaxWidth().animateItem(),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                GroupDetailSharingStatusElement(
-                                    contract = state.data.sharingStatus!!,
-                                    isPersonalSpace = false
-                                )
-                            }
-                        }
-                        this.item { Spacer(modifier = Modifier.size(20.dp).animateItem()) }
                     }
 
                     if (!state.data.isMemberFocused) {
                         this.item(key = "main_header") {
-                            GroupDetailsHeader(
+                            GroupSpaceDetailsHeader(
                                 modifier = Modifier.animateItem(),
+                                isPersonalSpace = false,
                                 groupName = state.data.name,
                                 groupImage = state.data.image,
+                                sharingStatus = state.data.sharingStatus,
+                                featurePlaces = state.data.placesFeatureItems,
                                 onMapClick = { vm.onEvent(GroupDetailScreenUiEvent.OpenMap) },
                                 onPlacesClick = openPlaces,
                                 onSettingsClick = openGroupSettings,
-                                onSharingClick = openSharing
+                                onSharingClick = openSharing,
+                                onPlaceClick = openPlace
                             )
                         }
                     }
@@ -329,7 +319,7 @@ fun GroupDetailScreenCore(
 
                     this.itemsIndexed(
                         items = state.data.visibleMembers,
-                        key = { index, item -> item.memberState.memberId }
+                        key = { _, item -> item.memberState.memberId }
                     ) { index, item ->
                         GroupMember(
                             modifier = Modifier

@@ -86,6 +86,11 @@ private fun GroupDetailScreen(
                     AppScreen.MainHome.PlacesList.route(groupId)
                 )
             },
+            openPlace = {
+                appState.navController.navigate(
+                    AppScreen.MainHome.PlaceDetail.route(groupId = it.groupOrSpaceId.id, placeId = it.itemId)
+                )
+            },
             openGroupSettings = {
                 appState.navController.navigate(
                     AppScreen.MainHome.GroupSettings.route(groupId)

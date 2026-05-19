@@ -74,6 +74,14 @@ fun PersonalSpaceScreen(
                     AppScreen.MainHome.PlacesList.route(groupId = UserGroup.groupPersonalDevicesId)
                 )
             },
+            openPlace = {
+                appState.navController.navigate(
+                    AppScreen.MainHome.PlaceDetail.route(
+                        groupId = UserGroup.groupPersonalDevicesId,
+                        placeId = it.itemId
+                    )
+                )
+            },
             openSharing = {
                 appState.navController.navigate(
                     AppScreen.MainHome.SharingStart.route(UserGroup.groupPersonalDevicesId)

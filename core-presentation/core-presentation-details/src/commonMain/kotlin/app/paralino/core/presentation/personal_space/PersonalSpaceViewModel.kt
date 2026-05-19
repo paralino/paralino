@@ -26,6 +26,7 @@ import app.paralino.core.presentation.common.MemberLocationVisibilityType
 import app.paralino.core.presentation.common.PlaceListItemData
 import app.paralino.core.presentation.common.SnackbarDuration
 import app.paralino.core.presentation.common.onAction
+import app.paralino.core.presentation.groups.detail.GroupSpaceFocusedFeatureChildItem
 import app.paralino.core.presentation.groups.detail.LocationSharingState
 import app.paralino.core.presentation.share.ApproximateLocationDistancePair
 import app.paralino.core.provider.DistanceType
@@ -100,6 +101,7 @@ class PersonalSpaceViewModel(
             loadingAction = false,
             sharingStatus = null,
             devicesWithSessions = emptyList(),
+            placesFeatureItems = emptyList(),
             devicesLimit = 0,
             shouldShowPlanBanner = false,
             arePlacesOverLimit = null,
@@ -219,6 +221,15 @@ class PersonalSpaceViewModel(
 
             this.devicesStateFlow.update { devices }
 
+            val featureItemsPlaces = placesData.map {
+                GroupSpaceFocusedFeatureChildItem(
+                    itemId = it.id,
+                    groupOrSpaceId = it.groupOrSpaceId,
+                    name = it.name,
+                    image = it.image
+                )
+            }
+
             _uiState.update { state ->
                 val newState = state.copy(
                     userName = user.name,
@@ -226,6 +237,7 @@ class PersonalSpaceViewModel(
                     isLoadingData = false,
                     sharingStatus = sharingState,
                     devicesLimit = devicesLimit,
+                    placesFeatureItems = featureItemsPlaces,
                     shouldShowPlanBanner = !userPlans.highestValidPlanConfig.planTypeEnum.isPremium,
                     arePlacesOverLimit = personalSpaceData.arePlacesOverLimits(),
                     isSpaceOverLimit = personalSpaceData.isSpaceOverLimits(),
@@ -396,6 +408,12 @@ class PersonalSpaceViewModel(
             PersonalSpaceScreenUiEvent.OpenPlaces -> {
                 coroutineScope.launch {
                     _eventChannel.send(PersonalSpaceScreenEvent.OpenPlaces)
+                }
+            }
+
+            is PersonalSpaceScreenUiEvent.OpenPlace -> {
+                coroutineScope.launch {
+                    _eventChannel.send(PersonalSpaceScreenEvent.OpenPlace(event.item))
                 }
             }
 

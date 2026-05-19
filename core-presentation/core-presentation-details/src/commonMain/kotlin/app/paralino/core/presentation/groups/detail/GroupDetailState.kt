@@ -1,9 +1,11 @@
 package app.paralino.core.presentation.groups.detail
 
+import androidx.compose.runtime.Stable
+import app.paralino.core.models.base.GroupOrSpaceId
 import app.paralino.core.models.base.ImageModel
+import app.paralino.core.presentation.common.AlertDialogAction
 import app.paralino.core.presentation.common.GroupMemberItemEvent
 import app.paralino.core.presentation.common.GroupMemberItemState
-import app.paralino.core.presentation.common.AlertDialogAction
 import app.paralino.core.presentation.common.MainAlertDialog
 import app.paralino.core.utils.ConditionErrorType
 
@@ -15,6 +17,7 @@ data class GroupDetailScreenState(
     val image: ImageModel,
     val sharingStatus: LocationSharingState?,
     val members: List<GroupMemberItemState>,
+    val placesFeatureItems: List<GroupSpaceFocusedFeatureChildItem>,
     val focusedMemberId: String?,
     val membersLimit: Int,
     val canShowMembersLimit: Boolean,
@@ -43,6 +46,14 @@ data class LocationSharingState(
     val shareDeviceStatus: Boolean,
     val saveToHistory: Boolean,
     val approximateLocation: String?
+)
+
+@Stable
+data class GroupSpaceFocusedFeatureChildItem(
+    val itemId: String,
+    val groupOrSpaceId: GroupOrSpaceId,
+    val name: String,
+    val image: ImageModel
 )
 
 sealed interface GroupDetailScreenUiEvent {

@@ -25,7 +25,7 @@ import dev.icerock.moko.resources.compose.stringResource
 
 @Composable
 fun GroupDetailSharingStatusElement(
-    modifier: Modifier = Modifier.Companion,
+    modifier: Modifier = Modifier,
     contract: LocationSharingState,
     isPersonalSpace: Boolean
 ) {
@@ -33,16 +33,16 @@ fun GroupDetailSharingStatusElement(
     val contentColor = contentColorFor(backgroundColor = backgroundColor)
     Column(
         modifier = modifier,
-        horizontalAlignment = Alignment.Companion.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Row(
-            modifier = Modifier.Companion
+            modifier = Modifier
                 .background(
-                    backgroundColor,
-                    RoundedCornerShape(percent = 50)
+                    color = backgroundColor,
+                    shape = RoundedCornerShape(percent = 50)
                 )
                 .padding(horizontal = 8.dp, vertical = 6.dp),
-            verticalAlignment = Alignment.Companion.CenterVertically
+            verticalAlignment = Alignment.CenterVertically
         ) {
             val sharingTime = contract.endTime
                 ?.let { stringResource(MR.strings.group_details_sharing_status_time, it) }
@@ -57,22 +57,22 @@ fun GroupDetailSharingStatusElement(
             Icon(
                 painter = CoreAppIcons.Timer.asPainterResource(),
                 contentDescription = null,
-                modifier = Modifier.Companion.size(14.dp),
+                modifier = Modifier.size(14.dp),
                 tint = contentColor
             )
-            Spacer(modifier = Modifier.Companion.size(4.dp))
+            Spacer(modifier = Modifier.size(4.dp))
             Text(
                 text = sharingTime.annotatedBoldCompose(),
                 style = MaterialTheme.typography.caption.copy(color = contentColor)
             )
         }
 
-        Row(verticalAlignment = Alignment.Companion.CenterVertically) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
             if (contract.shareBattery) {
                 Icon(
                     painter = CoreAppIcons.BatteryChargingFull.asPainterResource(),
                     contentDescription = null,
-                    modifier = Modifier.Companion
+                    modifier = Modifier
                         .padding(5.dp)
                         .size(18.dp)
                 )
@@ -82,7 +82,7 @@ fun GroupDetailSharingStatusElement(
                 Icon(
                     painter = CoreAppIcons.Speed.asPainterResource(),
                     contentDescription = null,
-                    modifier = Modifier.Companion
+                    modifier = Modifier
                         .padding(5.dp)
                         .size(18.dp)
                 )
@@ -92,7 +92,7 @@ fun GroupDetailSharingStatusElement(
                 Icon(
                     painter = CoreAppIcons.Elevation.asPainterResource(),
                     contentDescription = null,
-                    modifier = Modifier.Companion
+                    modifier = Modifier
                         .padding(5.dp)
                         .size(18.dp)
                 )
@@ -102,7 +102,7 @@ fun GroupDetailSharingStatusElement(
                 Icon(
                     painter = CoreAppIcons.SignalCell3.asPainterResource(),
                     contentDescription = null,
-                    modifier = Modifier.Companion
+                    modifier = Modifier
                         .padding(5.dp)
                         .size(18.dp)
                 )
@@ -112,7 +112,7 @@ fun GroupDetailSharingStatusElement(
                 Icon(
                     painter = CoreAppIcons.PhoneAndroid.asPainterResource(),
                     contentDescription = null,
-                    modifier = Modifier.Companion
+                    modifier = Modifier
                         .padding(5.dp)
                         .size(18.dp)
                 )
@@ -123,7 +123,7 @@ fun GroupDetailSharingStatusElement(
                 Icon(
                     painter = CoreAppIcons.TimelinePathWithPins.asPainterResource(),
                     contentDescription = null,
-                    modifier = Modifier.Companion
+                    modifier = Modifier
                         .padding(5.dp)
                         .size(18.dp)
                 )
@@ -133,7 +133,7 @@ fun GroupDetailSharingStatusElement(
                 Icon(
                     painter = CoreAppIcons.NotListedLocation.asPainterResource(),
                     contentDescription = null,
-                    modifier = Modifier.Companion
+                    modifier = Modifier
                         .padding(start = 5.dp, end = 2.dp)
                         .padding(vertical = 5.dp)
                         .size(18.dp)
@@ -142,7 +142,7 @@ fun GroupDetailSharingStatusElement(
                     text = "(${contract.approximateLocation})",
                     style = MaterialTheme.typography.overline.copy(letterSpacing = 0.1.sp)
                 )
-                Spacer(modifier = Modifier.Companion.size(5.dp))
+                Spacer(modifier = Modifier.size(5.dp))
             }
         }
 
