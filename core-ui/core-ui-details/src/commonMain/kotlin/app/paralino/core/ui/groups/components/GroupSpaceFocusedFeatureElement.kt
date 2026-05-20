@@ -2,6 +2,7 @@ package app.paralino.core.ui.groups.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,11 +15,9 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.material.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -65,7 +64,25 @@ fun GroupSpaceFocusedFeatureElement(
         AppColors.redMain.copy(alpha = 0.5f)
     }
 
-    val contentColor = contentColorFor(backgroundColor)
+    val iconTintColor = if (isActive) {
+        if (isSystemInDarkTheme()) {
+            AppColors.accent
+        } else {
+            AppColors.accentDark
+        }
+    } else {
+        AppColors.redMain
+    }
+
+    val contentColor = if (isActive) {
+        if (isSystemInDarkTheme()) {
+            MaterialTheme.colors.onBackground
+        } else {
+            MaterialTheme.colors.primary
+        }
+    } else {
+        AppColors.redMain
+    }
 
     Column(
         modifier = modifier
@@ -100,7 +117,7 @@ fun GroupSpaceFocusedFeatureElement(
                     .clip(RoundedCornerShape(8.dp))
                     .background(iconBackgroundColor)
                     .padding(8.dp),
-                tint = contentColorFor(iconBackgroundColor)
+                tint = iconTintColor
             )
 
             Text(
@@ -110,7 +127,7 @@ fun GroupSpaceFocusedFeatureElement(
                 text = title.annotatedBoldCompose(textColor = contentColor),
                 maxLines = 2,
                 style = MaterialTheme.typography.subtitle1.copy(
-                    fontWeight = FontWeight.Medium,
+                    fontWeight = FontWeight.SemiBold,
                     color = contentColor
                 )
             )
