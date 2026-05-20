@@ -31,6 +31,7 @@ class LocationPayloadProvider(
     private val personalDeviceKeyRotation: IPersonalDeviceCryptoKeyRotation,
     private val cryptoCore: CryptoCore,
     private val approximateLocationObfuscator: ApproximateLocationObfuscator,
+    private val privacyZoneObfuscator: PrivacyZoneObfuscator,
 ) {
 
     suspend fun getLocationPayload(
@@ -52,31 +53,55 @@ class LocationPayloadProvider(
             is LocationPayloadStatus.Success -> {
                 val status = memberDeviceStatusProvider.getStatus(groupId = groupId, contract = contract)
                 val locationData = safeLet(data, contract) { data, contract ->
-                    val approximateRadius = contract.approximateLocationInMeters
-                    val isSharingApproximate = approximateRadius != null
-                    val adjustedCoordinates = if (approximateRadius != null) {
-                        approximateLocationObfuscator.obfuscate(
+                    var workingLat = data.lat
+                    var workingLng = data.lng
+                    var privacyZoneUploadAccuracy: Int? = null
+
+                    if (!groupId.isPersonalSpace) {
+                        privacyZoneObfuscator.obfuscateIfInsideZone(
                             groupId = groupId,
                             trueLat = data.lat,
                             trueLng = data.lng,
+                        )?.let { zoneResult ->
+                            workingLat = zoneResult.lat
+                            workingLng = zoneResult.lng
+                            privacyZoneUploadAccuracy = zoneResult.uploadAccuracyMeters
+                        }
+                    }
+
+                    val approximateRadius = contract.approximateLocationInMeters
+                    val isSharingApproximate = approximateRadius != null
+                    val isInsidePrivacyZone = privacyZoneUploadAccuracy != null
+                    val adjustedCoordinates = if (approximateRadius != null) {
+                        approximateLocationObfuscator.obfuscate(
+                            groupId = groupId,
+                            trueLat = workingLat,
+                            trueLng = workingLng,
                             radiusMeters = approximateRadius
                         )
                     } else {
                         null
                     }
 
+                    val isApproximate = (isSharingApproximate || isInsidePrivacyZone) &&
+                        contract.shareDeviceStatus
+
                     LocationDataModel(
                         timeUTC = data.timeUTC,
                         endTimeUTC = contract.endTimeUTC?.takeIf { contract.shareDeviceStatus },
-                        lat = (adjustedCoordinates?.lat ?: data.lat).roundToPrecision(decimalPlaces = 6),
-                        lng = (adjustedCoordinates?.lng ?: data.lng).roundToPrecision(decimalPlaces = 6),
-                        accuracy = approximateRadius?.toFloat() ?: data.accuracy,
+                        lat = (adjustedCoordinates?.lat ?: workingLat).roundToPrecision(decimalPlaces = 6),
+                        lng = (adjustedCoordinates?.lng ?: workingLng).roundToPrecision(decimalPlaces = 6),
+                        accuracy = approximateRadius?.toFloat()
+                            ?: privacyZoneUploadAccuracy?.toFloat()
+                            ?: data.accuracy,
                         speed = data.speed?.takeIf {
-                            contract.shareSpeed && it != 0f && !isSharingApproximate
+                            contract.shareSpeed && it != 0f && !isApproximate
                         },
-                        altitude = data.altitude?.takeIf { contract.shareElevation && it != 0f },
+                        altitude = data.altitude?.takeIf {
+                            contract.shareElevation && it != 0f && !isApproximate
+                        },
                         isMasked = false,
-                        isApproximate = isSharingApproximate && contract.shareDeviceStatus,
+                        isApproximate = isApproximate,
                     )
                 }
 
