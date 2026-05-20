@@ -42,6 +42,7 @@ import app.paralino.core.models.AppHost
 import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.models.settings.RawPresentationDataType
 import app.paralino.core.notifications.IOSNSEPlaceCreatedNotificationProcessor
+import app.paralino.core.notifications.IOSNSEPrivacyZoneCreatedNotificationProcessor
 import app.paralino.core.notifications.IOSNSEPushNotificationHandler
 import app.paralino.core.presentation.billing.BillingScreenSourceType
 import app.paralino.core.presentation.common.NetworkQualityMonitor
@@ -187,6 +188,7 @@ object KoinIOS {
                     single { oneTimeLocationProvider(get(), get()) }
                     single { LocationRepositoryWrapper(get(), get(), get()) }
                     single { IOSNSEPlaceCreatedNotificationProcessor(get(), get(), get(), get()) }
+                    single { IOSNSEPrivacyZoneCreatedNotificationProcessor(get(), get(), get(), get()) }
                     single { IOSNSEPushNotificationHandler(get(), get(), get(), get()) }
                     single { PlatformUrlHandler() } bind IPlatformUrlHandler::class
 
