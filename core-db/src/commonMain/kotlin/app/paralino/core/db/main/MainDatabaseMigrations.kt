@@ -215,6 +215,35 @@ object MainDatabaseMigrations {
         }
     }
 
+    private val MIGRATION_22_23 = object : Migration(22, 23) {
+        override fun migrate(connection: SQLiteConnection) {
+            connection.execSQL(
+                """
+                CREATE TABLE IF NOT EXISTS `privacyZoneEntity` (
+                    `id` TEXT NOT NULL,
+                    `groupId` TEXT NOT NULL,
+                    `ownerUserId` TEXT NOT NULL,
+                    `userKeyVersion` INTEGER NOT NULL,
+                    `data` TEXT NOT NULL,
+                    `expiresAt` TEXT NOT NULL,
+                    PRIMARY KEY(`id`)
+                )
+                """.trimIndent()
+            )
+            connection.execSQL(
+                """
+                CREATE TABLE IF NOT EXISTS `privacyZoneSharedLocationEntity` (
+                    `groupId` TEXT NOT NULL,
+                    `privacyZoneId` TEXT NOT NULL,
+                    `userKeyVersion` INTEGER NOT NULL,
+                    `encryptedLocationData` TEXT NOT NULL,
+                    PRIMARY KEY(`groupId`, `privacyZoneId`)
+                )
+                """.trimIndent()
+            )
+        }
+    }
+
     val migrations: List<Migration> = listOf(
         MIGRATION_1_2,
         MIGRATION_2_3,
@@ -236,6 +265,7 @@ object MainDatabaseMigrations {
         MIGRATION_18_19,
         MIGRATION_19_20,
         MIGRATION_20_21,
-        MIGRATION_21_22
+        MIGRATION_21_22,
+        MIGRATION_22_23
     )
 }
