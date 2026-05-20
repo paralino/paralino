@@ -51,6 +51,10 @@ enum class ServerFunction constructor(
     PLACE_UPDATE(method = "PATCH", path = "/places"),
     PLACE_ADDRESS_SEARCH(method = "POST", path = "/places/search"),
 
+    PRIVACY_ZONE_CREATE(method = "PUT", path = "/privacy-zones"),
+    PRIVACY_ZONE_DELETE(method = "DELETE", path = "/privacy-zones"),
+    PRIVACY_ZONE_UPDATE(method = "PATCH", path = "/privacy-zones"),
+
     KEYS_UPDATE_GROUP(method = "POST", path = "/keys/group"),
     KEYS_UPDATE_MEMBERS(method = "POST", path = "/keys/member"),
     KEYS_UPDATE_LOCATIONS(method = "POST", path = "/keys/location"),

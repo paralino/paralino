@@ -52,6 +52,7 @@ object BackendResourceIDs {
     const val collectionLocationFocusID: String = "location_focus"
     const val collectionPlacesID: String = "places"
     const val collectionPlacesSettingsID: String = "places_settings"
+    const val collectionPrivacyZonesID: String = "privacy_zones"
 
     const val collectionGroupKeysID: String = "group_keys"
     const val collectionGroupMembersKeysID: String = "group_member_keys"
