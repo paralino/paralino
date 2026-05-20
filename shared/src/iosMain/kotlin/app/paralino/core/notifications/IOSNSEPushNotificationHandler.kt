@@ -33,6 +33,7 @@ class IOSNSEPushNotificationHandler constructor(
     private val sharingStartedNotification: LocationSharingStartedNotificationsProcessor by lazy { get() }
     private val memberAddedNotification: GroupMemberAddedNotificationProcessor by lazy { get() }
     private val placeCreatedNotification: IOSNSEPlaceCreatedNotificationProcessor by lazy { get() }
+    private val privacyZoneCreatedNotification: IOSNSEPrivacyZoneCreatedNotificationProcessor by lazy { get() }
     private val placeActivityNotification: PlaceActivityNotificationProcessor by lazy { get() }
     private val lowBatteryNotification: LowBatteryNotificationProcessor by lazy { get() }
 
@@ -143,6 +144,9 @@ class IOSNSEPushNotificationHandler constructor(
             PushNotificationType.PERSONAL_PLACE_DELETED-> null
             PushNotificationType.GROUP_PLACE_UPDATED -> null
             PushNotificationType.GROUP_PLACE_DELETED -> null
+            PushNotificationType.GROUP_PRIVACY_ZONE_CREATED -> privacyZoneCreatedNotification
+            PushNotificationType.GROUP_PRIVACY_ZONE_UPDATED -> null
+            PushNotificationType.GROUP_PRIVACY_ZONE_DELETED -> null
             PushNotificationType.GROUP_MEMBER_DELETED -> null
             PushNotificationType.LOCATION_REQUEST -> null
             PushNotificationType.LOCATION_FOCUS -> null

@@ -762,6 +762,8 @@
     <string name="place_created_group_notification_default">New place is created in your group</string>
     <string name="place_created_personal_notification">Your space just got a new place: %1$s</string>
     <string name="place_created_personal_notification_default">New place is created in your personal space</string>
+    <string name="privacy_zone_created_notification">Group %1$s: new privacy zone %2$s</string>
+    <string name="privacy_zone_created_notification_default">New privacy zone created</string>
     <string name="group_member_current_add_notification">🙌 You just joined %s</string>
     <string name="group_member_current_add_notification_default">🙌 You just joined a new group</string>
     <string name="group_member_add_notification">%1$s just joined %2$s</string>
@@ -819,6 +821,9 @@
     <string name="plan_limit_contact_owner_alert_message">Please contact group owner to adjust group plan!\n\nMaximum number of %1$s: **%2$d**</string>
     <string name="plan_limit_members_alert_info">group members</string>
     <string name="plan_limit_places_alert_info">places</string>
+    <string name="plan_limit_privacy_zones_alert_info">privacy zones</string>
+    <string name="privacy_zones_create_plan_limit_info">To create more privacy zones, upgrade your plan.</string>
+    <string name="plan_limit_overLimit_privacy_zones_banner_title">**Privacy zones are limited!**\nAllowed number of privacy zones is exceeded.</string>
     <string name="plan_limit_devices_alert_info">devices</string>
     <string name="plan_limit_groups_alert_info">groups</string>
     <string name="plan_limit_overLimit_groupOwner_banner_title">**Your group has exceeded the plan limits!**\n\nLocation sharing is limited and may not function correctly.\n\nPlease **remove some resources** or consider upgrading your plan to restore full functionality.</string>

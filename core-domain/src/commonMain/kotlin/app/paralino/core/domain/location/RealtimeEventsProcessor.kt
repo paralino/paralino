@@ -15,6 +15,7 @@ import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.location.LocationPerformanceType
 import app.paralino.core.models.raw.GroupPlaceRaw
+import app.paralino.core.models.raw.GroupPrivacyZoneRaw
 import app.paralino.core.models.raw.MemberDocumentRaw
 import app.paralino.core.models.raw.MemberLocationRaw
 import app.paralino.core.models.raw.UserDeviceLocationRaw
@@ -22,6 +23,7 @@ import app.paralino.core.models.raw.UserDeviceRaw
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.location.LocationLocalDataSource
 import app.paralino.core.repo.location.LocationPerformanceManager
+import app.paralino.core.domain.privacyzone.GetPrivacyZonesUseCase
 import app.paralino.core.repo.places.PlacesRepository
 import app.paralino.core.repo.user.IPushProviderManager
 import app.paralino.core.repo.user.PersonalDevicesLocalDataSource
@@ -33,6 +35,7 @@ class RealtimeEventsProcessor constructor(
     private val personalSpaceRefresh: PersonalSpaceRefreshUseCase,
     private val personalDevicesLocal: PersonalDevicesLocalDataSource,
     private val placesRepo: PlacesRepository,
+    private val getPrivacyZonesUseCase: GetPrivacyZonesUseCase,
     private val cryptoKEKRepo: CryptoKEKLocalRepository,
     private val userKeyRepo: CryptoUserKeysLocalSource,
     private val memberLocal: LocationLocalDataSource,
@@ -47,6 +50,8 @@ class RealtimeEventsProcessor constructor(
         "tablesdb.${BackendDatabaseType.DATA.id}.tables.${BackendResourceIDs.collectionLocationFocusID}.rows"
     val placesChannel =
         "tablesdb.${BackendDatabaseType.DATA.id}.tables.${BackendResourceIDs.collectionPlacesID}.rows"
+    val privacyZonesChannel =
+        "tablesdb.${BackendDatabaseType.DATA.id}.tables.${BackendResourceIDs.collectionPrivacyZonesID}.rows"
     val membersChannel =
         "tablesdb.${BackendDatabaseType.DATA.id}.tables.${BackendResourceIDs.collectionGroupMembersID}.rows"
     val groupsLocationsChannel =
@@ -68,6 +73,10 @@ class RealtimeEventsProcessor constructor(
 
             response.channels.contains(placesChannel) -> {
                 processPlaceChannelEvent(response)
+            }
+
+            response.channels.contains(privacyZonesChannel) -> {
+                processPrivacyZoneChannelEvent(response)
             }
 
             response.channels.contains(membersChannel) -> {
@@ -123,6 +132,24 @@ class RealtimeEventsProcessor constructor(
 
             if (!groupPreRefreshUseCase.isProcessing(place.groupId))
                 placesRepo.updatePlaceLocally(place)
+        }
+    }
+
+    private suspend fun processPrivacyZoneChannelEvent(response: RealtimeResponse<Map<String, Any>>) {
+        val zone = GroupPrivacyZoneRaw.from(response.payload)
+
+        if (isPaused(zone.groupId)) return
+        if (groupPreRefreshUseCase.isProcessing(zone.groupId)) return
+
+        if (response.events.any { it.endsWith(".delete") }) {
+            logg.tag("realtime_events").v("Got privacy zone delete event")
+            getPrivacyZonesUseCase.deletePrivacyZoneLocally(
+                zoneId = zone.id,
+                groupId = zone.groupId,
+            )
+        } else {
+            logg.tag("realtime_events").v("Got privacy zone create/update event")
+            getPrivacyZonesUseCase.updatePrivacyZoneLocally(zone)
         }
     }
 
