@@ -30,15 +30,15 @@ class RawDataPresentationViewModel constructor(
     init {
         val rawFlow = when (rawPresentationType) {
             is RawPresentationDataType.GroupMemberPresentation -> {
-                rawCryptoPresentation.getGroupMemberRawPresentation(group = null, rawPresentationType.memberId)
+                rawCryptoPresentation.getGroupMemberRawPresentation(group = null, memberId =  rawPresentationType.memberId)
             }
 
             is RawPresentationDataType.GroupPlacePresentation -> {
-                rawCryptoPresentation.getGroupPlaceRawPresentation(rawPresentationType.placeId)
+                rawCryptoPresentation.getGroupPlaceRawPresentation(placeId = rawPresentationType.placeId)
             }
 
             is RawPresentationDataType.GroupPresentation -> {
-                rawCryptoPresentation.getGroupRawPresentation(rawPresentationType.groupId)
+                rawCryptoPresentation.getGroupRawPresentation(groupId = rawPresentationType.groupId)
             }
 
             RawPresentationDataType.UserPresentation -> {
@@ -50,7 +50,11 @@ class RawDataPresentationViewModel constructor(
             }
 
             is RawPresentationDataType.LocationHistoryPointPresentation -> {
-                rawCryptoPresentation.getLocationHistoryPointRawPresentation(rawPresentationType)
+                rawCryptoPresentation.getLocationHistoryPointRawPresentation(type = rawPresentationType)
+            }
+
+            is RawPresentationDataType.GroupPrivacyZonePresentation -> {
+                rawCryptoPresentation.getGroupPrivacyZoneRawPresentation(privacyZoneId = rawPresentationType.privacyZoneId)
             }
         }
 

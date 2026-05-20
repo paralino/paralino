@@ -356,6 +356,7 @@ sealed class AppScreen {
                     is RawPresentationDataType.GroupMemberPresentation -> type.memberId
                     is RawPresentationDataType.GroupPlacePresentation -> type.placeId
                     is RawPresentationDataType.GroupPresentation -> type.groupId
+                    is RawPresentationDataType.GroupPrivacyZonePresentation -> type.privacyZoneId
                     is RawPresentationDataType.LocationHistoryPointPresentation -> {
                         BaseRemoteModule.formatter.encodeToString(type)
                     }

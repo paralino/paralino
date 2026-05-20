@@ -318,7 +318,7 @@ val coreModule = module {
     factory { RealtimeEventsMaker(get(), get()) }
     factory { UserMemberIdUseCase(get(), get(), get(), get()) }
     single { UpdateUserDataUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
-    factory { RawCryptoPresentation(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+    factory { RawCryptoPresentation(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { PlaceActivityUploadEngine(get(), get(), get(), get(), get(), get(), get()) }
     factory { GroupBatterySettingsUpdateUseCase(get(), get(), get()) }
     factory { PlaceAlertsSettingsUpdateUseCase(get(), get()) }
