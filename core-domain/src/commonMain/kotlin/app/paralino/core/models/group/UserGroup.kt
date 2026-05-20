@@ -14,6 +14,7 @@ import app.paralino.core.models.location.MemberLocation
 import app.paralino.core.models.location.MemberModel
 import app.paralino.core.models.location.MemberModelWithLocations
 import app.paralino.core.models.places.GroupPlaceWithSettings
+import app.paralino.core.models.privacyzones.GroupPrivacyZone
 import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.serialization.Contextual
@@ -96,6 +97,14 @@ data class UserGroup constructor(
         }.takeIf { it >= 0 }
     }
 
+    fun privacyZonesLimit(config: ConfigData): Int? {
+        return if (isPlanExpired) {
+            config.planConfigForPlanTypeOrDefault(fallbackPlanType).privacyZonesLimit
+        } else {
+            config.planConfigForPlanTypeOrDefault(planType).privacyZonesLimit
+        }.takeIf { it >= 0 }
+    }
+
     fun planConfig(config: ConfigData): PlanConfig {
         if (isPlanExpired) {
             return config.planConfigForPlanTypeOrDefault(fallbackPlanType)
@@ -116,6 +125,7 @@ data class UserGroupWithMetadata constructor(
     val group: UserGroup,
     val memberCount: Int,
     val placesCount: Int,
+    val privacyZonesCount: Int,
     val devicesPerMember: List<MemberRegisteredLocationCount>,
     val verification: VerificationResult,
 ) {
@@ -129,6 +139,11 @@ data class UserGroupWithMetadata constructor(
     fun arePlacesOverLimits(config: ConfigData): Boolean {
         val limit = group.placesLimit(config) ?: return true
         return placesCount > limit
+    }
+
+    fun arePrivacyZonesOverLimits(config: ConfigData): Boolean {
+        val limit = group.privacyZonesLimit(config) ?: return true
+        return privacyZonesCount > limit
     }
 
     fun isGroupOverLimits(config: ConfigData): Boolean {
@@ -194,7 +209,8 @@ data class UserGroupWithMembers constructor(
 
 data class UserGroupWithMembersAndPlaces constructor(
     val groupWithMembers: UserGroupWithMembers,
-    val places: List<GroupPlaceWithSettings>
+    val places: List<GroupPlaceWithSettings>,
+    val privacyZones: List<GroupPrivacyZone> = emptyList(),
 ) {
     val id: String get() = groupWithMembers.id
     val ownerUserId: String get() = groupWithMembers.ownerUserId

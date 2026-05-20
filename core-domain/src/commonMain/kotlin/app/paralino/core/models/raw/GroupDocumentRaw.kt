@@ -49,5 +49,6 @@ data class GroupWithMembersRaw constructor(
 
 data class GroupWithMembersAndPlacesRaw constructor(
     val group: GroupWithMembersRaw,
-    val places: List<GroupPlaceWithSettingsRaw>
+    val places: List<GroupPlaceWithSettingsRaw>,
+    val privacyZones: List<GroupPrivacyZoneRaw> = emptyList(),
 )
