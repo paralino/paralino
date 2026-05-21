@@ -664,7 +664,8 @@
     <string name="group_member_device_setup_invalid">Device is not fully compatible and can not be reached</string>
     <string name="group_member_device_request_failed">Request failed, please try again</string>
     <string name="group_member_device_request_disabled">Please wait a few moments before requesting location again 🙏</string>
-    <string name="group_members_status_distanceFromMe" note="Shows distance from other device. For all languages besides English use format: %s from me">%s away</string>
+    <!-- Shows distance from other device. For all languages besides English use format: "%s from me" -->
+    <string name="group_members_status_distanceFromMe">%s away</string>
     <string name="group_members_last_active_status_now">Just now</string>
     <string name="group_members_last_active_status_recently_1">1 minute ago</string>
     <string name="group_members_last_active_status_recently_2">2 minutes ago</string>
