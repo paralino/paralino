@@ -949,4 +949,6 @@
     <string name="setting_mapInteractions_minimize_info">Ovládacie prvky mapy sa zmenšia, aby ste mali viac priestoru.</string>
     <string name="setting_mapInteractions_collapsed_title">Zbalené</string>
     <string name="setting_mapInteractions_collapsed_info">Ovládacie prvky mapy sa zbalia alebo skryjú, aby sa maximalizoval priestor pre mapu.</string>
+    <string name="group_members_status_distanceFromMe">%s od mene</string>
+    <string name="history_map_options_show_inaccurate">Nepravilne lokacije</string>
 </resources>

@@ -949,4 +949,6 @@
     <string name="setting_mapInteractions_minimize_info">Элементы управления картой уменьшаются, чтобы дать вам больше места.</string>
     <string name="setting_mapInteractions_collapsed_title">Свернуть</string>
     <string name="setting_mapInteractions_collapsed_info">Элементы управления картой сворачиваются или скрываются, чтобы максимально расширить пространство для карты.</string>
+    <string name="group_members_status_distanceFromMe">%s от меня</string>
+    <string name="history_map_options_show_inaccurate">Неточные местоположения</string>
 </resources>

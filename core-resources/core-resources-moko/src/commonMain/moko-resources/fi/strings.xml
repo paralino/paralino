@@ -949,4 +949,6 @@
     <string name="setting_mapInteractions_minimize_info">Kartan ohjaimet pienenevät, jotta saat enemmän tilaa.</string>
     <string name="setting_mapInteractions_collapsed_title">Piilotettu</string>
     <string name="setting_mapInteractions_collapsed_info">Kartan ohjaimet supistetaan tai piilotetaan, jotta kartalle jää enemmän tilaa.</string>
+    <string name="group_members_status_distanceFromMe">%s päässä</string>
+    <string name="history_map_options_show_inaccurate">Epäluotettavat sijainnit</string>
 </resources>

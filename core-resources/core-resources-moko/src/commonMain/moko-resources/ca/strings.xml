@@ -949,4 +949,6 @@
     <string name="setting_mapInteractions_minimize_info">Els controls del mapa es redueixen per oferir-vos més espai.</string>
     <string name="setting_mapInteractions_collapsed_title">Plegat</string>
     <string name="setting_mapInteractions_collapsed_info">Els controls del mapa es pleguen o s\'amaguen per maximitzar l\'espai del mapa.</string>
+    <string name="group_members_status_distanceFromMe">%s de distància</string>
+    <string name="history_map_options_show_inaccurate">Ubicacions inexactes</string>
 </resources>

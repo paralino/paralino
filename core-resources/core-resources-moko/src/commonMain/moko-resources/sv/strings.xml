@@ -949,4 +949,6 @@
     <string name="setting_mapInteractions_minimize_info">Kartkontrollerna krymper för att ge dig mer utrymme.</string>
     <string name="setting_mapInteractions_collapsed_title">Hopfälld</string>
     <string name="setting_mapInteractions_collapsed_info">Kartkontrollerna kollapsar eller döljs för att frigöra mer utrymme åt kartan.</string>
+    <string name="group_members_status_distanceFromMe">%s från mig</string>
+    <string name="history_map_options_show_inaccurate">Felaktiga platser</string>
 </resources>
