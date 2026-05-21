@@ -949,4 +949,6 @@
     <string name="setting_mapInteractions_minimize_info">De kaartbedieningselementen verkleinen om u meer ruimte te geven.</string>
     <string name="setting_mapInteractions_collapsed_title">Ingeklapt</string>
     <string name="setting_mapInteractions_collapsed_info">De kaartbedieningselementen klappen in of verbergen zich om de kaartruimte te maximaliseren.</string>
+    <string name="group_members_status_distanceFromMe">%s verwijderd</string>
+    <string name="history_map_options_show_inaccurate">Onnauwkeurige locaties</string>
 </resources>

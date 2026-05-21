@@ -949,4 +949,6 @@
     <string name="setting_mapInteractions_minimize_info">A térkép vezérlőelemei összezsugorodnak, hogy több helyet biztosítsanak.</string>
     <string name="setting_mapInteractions_collapsed_title">Összecsukott</string>
     <string name="setting_mapInteractions_collapsed_info">A térkép vezérlőelemei összecsukódnak vagy elrejtődnek, így maximalizálják a térkép megjelenítésére szolgáló területet.</string>
+    <string name="group_members_status_distanceFromMe">%s távol</string>
+    <string name="history_map_options_show_inaccurate">Pontatlan helyek</string>
 </resources>

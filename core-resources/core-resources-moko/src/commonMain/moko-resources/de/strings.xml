@@ -949,4 +949,6 @@
     <string name="setting_mapInteractions_minimize_info">Die Kartensteuerungen verkleinern sich, um Ihnen mehr Platz zu geben.</string>
     <string name="setting_mapInteractions_collapsed_title">Eingeklappt</string>
     <string name="setting_mapInteractions_collapsed_info">Die Kartensteuerungen klappen ein oder werden ausgeblendet, um den Kartenbereich zu maximieren.</string>
+    <string name="group_members_status_distanceFromMe">%s entfernt</string>
+    <string name="history_map_options_show_inaccurate">Ungenaue Standorte</string>
 </resources>

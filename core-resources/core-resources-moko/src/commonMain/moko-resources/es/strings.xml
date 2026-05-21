@@ -949,4 +949,6 @@
     <string name="setting_mapInteractions_minimize_info">Los controles del mapa se reducen para ofrecerle más espacio.</string>
     <string name="setting_mapInteractions_collapsed_title">Colapsado</string>
     <string name="setting_mapInteractions_collapsed_info">Los controles del mapa se colapsan u ocultan para maximizar el espacio del mapa.</string>
+    <string name="group_members_status_distanceFromMe">%s lejos</string>
+    <string name="history_map_options_show_inaccurate">Ubicaciones inexactas</string>
 </resources>

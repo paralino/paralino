@@ -949,4 +949,6 @@
     <string name="setting_mapInteractions_minimize_info">Τα στοιχεία ελέγχου του χάρτη συρρικνώνονται για να σας προσφέρουν περισσότερο χώρο.</string>
     <string name="setting_mapInteractions_collapsed_title">Συμπτυγμένα</string>
     <string name="setting_mapInteractions_collapsed_info">Τα στοιχεία ελέγχου του χάρτη συμπτύσσονται ή αποκρύπτονται για να μεγιστοποιηθεί ο χώρος του χάρτη.</string>
+    <string name="group_members_status_distanceFromMe">%s μακριά</string>
+    <string name="history_map_options_show_inaccurate">Ανακριβείς τοποθεσίες</string>
 </resources>

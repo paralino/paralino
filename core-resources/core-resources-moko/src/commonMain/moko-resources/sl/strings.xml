@@ -949,4 +949,6 @@
     <string name="setting_mapInteractions_minimize_info">Elementi za upravljanje zemljevida se pomanjšajo, da vam omogočijo več prostora.</string>
     <string name="setting_mapInteractions_collapsed_title">Strnjeno</string>
     <string name="setting_mapInteractions_collapsed_info">Elementi za upravljanje zemljevida se strnejo ali skrijejo, da povečajo razpoložljivi prostor za zemljevid.</string>
+    <string name="group_members_status_distanceFromMe">%s stran od mene</string>
+    <string name="history_map_options_show_inaccurate">Netočne lokacije</string>
 </resources>

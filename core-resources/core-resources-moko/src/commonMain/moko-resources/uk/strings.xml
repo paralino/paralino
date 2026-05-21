@@ -949,4 +949,6 @@
     <string name="setting_mapInteractions_minimize_info">Елементи керування картою зменшуються, щоб надати вам більше місця.</string>
     <string name="setting_mapInteractions_collapsed_title">Згорнуто</string>
     <string name="setting_mapInteractions_collapsed_info">Елементи керування картою згортаються або приховуються, щоб максимально звільнити простір для карти.</string>
+    <string name="group_members_status_distanceFromMe">%s від вас</string>
+    <string name="history_map_options_show_inaccurate">Неточні місця</string>
 </resources>

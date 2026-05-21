@@ -949,4 +949,6 @@
     <string name="setting_mapInteractions_minimize_info">Контроле мапе се умањују како би вам оставиле више простора.</string>
     <string name="setting_mapInteractions_collapsed_title">Сажето</string>
     <string name="setting_mapInteractions_collapsed_info">Контроле мапе се склапају или сакривају како би се максимизовао простор за мапу.</string>
+    <string name="group_members_status_distanceFromMe">%s од мене</string>
+    <string name="history_map_options_show_inaccurate">Нетачне локације</string>
 </resources>
