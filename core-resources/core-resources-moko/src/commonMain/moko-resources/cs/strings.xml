@@ -949,4 +949,6 @@
     <string name="setting_mapInteractions_minimize_info">Ovládací prvky mapy se zmenší, aby vám poskytly více prostoru.</string>
     <string name="setting_mapInteractions_collapsed_title">Sbalené</string>
     <string name="setting_mapInteractions_collapsed_info">Ovládací prvky mapy se sbalí nebo skryjí, aby maximalizovaly prostor pro mapu.</string>
+    <string name="group_members_status_distanceFromMe">%s odtud</string>
+    <string name="history_map_options_show_inaccurate">Nepřesná umístění</string>
 </resources>

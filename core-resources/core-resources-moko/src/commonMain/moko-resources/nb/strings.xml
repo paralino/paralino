@@ -949,4 +949,6 @@
     <string name="setting_mapInteractions_minimize_info">Kartkontrollene krymper for å gi deg mer plass.</string>
     <string name="setting_mapInteractions_collapsed_title">Sammenfoldet</string>
     <string name="setting_mapInteractions_collapsed_info">Kartkontrollene kollapser eller skjules for å gi mest mulig plass til kartet.</string>
+    <string name="group_members_status_distanceFromMe">%s unna</string>
+    <string name="history_map_options_show_inaccurate">Unøyaktige plasseringer</string>
 </resources>

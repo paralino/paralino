@@ -949,4 +949,6 @@
     <string name="setting_mapInteractions_minimize_info">Harita kontrolleri daha fazla alan sağlamak için küçülür.</string>
     <string name="setting_mapInteractions_collapsed_title">Daraltılmış</string>
     <string name="setting_mapInteractions_collapsed_info">Harita kontrolleri harita alanını en üst düzeye çıkarmak için daraltılır veya gizlenir.</string>
+    <string name="group_members_status_distanceFromMe">%s uzakta</string>
+    <string name="history_map_options_show_inaccurate">Yanlış konumlar</string>
 </resources>

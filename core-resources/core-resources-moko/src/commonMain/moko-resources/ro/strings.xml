@@ -949,4 +949,6 @@
     <string name="setting_mapInteractions_minimize_title">Minimizare</string>
     <string name="setting_mapInteractions_minimize_info">Controalele hărții se reduc pentru a vă oferi mai mult spațiu.</string>
     <string name="setting_mapInteractions_collapsed_title">Restrâns</string>
+    <string name="group_members_status_distanceFromMe">%s departe</string>
+    <string name="history_map_options_show_inaccurate">Locații inexacte</string>
 </resources>

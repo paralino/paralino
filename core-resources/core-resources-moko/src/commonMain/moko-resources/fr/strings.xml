@@ -949,4 +949,6 @@
     <string name="setting_mapInteractions_minimize_info">Les contrôles de la carte se réduisent pour vous laisser plus d\'espace.</string>
     <string name="setting_mapInteractions_collapsed_title">Repliés</string>
     <string name="setting_mapInteractions_collapsed_info">Les contrôles de la carte se replient ou se masquent pour maximiser l\'espace consacré à la carte.</string>
+    <string name="group_members_status_distanceFromMe">%s à partir de moi</string>
+    <string name="history_map_options_show_inaccurate">Emplacements imprécis</string>
 </resources>
