@@ -404,9 +404,22 @@ class LocationPerformanceManager constructor(
             batterySaverPerformanceSettings = batterySaverPerformanceSettings
         )
 
-        val isThrottling get() = requested > current
-        val isThrottlingLocationRequest get() = isThrottling && requested == LocationPerformanceType.VERY_HIGH
-        val isSlow get() = isThrottling || current <= LocationPerformanceType.BALANCED
+        val isThrottlingVeryHighRequest get() = if (requested >= LocationPerformanceType.VERY_HIGH) {
+            // checking < High since High and VeryHigh have the same config
+            // VeryHigh just allows for additional time in high when requested
+            current < LocationPerformanceType.HIGH
+        } else {
+            false
+        }
+
+        val isThrottlingPerformance get() = if (requested >= LocationPerformanceType.HIGH) {
+            current < LocationPerformanceType.HIGH
+        } else {
+            current < requested
+        }
+
+        val isSlow get() = isThrottlingPerformance || current <= LocationPerformanceType.BALANCED
+        val isBatterySaverOn get() = current <= LocationPerformanceType.BATTERY_SAVER
     }
 
     data class LocationPerformanceSettings(

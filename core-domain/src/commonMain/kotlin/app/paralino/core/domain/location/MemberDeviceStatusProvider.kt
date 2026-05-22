@@ -55,13 +55,13 @@ class MemberDeviceStatusProvider(
                 else MemberDeviceStatusType.INACTIVE
             }
 
-            locationPerformanceManager.locationPerformanceType.value.isThrottlingLocationRequest -> MemberDeviceStatusType.TOO_MANY_REQUESTS
-            locationPerformanceManager.locationPerformanceType.value.current <= LocationPerformanceType.BATTERY_SAVER -> {
+            locationPerformanceManager.locationPerformanceType.value.isThrottlingVeryHighRequest -> MemberDeviceStatusType.TOO_MANY_REQUESTS
+            locationPerformanceManager.locationPerformanceType.value.isBatterySaverOn -> {
                 if (shareDeviceStatus) MemberDeviceStatusType.BATTERY_SAVER_ON
                 else MemberDeviceStatusType.IDLE
             }
 
-            locationPerformanceManager.locationPerformanceType.value.isThrottling -> MemberDeviceStatusType.THROTTLING
+            locationPerformanceManager.locationPerformanceType.value.isThrottlingPerformance -> MemberDeviceStatusType.THROTTLING
             locationPerformanceManager.locationPerformanceType.value.isSlow -> MemberDeviceStatusType.IDLE
             else -> MemberDeviceStatusType.ACTIVE
         }
