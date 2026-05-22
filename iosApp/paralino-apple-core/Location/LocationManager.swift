@@ -85,7 +85,14 @@ public class LocationManager: NSObject, ObservableObject, CoreLocationManagerDel
                 } else {
                     self?.manager.desiredAccuracy = kCLLocationAccuracyKilometer
                 }
-                self?.manager.distanceFilter = CLLocationDistance(settings.minUpdateDistanceMeters)
+                
+                // In best performance balanced mode, even in minUpdateDistance is set to 1 meter, iOS puts the app to sleep after few updates
+                // Only when set to 0 app can have high resolution updates when traveling
+                if settings.minUpdateDistanceMeters == 0 && !settings.useHighPerformanceLocation {
+                    self?.manager.distanceFilter = 10
+                } else {
+                    self?.manager.distanceFilter = CLLocationDistance(settings.minUpdateDistanceMeters)
+                }
             case .mediumHigh:
                 self?.manager.pausesLocationUpdatesAutomatically = false
                 self?.manager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters

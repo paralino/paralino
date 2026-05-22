@@ -1,5 +1,7 @@
 package app.paralino.core.repo.location
 
+import app.paralino.core.models.base.DeviceType
+import app.paralino.core.provider.current
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
@@ -135,7 +137,10 @@ sealed interface LocationPerformanceSettingsType {
         data object Level5 : Balanced {
             override val updateInterval: Duration = 5.minutes
             override val minUpdateInterval: Duration = 1.minutes
-            override val minUpdateDistanceMeters: Int = 10
+            override val minUpdateDistanceMeters: Int get() = when (DeviceType.current) {
+                DeviceType.Android -> 10
+                DeviceType.iOS -> 0
+            }
             override val isPremiumFeature: Boolean = true
             override val key: String = "balanced_level_500"
         }
