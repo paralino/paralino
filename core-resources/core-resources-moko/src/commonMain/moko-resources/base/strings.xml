@@ -765,6 +765,8 @@
     <string name="place_created_personal_notification_default">New place is created in your personal space</string>
     <string name="privacy_zone_created_notification">Group %1$s: new privacy zone %2$s</string>
     <string name="privacy_zone_created_notification_default">New privacy zone created</string>
+    <string name="privacy_zone_menu_delete">Delete privacy zone</string>
+    <string name="privacy_zone_delete_alert_title">Are you sure you want to delete this privacy zone?</string>
     <string name="group_member_current_add_notification">🙌 You just joined %s</string>
     <string name="group_member_current_add_notification_default">🙌 You just joined a new group</string>
     <string name="group_member_add_notification">%1$s just joined %2$s</string>

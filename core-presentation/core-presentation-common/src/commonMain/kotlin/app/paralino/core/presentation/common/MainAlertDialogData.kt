@@ -643,6 +643,28 @@ interface MainAlertDialog {
         )
     }
 
+    object DeleteZone : MainAlertDialog {
+        override val key: String = this::class.simpleName ?: "dialog"
+
+        override val dialogData: AlertDialogData = AlertDialogData(
+            id = key,
+            title = stringResource(resource = MR.strings.privacy_zone_menu_delete),
+            message = stringResource(resource = MR.strings.privacy_zone_delete_alert_title),
+            buttons = listOf(
+                AlertDialogButtonData(
+                    id = Buttons.buttonOk,
+                    text = stringResource(resource = MR.strings.button_delete),
+                    color = AlertDialogButtonData.destructiveColor,
+                    needsLongConfirmation = true
+                ),
+                AlertDialogButtonData(
+                    id = Buttons.buttonCancel,
+                    text = stringResource(resource = MR.strings.button_cancel)
+                ),
+            ),
+        )
+    }
+
     data class ServiceMaxLimit(
         val content: String,
         val limit: Int

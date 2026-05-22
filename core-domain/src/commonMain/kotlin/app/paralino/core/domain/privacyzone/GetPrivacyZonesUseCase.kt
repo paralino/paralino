@@ -1,15 +1,14 @@
 package app.paralino.core.domain.privacyzone
 
+import app.paralino.core.domain.location.PrivacyZoneSharedLocationLocalSource
 import app.paralino.core.models.privacyzones.GroupPrivacyZone
 import app.paralino.core.models.raw.GroupPrivacyZoneRaw
 import app.paralino.core.repo.base.BaseRepository
 import app.paralino.core.repo.base.RemotePreference
-import app.paralino.core.domain.location.PrivacyZoneSharedLocationLocalSource
 import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.privacyzones.PrivacyZonesGetRemoteSource
 import app.paralino.core.repo.privacyzones.PrivacyZonesLocalDataSource
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
 
 class GetPrivacyZonesUseCase(
     private val local: PrivacyZonesLocalDataSource,

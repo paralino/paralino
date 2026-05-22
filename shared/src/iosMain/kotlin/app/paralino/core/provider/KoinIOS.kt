@@ -70,6 +70,7 @@ import app.paralino.core.presentation.places.create.CreatePlaceViewModel
 import app.paralino.core.presentation.places.detail.PlaceDetailViewModel
 import app.paralino.core.presentation.places.detail.PlaceSensitivityViewModel
 import app.paralino.core.presentation.places.list.PlacesViewModel
+import app.paralino.core.presentation.privacyzones.detail.PrivacyZoneDetailViewModel
 import app.paralino.core.presentation.rawdata.RawDataPresentationViewModel
 import app.paralino.core.presentation.settings.SettingsViewModel
 import app.paralino.core.presentation.settings.appstatus.AppStatusDebugViewModel
@@ -284,6 +285,17 @@ object KoinIOS {
                     premiumStatusManager = get()
                 )
             }
+            factory { (groupID: String, zoneId: String) ->
+                PrivacyZoneDetailViewModel(
+                    groupId = groupID,
+                    zoneId = zoneId,
+                    getPrivacyZonesUseCase = get(),
+                    deletePrivacyZoneUseCase = get(),
+                    groupRepo = get(),
+                    premiumStatusManager = get(),
+                    appPrefs = get(),
+                )
+            }
             factory { (groupID: String, placeId: String?, lat: Double?, lng: Double?) ->
                 CreatePlaceViewModel(
                     groupId = groupID,
@@ -385,6 +397,8 @@ object KoinIOS {
         fun placesVM(groupId: String, isOnboarding: Boolean) = get<PlacesViewModel> { parametersOf(groupId, isOnboarding) }
         fun placeDetailVM(groupId: String, placeId: String) =
             get<PlaceDetailViewModel> { parametersOf(groupId, placeId) }
+        fun privacyZoneDetailVM(groupId: String, zoneId: String) =
+            get<PrivacyZoneDetailViewModel> { parametersOf(groupId, zoneId) }
 
         fun placeCreateVM(
             groupId: String,

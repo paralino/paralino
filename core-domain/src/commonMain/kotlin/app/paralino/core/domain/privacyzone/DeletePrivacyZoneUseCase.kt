@@ -11,7 +11,6 @@ class DeletePrivacyZoneUseCase(
     private val groupLocal: UserGroupLocalDataSource,
     private val sharedLocationLocal: PrivacyZoneSharedLocationLocalSource,
 ) {
-
     fun invoke(privacyZoneId: String, groupId: String): Flow<Unit> {
         return flow {
             remote.deletePrivacyZone(privacyZoneId)
