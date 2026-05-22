@@ -26,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import app.paralino.core.MR
+import app.paralino.core.models.PlaceZoneType
 import app.paralino.core.models.Payload
 import app.paralino.core.presentation.common.MainAlertDialog
 import app.paralino.core.presentation.common.PlaceListItemData
@@ -167,6 +168,7 @@ private fun PlaceDetailScreen(
                     PlaceListItemData(
                         id = state.placeId,
                         groupOrSpaceId = state.groupOrSpaceId,
+                        type = PlaceZoneType.PlaceWithAlert,
                         name = state.name,
                         image = state.image,
                         private = state.private,

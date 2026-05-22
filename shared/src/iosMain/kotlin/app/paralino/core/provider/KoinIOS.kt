@@ -71,6 +71,7 @@ import app.paralino.core.presentation.places.detail.PlaceDetailViewModel
 import app.paralino.core.presentation.places.detail.PlaceSensitivityViewModel
 import app.paralino.core.presentation.places.list.PlacesViewModel
 import app.paralino.core.presentation.privacyzones.detail.PrivacyZoneDetailViewModel
+import app.paralino.core.presentation.privacyzones.list.PrivacyZonesViewModel
 import app.paralino.core.presentation.rawdata.RawDataPresentationViewModel
 import app.paralino.core.presentation.settings.SettingsViewModel
 import app.paralino.core.presentation.settings.appstatus.AppStatusDebugViewModel
@@ -285,6 +286,16 @@ object KoinIOS {
                     premiumStatusManager = get()
                 )
             }
+            factory { (groupID: String, isOnboarding: Boolean) ->
+                PrivacyZonesViewModel(
+                    groupId = groupID,
+                    isOnboarding = isOnboarding,
+                    remoteConfig = get(),
+                    getPrivacyZonesUseCase = get(),
+                    groupRepo = get(),
+                    premiumStatusManager = get(),
+                )
+            }
             factory { (groupID: String, zoneId: String) ->
                 PrivacyZoneDetailViewModel(
                     groupId = groupID,
@@ -397,6 +408,8 @@ object KoinIOS {
         fun placesVM(groupId: String, isOnboarding: Boolean) = get<PlacesViewModel> { parametersOf(groupId, isOnboarding) }
         fun placeDetailVM(groupId: String, placeId: String) =
             get<PlaceDetailViewModel> { parametersOf(groupId, placeId) }
+        fun privacyZonesVM(groupId: String, isOnboarding: Boolean) =
+            get<PrivacyZonesViewModel> { parametersOf(groupId, isOnboarding) }
         fun privacyZoneDetailVM(groupId: String, zoneId: String) =
             get<PrivacyZoneDetailViewModel> { parametersOf(groupId, zoneId) }
 

@@ -1,9 +1,12 @@
 package app.paralino.core.presentation.common
 
+import app.paralino.core.models.PlaceZoneType
 import app.paralino.core.models.base.GroupOrSpaceId
 import app.paralino.core.models.base.ImageModel
+import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.models.data
 import app.paralino.core.models.places.GroupPlace
+import app.paralino.core.models.privacyzones.GroupPrivacyZone
 import app.paralino.core.presentation.map.FocusedMarkerData
 import app.paralino.core.presentation.map.MapMarkerStyle
 import app.paralino.core.presentation.map.MapPinData
@@ -13,6 +16,7 @@ import app.paralino.core.utils.Emojis
 data class PlaceListItemData constructor(
     val id: String,
     val groupOrSpaceId: GroupOrSpaceId,
+    val type: PlaceZoneType,
     val name: String,
     val image: ImageModel,
     val private: Boolean,
@@ -23,12 +27,25 @@ data class PlaceListItemData constructor(
     constructor(place: GroupPlace) : this(
         id = place.id,
         groupOrSpaceId = place.groupOrSpaceId,
+        type = PlaceZoneType.PlaceWithAlert,
         name = place.data.data?.name ?: "---",
-        image = place.data.data?.image ?: ImageModel.Companion.emoji(Emojis.robot),
+        image = place.data.data?.image ?: ImageModel.emoji(Emojis.robot),
         private = place.private,
         lat = place.data.data?.lat,
         lng = place.data.data?.lng,
         radiusMeters = place.data.data?.radiusMeters ?: 0
+    )
+
+    constructor(zone: GroupPrivacyZone) : this(
+        id = zone.id,
+        groupOrSpaceId = zone.groupId.asGroupOrSpaceId(),
+        type = PlaceZoneType.PrivacyZone,
+        name = zone.data.data?.name ?: "---",
+        image = zone.data.data?.image ?: ImageModel.emoji(Emojis.robot),
+        private = true,
+        lat = zone.data.data?.lat,
+        lng = zone.data.data?.lng,
+        radiusMeters = zone.data.data?.radiusMeters ?: 0
     )
 
     fun asFocusedMarker(): FocusedMarkerData {
@@ -40,6 +57,7 @@ data class PlaceListItemData constructor(
         return MapPinData(
             groupOrSpaceId = groupOrSpaceId,
             markerId = state.id,
+            // TODO adjust pin type
             pinType = MapPinType.PLACE,
             markerStyle = MapMarkerStyle.CIRCLE,
             focused = false,

@@ -20,6 +20,7 @@ import app.paralino.android.ui.main.MainAppState
 import app.paralino.android.ui.map.SimpleGenericMapComposable
 import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.core.MR
+import app.paralino.core.models.PlaceZoneType
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.presentation.common.PlaceListItemData
@@ -131,6 +132,7 @@ private fun PlaceListItemPreview() {
             state = PlaceListItemData(
                 id = "",
                 groupOrSpaceId = "".asGroupOrSpaceId(),
+                type = PlaceZoneType.PlaceWithAlert,
                 name = "Home",
                 image = ImageModel.emoji(Emojis.lightBulb),
                 private = false,
