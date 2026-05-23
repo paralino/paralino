@@ -30,6 +30,8 @@ import app.paralino.core.presentation.places.detail.PlaceDetailViewModel
 import app.paralino.core.presentation.common.PlaceListItemData
 import app.paralino.core.presentation.places.list.PlacesListScreenState
 import app.paralino.core.presentation.places.list.PlacesViewModel
+import app.paralino.core.presentation.privacyzones.list.PrivacyZonesListScreenState
+import app.paralino.core.presentation.privacyzones.list.PrivacyZonesViewModel
 import app.paralino.core.presentation.settings.billing.PlanInfoViewModel
 import app.paralino.core.presentation.share.SharingStartViewModel
 import app.paralino.core.presentation.common.BottomSheetPickerType
@@ -47,6 +49,7 @@ import app.paralino.core.ui.places.CreatePlaceScreenCore
 import app.paralino.core.ui.places.PlaceAlertsSettingsScreenCore
 import app.paralino.core.ui.places.PlaceDetailScreenCore
 import app.paralino.core.ui.places.PlacesScreenCore
+import app.paralino.core.ui.privacyzones.PrivacyZonesScreenCore
 import app.paralino.core.presentation.billing.BillingScreenSourceType
 import app.paralino.core.ui.share.SharingStartScreenCore
 import kotlinx.cinterop.ExperimentalForeignApi
@@ -296,6 +299,48 @@ object HomeScreens {
                 openPaywall = openPaywall,
                 onSkipOnboarding = onSkipOnboarding,
                 openPlaceDetails = openPlaceDetailScreen,
+                mapContent = { state ->
+                    Box(
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        UIKitViewController(
+                            modifier = Modifier.fillMaxSize(),
+                            factory = { mapUIView(state) },
+                            properties = UIKitInteropProperties(
+                                interactionMode = UIKitInteropInteractionMode.NonCooperative,
+                                isNativeAccessibilityEnabled = true
+                            )
+                        )
+                    }
+                }
+            )
+        }
+    }
+
+    @OptIn(ExperimentalForeignApi::class, ExperimentalComposeUiApi::class)
+    fun PrivacyZonesScreenVC(
+        vm: PrivacyZonesViewModel,
+        paddingValues: AppleScreenPaddingValues,
+        addNewPrivacyZone: () -> Unit,
+        openPaywall: () -> Unit,
+        onSkipOnboarding: () -> Unit,
+        openPrivacyZoneDetailScreen: (zone: PlaceListItemData) -> Unit,
+        mapUIView: (PrivacyZonesListScreenState) -> UIViewController,
+    ) = ComposeUIViewController {
+        RootScreenIOS {
+            var userScroll by remember {
+                mutableStateOf(true)
+            }
+
+            PrivacyZonesScreenCore(
+                appState = it,
+                vm = vm,
+                userScrollEnabled = userScroll,
+                contentPadding = paddingValues.toComposePaddingValues(),
+                addNewPrivacyZone = addNewPrivacyZone,
+                openPaywall = openPaywall,
+                onSkipOnboarding = onSkipOnboarding,
+                openPrivacyZoneDetails = openPrivacyZoneDetailScreen,
                 mapContent = { state ->
                     Box(
                         modifier = Modifier.fillMaxSize()

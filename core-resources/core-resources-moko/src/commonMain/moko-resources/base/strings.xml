@@ -330,6 +330,7 @@
     <string name="plans_banner_inline_group_detail">Get more location history for everyone!</string>
     <string name="plans_banner_inline_personal_space">Track more devices and get more location history!</string>
     <string name="plans_banner_inline_places">Add more places and enjoy unlimited alerts!</string>
+    <string name="plans_banner_inline_privacy_zones">Create more privacy zones and stay in control of your location!</string>
     <string name="plans_banner_inline_groups_picker">Create more groups and connect with more dear people!</string>
     <string name="plans_management_screen_title">Membership</string>
     <string name="plans_management_info_not_subscribed">You are currently not subscribed to a Premium plan!</string>
@@ -767,6 +768,8 @@
     <string name="privacy_zone_created_notification_default">New privacy zone created</string>
     <string name="privacy_zone_menu_delete">Delete privacy zone</string>
     <string name="privacy_zone_delete_alert_title">Are you sure you want to delete this privacy zone?</string>
+    <string name="privacy_zones_list_screen_title">Privacy zones</string>
+    <string name="privacy_zones_list_add_button">New zone</string>
     <string name="privacy_zones_create_button_create">Create a privacy zone</string>
     <string name="privacy_zones_empty_state_info">Create a privacy zone to **protect** your actual location when you need a little privacy.</string>
     <string name="privacy_zones_empty_state_encryption_info">Your privacy zone is **end-to-end encrypted** and only visible to you. Other group members cannot see it.</string>
