@@ -38,9 +38,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.draw.dropShadow
 import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -53,9 +54,9 @@ import app.paralino.core.presentation.map.MapMarkerStyle
 import app.paralino.core.presentation.map.MapPinData
 import app.paralino.core.presentation.map.MapPinType
 import app.paralino.core.provider.localizedString
-import app.paralino.core.ui.components.ConditionErrorItem
 import app.paralino.core.resources.CoreAppIcons
 import app.paralino.core.resources.CoreAppIcons.asPainterResource
+import app.paralino.core.ui.components.ConditionErrorItem
 import app.paralino.core.ui.components.MapMarkerContent
 import app.paralino.core.ui.components.NoticeInfoChip
 import app.paralino.core.ui.theme.AppColors
@@ -130,18 +131,24 @@ fun PlacesEmptyState(
 @Composable
 fun PlaceEmptyScreenMapContent(
     modifier: Modifier = Modifier,
-    mapShadowElevation: Dp = 6.dp,
+    mapShadowElevation: Dp = 12.dp,
     isPersonalSpace: Boolean
 ) {
     Box(
         modifier = modifier
             .fillMaxSize()
             .height(300.dp)
-            .shadow(mapShadowElevation, RoundedCornerShape(12.dp))
-            .clip(RoundedCornerShape(12.dp))
+            .dropShadow(
+                shape = RoundedCornerShape(20.dp),
+                shadow = Shadow(
+                    radius = mapShadowElevation,
+                    color = MaterialTheme.colors.onBackground.copy(alpha = 0.2f),
+                )
+            )
+            .clip(RoundedCornerShape(20.dp))
             .background(MaterialTheme.colors.surface)
             .padding(6.dp)
-            .clip(RoundedCornerShape(8.dp))
+            .clip(RoundedCornerShape(14.dp))
     ) {
         Image(
             painter = if (isSystemInDarkTheme()) {

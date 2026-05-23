@@ -19,9 +19,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.dropShadow
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.unit.dp
 import app.paralino.core.MR
 import app.paralino.core.provider.localizedString
@@ -45,11 +47,17 @@ fun AccountOnboardingPushNotifications(
             .fillMaxSize()
             .padding(horizontal = 20.dp)
             .padding(bottom = 20.dp, top = 12.dp)
-            .shadow(8.dp, RoundedCornerShape(12.dp))
-            .clip(RoundedCornerShape(12.dp))
+            .dropShadow(
+                shape = RoundedCornerShape(20.dp),
+                shadow = Shadow(
+                    radius = 12.dp,
+                    color = MaterialTheme.colors.onBackground.copy(alpha = 0.2f),
+                )
+            )
+            .clip(RoundedCornerShape(20.dp))
             .background(MaterialTheme.colors.surface)
             .padding(6.dp)
-            .clip(RoundedCornerShape(8.dp))
+            .clip(RoundedCornerShape(14.dp))
             .background(AppColors.accentDark.copy(alpha = 0.2f)),
         contentAlignment = Alignment.TopCenter
     ) {
