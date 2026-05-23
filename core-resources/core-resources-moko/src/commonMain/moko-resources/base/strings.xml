@@ -767,6 +767,11 @@
     <string name="privacy_zone_created_notification_default">New privacy zone created</string>
     <string name="privacy_zone_menu_delete">Delete privacy zone</string>
     <string name="privacy_zone_delete_alert_title">Are you sure you want to delete this privacy zone?</string>
+    <string name="privacy_zones_create_button_create">Create a privacy zone</string>
+    <string name="privacy_zones_empty_state_info">Create a privacy zone to **protect** your actual location when you need a little privacy.</string>
+    <string name="privacy_zones_empty_state_encryption_info">Your privacy zone is **end-to-end encrypted** and only visible to you. Other group members cannot see it.</string>
+    <string name="privacy_zones_empty_state_map_label_your_location">Your location</string>
+    <string name="privacy_zones_empty_state_map_label_others_view">What others see</string>
     <string name="group_member_current_add_notification">🙌 You just joined %s</string>
     <string name="group_member_current_add_notification_default">🙌 You just joined a new group</string>
     <string name="group_member_add_notification">%1$s just joined %2$s</string>
