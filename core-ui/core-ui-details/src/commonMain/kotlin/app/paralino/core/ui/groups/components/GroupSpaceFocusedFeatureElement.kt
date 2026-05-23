@@ -53,7 +53,11 @@ fun GroupSpaceFocusedFeatureElement(
     }
 
     val iconBackgroundColor = if (isActive) {
-        AppColors.accentDark.copy(alpha = 0.2f)
+        if (isSystemInDarkTheme()) {
+            AppColors.accentDark.copy(alpha = 0.2f)
+        } else {
+            AppColors.accentDark.copy(alpha = 0.15f)
+        }
     } else {
         AppColors.redMain.copy(alpha = 0.2f)
     }
@@ -88,10 +92,15 @@ fun GroupSpaceFocusedFeatureElement(
         modifier = modifier
             .conditional(isActive) {
                 shadow(
-                    elevation = 12.dp,
+                    elevation = if (isActive) 12.dp else 4.dp,
                     shape = RoundedCornerShape(16.dp),
                     spotColor = backgroundColor
                 )
+                    .border(
+                        width = if (isActive) 2.dp else 1.dp,
+                        color = if (isActive) MaterialTheme.colors.background else MaterialTheme.colors.surface,
+                        shape = RoundedCornerShape(16.dp)
+                    )
             }
             .clip(RoundedCornerShape(16.dp))
             .background(MaterialTheme.colors.background)
@@ -164,7 +173,7 @@ fun GroupSpaceFocusedFeatureElement(
                     this.items(items, key = { it.itemId }) { item ->
                         DataInfoChip(
                             modifier = Modifier,
-                            backgroundColor = AppColors.accent.copy(alpha = 0.4f),
+                            backgroundColor = AppColors.accent.copy(alpha = 0.3f),
                             contentColor = MaterialTheme.colors.onSurface,
                             shape = RoundedCornerShape(100),
                             imageShape = CircleShape,

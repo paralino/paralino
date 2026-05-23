@@ -18,6 +18,7 @@ data class GroupDetailScreenState(
     val sharingStatus: LocationSharingState?,
     val members: List<GroupMemberItemState>,
     val placesFeatureItems: List<GroupSpaceFocusedFeatureChildItem>,
+    val privacyZonesFeatureItems: List<GroupSpaceFocusedFeatureChildItem>,
     val focusedMemberId: String?,
     val membersLimit: Int,
     val canShowMembersLimit: Boolean,

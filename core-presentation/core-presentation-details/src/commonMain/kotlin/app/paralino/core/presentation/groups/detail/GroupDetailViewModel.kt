@@ -8,6 +8,7 @@ import app.paralino.core.domain.group.GroupMemberRemoveUseCase
 import app.paralino.core.domain.group.GroupPreRefreshUseCase
 import app.paralino.core.domain.location.LocationCacheRepository
 import app.paralino.core.domain.location.MemberDeviceStatusProcessor
+import app.paralino.core.domain.privacyzone.GetPrivacyZonesUseCase
 import app.paralino.core.domain.user.PremiumStatusLimitState
 import app.paralino.core.domain.user.PremiumStatusManager
 import app.paralino.core.logg
@@ -79,6 +80,7 @@ class GroupDetailViewModel(
     private val deviceStatusProcessor: MemberDeviceStatusProcessor,
     private val sharingManager: LocationSharingManager,
     private val placeActivityRepo: PlaceActivityDataSource,
+    private val getPrivacyZonesUseCase: GetPrivacyZonesUseCase,
     private val groupMemberRemove: GroupMemberRemoveUseCase,
     private val groupRefresh: GroupPreRefreshUseCase,
     private val groupLocal: UserGroupLocalDataSource,
@@ -115,12 +117,19 @@ class GroupDetailViewModel(
             sharingManager.sharingContractForGroup(groupId.asGroupOrSpaceId()),
             userRepo.getBlocklistLocally(),
             placesRepo.getPlacesForGroupLocally(groupId),
+            getPrivacyZonesUseCase.getPrivacyZonesForGroupLocally(groupId),
             locationCacheRepository.lastLocationFlow,
-        ) { deviceStatus, group, sharingStatus, blocklist, places, myLocation ->
+        ) { deviceStatus, group, sharingStatus, blocklist, places, privacyZones, myLocation ->
+
             groupData.update { group }
+
             val placesData = places
                 .filter { it.data.data != null }
                 .map { PlaceListItemData(it) }
+            val privacyZonesData = privacyZones
+                .filter { it.data.data != null }
+                .map { PlaceListItemData(it) }
+
             val members = group.members
                 .sortedBy { it.member.name }
                 .sortedBy { it.member.userId != appPrefs.userId }
@@ -233,6 +242,15 @@ class GroupDetailViewModel(
                 )
             }
 
+            val featureItemsZones = privacyZonesData.map {
+                GroupSpaceFocusedFeatureChildItem(
+                    itemId = it.id,
+                    groupOrSpaceId = it.groupOrSpaceId,
+                    name = it.name,
+                    image = it.image
+                )
+            }
+
             val membersLimit = group.group.membersLimit(remoteConfigRepo.getConfigOnce())
             val currentState = _uiState.value
             GroupDetailScreenState(
@@ -244,6 +262,7 @@ class GroupDetailViewModel(
                 sharingStatus = sharingState,
                 members = members,
                 placesFeatureItems = featureItemsPlaces,
+                privacyZonesFeatureItems = featureItemsZones,
                 focusedMemberId = currentState.data?.focusedMemberId,
                 membersLimit = membersLimit,
                 canShowMembersLimit = group.isCurrentUserOwner || membersLimit < members.size,

@@ -38,11 +38,14 @@ fun GroupSpaceDetailsHeader(
     groupImage: ImageModel?,
     sharingStatus: LocationSharingState?,
     featurePlaces: List<GroupSpaceFocusedFeatureChildItem>,
+    featurePrivacyZones: List<GroupSpaceFocusedFeatureChildItem>,
     onMapClick: () -> Unit,
     onPlacesClick: () -> Unit,
+    onPrivacyZonesClick: () -> Unit,
     onSettingsClick: () -> Unit,
     onSharingClick: () -> Unit,
     onPlaceClick: (GroupSpaceFocusedFeatureChildItem) -> Unit,
+    onPrivacyZoneClick: (GroupSpaceFocusedFeatureChildItem) -> Unit,
 ) {
     Column(
         modifier = modifier.fillMaxWidth()
@@ -156,6 +159,18 @@ fun GroupSpaceDetailsHeader(
                 bottomExtraContent = null,
                 onChildItemClick = onPlaceClick
             )
+
+            if (!isPersonalSpace) {
+                GroupSpaceFocusedFeatureElement(
+                    modifier = Modifier.clickable(onClick = onPrivacyZonesClick),
+                    title = stringResource(MR.strings.privacy_zones_list_screen_title),
+                    icon = CoreAppIcons.ShieldLock.asPainterResource(),
+                    items = featurePrivacyZones,
+                    isActive = featurePrivacyZones.isNotEmpty(),
+                    bottomExtraContent = null,
+                    onChildItemClick = onPrivacyZoneClick
+                )
+            }
         }
 
         Spacer(modifier = Modifier.size(20.dp))

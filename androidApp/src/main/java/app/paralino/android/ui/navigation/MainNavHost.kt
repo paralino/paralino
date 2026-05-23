@@ -31,6 +31,8 @@ import app.paralino.android.ui.places.CreatePlaceScreen
 import app.paralino.android.ui.places.PlaceAlertsSettingsScreen
 import app.paralino.android.ui.places.PlaceDetailScreen
 import app.paralino.android.ui.places.PlacesScreen
+import app.paralino.android.ui.privacyzones.PrivacyZonesScreen
+import app.paralino.core.ui.components.DefaultEmptyState
 import app.paralino.android.ui.settings.AppSettingsScreen
 import app.paralino.android.ui.settings.AppStatusDebugScreen
 import app.paralino.android.ui.settings.BlocklistScreen
@@ -49,10 +51,12 @@ import app.paralino.android.ui.settings.profile.ChangePasswordScreen
 import app.paralino.android.ui.settings.profile.ConvertAccountScreen
 import app.paralino.android.ui.settings.profile.EditProfileScreen
 import app.paralino.android.ui.share.SharingStartScreen
+import app.paralino.core.MR
 import app.paralino.core.presentation.login.LoginScreenState
 import app.paralino.core.presentation.login.LoginScreenUiType
 import app.paralino.core.presentation.places.detail.PlaceSensitivityViewModel
 import app.paralino.core.models.settings.RawPresentationDataType
+import dev.icerock.moko.resources.compose.stringResource
 import app.paralino.core.presentation.settings.generic.maps.MapsProviderViewModel
 import app.paralino.core.presentation.settings.generic.maps.MapInteractionsViewModel
 import app.paralino.core.presentation.settings.generic.MeasurementSystemViewModel
@@ -137,6 +141,19 @@ fun NavGraphBuilder.homeGraph(
             val onboarding =
                 it.arguments?.getString(AppScreen.MainHome.PlacesList.argumentOnboarding)?.toBoolean() ?: false
             PlacesScreen(appState = appState, groupId = groupId, isOnboarding = onboarding)
+        }
+        composable(AppScreen.MainHome.PrivacyZonesList.routeSignature) {
+            val groupId =
+                it.arguments?.getString(AppScreen.MainHome.PrivacyZonesList.argumentGroupId)!!
+            val onboarding =
+                it.arguments?.getString(AppScreen.MainHome.PrivacyZonesList.argumentOnboarding)?.toBoolean() ?: false
+            PrivacyZonesScreen(appState = appState, groupId = groupId, isOnboarding = onboarding)
+        }
+        composable(AppScreen.MainHome.PrivacyZoneCreate.routeSignature) {
+            DefaultEmptyState(content = stringResource(MR.strings.alert_comingSoon_message))
+        }
+        composable(AppScreen.MainHome.PrivacyZoneDetail.routeSignature) {
+            DefaultEmptyState(content = stringResource(MR.strings.alert_comingSoon_message))
         }
         composable(AppScreen.MainHome.PlaceDetail.routeSignature) {
             val groupId =

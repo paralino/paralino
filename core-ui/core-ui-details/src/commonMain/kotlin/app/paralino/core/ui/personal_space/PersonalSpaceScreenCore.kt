@@ -25,6 +25,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -222,8 +223,11 @@ fun PersonalSpaceScreenCore(
                         groupImage = uiState.userImage,
                         sharingStatus = uiState.sharingStatus,
                         featurePlaces = uiState.placesFeatureItems,
+                        featurePrivacyZones = remember { emptyList() },
                         onPlacesClick = { vm.onEvent(PersonalSpaceScreenUiEvent.OpenPlaces) },
+                        onPrivacyZonesClick = { },
                         onPlaceClick = { vm.onEvent(PersonalSpaceScreenUiEvent.OpenPlace(it)) },
+                        onPrivacyZoneClick = { },
                         onMapClick = { vm.onEvent(PersonalSpaceScreenUiEvent.OpenMap) },
                         onSettingsClick = openSettings,
                         onSharingClick = { vm.onEvent(PersonalSpaceScreenUiEvent.OpenSharingScreen) },

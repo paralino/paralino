@@ -72,6 +72,8 @@ fun GroupDetailScreenCore(
     openMap: () -> Unit,
     openPlaces: () -> Unit,
     openPlace: (GroupSpaceFocusedFeatureChildItem) -> Unit,
+    openPrivacyZones: () -> Unit,
+    openPrivacyZone: (GroupSpaceFocusedFeatureChildItem) -> Unit,
     openGroupSettings: () -> Unit,
     openMemberRawData: (String) -> Unit,
     openSharing: () -> Unit,
@@ -251,11 +253,14 @@ fun GroupDetailScreenCore(
                                 groupImage = state.data.image,
                                 sharingStatus = state.data.sharingStatus,
                                 featurePlaces = state.data.placesFeatureItems,
+                                featurePrivacyZones = state.data.privacyZonesFeatureItems,
                                 onMapClick = { vm.onEvent(GroupDetailScreenUiEvent.OpenMap) },
                                 onPlacesClick = openPlaces,
+                                onPrivacyZonesClick = openPrivacyZones,
                                 onSettingsClick = openGroupSettings,
                                 onSharingClick = openSharing,
-                                onPlaceClick = openPlace
+                                onPlaceClick = openPlace,
+                                onPrivacyZoneClick = openPrivacyZone,
                             )
                         }
                     }

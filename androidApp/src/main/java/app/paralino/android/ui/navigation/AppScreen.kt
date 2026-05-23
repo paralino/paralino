@@ -188,6 +188,50 @@ sealed class AppScreen {
             }
         }
 
+        object PrivacyZonesList : AppScreen() {
+            val argumentOnboarding: String = "onboarding"
+            override val routeSignature: String =
+                "privacy-zones-list?$argumentGroupId={$argumentGroupId}&${argumentOnboarding}={$argumentOnboarding}"
+
+            fun route(groupId: String, isOnboarding: Boolean = false): String {
+                val args = arrayOf(
+                    "$argumentGroupId=$groupId",
+                    "${argumentOnboarding}=$isOnboarding",
+                ).joinToString(separator = "&")
+                return "privacy-zones-list?$args"
+            }
+        }
+
+        object PrivacyZoneCreate : AppScreen() {
+            val argumentZoneId: String = "zoneId"
+            override val routeSignature: String =
+                "privacy-zone-create?$argumentGroupId={$argumentGroupId}&$argumentZoneId={$argumentZoneId}"
+
+            fun route(groupId: String, zoneId: String?): String {
+                val args = arrayOf(
+                    "$argumentGroupId=$groupId",
+                    zoneId?.let { "$argumentZoneId=$it" },
+                )
+                    .filterNotNull()
+                    .joinToString(separator = "&")
+                return "privacy-zone-create?$args"
+            }
+        }
+
+        object PrivacyZoneDetail : AppScreen() {
+            val argumentZoneId: String = "zoneId"
+            override val routeSignature: String =
+                "privacy-zone-detail?$argumentGroupId={$argumentGroupId}&$argumentZoneId={$argumentZoneId}"
+
+            fun route(groupId: String, zoneId: String): String {
+                val args = arrayOf(
+                    "$argumentGroupId=$groupId",
+                    "$argumentZoneId=$zoneId",
+                ).joinToString(separator = "&")
+                return "privacy-zone-detail?$args"
+            }
+        }
+
         object PlaceCreate : AppScreen() {
             val argumentPlaceId: String = "placeId"
             val argumentLat: String = "lat"

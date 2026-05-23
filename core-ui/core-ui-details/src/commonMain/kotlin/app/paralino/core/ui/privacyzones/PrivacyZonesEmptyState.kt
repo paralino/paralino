@@ -48,19 +48,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.clipToBounds
-import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.draw.dropShadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Density
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
@@ -119,8 +119,7 @@ fun PrivacyZonesEmptyState(
 
 @Composable
 private fun PrivacyZonesEmptyScreenMapContent(
-    modifier: Modifier = Modifier,
-    mapShadowElevation: Dp = 6.dp
+    modifier: Modifier = Modifier
 ) {
     var comparisonProgress by rememberSaveable { mutableFloatStateOf(0f) }
     val animation = Animatable(initialValue = 0f)
@@ -140,7 +139,13 @@ private fun PrivacyZonesEmptyScreenMapContent(
             .fillMaxSize()
             .padding(top = 20.dp)
             .height(350.dp)
-            .shadow(mapShadowElevation, RoundedCornerShape(20.dp))
+            .dropShadow(
+                shape = RoundedCornerShape(20.dp),
+                shadow = Shadow(
+                    radius = 12.dp,
+                    color = MaterialTheme.colors.onBackground.copy(alpha = 0.2f),
+                )
+            )
             .clip(RoundedCornerShape(20.dp))
             .background(MaterialTheme.colors.background)
             .padding(6.dp),

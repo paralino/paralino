@@ -15,26 +15,28 @@ import androidx.compose.ui.viewinterop.UIKitInteropProperties
 import androidx.compose.ui.viewinterop.UIKitViewController
 import androidx.compose.ui.window.ComposeUIViewController
 import app.paralino.core.models.base.GroupOrSpaceId
+import app.paralino.core.presentation.billing.BillingScreenSourceType
+import app.paralino.core.presentation.common.BottomSheetPickerType
+import app.paralino.core.presentation.common.PlaceListItemData
+import app.paralino.core.presentation.groups.add_member.MemberInviteViewModel
 import app.paralino.core.presentation.groups.detail.GroupDetailViewModel
+import app.paralino.core.presentation.groups.detail.GroupSpaceFocusedFeatureChildItem
 import app.paralino.core.presentation.groups.edit.CreateGroupViewModel
 import app.paralino.core.presentation.groups.settings.BatteryNotificationsViewModel
 import app.paralino.core.presentation.groups.settings.GroupSettingsViewModel
 import app.paralino.core.presentation.history.LocationHistoryDeleteViewModel
-import app.paralino.core.presentation.groups.add_member.MemberInviteViewModel
 import app.paralino.core.presentation.onboarding.AccountOnboardingViewModel
 import app.paralino.core.presentation.personal_space.PersonalSpaceViewModel
 import app.paralino.core.presentation.personal_space.settings.PersonalSpaceSettingsViewModel
 import app.paralino.core.presentation.places.create.CreatePlaceViewModel
 import app.paralino.core.presentation.places.detail.PlaceDetailScreenState
 import app.paralino.core.presentation.places.detail.PlaceDetailViewModel
-import app.paralino.core.presentation.common.PlaceListItemData
 import app.paralino.core.presentation.places.list.PlacesListScreenState
 import app.paralino.core.presentation.places.list.PlacesViewModel
 import app.paralino.core.presentation.privacyzones.list.PrivacyZonesListScreenState
 import app.paralino.core.presentation.privacyzones.list.PrivacyZonesViewModel
 import app.paralino.core.presentation.settings.billing.PlanInfoViewModel
 import app.paralino.core.presentation.share.SharingStartViewModel
-import app.paralino.core.presentation.common.BottomSheetPickerType
 import app.paralino.core.ui.groups.BatteryNotificationsScreenCore
 import app.paralino.core.ui.groups.GroupCreateScreenCore
 import app.paralino.core.ui.groups.GroupDetailScreenCore
@@ -50,7 +52,6 @@ import app.paralino.core.ui.places.PlaceAlertsSettingsScreenCore
 import app.paralino.core.ui.places.PlaceDetailScreenCore
 import app.paralino.core.ui.places.PlacesScreenCore
 import app.paralino.core.ui.privacyzones.PrivacyZonesScreenCore
-import app.paralino.core.presentation.billing.BillingScreenSourceType
 import app.paralino.core.ui.share.SharingStartScreenCore
 import kotlinx.cinterop.ExperimentalForeignApi
 import platform.UIKit.UIViewController
@@ -103,6 +104,9 @@ object HomeScreens {
         openMemberAdd: () -> Unit,
         openMap: () -> Unit,
         openPlaces: () -> Unit,
+        openPlace: (GroupSpaceFocusedFeatureChildItem) -> Unit,
+        openPrivacyZones: () -> Unit,
+        openPrivacyZone: (GroupSpaceFocusedFeatureChildItem) -> Unit,
         openGroupSettings: () -> Unit,
         openMemberRawData: (String) -> Unit,
         openSharing: () -> Unit,
@@ -122,6 +126,9 @@ object HomeScreens {
                 openMemberAdd = openMemberAdd,
                 openMap = openMap,
                 openPlaces = openPlaces,
+                openPlace = openPlace,
+                openPrivacyZones = openPrivacyZones,
+                openPrivacyZone = openPrivacyZone,
                 openGroupSettings = openGroupSettings,
                 openMemberRawData = openMemberRawData,
                 openSharing = openSharing,
@@ -200,6 +207,7 @@ object HomeScreens {
         openTimeline: () -> Unit,
         openMap: () -> Unit,
         openPlaces: () -> Unit,
+        openPlace: (GroupSpaceFocusedFeatureChildItem) -> Unit,
         openSharing: () -> Unit,
         openPaywall: () -> Unit,
         askNotificationPermission: () -> Unit,
@@ -216,6 +224,7 @@ object HomeScreens {
                 openTimeline = openTimeline,
                 openMap = openMap,
                 openPlaces = openPlaces,
+                openPlace = openPlace,
                 openSharing = openSharing,
                 openPaywall = openPaywall,
                 askNotificationPermission = askNotificationPermission,
