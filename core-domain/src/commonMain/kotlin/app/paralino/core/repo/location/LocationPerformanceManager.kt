@@ -300,7 +300,7 @@ class LocationPerformanceManager constructor(
             .fromKey(appPrefs.locationSettingsHighPerformanceDurationType)
         val didConsumedMediumPerformanceAllowance = currentMediumBoostDuration >= highPerformanceSettings.allowedMediumPerformanceDuration
         val didConsumedHighPerformanceAllowance = currentHighBoostDuration >= highPerformanceSettings.allowedHighPerformanceDuration
-        val didConsumedVeryHighPerformanceAllowance = currentVeryHighBoostDuration >= 3.minutes
+        val didConsumedVeryHighPerformanceAllowance = currentVeryHighBoostDuration >= highPerformanceSettings.allowedVeryHighPerformanceDuration
 
         // take certain range of battery in account
         // assume decent battery level if battery level unavailable
