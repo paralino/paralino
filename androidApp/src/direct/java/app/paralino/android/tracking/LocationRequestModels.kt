@@ -14,9 +14,15 @@ object LocationRequestModels {
         batterySaverSettings: LocationPerformanceManager.LocationPerformanceSettings,
     ): LocationRequestCompat {
         return when (type) {
-            LocationPerformanceType.HIGH,
             LocationPerformanceType.VERY_HIGH,
             LocationPerformanceType.MANUAL_BOOST -> {
+                LocationRequestCompat.Builder(1_000L)
+                    .setMinUpdateIntervalMillis(1_000L)
+                    .setQuality(LocationRequestCompat.QUALITY_HIGH_ACCURACY)
+                    .build()
+            }
+
+            LocationPerformanceType.HIGH -> {
                 LocationRequestCompat.Builder(3_000L)
                     .setMinUpdateIntervalMillis(2_000L)
                     .setQuality(LocationRequestCompat.QUALITY_HIGH_ACCURACY)
