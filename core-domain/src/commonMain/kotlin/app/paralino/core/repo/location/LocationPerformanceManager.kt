@@ -337,18 +337,20 @@ class LocationPerformanceManager constructor(
                 } else if (shouldUseLowPowerMode) {
                     if (didConsumedMediumPerformanceAllowance || didConsumedHighPerformanceAllowance) {
                         // when battery is less than 30% and we spent all medium and high allowance
-                        // revert to BALANCED to conserve battery
+                        // revert to BATTERY_SAVER to conserve battery
                         LocationPerformanceType.BATTERY_SAVER
                     } else {
                         // otherwise go for medium performance to preserve more battery
                         LocationPerformanceType.MEDIUM_HIGH
                     }
-                } else if (didConsumedMediumPerformanceAllowance) {
-                    // user consumed both high and medium performance allowance
-                    LocationPerformanceType.BALANCED
                 } else if (didConsumedHighPerformanceAllowance) {
-                    // user consumed only high performance allowance but there is still some time left in medium
-                    LocationPerformanceType.MEDIUM_HIGH
+                    if (didConsumedMediumPerformanceAllowance) {
+                        // user consumed both high and medium performance allowance
+                        LocationPerformanceType.BALANCED
+                    } else {
+                        // user consumed only high performance allowance but there is still some time left in medium
+                        LocationPerformanceType.MEDIUM_HIGH
+                    }
                 } else {
                     LocationPerformanceType.HIGH
                 }
