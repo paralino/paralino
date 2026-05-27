@@ -130,7 +130,7 @@ class LocationRequestUseCase constructor(
                                     locationId = focusType.memberLocationId
                                 )
 
-                                functionsApi.runAsync(
+                                functionsApi.runAndWait(
                                     function = ServerFunction.LOCATION_FOCUS_MEMBER,
                                     data = requestPayload
                                 )
