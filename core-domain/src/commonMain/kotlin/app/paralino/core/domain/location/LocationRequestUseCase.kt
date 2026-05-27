@@ -231,7 +231,7 @@ class LocationRequestUseCase constructor(
                 }
 
                 if (!responseOne.isSuccess) {
-                    response.remoteException
+                    throw response.remoteException
                 }
             }
         }

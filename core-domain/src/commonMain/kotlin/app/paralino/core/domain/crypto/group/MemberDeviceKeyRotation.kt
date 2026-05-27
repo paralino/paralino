@@ -181,7 +181,7 @@ class MemberDeviceKeyRotation(
         )
 
         if (!response.isSuccess) {
-            response.remoteException
+            throw response.remoteException
         } else {
             val userKey = userKeyRepo.activePersonalKeyWithVersion()
             val groupDeviceIntegrity = GroupIntegrity(
