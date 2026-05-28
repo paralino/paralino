@@ -116,6 +116,8 @@ class AppPrefs(
         const val keySelectedPushProvider = "prefs.device.pushProvider"
         const val keyUnifiedPushEndpointConfigUnsynced = "prefs.device.unifiedPushEndpointConfig.unsynced"
         const val keyUnifiedPushEndpointConfigSynced = "prefs.device.unifiedPushEndpointConfig.synced"
+        const val keyiOSLastLSEHandoffPingTime = "prefs.device.iOSLastLSEHandoffPingTime"
+        const val keyiOSLastMainAppHeartbeatTime = "prefs.device.iOSLastMainAppHeartbeatTime"
     }
 
 
@@ -583,6 +585,18 @@ class AppPrefs(
         get() = provider.userSettings.getBoolean(keyPlaceSearchLocation, true)
         set(value) {
             provider.userSettings.putBoolean(keyPlaceSearchLocation, value)
+        }
+
+    var iOSLastMainAppHeartbeatTime: Double
+        get() = provider.userSettings.getDouble(keyiOSLastMainAppHeartbeatTime, 0.0)
+        set(value) {
+            provider.userSettings.putDouble(keyiOSLastMainAppHeartbeatTime, value)
+        }
+
+    var iOSLastLSEHandoffPingTime: Double
+        get() = provider.userSettings.getDouble(keyiOSLastLSEHandoffPingTime, 0.0)
+        set(value) {
+            provider.userSettings.putDouble(keyiOSLastLSEHandoffPingTime, value)
         }
 
     fun getAndroidMapSDKProviderOrDefault(

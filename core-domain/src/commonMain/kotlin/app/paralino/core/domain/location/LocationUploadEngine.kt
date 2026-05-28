@@ -34,6 +34,8 @@ class LocationUploadEngine constructor(
     private val _pendingLocation = MutableStateFlow<LocationDataModel?>(null)
 
     fun startLocationUploadEngine() {
+        locationSaveProcessing.stop()
+        locationUploadProcessing.stop()
         locationStatusMonitoringJob?.cancel()
         locationStatusMonitoringJob = locationSharingManager.sharingStatus
             .mapNotNull { it.data }

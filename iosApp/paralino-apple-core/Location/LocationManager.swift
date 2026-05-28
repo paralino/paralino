@@ -8,11 +8,13 @@
 import Foundation
 import CoreLocation
 import shared
+import UIKit
 import UserNotifications
 
 public class LocationManager: NSObject, ObservableObject, CoreLocationManagerDelegate {
     
     public let manager = CLLocationManager()
+    private var liveHandoffObserverRegistered = false
     
     lazy var locationRepo: LocationRepositoryWrapper = { KoinIOS.Instances.shared.locationRepo }()
     lazy var placesActivityProcessor: PlacesActivityProcessor = { KoinIOS.Instances.shared.placesActivityProcessor }()
@@ -86,7 +88,7 @@ public class LocationManager: NSObject, ObservableObject, CoreLocationManagerDel
                     self?.manager.desiredAccuracy = kCLLocationAccuracyKilometer
                 }
                 
-                // In best performance balanced mode, even in minUpdateDistance is set to 1 meter, iOS puts the app to sleep after few updates
+                // In best performance balanced mode, even in minUpdateDistance is set to 1 meter, iOS puts the app to sleep after few updates even when traveling
                 // Only when set to 0 app can have high resolution updates when traveling
                 if settings.minUpdateDistanceMeters == 0 && !settings.useHighPerformanceLocation {
                     self?.manager.distanceFilter = 10
@@ -114,6 +116,8 @@ public class LocationManager: NSObject, ObservableObject, CoreLocationManagerDel
         manager.startUpdatingLocation()
         manager.startMonitoringSignificantLocationChanges()
         
+        registerLiveHandoffObserverIfNeeded()
+        
         manager.startMonitoringLocationPushes { [weak self] data, error in
             if let data = data {
                 let token = data.map { String(format: "%.2hhx", $0) }.joined()
@@ -128,12 +132,44 @@ public class LocationManager: NSObject, ObservableObject, CoreLocationManagerDel
     }
     
     func stopLocationUpdates() {
+        LocationLiveHandoffCoordinator.shared.stopMainAppLSESession()
         manager.stopUpdatingLocation()
         manager.stopMonitoringSignificantLocationChanges()
         manager.stopMonitoringLocationPushes()
     }
     
+    private func registerLiveHandoffObserverIfNeeded() {
+        guard !liveHandoffObserverRegistered else { return }
+        liveHandoffObserverRegistered = true
+        
+        LocationLiveHandoffCoordinator.shared.registerMainAppHandoffObserver { [weak self] in
+            self?.handleLiveLocationHandoff()
+        }
+    }
+    
+    private func handleLiveLocationHandoff() {
+        Logr.i(tag: "location_service", message: "Main app live handoff from LSE")
+        
+        // Clear handoff ping so we only trigger once per handoff.
+        LocationLiveHandoffCoordinator.shared.clearHandoffPing()
+        
+        pushProvider.syncPushNotifications()
+        
+        LocationLiveHandoffCoordinator.shared.beginMainAppLSESession()
+    }
+    
     public func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        // Safety net: check if we should start a live session because of a recent LSE ping
+        if LocationLiveHandoffCoordinator.shared.hasRecentHandoffPing() {
+            Logr.i(tag: "location_service", message: "didUpdateLocations safety net: detected recent LSE ping, starting live session")
+            handleLiveLocationHandoff()
+        }
+        
+        // If live session is active, keep recording heartbeat and renewing the idle timer
+        if LocationLiveHandoffCoordinator.shared.isMainAppLSESessionActive() {
+            LocationLiveHandoffCoordinator.shared.recordMainAppHeartbeat()
+            LocationLiveHandoffCoordinator.shared.renewMainAppIdleTimer()
+        }
         
         guard let location = locations.last?.toLocationModel() else { return }
         let systemLocation = manager.location?.toLocationModel()
