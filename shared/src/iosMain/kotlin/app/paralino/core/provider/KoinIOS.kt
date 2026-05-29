@@ -108,6 +108,7 @@ import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.location.IGeofenceManager
 import app.paralino.core.repo.location.LocationPerformanceManager
 import app.paralino.core.repo.location.LocationRepositoryWrapper
+import app.paralino.core.repo.location.LocationSharingContractFilter
 import app.paralino.core.repo.places.IOSLSEPlacesActivityProcessor
 import app.paralino.core.repo.places.IPlacesActivityProcessor
 import app.paralino.core.repo.places.PlaceActivityUploadEngine
@@ -185,7 +186,7 @@ object KoinIOS {
                     single { appUpdateManager() } bind IAppUpdateManager::class
                     single { appRatingPresenter() } bind IAppRatingPresenter::class
                     single { oneTimeLocationProvider(get(), get()) }
-                    single { LocationRepositoryWrapper(get(), get(), get()) }
+                    single { LocationRepositoryWrapper(get(), get(), get(), get()) }
                     single { IOSNSEPlaceCreatedNotificationProcessor(get(), get(), get(), get()) }
                     single { IOSNSEPushNotificationHandler(get(), get(), get(), get()) }
                     single { PlatformUrlHandler() } bind IPlatformUrlHandler::class
@@ -347,6 +348,7 @@ object KoinIOS {
         val userConfigRepo: UserConfigRepository get() = get()
         val nseNotificationHandler: IOSNSEPushNotificationHandler get() = get()
         val placeActivityUploadEngine: PlaceActivityUploadEngine get() = get()
+        val sharingContractFilter: LocationSharingContractFilter get() = get()
     }
 
     object ViewModels : KoinComponent {

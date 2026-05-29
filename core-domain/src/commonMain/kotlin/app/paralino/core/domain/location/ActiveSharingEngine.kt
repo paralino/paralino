@@ -125,7 +125,9 @@ class ActiveSharingEngine(
     private fun updateStatus() {
         scopeProvider.userSessionIOScope.launch {
             try {
-                locationUploadEngine.updateDeviceStatusOnly()
+                locationUploadEngine.updateDeviceStatusOnly(
+                    tryToFetchCachedLocation = true
+                )
             } catch (e: Exception) {
                 logg.w("Error updating device status: ${e.message}")
             }

@@ -74,7 +74,7 @@ class LocationUploadEngine constructor(
         locationSharingManager.refreshAllContracts()
     }
 
-    suspend fun updateDeviceStatusOnly(tryToFetchCachedLocation: Boolean = true) {
+    suspend fun updateDeviceStatusOnly(tryToFetchCachedLocation: Boolean) {
         locationUploadProcessing.checkAndUploadLocation(
             data = if (tryToFetchCachedLocation) {
                 oneTimeLocationProvider.getLastLocation(

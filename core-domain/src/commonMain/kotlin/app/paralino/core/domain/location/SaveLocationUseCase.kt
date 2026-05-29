@@ -11,6 +11,7 @@ import app.paralino.core.db.main.groups.MemberLocationEntityDataUpdate
 import app.paralino.core.db.main.user.UserDeviceEntityLocationDataUpdate
 import app.paralino.core.domain.location.history.ILocationHistoryUploadEngine
 import app.paralino.core.logg
+import app.paralino.core.models.AppHost
 import app.paralino.core.models.base.BackendDatabaseType
 import app.paralino.core.models.location.LocationHistoryModel
 import app.paralino.core.models.location.MemberGroupIdForUpload
@@ -166,34 +167,42 @@ class SaveLocationUseCase(
         data: MemberGroupIdForUpload,
         key: String
     ): Pair<String?, Int> {
+        when (appConfig.appHost) {
+            AppHost.MAIN_APP -> {
+                val allPendingEntries = if (data.groupId.isPersonalSpace) {
+                    database.pendingLocationHistoryDao.getAllEntriesForGroupOnce(groupOrSpaceId = data.groupId.id)
+                } else {
+                    val historyKey = database.groupLocalHistoryKeyDao.getActiveHistoryKey(groupId = data.groupId.id)
+                    database.pendingLocationHistoryDao.getAllEntriesForGroupOnce(groupOrSpaceId = data.groupId.id)
+                        // history key can be null for personal space
+                        .filter { it.localGroupHistoryKeyId == historyKey?.id }
+                }
+                    .sortedByDescending { it.id }
 
-        val allPendingEntries = if (data.groupId.isPersonalSpace) {
-            database.pendingLocationHistoryDao.getAllEntriesForGroupOnce(groupOrSpaceId = data.groupId.id)
-        } else {
-            val historyKey = database.groupLocalHistoryKeyDao.getActiveHistoryKey(groupId = data.groupId.id)
-            database.pendingLocationHistoryDao.getAllEntriesForGroupOnce(groupOrSpaceId = data.groupId.id)
-                // history key can be null for personal space
-                .filter { it.localGroupHistoryKeyId == historyKey?.id }
+                val historyEntries = allPendingEntries
+                    .take(100)
+                    .let { historyMapper.pendingLocationToCore(it) }
+
+                val locationHistory = if (historyEntries.isNotEmpty()) {
+                    val historyModel = LocationHistoryModel(
+                        history = historyEntries.map { it.history }
+                    )
+                    cryptoCore.encryptDataWithKey(
+                        data = BaseRemoteModule.locationHistoryFormatter.encodeToString(historyModel),
+                        key = key
+                    )
+                } else {
+                    ""
+                }
+
+                return locationHistory to allPendingEntries.size
+            }
+
+            AppHost.IOS_NOTIFICATION_EXTENSION,
+            AppHost.IOS_LOCATION_EXTENSION -> {
+                return null to 0
+            }
         }
-            .sortedByDescending { it.id }
-
-        val historyEntries = allPendingEntries
-            .take(100)
-            .let { historyMapper.pendingLocationToCore(it) }
-
-        val locationHistory = if (historyEntries.isNotEmpty()) {
-            val historyModel = LocationHistoryModel(
-                history = historyEntries.map { it.history }
-            )
-            cryptoCore.encryptDataWithKey(
-                data = BaseRemoteModule.locationHistoryFormatter.encodeToString(historyModel),
-                key = key
-            )
-        } else {
-            ""
-        }
-
-        return locationHistory to allPendingEntries.size
     }
 
     suspend fun saveGroupLocationLocally(data: MemberLocationRaw) {

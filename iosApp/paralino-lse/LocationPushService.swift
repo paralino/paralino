@@ -12,6 +12,7 @@ import shared
 class LocationPushService: NSObject, CLLocationPushServiceExtension, CLLocationManagerDelegate {
     
     private lazy var locationRepo: LocationRepositoryWrapper = { KoinIOS.Instances.shared.locationRepo }()
+    private lazy var sharingContractFilter: LocationSharingContractFilter = { KoinIOS.Instances.shared.sharingContractFilter }()
     private let locationManagerDelegate = LseLocationManager()
     
     private var pushCompletion: (() -> Void)?
@@ -28,15 +29,40 @@ class LocationPushService: NSObject, CLLocationPushServiceExtension, CLLocationM
         
         KoinSetup.initKoin(locationManager: locationManagerDelegate)
         
-        Logr.i(tag: "location_service", message: "LSE: Got location push payload. Pinging main app.")
-        
-        self.locationRepo.startLocationUploadEngine()
+        let notificationId = payload["notificationId"] as? String
+        let directGroupId = payload["groupId"] as? String
+        Logr.i(tag: "location_service", message: "LSE: Got location push payload for notification \(notificationId ?? "unknown") and group \(directGroupId ?? "unknown")")
         
         self.locationManager = CLLocationManager()
         self.locationManager?.distanceFilter = 0
         self.locationManager?.desiredAccuracy = kCLLocationAccuracyBest
         self.locationManager?.delegate = self
         
+        DispatchQueue.main.async { [weak self] in
+            Task {
+                let groupId: String?
+                if let directGroupId = directGroupId {
+                    groupId = directGroupId
+                } else {
+                    groupId = try? await self?.locationRepo.getGroupIdFromNotificationId(notificationId: notificationId)
+                }
+                
+                if let groupId = groupId {
+                    Logr.i(tag: "location_service", message: "LSE: Allowing only group \(groupId) for 60 seconds")
+                    self?.sharingContractFilter.setAsAllowedForSeconds(groupOrSpaceId: GroupOrSpaceIdHelper.shared.wrap(id: groupId), seconds: 60)
+                } else {
+                    Logr.i(tag: "location_service", message: "LSE: No new sharing contract filter to add")
+                    self?.sharingContractFilter.clearFilter()
+                }
+                
+                self?.locationRepo.startLocationUploadEngine()
+                self?.handleMainAppHandoff()
+            }
+        }
+    }
+    
+    private func handleMainAppHandoff() {
+        Logr.i(tag: "location_service", message: "LSE: Pinging main app")
         LocationLiveHandoffCoordinator.shared.handleLocationPushExtension(
             startLseLocationManager: { [weak self] in
                 guard let self = self else { return }

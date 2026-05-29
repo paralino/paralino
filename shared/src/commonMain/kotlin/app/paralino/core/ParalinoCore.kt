@@ -111,6 +111,7 @@ import app.paralino.core.presentation.common.NetworkQualityMonitor
 import app.paralino.core.provider.ICrashReportingLogr
 import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.provider.InAppLogger
+import app.paralino.core.repo.location.LocationSharingContractFilter
 import app.paralino.core.provider.Logr
 import app.paralino.core.provider.NotificationSocketServiceManager
 import app.paralino.core.provider.RealtimeSubscriptionManager
@@ -289,7 +290,7 @@ val coreModule = module {
     factory { SessionRenewalHandler(get(), get(), get(), get()) }
     factory { LocationRequestUseCase(get(), get(), get()) }
     factory { SaveLocationUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
-    factory { SavePendingLocationUseCase(get(), get(), get(), get()) }
+    factory { SavePendingLocationUseCase(get(), get(), get(), get(), get()) }
     factory { ClearUserLocationUseCase(get(), get(), get(), get(), get(), get()) }
     factory { RealtimeEventsMaker(get(), get()) }
     factory { UserMemberIdUseCase(get(), get(), get(), get()) }
@@ -329,7 +330,8 @@ val coreModule = module {
     single { UserRepository(get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { LocationUploadEngine(get(), get(), get(), get(), get(), get(), get(), get()) }
     single { LocationSaveEventProcessingEngine(get(), get(), get(), get(), get(), get(), get()) }
-    single { LocationUploadEventProcessingEngine(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+    single { LocationUploadEventProcessingEngine(get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+    single { LocationSharingContractFilter() }
     single { HandleGetLocationPayloadRequest(get(), get(), get(), get()) }
     single { LocationCacheRepository() }
     single { PlacesRepository(get(), get(), get(), get(), get(), get()) }

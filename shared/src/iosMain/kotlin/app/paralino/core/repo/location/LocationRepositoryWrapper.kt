@@ -1,15 +1,23 @@
 package app.paralino.core.repo.location
 
 import app.paralino.core.domain.location.LocationUploadEngine
+import app.paralino.core.domain.notifications.processors.LocationRequestNotificationProcessor.LocationRequestNotificationPayload
+import app.paralino.core.logg
 import app.paralino.core.models.Payload
+import app.paralino.core.models.base.BackendDatabaseType
+import app.paralino.core.models.base.BackendResourceIDs
 import app.paralino.core.models.location.LocationDataModel
+import app.paralino.core.models.raw.PushNotificationRaw
 import app.paralino.core.provider.CoroutineScopeProvider
 import app.paralino.core.repo.LocationSharingManager
+import app.paralino.core.repo.api.IDocumentsApi
+import app.paralino.core.utils.extensions.tryParseFromJson
 import kotlinx.coroutines.launch
 
 class LocationRepositoryWrapper(
     private val locationRepo: LocationUploadEngine,
     private val locationSharingManager: LocationSharingManager,
+    private val docApi: IDocumentsApi,
     private val scopeProvider: CoroutineScopeProvider
 ) {
 
@@ -25,6 +33,43 @@ class LocationRepositoryWrapper(
 
     suspend fun canProcessLocationRequest(): Boolean {
         return locationSharingManager.isSharingActive()
+    }
+
+    suspend fun getGroupIdFromNotificationId(
+        notificationId: String?
+    ): String? {
+
+        if (notificationId.isNullOrBlank()) {
+            return null
+        }
+
+        try {
+            val notification = docApi.getDocument(
+                databaseType = BackendDatabaseType.DATA,
+                collectionId = BackendResourceIDs.collectionPushNotificationID,
+                documentId = notificationId
+            )
+                .also {
+                    logg.tag("location_service").v("Got notification document")
+                }
+                .let {
+                    try {
+                        PushNotificationRaw.from(it)
+                    } catch (e: Exception) {
+                        logg.tag("location_service").e("Error parsing push notification", e)
+                        null
+                    }
+                }
+
+            val payload = notification?.content?.tryParseFromJson<LocationRequestNotificationPayload>()
+
+            logg.tag("location_service").i("Got group ${payload?.groupId} from notification")
+
+            return payload?.groupId
+        } catch (e: Exception) {
+            logg.tag("location_service").i("Failed to fetch notification: ${e.message}")
+            return null
+        }
     }
 
     fun registerNewLocation(data: LocationDataModel): Payload<Unit> {
