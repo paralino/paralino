@@ -130,7 +130,6 @@ class ILocationHistoryStateMapper(
                     yesterday = yesterday,
                 )
             }
-            .sortedByDescending { it.point.status.startTime }
             .distinctBy { it.point.properID }
 
         logg.v("history_fetch", "Cluster locations")
