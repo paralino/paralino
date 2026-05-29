@@ -195,8 +195,8 @@ android {
     productFlavors {
         create("playStore") {
             dimension = "version"
-            versionCode = 82
-            versionName = "2.2.4"
+            versionCode = 83
+            versionName = "2.2.5"
 
             val userProps = loadUserProperties(rootProject.rootDir)
             buildConfigField("String", "revenueCatApiKey", userProps?.getProperty("revenueCatApiKey") ?: "null")
@@ -204,8 +204,8 @@ android {
         }
         create("direct") {
             dimension = "version"
-            versionCode = 82
-            versionName = "2.2.4"
+            versionCode = 83
+            versionName = "2.2.5"
 
             buildConfigField("String", "revenueCatApiKey", "null")
         }
