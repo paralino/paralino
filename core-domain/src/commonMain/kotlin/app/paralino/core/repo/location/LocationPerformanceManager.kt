@@ -297,15 +297,26 @@ class LocationPerformanceManager constructor(
         val highPerformanceSettings = LocationPerformanceSettingsType
             .HighPerformance
             .fromKey(appPrefs.locationSettingsHighPerformanceDurationType ?: appPrefs.locationSettingsHighPerformanceDurationTypeFallback)
+        val balancedPerformanceSettings = LocationPerformanceSettingsType
+            .Balanced
+            .fromKey(appPrefs.locationSettingsBalancedPerformanceType)
+
         val didConsumedMediumPerformanceAllowance = currentMediumBoostDuration >= highPerformanceSettings.allowedMediumPerformanceDuration
         val didConsumedHighPerformanceAllowance = currentHighBoostDuration >= highPerformanceSettings.allowedHighPerformanceDuration
         val didConsumedVeryHighPerformanceAllowance = currentVeryHighBoostDuration >= highPerformanceSettings.allowedVeryHighPerformanceDuration
 
         // take certain range of battery in account
         // assume decent battery level if battery level unavailable
-        val batteryLevelAdjusted = batteryLevel ?: 30
+        val lowBatteryLevelThreshold = when (balancedPerformanceSettings) {
+            LocationPerformanceSettingsType.Balanced.Level1,
+            LocationPerformanceSettingsType.Balanced.Level2,
+            LocationPerformanceSettingsType.Balanced.Level3 -> 30
+            LocationPerformanceSettingsType.Balanced.Level4 -> 20
+            LocationPerformanceSettingsType.Balanced.Level5 -> 15
+        }
+        val batteryLevelAdjusted = batteryLevel ?: lowBatteryLevelThreshold
         val batteryVeryLow = batteryLevelAdjusted < 10
-        val batteryLow = batteryLevelAdjusted < 30
+        val batteryLow = batteryLevelAdjusted < lowBatteryLevelThreshold
         val shouldUseLowPowerMode = batteryLow || (lowPowerMode && appPrefs.locationBatterySaverRespectsDeviceLowPower)
 
         return when (type) {
@@ -335,7 +346,7 @@ class LocationPerformanceManager constructor(
                     LocationPerformanceType.BATTERY_SAVER
                 } else if (shouldUseLowPowerMode) {
                     if (didConsumedMediumPerformanceAllowance || didConsumedHighPerformanceAllowance) {
-                        // when battery is less than 30% and we spent all medium and high allowance
+                        // when battery is less than lowBatteryLevelThreshold, and we spent all medium and high allowance
                         // revert to BATTERY_SAVER to conserve battery
                         LocationPerformanceType.BATTERY_SAVER
                     } else {

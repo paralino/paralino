@@ -115,7 +115,6 @@ class LocationRequestNotificationProcessor(
                     when (pushImportance) {
                         PushNotificationImportance.HIGH,
                         PushNotificationImportance.MEDIUM -> LocationPerformanceType.HIGH
-                        // TODO check if we should use HIGH by default (this was previous behavior)
                         PushNotificationImportance.NORMAL -> LocationPerformanceType.MEDIUM_HIGH
                         else -> LocationPerformanceType.MEDIUM_HIGH
                     }
