@@ -56,6 +56,7 @@ sealed interface LocationPerformanceSettingsType {
 
         companion object {
             val default: HighPerformance = Level1
+            val defaultPremium: HighPerformance = Level2
             fun fromKey(key: String?): HighPerformance {
                 return when (key) {
                     Level1.key -> Level1

@@ -79,6 +79,7 @@ class AppPrefs(
         const val keyErrorReporting = "prefs.user.errorReporting"
         const val keyErrorReportingID = "prefs.user.errorReporting.ID"
         const val keyHighPerformanceDuration = "prefs.location.highPerformance.duration"
+        const val keyHighPerformanceDurationFallback = "prefs.location.highPerformance.durationFallback"
         const val keyBatterySaverPerformance = "prefs.location.batterySaver.performance"
         const val keyBatterySaverDeviceLowPower = "prefs.location.batterySaver.deviceLowPowerMode"
         const val keyBalancedPerformance = "prefs.location.balanced.performance"
@@ -377,6 +378,12 @@ class AppPrefs(
         get() = provider.userSettings.getStringOrNull(keyHighPerformanceDuration).takeIf { !it.isNullOrBlank() }
         set(value) {
             provider.userSettings.putString(keyHighPerformanceDuration, value ?: "")
+        }
+
+    var locationSettingsHighPerformanceDurationTypeFallback: String?
+        get() = provider.userSettings.getStringOrNull(keyHighPerformanceDurationFallback).takeIf { !it.isNullOrBlank() }
+        set(value) {
+            provider.userSettings.putString(keyHighPerformanceDurationFallback, value ?: "")
         }
 
     var locationSettingsBatterySaverPerformanceType: String?

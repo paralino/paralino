@@ -43,6 +43,7 @@ class LocationSettingsViewModel(
         coroutineScope.launch {
             try {
                 premiumStatusManager.adjustDeviceSettingsForPlan()
+                _uiState.update { createInitialState() }
             } catch (e: Exception) {
             }
         }
@@ -93,8 +94,11 @@ class LocationSettingsViewModel(
                         description = getOptionDescription(level),
                         tag = getOptionBatteryImpact(level),
                         isTagWarning = level is LocationPerformanceSettingsType.HighPerformance.LevelMax || level is LocationPerformanceSettingsType.HighPerformance.Level3,
-                        isSelected = level.key == (appPrefs.locationSettingsHighPerformanceDurationType
-                            ?: LocationPerformanceSettingsType.HighPerformance.default.key)
+                        isSelected = level.key == (
+                                appPrefs.locationSettingsHighPerformanceDurationType
+                                    ?: appPrefs.locationSettingsHighPerformanceDurationTypeFallback
+                                    ?: LocationPerformanceSettingsType.HighPerformance.default.key
+                                )
                     )
                 }
             ),

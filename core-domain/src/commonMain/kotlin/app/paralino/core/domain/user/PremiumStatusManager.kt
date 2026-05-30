@@ -45,6 +45,8 @@ class PremiumStatusManager(
         } ?: false
 
         if (currentPlanConfig?.planTypeEnum == PlanType.FREE && !isUserPartOfPremiumGroup) {
+            appPrefs.locationSettingsHighPerformanceDurationTypeFallback = null
+
             if (LocationPerformanceSettingsType.HighPerformance.fromKey(appPrefs.locationSettingsHighPerformanceDurationType).isPremiumFeature) {
                 appPrefs.locationSettingsHighPerformanceDurationType = LocationPerformanceSettingsType.HighPerformance.default.key
             }
@@ -56,6 +58,8 @@ class PremiumStatusManager(
             if (LocationPerformanceSettingsType.BatterySaver.fromKey(appPrefs.locationSettingsBatterySaverPerformanceType).isPremiumFeature) {
                 appPrefs.locationSettingsBatterySaverPerformanceType = LocationPerformanceSettingsType.BatterySaver.default.key
             }
+        } else {
+            appPrefs.locationSettingsHighPerformanceDurationTypeFallback = LocationPerformanceSettingsType.HighPerformance.defaultPremium.key
         }
 
         if (currentPlanConfig?.planTypeEnum?.isPremium == false) {

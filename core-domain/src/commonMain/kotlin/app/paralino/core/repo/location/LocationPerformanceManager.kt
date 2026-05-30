@@ -20,7 +20,6 @@ import kotlinx.coroutines.launch
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.minus
 import kotlin.time.Duration
-import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.Instant
 
@@ -297,7 +296,7 @@ class LocationPerformanceManager constructor(
         // allow only certain amount of boost per hour
         val highPerformanceSettings = LocationPerformanceSettingsType
             .HighPerformance
-            .fromKey(appPrefs.locationSettingsHighPerformanceDurationType)
+            .fromKey(appPrefs.locationSettingsHighPerformanceDurationType ?: appPrefs.locationSettingsHighPerformanceDurationTypeFallback)
         val didConsumedMediumPerformanceAllowance = currentMediumBoostDuration >= highPerformanceSettings.allowedMediumPerformanceDuration
         val didConsumedHighPerformanceAllowance = currentHighBoostDuration >= highPerformanceSettings.allowedHighPerformanceDuration
         val didConsumedVeryHighPerformanceAllowance = currentVeryHighBoostDuration >= highPerformanceSettings.allowedVeryHighPerformanceDuration
