@@ -243,8 +243,8 @@ class LocationPerformanceManager constructor(
 
         // sum duration of HIGH and MEDIUM_HIGH requests in last 20 min
         iterator20Min.forEachIndexed { index, pair ->
-            // don't consider user own boost
-            if (pair.second < LocationPerformanceType.MANUAL_BOOST) {
+            // don't consider user own boost or location request
+            if (pair.second < LocationPerformanceType.VERY_HIGH) {
                 val next = iterator20Min.getOrNull(index + 1)
                 val durationInSec = ((next?.first ?: now) - pair.first).seconds
 
