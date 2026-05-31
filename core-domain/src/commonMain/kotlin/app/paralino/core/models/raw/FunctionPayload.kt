@@ -208,6 +208,7 @@ data class LocationCreateGroupPayload constructor(
     val status: String,
     val groupKeyVersion: Long,
     val notify: Boolean,
+    val realtimeUpdatesPrefs: Boolean?,
     val keys: List<GroupSenderKeyPayload>
 )
 

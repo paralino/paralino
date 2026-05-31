@@ -552,6 +552,9 @@
     <string name="groups_sharing_setting_notifyOthers_description">If enabled, group members will receive notification that you started sharing your location.</string>
     <string name="groups_sharing_setting_timeline_title">Location history</string>
     <string name="groups_sharing_setting_timeline_description">If enabled, your location updates will be saved to location history.</string>
+    <string name="groups_sharing_setting_realtimeUpdates_title">Real-time location updates</string>
+    <string name="groups_sharing_setting_realtimeUpdates_description_on">Allow others to **continuously** get real-time location updates from this device. If someone is watching you on the map for a long time, this may use more battery.</string>
+    <string name="groups_sharing_setting_realtimeUpdates_description_off">Others can still locate you by manually refreshing your location, but in all other cases location updates will be limited without real-time support.</string>
     <string name="location_sharing_button_start_groups">Start sharing</string>
     <string name="location_sharing_button_start_personal">Start tracking</string>
     <string name="location_sharing_button_stop_groups">Stop sharing</string>

@@ -17,6 +17,7 @@ data class SharingContractEntity(
     @ColumnInfo(name = "shareDeviceStatus") val shareDeviceStatus: Boolean = true,
     @ColumnInfo(name = "saveToHistory") val saveToHistory: Boolean = false,
     @ColumnInfo(name = "isNotifyOthersOn") val isNotifyOthersOn: Boolean? = null,
+    @ColumnInfo(name = "isRealtimeUpdatesOn") val isRealtimeUpdatesOn: Boolean? = null,
     @ColumnInfo(name = "sharingDurationPreset") val sharingDurationPreset: Long? = null,
     @ColumnInfo(name = "isEnabled") val isEnabled: Boolean = true
 )

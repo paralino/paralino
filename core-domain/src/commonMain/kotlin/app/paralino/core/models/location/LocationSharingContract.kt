@@ -21,6 +21,7 @@ data class LocationSharingContract constructor(
     val approximateLocationInMeters: Int?,
     val saveToHistory: Boolean,
     val isNotifyOthersOn: Boolean? = null,
+    val isRealtimeUpdatesOn: Boolean? = null,
     val sharingDurationPreset: Long? = null,
     val isEnabled: Boolean,
 ) {
