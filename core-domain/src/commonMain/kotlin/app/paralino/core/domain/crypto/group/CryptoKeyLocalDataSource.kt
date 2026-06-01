@@ -97,6 +97,20 @@ class CryptoKeyLocalDataSource constructor(
         database.groupRelatedKeysDao.createLocalGroupDeviceSenderKey(key)
     }
 
+    suspend fun getSpecificGroupDeviceKey(
+        groupId: String,
+        ownerUserId: String,
+        memberUserId: String,
+        locationId: String
+    ): List<GroupDeviceKeysEntity> {
+        return database.groupRelatedKeysDao.getSpecificGroupDeviceKey(
+            groupId = groupId,
+            ownerUserId = ownerUserId,
+            memberUserId = memberUserId,
+            locationId = locationId
+        )
+    }
+
     suspend fun getCurrentDeviceLocationId(groupId: String): String? {
         return database.groupRelatedDao.getSingleLocationForMemberAndDeviceOnce(
             groupId = groupId,

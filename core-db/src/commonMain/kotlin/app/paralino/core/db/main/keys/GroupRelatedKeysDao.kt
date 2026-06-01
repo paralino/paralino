@@ -123,8 +123,22 @@ interface GroupRelatedKeysDao {
     @Query("SELECT * FROM groupDeviceKeysEntity")
     suspend fun getAllGroupDeviceKeys(): List<GroupDeviceKeysEntity>
 
-    @Query("SELECT * FROM personalGroupKeyEntity WHERE isArchived = 1")
-    suspend fun getAllArchivedPersonalGroupKeys(): List<PersonalGroupKeyEntity>
+    @Query(
+        """
+            SELECT * FROM groupDeviceKeysEntity
+            WHERE groupId = :groupId 
+            AND ownerUserId = :ownerUserId 
+            AND memberUserId = :memberUserId 
+            AND locationId = :locationId
+        """
+    )
+    suspend fun getSpecificGroupDeviceKey(
+        groupId: String,
+        ownerUserId: String,
+        memberUserId: String,
+        locationId: String
+    ): List<GroupDeviceKeysEntity>
+
     @Query("SELECT * FROM personalGroupKeyEntity WHERE groupId = :groupId AND isArchived = 1")
     suspend fun getAllArchivedPersonalGroupKeys(groupId: String): List<PersonalGroupKeyEntity>
 

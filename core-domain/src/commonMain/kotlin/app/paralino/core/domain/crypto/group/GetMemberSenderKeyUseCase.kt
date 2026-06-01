@@ -5,12 +5,12 @@ import app.paralino.core.crypto.GroupMemberMainPublicKey
 import app.paralino.core.crypto.GroupMemberSenderKey
 import app.paralino.core.crypto.UserGroupPersonalKeyPair
 import app.paralino.core.db.AppPrefs
+import app.paralino.core.db.main.keys.GroupDeviceKeysEntity
 import app.paralino.core.db.main.keys.LocalGroupDeviceKeysEntity
 import app.paralino.core.domain.crypto.user.CryptoUserKeysLocalSource
 import app.paralino.core.logg
 import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.AppHost
-import app.paralino.core.models.raw.GroupDeviceCryptoKeyRaw
 
 class GetMemberSenderKeyUseCase(
     private val cryptoCore: CryptoCore,
@@ -21,6 +21,37 @@ class GetMemberSenderKeyUseCase(
     private val appPrefs: AppPrefs,
     private val appBuildConfig: AppBuildConfig
 ) {
+    suspend fun getCurrentUserDeviceSenderKey(
+        groupId: String,
+        locationId: String
+    ): GroupMemberSenderKey {
+        val currentUserId = appPrefs.userId
+        val keyRaw = local.getSpecificGroupDeviceKey(
+            groupId = groupId,
+            ownerUserId = currentUserId,
+            memberUserId = currentUserId,
+            locationId = locationId
+        )
+            .firstOrNull()
+            ?: let {
+                logg.tag("tag_crypto_key_group_member")
+                    .d("member sender key not found for current user in group $groupId")
+                return getMemberSenderKey(
+                    groupId = groupId,
+                    memberUserId = currentUserId,
+                    locationId = locationId,
+                )
+            }
+
+        return parseMemberSenderKey(
+            groupId = groupId,
+            currentUserId = currentUserId,
+            memberUserId = currentUserId,
+            locationId = locationId,
+            keyRaw = keyRaw
+        )
+    }
+
     suspend fun getMemberSenderKey(
         groupId: String,
         memberUserId: String,
@@ -40,7 +71,24 @@ class GetMemberSenderKeyUseCase(
                 return GroupMemberSenderKey.Error.MissingKeys
             }
 
-        if (memberUserId == appPrefs.userId) {
+        return parseMemberSenderKey(
+            groupId = groupId,
+            currentUserId = currentUserId,
+            memberUserId = memberUserId,
+            locationId = locationId,
+            keyRaw
+        )
+    }
+
+    private suspend fun parseMemberSenderKey(
+        groupId: String,
+        currentUserId: String,
+        memberUserId: String,
+        locationId: String,
+        keyRaw: GroupDeviceKeysEntity
+    ): GroupMemberSenderKey {
+
+        if (memberUserId == currentUserId) {
             val key = local.getLocalGroupSenderKey(groupId = groupId)
                 ?.takeIf { key ->
                     key.locationId == locationId
@@ -68,13 +116,6 @@ class GetMemberSenderKeyUseCase(
                 return key
             }
         }
-
-        return parseMemberSenderKey(keyRaw)
-    }
-
-    private suspend fun parseMemberSenderKey(
-        keyRaw: GroupDeviceCryptoKeyRaw
-    ): GroupMemberSenderKey {
 
         if (keyRaw.encryptedSenderKey.isBlank()) {
             logg.tag("tag_crypto_key_group_member")
