@@ -260,7 +260,7 @@ val dataSourceModule = module {
     single { UserLocalDataSource(get(), get()) }
     single { UserPersonalSpaceLocalDataSource(get(), get(), get(), get(), get(), get(), get()) }
     single { PersonalDevicesLocalDataSource(get(), get()) }
-    single { CryptoKeyLocalDataSource(get(), get(), get()) }
+    single { CryptoKeyLocalDataSource(get(), get(), get(), get()) }
     single { UserGroupLocalDataSource(get(), get(), get(), get(), get(), get(), get(), get()) }
     single { PersonalCodeLocalDataSource(get(), get()) }
     single { PlacesLocalDataSource(get(), get()) }

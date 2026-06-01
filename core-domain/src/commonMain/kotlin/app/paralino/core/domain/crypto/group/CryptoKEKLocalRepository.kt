@@ -7,6 +7,7 @@ import app.paralino.core.crypto.LocationHistoryKey
 import app.paralino.core.crypto.UserGroupPersonalKeyPair
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.db.main.keys.GroupDeviceIntegrityEntity
+import app.paralino.core.db.main.keys.GroupDeviceKeysEntity
 import app.paralino.core.db.main.keys.GroupHistoryKeyEntity
 import app.paralino.core.db.main.keys.PersonalHistoryKeyEntity
 import app.paralino.core.models.raw.GroupDeviceCryptoKeyRaw
@@ -89,7 +90,7 @@ class CryptoKEKLocalRepository(
         )
     }
 
-    suspend fun getGroupDeviceKeys(): List<GroupDeviceCryptoKeyRaw> {
+    suspend fun getGroupDeviceKeys(): List<GroupDeviceKeysEntity> {
         return local.getGroupDeviceKeys()
     }
 
@@ -105,13 +106,12 @@ class CryptoKEKLocalRepository(
 
     suspend fun getMyPreKeyForGroup(
         groupId: String,
-        version: Long?,
-        includeArchivedKeys: Boolean = false
+        version: Long?
     ): UserGroupPersonalKeyPair {
         return getPersonalGroupKey.getMyPreKeyForGroup(
             groupId = groupId,
             version = version,
-            includeArchivedKeys = includeArchivedKeys
+            includeArchivedKeys = false
         )
     }
 

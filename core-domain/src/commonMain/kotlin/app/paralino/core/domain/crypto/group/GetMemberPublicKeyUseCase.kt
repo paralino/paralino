@@ -5,9 +5,9 @@ import app.paralino.core.crypto.GroupMemberIdentityKey
 import app.paralino.core.crypto.GroupMemberMainPublicKey
 import app.paralino.core.crypto.UserGroupPersonalKeyPair
 import app.paralino.core.db.AppPrefs
+import app.paralino.core.db.main.keys.GroupMembersKeysEntity
 import app.paralino.core.domain.crypto.user.CryptoUserKeysLocalSource
 import app.paralino.core.logg
-import app.paralino.core.models.raw.GroupMemberCryptoKeyDataRaw
 
 class GetMemberPublicKeyUseCase(
     private val cryptoCore: CryptoCore,
@@ -40,7 +40,7 @@ class GetMemberPublicKeyUseCase(
     }
 
     private suspend fun getMemberPublicKey(
-        keyRaw: GroupMemberCryptoKeyDataRaw
+        keyRaw: GroupMembersKeysEntity
     ): GroupMemberMainPublicKey {
         val currentUserId = appPrefs.userId
 
@@ -59,7 +59,8 @@ class GetMemberPublicKeyUseCase(
                     val myGroupKeyPair = when (
                         val myPreKey = getPersonalGroupKey.getMyPreKeyForGroup(
                             groupId = keyRaw.groupId,
-                            version = 0
+                            version = 0,
+                            includeArchivedKeys = false
                         )
                     ) {
                         is UserGroupPersonalKeyPair.Error -> {
@@ -95,7 +96,8 @@ class GetMemberPublicKeyUseCase(
                     val myGroupKeyPair = when (
                         val myPreKey = getPersonalGroupKey.getMyPreKeyForGroup(
                             groupId = keyRaw.groupId,
-                            version = keyRaw.memberKeyVersion
+                            version = keyRaw.memberKeyVersion,
+                            includeArchivedKeys = false
                         )
                     ) {
                         is UserGroupPersonalKeyPair.Error -> {
@@ -130,7 +132,7 @@ class GetMemberPublicKeyUseCase(
     }
 
     private suspend fun getMemberIdentityKey(
-        keyRaw: GroupMemberCryptoKeyDataRaw
+        keyRaw: GroupMembersKeysEntity
     ): GroupMemberIdentityKey {
         val currentUserId = appPrefs.userId
         // always return own identity key from secure storage but ensure no one tampered with key from server

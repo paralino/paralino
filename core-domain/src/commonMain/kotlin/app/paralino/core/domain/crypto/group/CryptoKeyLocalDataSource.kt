@@ -4,8 +4,14 @@ import app.paralino.core.db.AppPrefs
 import app.paralino.core.db.MainDatabaseHelper
 import app.paralino.core.db.main.history.UnsyncedGroupHistoryKeyEntity
 import app.paralino.core.db.main.keys.GroupDeviceIntegrityEntity
-import app.paralino.core.db.main.keys.LocalGroupDeviceKeysEntity
+import app.paralino.core.db.main.keys.GroupDeviceKeysEntity
+import app.paralino.core.db.main.keys.GroupKeysEntity
 import app.paralino.core.db.main.keys.GroupLocalHistoryKeyEntity
+import app.paralino.core.db.main.keys.GroupMembersKeysEntity
+import app.paralino.core.db.main.keys.LocalGroupDeviceKeysEntity
+import app.paralino.core.db.main.keys.PersonalGroupKeyEntity
+import app.paralino.core.models.AppBuildConfig
+import app.paralino.core.models.AppHost
 import app.paralino.core.models.mappers.GroupKeysMapper
 import app.paralino.core.models.raw.GroupCryptoKeyDataRaw
 import app.paralino.core.models.raw.GroupDeviceCryptoKeyRaw
@@ -17,46 +23,70 @@ import kotlinx.coroutines.flow.MutableStateFlow
 class CryptoKeyLocalDataSource constructor(
     private val database: MainDatabaseHelper,
     private val keysMapper: GroupKeysMapper,
-    private val appPrefs: AppPrefs
+    private val appPrefs: AppPrefs,
+    private val appBuildConfig: AppBuildConfig
 ) {
 
-    private var cachedGroupKeys = MutableStateFlow<List<GroupCryptoKeyDataRaw>>(emptyList())
-    private var cachedMemberKeys = MutableStateFlow<List<GroupMemberCryptoKeyDataRaw>>(emptyList())
-    private var cachedGroupDeviceKeys = MutableStateFlow<List<GroupDeviceCryptoKeyRaw>>(emptyList())
-    private var cachedPersonalGroupKeys = MutableStateFlow<List<PersonalGroupKeyRaw>>(emptyList())
+    private var cachedGroupKeys = MutableStateFlow<List<GroupKeysEntity>>(emptyList())
+    private var cachedMemberKeys = MutableStateFlow<List<GroupMembersKeysEntity>>(emptyList())
+    private var cachedGroupDeviceKeys = MutableStateFlow<List<GroupDeviceKeysEntity>>(emptyList())
+    private var cachedPersonalGroupKeys = MutableStateFlow<List<PersonalGroupKeyEntity>>(emptyList())
 
-    suspend fun getGroupKeys(): List<GroupCryptoKeyDataRaw> {
-        return cachedGroupKeys.value.ifEmpty {
-            getAllGroupKeys()
-                .also { cachedGroupKeys.value = it }
+    suspend fun getGroupKeys(): List<GroupKeysEntity> {
+        if (appBuildConfig.appHost == AppHost.MAIN_APP) {
+            return cachedGroupKeys.value.ifEmpty {
+                getAllGroupKeys()
+                    .also { cachedGroupKeys.value = it }
+            }
+        } else{
+            return getAllGroupKeys()
         }
     }
 
-    suspend fun getMemberKeys(): List<GroupMemberCryptoKeyDataRaw> {
-        return cachedMemberKeys.value.ifEmpty {
-            getAllMemberKeys()
-                .also { cachedMemberKeys.value = it }
+    suspend fun getMemberKeys(): List<GroupMembersKeysEntity> {
+        if (appBuildConfig.appHost == AppHost.MAIN_APP) {
+            return cachedMemberKeys.value.ifEmpty {
+                getAllMemberKeys()
+                    .also { cachedMemberKeys.value = it }
+            }
+        } else{
+            return getAllMemberKeys()
         }
     }
 
-    suspend fun getGroupDeviceKeys(): List<GroupDeviceCryptoKeyRaw> {
-        return cachedGroupDeviceKeys.value.ifEmpty {
-            getAllGroupDeviceKeys()
-                .also { cachedGroupDeviceKeys.value = it }
+    suspend fun getGroupDeviceKeys(): List<GroupDeviceKeysEntity> {
+        if (appBuildConfig.appHost == AppHost.MAIN_APP) {
+            return cachedGroupDeviceKeys.value.ifEmpty {
+                getAllGroupDeviceKeys()
+                    .also { cachedGroupDeviceKeys.value = it }
+            }
+        } else{
+            return getAllGroupDeviceKeys()
         }
     }
 
-    suspend fun getPersonalGroupKeys(includeArchivedKeys: Boolean): List<PersonalGroupKeyRaw> {
+    suspend fun getPersonalGroupKeys(
+        groupId: String,
+        includeArchivedKeys: Boolean
+    ): List<PersonalGroupKeyEntity> {
         val archivedKeys = if (includeArchivedKeys) {
-            getAllArchivedPersonalGroupKeys()
+            getAllArchivedPersonalGroupKeys(groupId = groupId)
         } else {
             emptyList()
         }
 
-        return cachedPersonalGroupKeys.value.ifEmpty {
+        val activeKeys = if (appBuildConfig.appHost == AppHost.MAIN_APP) {
+            cachedPersonalGroupKeys.value.ifEmpty {
+                getAllActivePersonalGroupKeys()
+                    .also { cachedPersonalGroupKeys.value = it }
+            }
+        } else {
             getAllActivePersonalGroupKeys()
-                .also { cachedPersonalGroupKeys.value = it }
-        } + archivedKeys
+        }
+
+        val targetKeys = activeKeys + archivedKeys
+
+        return targetKeys.filter { it.groupId == groupId }
     }
 
     suspend fun getLocalGroupSenderKey(groupId: String): LocalGroupDeviceKeysEntity? {
@@ -81,16 +111,21 @@ class CryptoKeyLocalDataSource constructor(
         deviceKeys: List<GroupDeviceCryptoKeyRaw>,
         personalKeys: List<PersonalGroupKeyRaw>
     ) {
-        cachedGroupKeys.value = groupKeys
-        cachedMemberKeys.value = memberKeys
-        cachedGroupDeviceKeys.value = deviceKeys
-        cachedPersonalGroupKeys.value = personalKeys
+        val mappedGroupKeys = groupKeys.map { keysMapper.remote2Local(it) }
+        val mappedMemberKeys = memberKeys.map { keysMapper.remote2Local(it) }
+        val mappedPersonalKeys = personalKeys.map { keysMapper.remote2Local(it) }
+        val mappedDeviceKeys = deviceKeys.map { keysMapper.remote2Local(it) }
+
+        cachedGroupKeys.value = mappedGroupKeys
+        cachedMemberKeys.value = mappedMemberKeys
+        cachedGroupDeviceKeys.value = mappedDeviceKeys
+        cachedPersonalGroupKeys.value = mappedPersonalKeys
 
         database.groupRelatedKeysDao.recreateAllKeys(
-            groupKeys = groupKeys.map { keysMapper.remote2Local(it) },
-            memberKeys = memberKeys.map { keysMapper.remote2Local(it) },
-            deviceKeys = deviceKeys.map { keysMapper.remote2Local(it) },
-            personalKeys = personalKeys.map { keysMapper.remote2Local(it) }
+            groupKeys = mappedGroupKeys,
+            memberKeys = mappedMemberKeys,
+            deviceKeys = mappedDeviceKeys,
+            personalKeys = mappedPersonalKeys
         )
     }
 
@@ -215,29 +250,24 @@ class CryptoKeyLocalDataSource constructor(
         )
     }
 
-    private suspend fun getAllGroupKeys(): List<GroupCryptoKeyDataRaw> {
+    private suspend fun getAllGroupKeys(): List<GroupKeysEntity> {
         return database.groupRelatedKeysDao.getAllGroupKeys()
-            .map { keysMapper.local2Remote(it) }
     }
 
-    private suspend fun getAllMemberKeys(): List<GroupMemberCryptoKeyDataRaw> {
+    private suspend fun getAllMemberKeys(): List<GroupMembersKeysEntity> {
         return database.groupRelatedKeysDao.getAllGroupMembersKeys()
-            .map { keysMapper.local2Remote(it) }
     }
 
-    private suspend fun getAllGroupDeviceKeys(): List<GroupDeviceCryptoKeyRaw> {
+    private suspend fun getAllGroupDeviceKeys(): List<GroupDeviceKeysEntity> {
         return database.groupRelatedKeysDao.getAllGroupDeviceKeys()
-            .map { keysMapper.local2Remote(it) }
     }
 
-    private suspend fun getAllArchivedPersonalGroupKeys(): List<PersonalGroupKeyRaw> {
-        return database.groupRelatedKeysDao.getAllArchivedPersonalGroupKeys()
-            .map { keysMapper.local2Remote(it) }
+    private suspend fun getAllArchivedPersonalGroupKeys(groupId: String): List<PersonalGroupKeyEntity> {
+        return database.groupRelatedKeysDao.getAllArchivedPersonalGroupKeys(groupId = groupId)
     }
 
-    private suspend fun getAllActivePersonalGroupKeys(): List<PersonalGroupKeyRaw> {
+    private suspend fun getAllActivePersonalGroupKeys(): List<PersonalGroupKeyEntity> {
         return database.groupRelatedKeysDao.getAllActivePersonalGroupKeys()
-            .map { keysMapper.local2Remote(it) }
     }
 
     suspend fun getGroupOwnerId(groupId: String): String? {

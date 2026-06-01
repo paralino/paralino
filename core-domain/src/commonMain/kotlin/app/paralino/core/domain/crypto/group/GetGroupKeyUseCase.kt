@@ -10,7 +10,7 @@ class GetGroupKeyUseCase(
     private val cryptoCore: CryptoCore,
     private val local: CryptoKeyLocalDataSource,
     private val getMemberPublicKey: GetMemberPublicKeyUseCase,
-    private val getPersonalGroupKey: GetPersonalGroupKeyUseCase,
+    private val getPersonalGroupKey: GetPersonalGroupKeyUseCase
 ) {
     suspend fun getGroupKey(groupId: String, keyVersion: Long?): GroupMasterKey {
         val groupOwnerId = local.getGroupOwnerId(groupId) ?: return GroupMasterKey.Error.Missing
@@ -68,7 +68,8 @@ class GetGroupKeyUseCase(
                     val myPreKey = when (
                         val myPreKey = getPersonalGroupKey.getMyPreKeyForGroup(
                             groupId = groupId,
-                            version = keyRaw.memberKeyVersion
+                            version = keyRaw.memberKeyVersion,
+                            includeArchivedKeys = false
                         )
                     ) {
                         is UserGroupPersonalKeyPair.Error -> {
@@ -102,7 +103,8 @@ class GetGroupKeyUseCase(
                                 ) as GroupMemberMainPublicKey.Valid
                                 val myPreKey = getPersonalGroupKey.getMyPreKeyForGroup(
                                     groupId = groupId,
-                                    version = key.memberKeyVersion
+                                    version = key.memberKeyVersion,
+                                    includeArchivedKeys = false
                                 ).key
                                 cryptoCore.decryptKeyWithKeyPair(
                                     key = key.encryptedGroupKey,
@@ -124,7 +126,9 @@ class GetGroupKeyUseCase(
     }
 
     suspend fun getAllGroupKeys(groupId: String): List<GroupMasterKey.Valid> {
-        val keys = local.getGroupKeys().filter { it.groupId == groupId }
+        val keys = local.getGroupKeys()
+            .filter { it.groupId == groupId }
+
         return keys.map { key ->
             val ownerPublicKey = getMemberPublicKey.getMemberPublicKey(
                 groupId = groupId,
@@ -133,7 +137,8 @@ class GetGroupKeyUseCase(
 
             val myPreKey = getPersonalGroupKey.getMyPreKeyForGroup(
                 groupId = groupId,
-                version = key.memberKeyVersion
+                version = key.memberKeyVersion,
+                includeArchivedKeys = false
             ).key ?: return emptyList()
 
             val groupKey = cryptoCore.decryptKeyWithKeyPair(

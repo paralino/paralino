@@ -10,16 +10,19 @@ import app.paralino.core.utils.BaseRemoteModule
 class GetPersonalGroupKeyUseCase(
     private val cryptoCore: CryptoCore,
     private val local: CryptoKeyLocalDataSource,
-    private val userKeyRepository: CryptoUserKeysLocalSource
+    private val userKeyRepository: CryptoUserKeysLocalSource,
 ) {
 
     suspend fun getMyPreKeyForGroup(
         groupId: String,
         version: Long?,
-        includeArchivedKeys: Boolean = false
+        includeArchivedKeys: Boolean
     ): UserGroupPersonalKeyPair {
-        val allKeys = local.getPersonalGroupKeys(includeArchivedKeys = includeArchivedKeys)
-            .filter { it.groupId == groupId }
+        val allKeys = local.getPersonalGroupKeys(
+            groupId = groupId,
+            includeArchivedKeys = includeArchivedKeys
+        )
+
         val keyRaw = allKeys.let { keys ->
             val matchingKey = if (version != null) {
                 // if key version is passed get matching key

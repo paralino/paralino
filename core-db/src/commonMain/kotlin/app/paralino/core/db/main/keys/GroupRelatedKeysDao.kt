@@ -125,6 +125,8 @@ interface GroupRelatedKeysDao {
 
     @Query("SELECT * FROM personalGroupKeyEntity WHERE isArchived = 1")
     suspend fun getAllArchivedPersonalGroupKeys(): List<PersonalGroupKeyEntity>
+    @Query("SELECT * FROM personalGroupKeyEntity WHERE groupId = :groupId AND isArchived = 1")
+    suspend fun getAllArchivedPersonalGroupKeys(groupId: String): List<PersonalGroupKeyEntity>
 
     @Query("SELECT * FROM personalGroupKeyEntity WHERE isArchived = 0")
     suspend fun getAllActivePersonalGroupKeys(): List<PersonalGroupKeyEntity>

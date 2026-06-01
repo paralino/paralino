@@ -100,7 +100,8 @@ class GetMemberSenderKeyUseCase(
         val myPreKey = when (
             val myPreKey = getPersonalGroupKey.getMyPreKeyForGroup(
                 groupId = keyRaw.groupId,
-                version = keyRaw.memberKeyVersion
+                version = keyRaw.memberKeyVersion,
+                includeArchivedKeys = false
             )
         ) {
             is UserGroupPersonalKeyPair.Error -> {
