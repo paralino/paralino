@@ -10,6 +10,12 @@ import app.paralino.core.domain.crypto.group.CryptoKEKLocalRepository
 import app.paralino.core.domain.crypto.group.CryptoKEKRefreshUseCase
 import app.paralino.core.domain.crypto.group.CryptoKeyLocalDataSource
 import app.paralino.core.domain.crypto.group.CryptoKeyRemoteDataSource
+import app.paralino.core.domain.crypto.group.GetGroupHistoryKeyUseCase
+import app.paralino.core.domain.crypto.group.GetGroupKeyUseCase
+import app.paralino.core.domain.crypto.group.GetMemberPublicKeyUseCase
+import app.paralino.core.domain.crypto.group.GetMemberSenderKeyUseCase
+import app.paralino.core.domain.crypto.group.GetPersonalGroupKeyUseCase
+import app.paralino.core.domain.crypto.group.GetPersonalHistoryKeyUseCase
 import app.paralino.core.domain.crypto.group.GroupCryptoKeyRotation
 import app.paralino.core.domain.crypto.group.GroupValidityVerification
 import app.paralino.core.domain.crypto.user.CryptoAccountOperationV1
@@ -357,7 +363,13 @@ val coreModule = module {
     single { CryptoCore(get()) }
     single { CryptoAccountOperationV1(get()) }
     single { CryptoAccountOperationV2(get()) }
-    single { CryptoKEKLocalRepository(get(), get(), get(), get(), get()) }
+    single { GetGroupKeyUseCase(get(), get(), get(), get()) }
+    single { GetPersonalGroupKeyUseCase(get(), get(), get()) }
+    single { GetMemberPublicKeyUseCase(get(), get(), get(), get(), get()) }
+    single { GetMemberSenderKeyUseCase(get(), get(), get(), get(), get(), get(), get()) }
+    single { GetGroupHistoryKeyUseCase(get(), get(), get()) }
+    single { GetPersonalHistoryKeyUseCase(get(), get()) }
+    single { CryptoKEKLocalRepository(get(), get(), get(), get(), get(), get(), get(), get()) }
     single { CryptoUserKeysLocalSource(get(), get(), get()) }
     single { CryptoKEKRefreshUseCase(get(), get(), get()) }
 
