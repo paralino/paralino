@@ -23,6 +23,7 @@ class LocationUploadEngine constructor(
     private val locationSharingManager: LocationSharingManager,
     private val locationPerformanceManager: LocationPerformanceManager,
     private val registerDeviceForSharing: IReRegisterDeviceUseCase,
+    private val locationRequestAutoUpgrade: ILocationRequestAutoUpgradeUseCase,
     private val locationCacheRepo: LocationCacheRepository,
     private val scopeProvider: ICoroutineScopeProvider,
     private val oneTimeLocationProvider: IOneTimeLocationProvider,
@@ -72,6 +73,7 @@ class LocationUploadEngine constructor(
 
         locationPerformanceManager.checkPerformanceResetState()
         locationSharingManager.refreshAllContracts()
+        locationRequestAutoUpgrade.refreshNotificationsIfNeeded()
     }
 
     suspend fun updateDeviceStatusOnly(tryToFetchCachedLocation: Boolean) {

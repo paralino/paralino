@@ -334,7 +334,7 @@ val coreModule = module {
 
     single { PersonalCodesRepository(get(), get(), get(), get(), get(), get(), get()) }
     single { UserRepository(get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
-    single { LocationUploadEngine(get(), get(), get(), get(), get(), get(), get(), get()) }
+    single { LocationUploadEngine(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { LocationSaveEventProcessingEngine(get(), get(), get(), get(), get(), get(), get()) }
     single { LocationUploadEventProcessingEngine(get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { LocationSharingContractFilter() }
@@ -384,7 +384,7 @@ val coreModule = module {
     factory { GroupMemberAddedNotificationProcessor(get(), get(), get(), get()) }
     factory { GroupMemberDeletedNotificationProcessor(get()) }
     factory { LocationSharingStartedNotificationsProcessor(get(), get(), get(), get(), get()) }
-    factory { LocationRequestNotificationProcessor(get(), get(), get(), get(), get(), get()) }
+    factory { LocationRequestNotificationProcessor(get(), get(), get(), get(), get(), get(), get()) }
     factory { LowBatteryNotificationProcessor(get(), get(), get(), get()) }
 
     single { LocationPerformanceManager(get(), get(), get()) }

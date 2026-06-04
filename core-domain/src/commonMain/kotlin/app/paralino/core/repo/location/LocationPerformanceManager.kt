@@ -135,6 +135,12 @@ class LocationPerformanceManager constructor(
         }
     }
 
+    fun isPerformanceResetScheduledIn(threshold: Duration): Boolean {
+        val schedule = performanceResetScheduleTime ?: return false
+        val remaining = schedule.first.plus(schedule.second) - nowUTC()
+        return remaining.isPositive() && remaining <= threshold
+    }
+
     private fun preparePerformanceReset(
         request: LocationPerformanceRequest
     ) {
