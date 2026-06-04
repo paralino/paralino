@@ -34,6 +34,7 @@ data class SharingStartScreenState constructor(
     val saveToHistory: Boolean = true,
     val showNotifyOthers: Boolean = false,
     val showDeviceStatus: Boolean = false,
+    val showRealtimeUpdatesStatus: Boolean = false,
     val showDuration: Boolean = false,
     val showMetadata: Boolean = false,
     val isPremiumSectionHeaderVisible: Boolean = false,

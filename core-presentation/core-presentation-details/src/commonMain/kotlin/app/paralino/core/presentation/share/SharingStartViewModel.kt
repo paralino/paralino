@@ -279,6 +279,7 @@ class SharingStartViewModel(
                     devicesLimit = 0,
                     showNotifyOthers = false,
                     showDeviceStatus = false,
+                    showRealtimeUpdatesStatus = false,
                     isPremiumSectionHeaderVisible = false,
                     notifyOthers = false,
                     realtimeUpdatesState = null,
@@ -337,6 +338,7 @@ class SharingStartViewModel(
 
                                 showNotifyOthers = !isSharingActive && (isGroupPremium || group.group.group.isCurrentUserOwner),
                                 showDeviceStatus = true,
+                                showRealtimeUpdatesStatus = true,
                                 showDuration = !isSharingActive,
                                 showMetadata = true,
 
@@ -376,6 +378,7 @@ class SharingStartViewModel(
                                 isDeviceRegistered = isDeviceRegistered,
                                 showNotifyOthers = false,
                                 showDeviceStatus = false,
+                                showRealtimeUpdatesStatus = false,
                                 showDuration = false,
                                 showMetadata = false,
                                 formattedEndTime = endTime,
