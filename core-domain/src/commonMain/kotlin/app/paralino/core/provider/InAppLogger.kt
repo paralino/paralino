@@ -37,6 +37,8 @@ class InAppLogger(
     init {
         scopeProvider.defaultIOScope.launch {
             logg.d(tag = "app_logger", message = "Start in-app logger")
+            clearOldLogs()
+
             try {
                 _pendingLogsFlow
                     .filter { it.isNotEmpty() }
@@ -95,7 +97,7 @@ class InAppLogger(
             return
         }
 
-        log(
+        saveLog(
             type = InAppLoggerLogType.CONSOLE,
             priority = priority,
             tag = tag ?: "default",
@@ -105,9 +107,13 @@ class InAppLogger(
     }
 
     fun logNotificationPayload(payload: IPushNotificationPresenter.Payload) {
+        if (!appConfig.isInAppDevMode) {
+            return
+        }
+
         if (payload.loggerTag != null) {
             val timeInfo = payload.timeInfo ?: payload.timeMillis?.let { Instant.fromEpochMilliseconds(it).toString() }
-            log(
+            saveLog(
                 type = InAppLoggerLogType.NOTIFICATIONS,
                 priority = LogPriority.INFO,
                 tag = payload.loggerTag,
@@ -117,7 +123,21 @@ class InAppLogger(
         }
     }
 
-    fun log(
+    fun logDeprioritizedNotification(tag: String) {
+        if (!appConfig.isInAppDevMode) {
+            return
+        }
+
+        saveLog(
+            type = InAppLoggerLogType.DEPRIORITIZED_NOTIFICATIONS,
+            priority = LogPriority.INFO,
+            tag = tag,
+            title = "Notification deprioritized event",
+            info = nowUTC().toString()
+        )
+    }
+
+    fun saveLog(
         type: InAppLoggerLogType,
         priority: LogPriority,
         tag: String?,
@@ -178,6 +198,19 @@ class InAppLogger(
         _pendingLogsFlow.update { listOf() }
         database.debugLogsQueries.clearAll()
     }
+
+    private suspend fun clearOldLogs() {
+        try {
+            database.debugLogsQueries.removeOlderThan(
+                maxValidTimeUTC = nowUTC().minus(2.days).toString()
+            )
+        } catch (e: Exception) {
+            logg.w(
+                tag = "app_logger",
+                message = "Error clearing old logs: ${e.message}"
+            )
+        }
+    }
 }
 
 fun DebugLogsEntity.print(valueFormatter: IValueFormatter): String {
@@ -208,6 +241,7 @@ fun DebugLogsEntity.print(valueFormatter: IValueFormatter): String {
 enum class InAppLoggerLogType constructor(val key: String) {
     CONSOLE("console_log"),
     NOTIFICATIONS("notifications"),
+    DEPRIORITIZED_NOTIFICATIONS("deprioritized_notifications"),
     GENERIC("generic");
 
     companion object {
