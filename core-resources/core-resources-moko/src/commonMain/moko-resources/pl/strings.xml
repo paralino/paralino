@@ -951,4 +951,7 @@
     <string name="setting_mapInteractions_collapsed_info">Kontrolki mapy zwijają się lub ukrywają, aby zmaksymalizować przestrzeń mapy.</string>
     <string name="group_members_status_distanceFromMe">%s dalej</string>
     <string name="history_map_options_show_inaccurate">Nieprecyzyjne lokalizacje</string>
+    <string name="groups_sharing_setting_realtimeUpdates_title">Aktualizacje lokalizacji w czasie rzeczywistym</string>
+    <string name="groups_sharing_setting_realtimeUpdates_description_on">Umożliwiaj innym **ciągłe** otrzymywanie aktualizacji lokalizacji w czasie rzeczywistym z tego urządzenia. Jeśli ktoś obserwuje Państwa na mapie przez dłuższy czas, może to zużywać więcej baterii.</string>
+    <string name="groups_sharing_setting_realtimeUpdates_description_off">Inni nadal mogą odnaleźć Państwa, ręcznie odświeżając lokalizację, ale we wszystkich innych przypadkach aktualizacje lokalizacji będą ograniczone bez obsługi czasu rzeczywistego.</string>
 </resources>

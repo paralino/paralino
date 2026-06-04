@@ -951,4 +951,7 @@
     <string name="setting_mapInteractions_collapsed_info">Kortkontrollerne foldes sammen eller skjules for at maksimere kortpladsen.</string>
     <string name="group_members_status_distanceFromMe">%s væk</string>
     <string name="history_map_options_show_inaccurate">Unøjagtige placeringer</string>
+    <string name="groups_sharing_setting_realtimeUpdates_title">Opdateringer af placering i realtid</string>
+    <string name="groups_sharing_setting_realtimeUpdates_description_on">Giv andre mulighed for **kontinuerligt** at modtage opdateringer af placering i realtid fra denne enhed. Hvis nogen følger dig på kortet i lang tid, kan dette bruge mere batteri.</string>
+    <string name="groups_sharing_setting_realtimeUpdates_description_off">Andre kan stadig finde dig ved manuelt at opdatere din placering, men i alle andre tilfælde vil opdateringer af placering være begrænsede uden understøttelse af realtid.</string>
 </resources>

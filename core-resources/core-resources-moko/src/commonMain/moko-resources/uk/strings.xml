@@ -951,4 +951,7 @@
     <string name="setting_mapInteractions_collapsed_info">Елементи керування картою згортаються або приховуються, щоб максимально звільнити простір для карти.</string>
     <string name="group_members_status_distanceFromMe">%s від вас</string>
     <string name="history_map_options_show_inaccurate">Неточні місця</string>
+    <string name="groups_sharing_setting_realtimeUpdates_title">Оновлення місцезнаходження в реальному часі</string>
+    <string name="groups_sharing_setting_realtimeUpdates_description_on">Дозвольте іншим **безперервно** отримувати оновлення місцезнаходження в реальному часі з цього пристрою. Якщо хтось довго спостерігає за вами на карті, це може використовувати більше заряду батареї.</string>
+    <string name="groups_sharing_setting_realtimeUpdates_description_off">Інші все ще можуть знайти ваше місцезнаходження, оновивши його вручну, але в усіх інших випадках оновлення місцезнаходження будуть обмежені без підтримки в реальному часі.</string>
 </resources>

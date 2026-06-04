@@ -951,4 +951,7 @@
     <string name="setting_mapInteractions_collapsed_info">Ovládací prvky mapy se sbalí nebo skryjí, aby maximalizovaly prostor pro mapu.</string>
     <string name="group_members_status_distanceFromMe">%s odtud</string>
     <string name="history_map_options_show_inaccurate">Nepřesná umístění</string>
+    <string name="groups_sharing_setting_realtimeUpdates_title">Aktualizace polohy v reálném čase</string>
+    <string name="groups_sharing_setting_realtimeUpdates_description_on">Povolte ostatním, aby od tohoto zařízení **průběžně** získávali aktualizace polohy v reálném čase. Pokud vás někdo sleduje na mapě delší dobu, může to spotřebovat více baterie.</string>
+    <string name="groups_sharing_setting_realtimeUpdates_description_off">Ostatní vás stále mohou najít ručním obnovením vaší polohy, ale ve všech ostatních případech budou aktualizace polohy bez podpory v reálném čase omezené.</string>
 </resources>
