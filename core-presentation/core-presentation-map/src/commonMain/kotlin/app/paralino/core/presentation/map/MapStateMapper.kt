@@ -36,6 +36,7 @@ import app.paralino.core.presentation.common.MemberLocationVisibilityType
 import app.paralino.core.presentation.common.MemberLocationContextMapper
 import app.paralino.core.presentation.common.MemberNavigateItemState
 import app.paralino.core.presentation.common.PlaceListItemData
+import app.paralino.core.provider.LocationConditionStatus
 import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.extensions.fromUTCtoInstant
 import app.paralino.core.utils.extensions.nowUTC
@@ -69,6 +70,7 @@ class MapStateMapper(
         alertDialog: MainAlertDialog?,
         isFirstTimeInPersonalSpace: Boolean,
         myLocation: LocationDataModel?,
+        locationStatus: LocationConditionStatus
     ): MapHomeScreenState.Ready {
         val groupName = when (groupOrSpace) {
             is GroupWithMembersOrUserSpace.Group -> groupOrSpace.group.name
@@ -234,7 +236,12 @@ class MapStateMapper(
             isSatelliteModeEnabled = isSatelliteModeEnabled,
             groupPlanConfig = planConfig,
             isOverLimit = isOverLimits,
-            androidMapSDKProvider = mapProvider
+            androidMapSDKProvider = mapProvider,
+            errors = buildList {
+                if (activeSharingContract != null) {
+                    addAll(locationStatus.getPossibleErrors())
+                }
+            }
         )
     }
 

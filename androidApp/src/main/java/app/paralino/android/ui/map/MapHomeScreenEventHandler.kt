@@ -6,6 +6,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.LifecycleStartEffect
 import app.paralino.android.notification.rememberNotificationsPermissionHandler
+import app.paralino.android.tracking.rememberLocationPermissionHandler
 import app.paralino.android.ui.main.MainAppState
 import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.android.utils.extensions.share
@@ -35,6 +36,12 @@ internal fun MapHomeScreenEventHandler(
         appState = appState,
         messageDispatcher = vm,
         notificationStatusProvider = vm.deviceApiProvider.notificationStatusProvider
+    )
+
+    val locationPermissionHandler = rememberLocationPermissionHandler(
+        appState = appState,
+        messageDispatcher = vm.messageDispatcher,
+        locationStatusProvider = vm.deviceApiProvider.locationStatusProvider
     )
 
     BackHandler(
@@ -152,6 +159,18 @@ internal fun MapHomeScreenEventHandler(
 
                 MapHomeScreenEvent.AskNotificationPermission -> {
                     notificationPermissionHandler.askNotificationPermission()
+                }
+
+                MapHomeScreenEvent.AskLocationServices -> {
+                    locationPermissionHandler.askLocationService()
+                }
+
+                MapHomeScreenEvent.AskLocationPermission -> {
+                    locationPermissionHandler.askLocationPermission()
+                }
+
+                MapHomeScreenEvent.AskBackgroundLocationPermission -> {
+                    locationPermissionHandler.askBackgroundLocationPermission()
                 }
 
                 MapHomeScreenEvent.OpenPersonalCodes -> {
