@@ -407,12 +407,13 @@ class MapHomeViewModel constructor(
     private fun loadPersonalSpaceContent(): Flow<MapHomeScreenState> {
         return app.paralino.core.utils.extensions.combine(
             uiRefreshPingFlow.filterNotNull(),
+            deviceApiProvider.locationStatusProvider.status,
             personalSpaceRepo.personalSpaceState.map { it.data },
             placesRepo.getPlacesForGroupLocally(groupId = appPrefs.userId),
             locationFocusManager.getSharingContracts(),
             userRepository.localUser.map { it.data?.data }.distinctUntilChanged(),
             locationCacheRepository.lastLocationFlow,
-        ) { _, space, places, sharingContracts, userData, myLocation ->
+        ) { _, locationStatus, space, places, sharingContracts, userData, myLocation ->
 
             if (space == null || userData == null) {
                 val mapProvider = premiumStatusManager.defaultMapProvider()
@@ -440,6 +441,7 @@ class MapHomeViewModel constructor(
                 alertDialog = _uiState.value.alertDialog,
                 isFirstTimeInPersonalSpace = _uiState.value.asReady()?.isFirstTimeInPersonalSpace ?: !appPrefs.didHavePersonalSpaceIntroOnboarding,
                 myLocation = myLocation,
+                locationStatus = locationStatus
             )
         }
             .flowOn(Dispatchers.IO)
@@ -448,12 +450,13 @@ class MapHomeViewModel constructor(
     private fun loadGroupContent(groupId: String): Flow<MapHomeScreenState> {
         return app.paralino.core.utils.extensions.combine(
             uiRefreshPingFlow.filterNotNull(),
+            deviceApiProvider.locationStatusProvider.status,
             groupRepo.getGroupWithMembers(groupId = groupId),
             placesRepo.getPlacesForGroupLocally(groupId = groupId),
             locationFocusManager.getSharingContracts(),
             userRepository.localUser.map { it.data?.data }.distinctUntilChanged(),
             locationCacheRepository.lastLocationFlow,
-        ) { _, group, places, sharingContracts, userData, myLocation ->
+        ) { _, locationStatus, group, places, sharingContracts, userData, myLocation ->
 
             if (group == null || userData == null) {
                 val mapProvider = premiumStatusManager.defaultMapProvider()
@@ -481,6 +484,7 @@ class MapHomeViewModel constructor(
                 alertDialog = _uiState.value.alertDialog,
                 isFirstTimeInPersonalSpace = _uiState.value.asReady()?.isFirstTimeInPersonalSpace ?: !appPrefs.didHavePersonalSpaceIntroOnboarding,
                 myLocation = myLocation,
+                locationStatus = locationStatus
             )
         }
             .flatMapLatest { state ->

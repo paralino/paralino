@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 23,
-    "identityHash": "f272b6f4d97facb10f7d9181bc7cf734",
+    "identityHash": "1d032341d29cacfec5370971a7bbbe95",
     "entities": [
       {
         "tableName": "subscriptionPlanEntity",
@@ -275,7 +275,7 @@
       },
       {
         "tableName": "sharingContractEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`groupId` TEXT NOT NULL, `endTimeUTC` TEXT, `endTimeUTCOverride` TEXT, `shareBattery` INTEGER NOT NULL, `shareSpeed` INTEGER NOT NULL, `shareElevation` INTEGER NOT NULL, `approximateLocationInMeters` INTEGER, `shareNetwork` INTEGER NOT NULL, `shareDeviceStatus` INTEGER NOT NULL, `saveToHistory` INTEGER NOT NULL, `isNotifyOthersOn` INTEGER, `sharingDurationPreset` INTEGER, `isEnabled` INTEGER NOT NULL, PRIMARY KEY(`groupId`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`groupId` TEXT NOT NULL, `endTimeUTC` TEXT, `endTimeUTCOverride` TEXT, `shareBattery` INTEGER NOT NULL, `shareSpeed` INTEGER NOT NULL, `shareElevation` INTEGER NOT NULL, `approximateLocationInMeters` INTEGER, `shareNetwork` INTEGER NOT NULL, `shareDeviceStatus` INTEGER NOT NULL, `saveToHistory` INTEGER NOT NULL, `isNotifyOthersOn` INTEGER, `isRealtimeUpdatesOn` INTEGER, `sharingDurationPreset` INTEGER, `isEnabled` INTEGER NOT NULL, PRIMARY KEY(`groupId`))",
         "fields": [
           {
             "fieldPath": "groupId",
@@ -337,6 +337,11 @@
           {
             "fieldPath": "isNotifyOthersOn",
             "columnName": "isNotifyOthersOn",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "isRealtimeUpdatesOn",
+            "columnName": "isRealtimeUpdatesOn",
             "affinity": "INTEGER"
           },
           {
@@ -1829,96 +1834,11 @@
             "groupId"
           ]
         }
-      },
-      {
-        "tableName": "privacyZoneEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `groupId` TEXT NOT NULL, `ownerUserId` TEXT NOT NULL, `userKeyVersion` INTEGER NOT NULL, `data` TEXT NOT NULL, `expiresAt` TEXT NOT NULL, PRIMARY KEY(`id`))",
-        "fields": [
-          {
-            "fieldPath": "id",
-            "columnName": "id",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "groupId",
-            "columnName": "groupId",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "ownerUserId",
-            "columnName": "ownerUserId",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "userKeyVersion",
-            "columnName": "userKeyVersion",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "data",
-            "columnName": "data",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "expiresAt",
-            "columnName": "expiresAt",
-            "affinity": "TEXT",
-            "notNull": true
-          }
-        ],
-        "primaryKey": {
-          "autoGenerate": false,
-          "columnNames": [
-            "id"
-          ]
-        }
-      },
-      {
-        "tableName": "privacyZoneSharedLocationEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`groupId` TEXT NOT NULL, `privacyZoneId` TEXT NOT NULL, `userKeyVersion` INTEGER NOT NULL, `encryptedLocationData` TEXT NOT NULL, PRIMARY KEY(`groupId`, `privacyZoneId`))",
-        "fields": [
-          {
-            "fieldPath": "groupId",
-            "columnName": "groupId",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "privacyZoneId",
-            "columnName": "privacyZoneId",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "userKeyVersion",
-            "columnName": "userKeyVersion",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "encryptedLocationData",
-            "columnName": "encryptedLocationData",
-            "affinity": "TEXT",
-            "notNull": true
-          }
-        ],
-        "primaryKey": {
-          "autoGenerate": false,
-          "columnNames": [
-            "groupId",
-            "privacyZoneId"
-          ]
-        }
       }
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'f272b6f4d97facb10f7d9181bc7cf734')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '1d032341d29cacfec5370971a7bbbe95')"
     ]
   }
 }

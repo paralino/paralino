@@ -51,7 +51,9 @@ import app.paralino.core.domain.crypto.group.MemberDeviceKeyRotation
 import app.paralino.core.domain.crypto.user.PersonalDeviceCryptoKeyRotation
 import app.paralino.core.domain.location.BatteryAlertUploadEngine
 import app.paralino.core.domain.location.IBatteryAlertUploadEngine
+import app.paralino.core.domain.location.ILocationRequestAutoUpgradeUseCase
 import app.paralino.core.domain.location.IReRegisterDeviceUseCase
+import app.paralino.core.domain.location.LocationRequestAutoUpgradeUseCase
 import app.paralino.core.domain.location.ReRegisterDeviceUseCase
 import app.paralino.core.domain.location.history.ILocationHistoryUploadEngine
 import app.paralino.core.domain.location.history.LocationHistoryUploadEngine
@@ -196,6 +198,7 @@ object KoinSetup {
         single { MemberDeviceKeyRotation(get(), get(), get(), get(), get(), get(), get(), get()) } bind IMemberDeviceKeyRotation::class
         single { PersonalDeviceCryptoKeyRotation(get(), get(), get(), get(), get(), get(), get(), get()) } bind IPersonalDeviceCryptoKeyRotation::class
         single { ReRegisterDeviceUseCase(get(), get()) } bind IReRegisterDeviceUseCase::class
+        single { LocationRequestAutoUpgradeUseCase(get(), get(), get(), get(), get()) } bind ILocationRequestAutoUpgradeUseCase::class
         single { PlacesActivityProcessor(get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) } bind IPlacesActivityProcessor::class
         single { LocationHistoryUploadEngine(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) } bind ILocationHistoryUploadEngine::class
         single { BatteryAlertUploadEngine(get(), get(), get(), get(), get()) } bind IBatteryAlertUploadEngine::class

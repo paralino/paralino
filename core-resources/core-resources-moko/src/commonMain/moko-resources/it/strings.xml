@@ -951,4 +951,7 @@
     <string name="setting_mapInteractions_collapsed_info">I controlli della mappa si comprimono o si nascondono per massimizzare lo spazio della mappa.</string>
     <string name="group_members_status_distanceFromMe">%s lontano</string>
     <string name="history_map_options_show_inaccurate">Posizioni imprecise</string>
+    <string name="groups_sharing_setting_realtimeUpdates_title">Aggiornamenti della posizione in tempo reale</string>
+    <string name="groups_sharing_setting_realtimeUpdates_description_on">Consente ad altre persone di ricevere **continuamente** aggiornamenti della posizione in tempo reale da questo dispositivo. Se qualcuno la osserva sulla mappa per molto tempo, ciò potrebbe consumare più batteria.</string>
+    <string name="groups_sharing_setting_realtimeUpdates_description_off">Altre persone possono ancora localizzarla aggiornando manualmente la sua posizione, ma in tutti gli altri casi gli aggiornamenti della posizione saranno limitati senza il supporto in tempo reale.</string>
 </resources>

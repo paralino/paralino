@@ -22,6 +22,7 @@ import app.paralino.core.presentation.common.GroupMemberItemStateWithOneLocation
 import app.paralino.core.presentation.common.MainAlertDialog
 import app.paralino.core.presentation.common.MemberActionsState
 import app.paralino.core.presentation.common.PlaceListItemData
+import app.paralino.core.utils.ConditionErrorType
 
 sealed class MapHomeScreenState {
     abstract val currentUserImage: ImageModel
@@ -79,6 +80,7 @@ sealed class MapHomeScreenState {
         val verified: Boolean,
         val groupPlanConfig: PlanConfig,
         val isOverLimit: Boolean,
+        val errors: List<ConditionErrorType>,
         override val androidMapSDKProvider: MapsSDKProvider,
         override val alertDialog: MainAlertDialog?,
         override val isSatelliteModeEnabled: Boolean = false
@@ -208,6 +210,9 @@ fun MapHomeScreenState.asReady(): MapHomeScreenState.Ready? = this as? MapHomeSc
 
 sealed class MapHomeScreenEvent {
     data object AskNotificationPermission: MapHomeScreenEvent()
+    data object AskLocationPermission: MapHomeScreenEvent()
+    data object AskBackgroundLocationPermission: MapHomeScreenEvent()
+    data object AskLocationServices: MapHomeScreenEvent()
     data object OpenPersonalCodes: MapHomeScreenEvent()
     data object OpenGroupCreateScreen : MapHomeScreenEvent()
     data object OpenPaywall : MapHomeScreenEvent()
@@ -265,6 +270,7 @@ sealed interface MapHomeScreenUiEvent {
     data object ConfirmPersonalSpaceIntro : MapHomeScreenUiEvent
     data object CloseLocationHistory : MapHomeScreenUiEvent
     data object OnOverLimitsBannerTap : MapHomeScreenUiEvent
+    data class OnConditionErrorItemClick(val item: ConditionErrorType) : MapHomeScreenUiEvent
 }
 
 enum class MapSheetSelectedContentType {

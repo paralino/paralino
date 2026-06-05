@@ -20,6 +20,7 @@ import app.paralino.core.presentation.common.onAction
 import app.paralino.core.presentation.map.MapScreenViewSourceType.DefaultGroup
 import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.group.UserGroupLocalDataSource
+import app.paralino.core.utils.ConditionErrorType
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -293,6 +294,19 @@ class MapEventHandler(
             MapHomeScreenUiEvent.OnOverLimitsBannerTap -> {
                 coroutineScope.launch {
                     showOverLimitInfoMessage()
+                }
+            }
+
+            is MapHomeScreenUiEvent.OnConditionErrorItemClick -> {
+                when (event.item) {
+                    ConditionErrorType.GPS -> eventChannel.trySend(MapHomeScreenEvent.AskLocationServices)
+                    ConditionErrorType.Network -> messageDispatcher.showSnackbar(MR.strings.error_no_connection_snackbar.localizedString())
+                    is ConditionErrorType.PermissionLocation -> eventChannel.trySend(MapHomeScreenEvent.AskLocationPermission)
+                    ConditionErrorType.PermissionLocationBackground -> eventChannel.trySend(MapHomeScreenEvent.AskBackgroundLocationPermission)
+                    ConditionErrorType.PermissionNotifications -> eventChannel.trySend(MapHomeScreenEvent.AskNotificationPermission)
+                    else -> {
+                        // not handled in map
+                    }
                 }
             }
         }

@@ -23,6 +23,7 @@ class LocationUploadEngine constructor(
     private val locationSharingManager: LocationSharingManager,
     private val locationPerformanceManager: LocationPerformanceManager,
     private val registerDeviceForSharing: IReRegisterDeviceUseCase,
+    private val locationRequestAutoUpgrade: ILocationRequestAutoUpgradeUseCase,
     private val locationCacheRepo: LocationCacheRepository,
     private val scopeProvider: ICoroutineScopeProvider,
     private val oneTimeLocationProvider: IOneTimeLocationProvider,
@@ -34,6 +35,8 @@ class LocationUploadEngine constructor(
     private val _pendingLocation = MutableStateFlow<LocationDataModel?>(null)
 
     fun startLocationUploadEngine() {
+        locationSaveProcessing.stop()
+        locationUploadProcessing.stop()
         locationStatusMonitoringJob?.cancel()
         locationStatusMonitoringJob = locationSharingManager.sharingStatus
             .mapNotNull { it.data }
@@ -58,7 +61,7 @@ class LocationUploadEngine constructor(
 
     fun registerNewLocation(data: LocationDataModel) {
         val sharingActive = locationSharingManager.isSharingActiveMaybe()
-        logg.d("location_service", "Register new location (active: $sharingActive)")
+        logg.d("location_service", "Register new location (sharing active: $sharingActive - ${locationPerformanceManager.locationPerformanceType.value.current})")
 
         if (!sharingActive) {
             throw NoValidContractsException()
@@ -70,9 +73,10 @@ class LocationUploadEngine constructor(
 
         locationPerformanceManager.checkPerformanceResetState()
         locationSharingManager.refreshAllContracts()
+        locationRequestAutoUpgrade.refreshNotificationsIfNeeded()
     }
 
-    suspend fun updateDeviceStatusOnly(tryToFetchCachedLocation: Boolean = true) {
+    suspend fun updateDeviceStatusOnly(tryToFetchCachedLocation: Boolean) {
         locationUploadProcessing.checkAndUploadLocation(
             data = if (tryToFetchCachedLocation) {
                 oneTimeLocationProvider.getLastLocation(

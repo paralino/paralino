@@ -39,7 +39,7 @@ abstract class ILocationEventProcessingEngine(
                 pendingLocationFlow.filterNotNull()
                     .conflate()
                     .collectLatest { pendingLocation ->
-                        logg.d(tag = "location_service", message = "Processing new location for $tag")
+                        logg.v(tag = "location_service", message = "Processing new location for $tag")
                         val lastUpdate = lastEventTime.value
                         val diff = if (lastUpdate != null) nowUTC() - lastUpdate else 0.seconds
 
@@ -48,7 +48,7 @@ abstract class ILocationEventProcessingEngine(
                             val delay = processingRate - diff
                             // no need to lock thread if potential delay is small
                             if (delay > 100.milliseconds) {
-                                logg.d(
+                                logg.v(
                                     tag = "location_service",
                                     message = "Delay location $tag by $delay"
                                 )
@@ -56,7 +56,7 @@ abstract class ILocationEventProcessingEngine(
                             }
                         }
 
-                        logg.d(
+                        logg.v(
                             tag = "location_service",
                             message = "Location (${pendingLocation.timeUTC}) ready for $tag"
                         )

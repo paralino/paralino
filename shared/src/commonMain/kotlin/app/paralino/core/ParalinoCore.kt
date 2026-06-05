@@ -10,6 +10,12 @@ import app.paralino.core.domain.crypto.group.CryptoKEKLocalRepository
 import app.paralino.core.domain.crypto.group.CryptoKEKRefreshUseCase
 import app.paralino.core.domain.crypto.group.CryptoKeyLocalDataSource
 import app.paralino.core.domain.crypto.group.CryptoKeyRemoteDataSource
+import app.paralino.core.domain.crypto.group.GetGroupHistoryKeyUseCase
+import app.paralino.core.domain.crypto.group.GetGroupKeyUseCase
+import app.paralino.core.domain.crypto.group.GetMemberPublicKeyUseCase
+import app.paralino.core.domain.crypto.group.GetMemberSenderKeyUseCase
+import app.paralino.core.domain.crypto.group.GetPersonalGroupKeyUseCase
+import app.paralino.core.domain.crypto.group.GetPersonalHistoryKeyUseCase
 import app.paralino.core.domain.crypto.group.GroupCryptoKeyRotation
 import app.paralino.core.domain.crypto.group.GroupValidityVerification
 import app.paralino.core.domain.crypto.user.CryptoAccountOperationV1
@@ -123,6 +129,7 @@ import app.paralino.core.presentation.common.NetworkQualityMonitor
 import app.paralino.core.provider.ICrashReportingLogr
 import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.provider.InAppLogger
+import app.paralino.core.repo.location.LocationSharingContractFilter
 import app.paralino.core.provider.Logr
 import app.paralino.core.provider.NotificationSocketServiceManager
 import app.paralino.core.provider.RealtimeSubscriptionManager
@@ -274,7 +281,7 @@ val dataSourceModule = module {
     single { UserLocalDataSource(get(), get()) }
     single { UserPersonalSpaceLocalDataSource(get(), get(), get(), get(), get(), get(), get()) }
     single { PersonalDevicesLocalDataSource(get(), get()) }
-    single { CryptoKeyLocalDataSource(get(), get(), get()) }
+    single { CryptoKeyLocalDataSource(get(), get(), get(), get()) }
     single { UserGroupLocalDataSource(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { PersonalCodeLocalDataSource(get(), get()) }
     single { PlacesLocalDataSource(get(), get()) }
@@ -313,7 +320,7 @@ val coreModule = module {
     factory { SessionRenewalHandler(get(), get(), get(), get()) }
     factory { LocationRequestUseCase(get(), get(), get()) }
     factory { SaveLocationUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
-    factory { SavePendingLocationUseCase(get(), get(), get(), get()) }
+    factory { SavePendingLocationUseCase(get(), get(), get(), get(), get()) }
     factory { ClearUserLocationUseCase(get(), get(), get(), get(), get(), get()) }
     factory { RealtimeEventsMaker(get(), get()) }
     factory { UserMemberIdUseCase(get(), get(), get(), get()) }
@@ -355,9 +362,10 @@ val coreModule = module {
 
     single { PersonalCodesRepository(get(), get(), get(), get(), get(), get(), get()) }
     single { UserRepository(get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
-    single { LocationUploadEngine(get(), get(), get(), get(), get(), get(), get(), get()) }
+    single { LocationUploadEngine(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { LocationSaveEventProcessingEngine(get(), get(), get(), get(), get(), get(), get()) }
-    single { LocationUploadEventProcessingEngine(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+    single { LocationUploadEventProcessingEngine(get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+    single { LocationSharingContractFilter() }
     single { HandleGetLocationPayloadRequest(get(), get(), get(), get()) }
     single { LocationCacheRepository() }
     single { PlacesRepository(get(), get(), get(), get(), get(), get()) }
@@ -383,7 +391,13 @@ val coreModule = module {
     single { CryptoCore(get()) }
     single { CryptoAccountOperationV1(get()) }
     single { CryptoAccountOperationV2(get()) }
-    single { CryptoKEKLocalRepository(get(), get(), get(), get(), get()) }
+    single { GetGroupKeyUseCase(get(), get(), get(), get()) }
+    single { GetPersonalGroupKeyUseCase(get(), get(), get()) }
+    single { GetMemberPublicKeyUseCase(get(), get(), get(), get(), get()) }
+    single { GetMemberSenderKeyUseCase(get(), get(), get(), get(), get(), get(), get()) }
+    single { GetGroupHistoryKeyUseCase(get(), get(), get()) }
+    single { GetPersonalHistoryKeyUseCase(get(), get()) }
+    single { CryptoKEKLocalRepository(get(), get(), get(), get(), get(), get(), get(), get()) }
     single { CryptoUserKeysLocalSource(get(), get(), get()) }
     single { CryptoKEKRefreshUseCase(get(), get(), get()) }
 

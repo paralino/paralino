@@ -112,7 +112,7 @@ class LocationRequestUseCase constructor(
                     is MapHomeScreenFocusType.MEMBER -> {
                         if (focusType.isIdleActive) {
                             logg.tag("location_performance")
-                                .v("Map is active (${focusType::class.simpleName}), sending ping")
+                                .d("Map is active (${focusType::class.simpleName}), sending ping")
 
                             if (groupId.isPersonalSpace) {
                                 val requestPayload = LocationFocusSpacePayload(
@@ -130,7 +130,7 @@ class LocationRequestUseCase constructor(
                                     locationId = focusType.memberLocationId
                                 )
 
-                                functionsApi.runAsync(
+                                functionsApi.runAndWait(
                                     function = ServerFunction.LOCATION_FOCUS_MEMBER,
                                     data = requestPayload
                                 )
@@ -231,7 +231,7 @@ class LocationRequestUseCase constructor(
                 }
 
                 if (!responseOne.isSuccess) {
-                    response.remoteException
+                    throw response.remoteException
                 }
             }
         }

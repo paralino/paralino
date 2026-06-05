@@ -114,6 +114,7 @@ class LocationInitHandler constructor(
 
                 val isGpsPreferred = when (performanceType) {
                     LocationPerformanceType.HIGH,
+                    LocationPerformanceType.HIGHER_FOCUS,
                     LocationPerformanceType.VERY_HIGH,
                     LocationPerformanceType.MANUAL_BOOST,
                     LocationPerformanceType.MEDIUM_HIGH -> true

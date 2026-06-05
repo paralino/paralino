@@ -102,7 +102,7 @@ import kotlinx.coroutines.IO
         PrivacyZoneEntity::class,
         PrivacyZoneSharedLocationEntity::class,
     ],
-    version = 23,
+    version = 24,
     exportSchema = true
 )
 @ConstructedBy(AppMainDatabaseConstructor::class)

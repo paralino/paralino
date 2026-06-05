@@ -1,7 +1,6 @@
 package app.paralino.core.models.location
 
 import app.paralino.core.models.base.GroupOrSpaceId
-import app.paralino.core.models.group.UserGroup
 import app.paralino.core.utils.SharingDurationPreset
 import app.paralino.core.utils.extensions.fromUTCtoInstant
 import app.paralino.core.utils.extensions.nowUTC
@@ -9,7 +8,6 @@ import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.plus
 import kotlinx.datetime.toLocalDateTime
-import kotlin.time.Duration
 
 data class LocationSharingContract constructor(
     val groupOrSpaceId: GroupOrSpaceId,
@@ -23,6 +21,7 @@ data class LocationSharingContract constructor(
     val approximateLocationInMeters: Int?,
     val saveToHistory: Boolean,
     val isNotifyOthersOn: Boolean? = null,
+    val isRealtimeUpdatesOn: Boolean? = null,
     val sharingDurationPreset: Long? = null,
     val isEnabled: Boolean,
 ) {

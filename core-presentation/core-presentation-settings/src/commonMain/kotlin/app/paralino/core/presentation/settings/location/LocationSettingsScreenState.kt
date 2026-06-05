@@ -1,9 +1,9 @@
 package app.paralino.core.presentation.settings.location
 
-import app.paralino.core.presentation.settings.generic.GroupOptionItem
-import app.paralino.core.repo.location.LocationPerformanceSettingsType
 import app.paralino.core.presentation.common.AlertDialogAction
 import app.paralino.core.presentation.common.MainAlertDialog
+import app.paralino.core.presentation.settings.generic.GroupOptionItem
+import app.paralino.core.repo.location.LocationPerformanceSettingsType
 
 data class LocationSettingsScreenState(
     val highPerformanceSettings: LocationSettingsHighPerformance,
@@ -15,11 +15,7 @@ data class LocationSettingsScreenState(
 
 data class LocationSettingsHighPerformance(
     val items: List<GroupOptionItem>,
-) {
-    val selectedItem: GroupOptionItem = items.firstOrNull { it.isSelected }
-        ?: items.firstOrNull() { it.id == LocationPerformanceSettingsType.HighPerformance.default.key }
-        ?: items.first()
-}
+)
 
 data class LocationSettingsBatterySaver(
     val activeOnLowPowerMode: Boolean,

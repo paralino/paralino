@@ -79,6 +79,7 @@ class AppPrefs(
         const val keyErrorReporting = "prefs.user.errorReporting"
         const val keyErrorReportingID = "prefs.user.errorReporting.ID"
         const val keyHighPerformanceDuration = "prefs.location.highPerformance.duration"
+        const val keyHighPerformanceDurationFallback = "prefs.location.highPerformance.durationFallback"
         const val keyBatterySaverPerformance = "prefs.location.batterySaver.performance"
         const val keyBatterySaverDeviceLowPower = "prefs.location.batterySaver.deviceLowPowerMode"
         const val keyBalancedPerformance = "prefs.location.balanced.performance"
@@ -116,6 +117,8 @@ class AppPrefs(
         const val keySelectedPushProvider = "prefs.device.pushProvider"
         const val keyUnifiedPushEndpointConfigUnsynced = "prefs.device.unifiedPushEndpointConfig.unsynced"
         const val keyUnifiedPushEndpointConfigSynced = "prefs.device.unifiedPushEndpointConfig.synced"
+        const val keyiOSLastLSEHandoffPingTime = "prefs.device.iOSLastLSEHandoffPingTime"
+        const val keyiOSLastMainAppHeartbeatTime = "prefs.device.iOSLastMainAppHeartbeatTime"
     }
 
 
@@ -377,6 +380,12 @@ class AppPrefs(
             provider.userSettings.putString(keyHighPerformanceDuration, value ?: "")
         }
 
+    var locationSettingsHighPerformanceDurationTypeFallback: String?
+        get() = provider.userSettings.getStringOrNull(keyHighPerformanceDurationFallback).takeIf { !it.isNullOrBlank() }
+        set(value) {
+            provider.userSettings.putString(keyHighPerformanceDurationFallback, value ?: "")
+        }
+
     var locationSettingsBatterySaverPerformanceType: String?
         get() = provider.userSettings.getStringOrNull(keyBatterySaverPerformance).takeIf { !it.isNullOrBlank() }
         set(value) {
@@ -583,6 +592,18 @@ class AppPrefs(
         get() = provider.userSettings.getBoolean(keyPlaceSearchLocation, true)
         set(value) {
             provider.userSettings.putBoolean(keyPlaceSearchLocation, value)
+        }
+
+    var iOSLastMainAppHeartbeatTime: Double
+        get() = provider.userSettings.getDouble(keyiOSLastMainAppHeartbeatTime, 0.0)
+        set(value) {
+            provider.userSettings.putDouble(keyiOSLastMainAppHeartbeatTime, value)
+        }
+
+    var iOSLastLSEHandoffPingTime: Double
+        get() = provider.userSettings.getDouble(keyiOSLastLSEHandoffPingTime, 0.0)
+        set(value) {
+            provider.userSettings.putDouble(keyiOSLastLSEHandoffPingTime, value)
         }
 
     fun getAndroidMapSDKProviderOrDefault(

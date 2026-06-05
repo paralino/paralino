@@ -18,6 +18,7 @@ object SharingContractsMapper {
             shareDeviceStatus = model.shareDeviceStatus,
             saveToHistory = model.saveToHistory,
             isNotifyOthersOn = model.isNotifyOthersOn,
+            isRealtimeUpdatesOn = model.isRealtimeUpdatesOn,
             sharingDurationPreset = model.sharingDurationPreset,
             isEnabled = model.isEnabled
         )
@@ -36,6 +37,7 @@ object SharingContractsMapper {
             shareDeviceStatus = model.shareDeviceStatus,
             saveToHistory = model.saveToHistory,
             isNotifyOthersOn = model.isNotifyOthersOn,
+            isRealtimeUpdatesOn = model.isRealtimeUpdatesOn,
             sharingDurationPreset = model.sharingDurationPreset,
             isEnabled = model.isEnabled
         )

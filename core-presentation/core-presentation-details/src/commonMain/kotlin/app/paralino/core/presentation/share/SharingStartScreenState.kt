@@ -27,14 +27,17 @@ data class SharingStartScreenState constructor(
     val shareElevation: Boolean = true,
     val shareNetwork: Boolean = true,
     val shareDeviceStatus: Boolean = true,
+    val realtimeUpdatesState: Boolean? = null,
+    val realtimeUpdatesDefaultState: Boolean? = null,
     val notifyOthers: Boolean = true,
     val saveToHistory: Boolean = true,
     val showNotifyOthers: Boolean = false,
     val showDeviceStatus: Boolean = false,
+    val showRealtimeUpdatesStatus: Boolean = false,
     val showApproximateLocation: Boolean = false,
     val showDuration: Boolean = false,
     val showMetadata: Boolean = false,
-    val isPremiumSectionVisible: Boolean = false,
+    val isPremiumSectionHeaderVisible: Boolean = false,
     val devicesLimit: Int = 0,
     val devicesCount: Int? = null,
     val premiumStatus: PremiumStatusLimitState? = null,
@@ -48,8 +51,23 @@ data class SharingStartScreenState constructor(
 ) {
     val isNewContract: Boolean = currentContract == null
     val isNameChanged: Boolean = deviceName != initialDeviceName
+    val isRealtimeOptionSelected: Boolean = if (isPremiumSectionHeaderVisible) {
+        false
+    } else {
+        realtimeUpdatesState ?: realtimeUpdatesDefaultState ?: true
+    }
     val isTimelineReEnabled: Boolean = currentContract?.saveToHistory != true && saveToHistory
+    val isRealtimeUpdatesReEnabled: Boolean = if (currentContract != null) {
+        if (realtimeUpdatesDefaultState != null) {
+            realtimeUpdatesDefaultState != isRealtimeOptionSelected
+        } else {
+            realtimeUpdatesState == false
+        }
+    } else {
+        true
+    }
     val canShowContent: Boolean = groupState is Payload.Loading || groupState.data != null
+
     val sharingTimeIndex: Int
         get() {
             return sharingPresetsMillis.indexOfFirst { it == sharingTimeMillis }.takeIf { it >= 0 }
@@ -81,6 +99,7 @@ data class SharingStartScreenState constructor(
                 contract.shareNetwork != shareNetwork ||
                 contract.shareDeviceStatus != shareDeviceStatus ||
                 contract.saveToHistory != saveToHistory ||
+                isRealtimeUpdatesReEnabled ||
                 isNameChanged ||
                 (contract.approximateLocationInMeters != null) != shareApproximateLocation ||
                 (shareApproximateLocation && contract.approximateLocationInMeters != approximateLocationValue.meters)
@@ -91,7 +110,7 @@ data class SharingStartScreenState constructor(
     val needsPlanUpgrade =
         premiumStatus is PremiumStatusLimitState.PlanLimitReached && !isDeviceRegistered
     val shouldUpgradePlan = isOwner && needsPlanUpgrade
-    val shouldRegisterDevice = isNameChanged || isTimelineReEnabled || isNewContract
+    val shouldRegisterDevice = isNameChanged || isTimelineReEnabled || isRealtimeUpdatesReEnabled || isNewContract
 }
 
 data class ApproximateLocationDistancePair(

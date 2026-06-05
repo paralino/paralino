@@ -166,7 +166,7 @@ class PersonalDeviceCryptoKeyRotation(
         )
 
         if (!response.isSuccess) {
-            response.remoteException
+            throw response.remoteException
         } else {
             val groupDeviceIntegrity = GroupIntegrity(
                 timeUtc = nowUTC().toString(),

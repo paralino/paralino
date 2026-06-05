@@ -66,6 +66,9 @@ object MainMapScreen {
         openRawDataScreen: (RawPresentationDataType) -> Unit,
         onSharePersonalCode: (String) -> Unit,
         askNotificationPermission: () -> Unit,
+        askLocationService: () -> Unit,
+        askLocationPermission: () -> Unit,
+        askBackgroundLocationPermission: () -> Unit,
         mapUIView: () -> UIViewController,
     ) = ComposeUIViewController() {
         RootScreenIOS {
@@ -140,6 +143,9 @@ object MainMapScreen {
                             MapHomeScreenEvent.OpenMapProviderSettings -> {}
                             null -> {}
                             MapHomeScreenEvent.AskNotificationPermission -> askNotificationPermission()
+                            MapHomeScreenEvent.AskLocationServices -> askLocationService()
+                            MapHomeScreenEvent.AskLocationPermission -> askLocationPermission()
+                            MapHomeScreenEvent.AskBackgroundLocationPermission -> askBackgroundLocationPermission()
                             MapHomeScreenEvent.OpenPersonalCodes -> openPersonalCodes()
                             is MapHomeScreenEvent.SharePersonalCode -> onSharePersonalCode(event.content)
                         }

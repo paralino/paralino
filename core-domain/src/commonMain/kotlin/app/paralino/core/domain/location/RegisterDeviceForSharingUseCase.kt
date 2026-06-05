@@ -65,7 +65,7 @@ class RegisterDeviceForSharingUseCase constructor(
     suspend fun registerDevice(
         groupId: GroupOrSpaceId,
         deviceName: String?,
-        contract: LocationSharingContract?,
+        contract: LocationSharingContract,
         notifyOthers: Boolean,
         isRetry: Boolean
     ) {
@@ -89,7 +89,7 @@ class RegisterDeviceForSharingUseCase constructor(
 
     private suspend fun registerDeviceForPersonalSpace(
         deviceName: String?,
-        contract: LocationSharingContract?,
+        contract: LocationSharingContract,
         notifyOthers: Boolean,
         isRetry: Boolean
     ) {
@@ -204,7 +204,7 @@ class RegisterDeviceForSharingUseCase constructor(
     private suspend fun registerDeviceForGroupSharing(
         groupId: String,
         deviceName: String?,
-        contract: LocationSharingContract?,
+        contract: LocationSharingContract,
         notifyOthers: Boolean,
         isRetry: Boolean
     ) {
@@ -277,6 +277,7 @@ class RegisterDeviceForSharingUseCase constructor(
                     status = status,
                     groupKeyVersion = groupKey.version,
                     notify = notifyOthers,
+                    realtimeUpdatesPrefs = contract.isRealtimeUpdatesOn,
                     keys = keyData.keys.map { it.senderKey }
                 )
 
