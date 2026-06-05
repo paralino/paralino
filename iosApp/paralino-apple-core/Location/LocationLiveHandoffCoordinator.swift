@@ -38,7 +38,7 @@ public final class LocationLiveHandoffCoordinator {
         let pingTime = AppPrefs.companion.instance.iOSLastLSEHandoffPingTime
         let now = Date().timeIntervalSince1970
         let age = now - pingTime
-        Logr.d(
+        Logr.v(
             tag: "location_service",
             message: "Checking LSE handoff ping: age is \(age) seconds"
         )

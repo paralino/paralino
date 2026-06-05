@@ -112,7 +112,7 @@ class LocationRequestUseCase constructor(
                     is MapHomeScreenFocusType.MEMBER -> {
                         if (focusType.isIdleActive) {
                             logg.tag("location_performance")
-                                .v("Map is active (${focusType::class.simpleName}), sending ping")
+                                .d("Map is active (${focusType::class.simpleName}), sending ping")
 
                             if (groupId.isPersonalSpace) {
                                 val requestPayload = LocationFocusSpacePayload(
