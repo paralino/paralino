@@ -128,13 +128,13 @@ class LocationRequestNotificationProcessor(
         get() {
             return when (pushType) {
                 PushNotificationType.LOCATION_REQUEST -> {
-                    5.seconds
+                    3.seconds
                 }
 
                 PushNotificationType.LOCATION_FOCUS -> {
                     when (pushImportance) {
-                        PushNotificationImportance.HIGH -> 10.seconds
-                        PushNotificationImportance.MEDIUM -> 15.seconds
+                        PushNotificationImportance.HIGH -> 3.seconds
+                        PushNotificationImportance.MEDIUM -> 10.seconds
                         PushNotificationImportance.NORMAL -> 20.seconds
                         else -> 20.seconds
                     }
