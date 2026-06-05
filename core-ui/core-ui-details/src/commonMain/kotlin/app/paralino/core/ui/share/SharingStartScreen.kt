@@ -594,7 +594,8 @@ fun SharingStartScreenCore(
                     }
 
                     Spacer(modifier = Modifier.size(10.dp))
-                    if (state.isPremiumSectionVisible) {
+
+                    if (state.isPremiumSectionHeaderVisible) {
                         SettingsSectionHeader(
                             modifier = Modifier.zIndex(0f),
                             backgroundColor = Color.Transparent,
@@ -618,7 +619,31 @@ fun SharingStartScreenCore(
                         Spacer(modifier = Modifier.size(4.dp))
                     }
 
+                    if (state.showRealtimeUpdatesStatus) {
+                        LargeSeekbarSwitch(
+                            modifier = Modifier.fillMaxWidth(),
+                            icon = CoreAppIcons.ShareLocation.asPainterResource(),
+                            title = stringResource(MR.strings.groups_sharing_setting_realtimeUpdates_title),
+                            description = if (state.isPremiumSectionHeaderVisible || state.isRealtimeOptionSelected) {
+                                stringResource(MR.strings.groups_sharing_setting_realtimeUpdates_description_on)
+                            } else {
+                                stringResource(MR.strings.groups_sharing_setting_realtimeUpdates_description_off)
+                            },
+                            state = rememberSeekbarState(
+                                key = state,
+                                state = LargeSeekbarSwitchState.SeekbarSwitchState(
+                                    seekbarState = null,
+                                    switchState = LargeSeekbarSwitchState.Switch(state.isRealtimeOptionSelected)
+                                )
+                            ).value,
+                            onStateChange = {
+                                vm.toggleRealtimeUpdates(it)
+                            }
+                        )
+                    }
+
                     if (state.showNotifyOthers) {
+                        Spacer(modifier = Modifier.size(10.dp))
                         LargeSeekbarSwitch(
                             modifier = Modifier.fillMaxWidth(),
                             icon = CoreAppIcons.NotificationsActive.asPainterResource(),

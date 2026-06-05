@@ -9,6 +9,7 @@ import app.paralino.core.models.location.LocationDataModel
 import app.paralino.core.models.location.LocationPerformanceType
 import app.paralino.core.models.location.MemberGroupIdForUpload
 import app.paralino.core.provider.ICoroutineScopeProvider
+import app.paralino.core.repo.location.LocationSharingContractFilter
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.base.AppConfigRepository
 import app.paralino.core.repo.location.LocationPerformanceManager
@@ -27,6 +28,7 @@ class LocationUploadEventProcessingEngine(
     private val savePendingLocationUseCase: SavePendingLocationUseCase,
     private val placesActivityProcessor: IPlacesActivityProcessor,
     private val batteryAlertUploadEngine: IBatteryAlertUploadEngine,
+    private val sharingContractFilter: LocationSharingContractFilter
 ) : ILocationEventProcessingEngine(scope = scopeProvider.userSessionIOScope) {
     override val tag: String = "upload"
     override val processingRate: Duration
@@ -40,6 +42,7 @@ class LocationUploadEventProcessingEngine(
                         LocationPerformanceType.BALANCED -> 40.seconds
                         LocationPerformanceType.MEDIUM_HIGH -> 10.seconds
                         LocationPerformanceType.HIGH,
+                        LocationPerformanceType.HIGHER_FOCUS,
                         LocationPerformanceType.VERY_HIGH,
                         LocationPerformanceType.MANUAL_BOOST -> 2.seconds
                     }
@@ -71,6 +74,9 @@ class LocationUploadEventProcessingEngine(
         saveLocally: Boolean
     ) {
         val contracts = locationSharingManager.allValidContracts()
+            .mapNotNull { contract ->
+                sharingContractFilter.filter(contract = contract)
+            }
         val payloads = contracts.mapNotNull { contract ->
             locationPayloadRequest.getLocationPayload(
                 groupId = contract.groupOrSpaceId,

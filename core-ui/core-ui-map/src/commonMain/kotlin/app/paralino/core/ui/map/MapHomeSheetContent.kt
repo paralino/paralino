@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -50,14 +51,15 @@ import androidx.compose.ui.unit.dp
 import app.paralino.core.MR
 import app.paralino.core.presentation.common.GroupMemberItemEvent
 import app.paralino.core.presentation.common.GroupMemberItemState
+import app.paralino.core.presentation.common.PlaceListItemData
+import app.paralino.core.presentation.map.BottomSheetPosition
 import app.paralino.core.presentation.map.MapHomeScreenState
 import app.paralino.core.presentation.map.MapHomeScreenUiEvent
 import app.paralino.core.presentation.map.MapSheetSelectedContentType
-import app.paralino.core.presentation.common.PlaceListItemData
-import app.paralino.core.presentation.map.BottomSheetPosition
 import app.paralino.core.provider.localizedString
 import app.paralino.core.resources.CoreAppIcons
 import app.paralino.core.resources.CoreAppIcons.asPainterResource
+import app.paralino.core.ui.components.ConditionErrorItem
 import app.paralino.core.ui.components.DefaultEmptyState
 import app.paralino.core.ui.components.FilledButton
 import app.paralino.core.ui.groups.components.GroupMember
@@ -174,7 +176,7 @@ fun MapHomeSheetContent(
             activeUserCount = readyState.activeUserCount,
             inactiveUserCount = readyState.inactiveUserCount,
             idleUserCount = readyState.idleUserCount,
-            verified = readyState.allMembersVerified,
+            hasWarning = !readyState.allMembersVerified || readyState.errors.isNotEmpty(),
             interactionVisibilityFraction = contentAlpha,
             collapsedVisibilityFraction = contentCollapsedFraction,
             onGroupContentClick = onWholeContentClick,
@@ -249,6 +251,16 @@ fun MapHomeSheetContent(
                         onEvent = onEvent
                     )
                 }
+            }
+
+            this.items(readyState.errors, key = { "error_$it" }) {
+                ConditionErrorItem(data = it) {
+                    onEvent(MapHomeScreenUiEvent.OnConditionErrorItemClick(it))
+                }
+            }
+
+            if (readyState.errors.isNotEmpty()) {
+                this.item { Spacer(modifier = Modifier.size(10.dp)) }
             }
 
             when (readyState?.mapSheetSelectedContentType) {

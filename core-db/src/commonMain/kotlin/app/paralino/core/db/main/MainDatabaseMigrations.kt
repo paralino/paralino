@@ -202,6 +202,12 @@ object MainDatabaseMigrations {
 
     private val MIGRATION_21_22 = object : Migration(21, 22) {
         override fun migrate(connection: SQLiteConnection) {
+            connection.execSQL("ALTER TABLE sharingContractEntity ADD COLUMN `isRealtimeUpdatesOn` INTEGER DEFAULT NULL")
+        }
+    }
+
+    private val MIGRATION_22_23 = object : Migration(22, 23) {
+        override fun migrate(connection: SQLiteConnection) {
             connection.execSQL(
                 """
                 CREATE TABLE IF NOT EXISTS `approximateSharedLocationEntity` (
@@ -236,6 +242,7 @@ object MainDatabaseMigrations {
         MIGRATION_18_19,
         MIGRATION_19_20,
         MIGRATION_20_21,
-        MIGRATION_21_22
+        MIGRATION_21_22,
+        MIGRATION_22_23,
     )
 }

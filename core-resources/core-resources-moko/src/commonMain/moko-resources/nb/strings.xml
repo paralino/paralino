@@ -951,4 +951,7 @@
     <string name="setting_mapInteractions_collapsed_info">Kartkontrollene kollapser eller skjules for å gi mest mulig plass til kartet.</string>
     <string name="group_members_status_distanceFromMe">%s unna</string>
     <string name="history_map_options_show_inaccurate">Unøyaktige plasseringer</string>
+    <string name="groups_sharing_setting_realtimeUpdates_title">Oppdateringer av posisjon i sanntid</string>
+    <string name="groups_sharing_setting_realtimeUpdates_description_on">Tillat andre å få posisjonsoppdateringer i sanntid **kontinuerlig** fra denne enheten. Hvis noen følger deg på kartet over lengre tid, kan dette bruke mer batteri.</string>
+    <string name="groups_sharing_setting_realtimeUpdates_description_off">Andre kan fortsatt finne deg ved å oppdatere posisjonen din manuelt, men i alle andre tilfeller vil posisjonsoppdateringer være begrenset uten støtte for sanntid.</string>
 </resources>

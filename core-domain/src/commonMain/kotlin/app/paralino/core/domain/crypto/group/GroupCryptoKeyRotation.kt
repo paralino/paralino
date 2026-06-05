@@ -214,7 +214,7 @@ class GroupCryptoKeyRotation constructor(
             )
 
             if (!response.isSuccess) {
-                response.remoteException
+                throw response.remoteException
             } else {
                 logg.tag("tag_crypto_key_group_rotation")
                     .w("Finished rotating group key for: ${group.id}")

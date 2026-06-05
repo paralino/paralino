@@ -951,4 +951,7 @@
     <string name="setting_mapInteractions_collapsed_info">Kontrole karte se sklapaju ili skrivaju kako bi vam omogućile maksimalan prostor za kartu.</string>
     <string name="group_members_status_distanceFromMe">%s od mene</string>
     <string name="history_map_options_show_inaccurate">Netočne lokacije</string>
+    <string name="groups_sharing_setting_realtimeUpdates_title">Ažuriranja lokacije u stvarnom vremenu</string>
+    <string name="groups_sharing_setting_realtimeUpdates_description_on">Dopustite drugima da **neprekidno** primaju ažuriranja lokacije u stvarnom vremenu s ovog uređaja. Ako vas netko dugo prati na karti, to može trošiti više baterije.</string>
+    <string name="groups_sharing_setting_realtimeUpdates_description_off">Drugi vas i dalje mogu pronaći ručnim osvježavanjem vaše lokacije, ali u svim ostalim slučajevima ažuriranja lokacije bit će ograničena bez podrške u stvarnom vremenu.</string>
 </resources>

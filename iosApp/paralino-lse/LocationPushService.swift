@@ -8,83 +8,120 @@
 import CoreLocation
 import paralino_apple_core
 import shared
-//import Sentry
 
 class LocationPushService: NSObject, CLLocationPushServiceExtension, CLLocationManagerDelegate {
     
-    lazy var locationRepo: LocationRepositoryWrapper = { KoinIOS.Instances.shared.locationRepo }()
+    private lazy var locationRepo: LocationRepositoryWrapper = { KoinIOS.Instances.shared.locationRepo }()
+    private lazy var sharingContractFilter: LocationSharingContractFilter = { KoinIOS.Instances.shared.sharingContractFilter }()
+    private let locationManagerDelegate = LseLocationManager()
     
-    var completion: (() -> Void)?
-    var locationManager: CLLocationManager?
+    private var pushCompletion: (() -> Void)?
+    private var locationManager: CLLocationManager?
+    
     
     override init() {
-//        SentrySDK.start { options in
-//            options.dsn = BuildKonfig.shared.glitchTipDSN
-//            options.debug = false
-//        }
-    
-        KoinSetup.initKoin(locationManager: LseLocationManager())
-        
+        KoinSetup.initKoin(locationManager: locationManagerDelegate)
         super.init()
     }
 
     func didReceiveLocationPushPayload(_ payload: [String : Any], completion: @escaping () -> Void) {
+        pushCompletion = completion
         
-        KoinSetup.initKoin(locationManager: LseLocationManager())
-        Logr.i(tag: "location_service", message: "Got location request payload")
+        KoinSetup.initKoin(locationManager: locationManagerDelegate)
         
-        locationRepo.startLocationUploadEngine()
+        let notificationId = payload["notificationId"] as? String
+        let directGroupId = payload["groupId"] as? String
+        Logr.i(tag: "location_service", message: "LSE: Got location push payload for notification \(notificationId ?? "unknown") and group \(directGroupId ?? "unknown")")
         
-        self.completion = completion
         self.locationManager = CLLocationManager()
         self.locationManager?.distanceFilter = 0
         self.locationManager?.desiredAccuracy = kCLLocationAccuracyBest
-        self.locationManager!.delegate = self
+        self.locationManager?.delegate = self
         
-        DispatchQueue.main.async {
+        DispatchQueue.main.async { [weak self] in
             Task {
-                Logr.i(tag: "location_service", message: "Start location updates after delay")
-                try? await Task.sleep(nanoseconds: 500 * 1_000_000)
-                self.locationManager!.startUpdatingLocation()
+                let groupId: String?
+                if let directGroupId = directGroupId {
+                    groupId = directGroupId
+                } else {
+                    groupId = try? await self?.locationRepo.getGroupIdFromNotificationId(notificationId: notificationId)
+                }
+                
+                if let groupId = groupId {
+                    Logr.i(tag: "location_service", message: "LSE: Allowing only group \(groupId) for 60 seconds")
+                    self?.sharingContractFilter.setAsAllowedForSeconds(groupOrSpaceId: GroupOrSpaceIdHelper.shared.wrap(id: groupId), seconds: 60)
+                } else {
+                    Logr.i(tag: "location_service", message: "LSE: No new sharing contract filter to add")
+                    self?.sharingContractFilter.clearFilter()
+                }
+                
+                self?.locationRepo.startLocationUploadEngine()
+                self?.handleMainAppHandoff()
             }
         }
+    }
+    
+    private func handleMainAppHandoff() {
+        Logr.i(tag: "location_service", message: "LSE: Pinging main app")
+        LocationLiveHandoffCoordinator.shared.handleLocationPushExtension(
+            startLseLocationManager: { [weak self] in
+                guard let self = self else { return }
+                DispatchQueue.main.async {
+                    Task {
+                        try? await Task.sleep(nanoseconds: 500 * 1_000_000)
+                        Logr.i(tag: "location_service", message: "Start location updates")
+                        self.locationManager?.startUpdatingLocation()
+                    }
+                }
+            },
+            completion: { [weak self] in
+                self?.completePushIfNeeded()
+            }
+        )
     }
     
     func serviceExtensionWillTerminate() {
         Logr.i(tag: "location_service", message: "LSE will terminate")
         self.locationManager?.stopUpdatingLocation()
-        self.completion?()
+        LocationLiveHandoffCoordinator.shared.extensionWillTerminate()
+        completePushIfNeeded()
+    }
+    
+    private func completePushIfNeeded() {
+        self.pushCompletion?()
+        self.pushCompletion = nil
     }
 
     // MARK: - CLLocationManagerDelegate methods
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        let location = locations.last?.toLocationModel()
+        // If the main app wakes up and starts its session in the background, we can stop the LSE updates
+        if LocationLiveHandoffCoordinator.shared.isMainAppActivelyRunning() {
+            Logr.i(tag: "location_service", message: "LSE: Main app is now actively streaming. Stopping LSE location manager.")
+            manager.stopUpdatingLocation()
+            completePushIfNeeded()
+            return
+        }
         
-        if location == nil { return }
+        Logr.i(tag: "location_service", message: "LSE: got update \(locations.count), registering location")
         
+        guard let location = locations.last?.toLocationModel() else { return }
         let systemLocation = manager.location?.toLocationModel()
         let locationModel = LocationDataModel.companion.getBetter(first: location, second: systemLocation)
         
-        locationRepo.registerNewLocation(data: locationModel!)
+        _ = locationRepo.registerNewLocation(data: locationModel!)
     }
     
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-        Logr.i(tag: "location_service", message: "Location manager failed with error \(error.localizedDescription)")
-        self.completion?()
+        Logr.i(tag: "location_service", message: "LSE: Location manager failed with error: \(error.localizedDescription)")
+        completePushIfNeeded()
     }
 }
 
-
 class LseLocationManager: NSObject, CoreLocationManagerDelegate {
     
-    public var lastLocation: CLLocation? {
-        nil
-    }
-    
-    public var monitoredRegions: Set<CLRegion> {
-        []
-    }
+    public var lastLocation: CLLocation? { nil }
+    public var monitoredRegions: Set<CLRegion> { [] }
     
     public func startMonitoringRegion(region: CLCircularRegion) {}
     public func stopMonitoringRegion(region: CLRegion) {}

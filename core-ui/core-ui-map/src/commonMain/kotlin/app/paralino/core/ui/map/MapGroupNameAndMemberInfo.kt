@@ -51,7 +51,7 @@ fun MapGroupNameAndMemberInfo(
     activeUserCount: Int,
     idleUserCount: Int,
     inactiveUserCount: Int,
-    verified: Boolean,
+    hasWarning: Boolean,
     interactionVisibilityFraction: Float,
     collapsedVisibilityFraction: Float,
     onGroupDetailButtonClick: () -> Unit,
@@ -216,20 +216,20 @@ fun MapGroupNameAndMemberInfo(
                 ),
             contentAlignment = Alignment.Center
         ) {
-            if (verified) {
+            if (hasWarning) {
+                Icon(
+                    painter = CoreAppIcons.Warning.asPainterResource(),
+                    tint = MaterialTheme.colors.error,
+                    contentDescription = null,
+                    modifier = Modifier.size(20.dp)
+                )
+            } else {
                 Icon(
                     painter = CoreAppIcons.ChevronRight.asPainterResource(),
                     contentDescription = null,
                     modifier = Modifier
                         .size(24.dp)
                         .rotate((-90f) * (1f - interactionVisibilityFraction))
-                )
-            } else {
-                Icon(
-                    painter = CoreAppIcons.Warning.asPainterResource(),
-                    tint = MaterialTheme.colors.error,
-                    contentDescription = null,
-                    modifier = Modifier.size(20.dp)
                 )
             }
         }

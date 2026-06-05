@@ -41,7 +41,7 @@ class OneTimeLocationProvider: IOneTimeLocationProvider, CLLocationManagerDelega
         case .batterySaver: accuracyFilter = .horizontal(200)
         case .balanced: accuracyFilter = .horizontal(100)
         case .mediumHigh: accuracyFilter = .horizontal(50)
-        case .high: accuracyFilter = .horizontal(30)
+        case .high, .higherFocus: accuracyFilter = .horizontal(30)
         case .veryHigh, .manualBoost: accuracyFilter = .horizontal(5)
         default: accuracyFilter = .horizontal(50)
         }

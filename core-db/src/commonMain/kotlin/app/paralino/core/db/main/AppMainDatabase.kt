@@ -97,7 +97,7 @@ import kotlinx.coroutines.IO
         UnsyncedGroupHistoryKeyEntity::class,
         ApproximateSharedLocationEntity::class,
     ],
-    version = 22,
+    version = 23,
     exportSchema = true
 )
 @ConstructedBy(AppMainDatabaseConstructor::class)

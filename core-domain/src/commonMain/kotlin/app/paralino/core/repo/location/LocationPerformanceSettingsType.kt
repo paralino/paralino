@@ -1,5 +1,7 @@
 package app.paralino.core.repo.location
 
+import app.paralino.core.models.base.DeviceType
+import app.paralino.core.provider.current
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
@@ -16,10 +18,12 @@ sealed interface LocationPerformanceSettingsType {
         override val updateInterval: Duration = 3.seconds
         override val minUpdateInterval: Duration = 2.seconds
         override val minUpdateDistanceMeters: Int = 0
+        abstract val allowedVeryHighPerformanceDuration: Duration
         abstract val allowedHighPerformanceDuration: Duration
         abstract val allowedMediumPerformanceDuration: Duration
 
         data object Level1 : HighPerformance() {
+            override val allowedVeryHighPerformanceDuration: Duration = 3.minutes
             override val allowedHighPerformanceDuration: Duration = 3.minutes
             override val allowedMediumPerformanceDuration: Duration = 6.minutes
             override val isPremiumFeature: Boolean = false
@@ -27,6 +31,7 @@ sealed interface LocationPerformanceSettingsType {
         }
 
         data object Level2 : HighPerformance() {
+            override val allowedVeryHighPerformanceDuration: Duration = 5.minutes
             override val allowedHighPerformanceDuration: Duration = 6.minutes
             override val allowedMediumPerformanceDuration: Duration = 12.minutes
             override val isPremiumFeature: Boolean = true
@@ -34,6 +39,7 @@ sealed interface LocationPerformanceSettingsType {
         }
 
         data object Level3 : HighPerformance() {
+            override val allowedVeryHighPerformanceDuration: Duration = 7.minutes
             override val allowedHighPerformanceDuration: Duration = 12.minutes
             override val allowedMediumPerformanceDuration: Duration = 18.minutes
             override val isPremiumFeature: Boolean = true
@@ -41,6 +47,7 @@ sealed interface LocationPerformanceSettingsType {
         }
 
         data object LevelMax : HighPerformance() {
+            override val allowedVeryHighPerformanceDuration: Duration = 10.minutes
             override val allowedHighPerformanceDuration: Duration = 20.minutes
             override val allowedMediumPerformanceDuration: Duration = 20.minutes
             override val isPremiumFeature: Boolean = true
@@ -49,6 +56,7 @@ sealed interface LocationPerformanceSettingsType {
 
         companion object {
             val default: HighPerformance = Level1
+            val defaultPremium: HighPerformance = Level2
             fun fromKey(key: String?): HighPerformance {
                 return when (key) {
                     Level1.key -> Level1
@@ -135,7 +143,10 @@ sealed interface LocationPerformanceSettingsType {
         data object Level5 : Balanced {
             override val updateInterval: Duration = 5.minutes
             override val minUpdateInterval: Duration = 1.minutes
-            override val minUpdateDistanceMeters: Int = 10
+            override val minUpdateDistanceMeters: Int get() = when (DeviceType.current) {
+                DeviceType.Android -> 10
+                DeviceType.iOS -> 0
+            }
             override val isPremiumFeature: Boolean = true
             override val key: String = "balanced_level_500"
         }

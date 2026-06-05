@@ -26,7 +26,9 @@ class AppwriteRemoteModule: IRemoteModule {
     }
     
     lazy var client: Client = {
-        return Client(userDefaultsGroup: "group.app.paralino.ios")
+        let systemBundleId = Bundle.main.bundleIdentifier ?? "app.paralino.ios"
+        let bundleId = systemBundleId.starts(with: "app.paralino.ios.test") ? "app.paralino.ios.test" : "app.paralino.ios"
+        return Client(userDefaultsGroup: "group.\(bundleId)")
             .setEndpoint(appConfig.endpoint)
             .setProject(appConfig.projectId)
             .setSelfSigned(false)

@@ -3,14 +3,15 @@ package app.paralino.core.domain.location
 import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.GroupMemberSenderKey
 import app.paralino.core.crypto.PersonalSpaceDeviceKey
-import app.paralino.core.domain.crypto.group.CryptoKEKLocalRepository
-import app.paralino.core.domain.crypto.user.CryptoUserKeysLocalSource
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.db.MainDatabaseHelper
 import app.paralino.core.db.main.groups.MemberLocationEntityDataUpdate
 import app.paralino.core.db.main.user.UserDeviceEntityLocationDataUpdate
+import app.paralino.core.domain.crypto.group.GetMemberSenderKeyUseCase
+import app.paralino.core.domain.crypto.user.CryptoUserKeysLocalSource
 import app.paralino.core.domain.location.history.ILocationHistoryUploadEngine
 import app.paralino.core.logg
+import app.paralino.core.models.AppHost
 import app.paralino.core.models.base.BackendDatabaseType
 import app.paralino.core.models.location.LocationHistoryModel
 import app.paralino.core.models.location.MemberGroupIdForUpload
@@ -31,7 +32,7 @@ class SaveLocationUseCase(
     private val documentApi: IDocumentsApi,
     private val appConfig: AppConfigRepository,
     private val cryptoCore: CryptoCore,
-    private val cryptoKEKRepo: CryptoKEKLocalRepository,
+    private val getMemberSenderKey: GetMemberSenderKeyUseCase,
     private val userKeyRepo: CryptoUserKeysLocalSource,
     private val historyMapper: PendingLocationHistoryMapper,
     private val locationHistoryUpload: ILocationHistoryUploadEngine,
@@ -91,9 +92,8 @@ class SaveLocationUseCase(
 
     @Throws(CryptoException::class, MissingCryptoKeyException::class, CancellationException::class)
     private suspend fun uploadAndSaveGroupLocation(data: MemberGroupIdForUpload): MemberLocationRaw? {
-        val memberKey = cryptoKEKRepo.getMemberSenderKey(
+        val memberKey = getMemberSenderKey.getCurrentUserDeviceSenderKey(
             groupId = data.groupId.id,
-            memberUserId = appPrefs.userId,
             locationId = data.locationId
         )
         if (memberKey !is GroupMemberSenderKey.Valid)
@@ -166,34 +166,42 @@ class SaveLocationUseCase(
         data: MemberGroupIdForUpload,
         key: String
     ): Pair<String?, Int> {
+        when (appConfig.appHost) {
+            AppHost.MAIN_APP -> {
+                val allPendingEntries = if (data.groupId.isPersonalSpace) {
+                    database.pendingLocationHistoryDao.getAllEntriesForGroupOnce(groupOrSpaceId = data.groupId.id)
+                } else {
+                    val historyKey = database.groupLocalHistoryKeyDao.getActiveHistoryKey(groupId = data.groupId.id)
+                    database.pendingLocationHistoryDao.getAllEntriesForGroupOnce(groupOrSpaceId = data.groupId.id)
+                        // history key can be null for personal space
+                        .filter { it.localGroupHistoryKeyId == historyKey?.id }
+                }
+                    .sortedByDescending { it.id }
 
-        val allPendingEntries = if (data.groupId.isPersonalSpace) {
-            database.pendingLocationHistoryDao.getAllEntriesForGroupOnce(groupOrSpaceId = data.groupId.id)
-        } else {
-            val historyKey = database.groupLocalHistoryKeyDao.getActiveHistoryKey(groupId = data.groupId.id)
-            database.pendingLocationHistoryDao.getAllEntriesForGroupOnce(groupOrSpaceId = data.groupId.id)
-                // history key can be null for personal space
-                .filter { it.localGroupHistoryKeyId == historyKey?.id }
+                val historyEntries = allPendingEntries
+                    .take(100)
+                    .let { historyMapper.pendingLocationToCore(it) }
+
+                val locationHistory = if (historyEntries.isNotEmpty()) {
+                    val historyModel = LocationHistoryModel(
+                        history = historyEntries.map { it.history }
+                    )
+                    cryptoCore.encryptDataWithKey(
+                        data = BaseRemoteModule.locationHistoryFormatter.encodeToString(historyModel),
+                        key = key
+                    )
+                } else {
+                    ""
+                }
+
+                return locationHistory to allPendingEntries.size
+            }
+
+            AppHost.IOS_NOTIFICATION_EXTENSION,
+            AppHost.IOS_LOCATION_EXTENSION -> {
+                return null to 0
+            }
         }
-            .sortedByDescending { it.id }
-
-        val historyEntries = allPendingEntries
-            .take(100)
-            .let { historyMapper.pendingLocationToCore(it) }
-
-        val locationHistory = if (historyEntries.isNotEmpty()) {
-            val historyModel = LocationHistoryModel(
-                history = historyEntries.map { it.history }
-            )
-            cryptoCore.encryptDataWithKey(
-                data = BaseRemoteModule.locationHistoryFormatter.encodeToString(historyModel),
-                key = key
-            )
-        } else {
-            ""
-        }
-
-        return locationHistory to allPendingEntries.size
     }
 
     suspend fun saveGroupLocationLocally(data: MemberLocationRaw) {

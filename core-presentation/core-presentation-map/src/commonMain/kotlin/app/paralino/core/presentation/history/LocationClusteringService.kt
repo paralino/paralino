@@ -50,7 +50,7 @@ class LocationClusteringService(
         val yesterday = now.minus(1.days).toLocalDateTime(timeZone).date
 
         val clusters = mutableListOf<LocationHistoryPointState>()
-        val sortedPoints = newPoints.sortedBy { it.point.status.startTime }
+        val sortedPoints = newPoints.sortedBy { it.point.loc?.startTime ?: it.point.status.startTime }
 
         var currentCluster = mutableListOf<LocationHistoryPointState.Point>()
 

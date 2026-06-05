@@ -282,9 +282,11 @@ class SharingStartViewModel(
                     devicesLimit = 0,
                     showNotifyOthers = false,
                     showDeviceStatus = false,
+                    showRealtimeUpdatesStatus = false,
+                    isPremiumSectionHeaderVisible = false,
                     showApproximateLocation = false,
-                    isPremiumSectionVisible = false,
                     notifyOthers = false,
+                    realtimeUpdatesState = null,
                     sharingPresetsMillis = presets
                 )
             }
@@ -340,14 +342,16 @@ class SharingStartViewModel(
 
                                 showNotifyOthers = !isSharingActive && (isGroupPremium || group.group.group.isCurrentUserOwner),
                                 showDeviceStatus = true,
+                                showRealtimeUpdatesStatus = true,
                                 showApproximateLocation = true,
                                 showDuration = !isSharingActive,
                                 showMetadata = true,
 
-                                formattedEndTime = endTime,
-                                isPremiumSectionVisible = !isSharingActive && !isGroupPremium && group.group.group.isCurrentUserOwner,
+                                isPremiumSectionHeaderVisible = !isGroupPremium,
                                 notifyOthers = if (isGroupPremium) state.notifyOthers else false,
+                                realtimeUpdatesState = state.realtimeUpdatesState,
 
+                                formattedEndTime = endTime,
                                 sharingPresetsMillis = presets,
                                 sharingTimeMillis = state.sharingTimeMillis.let {
                                     if (!isGroupOverLimits) it
@@ -379,13 +383,15 @@ class SharingStartViewModel(
                                 isDeviceRegistered = isDeviceRegistered,
                                 showNotifyOthers = false,
                                 showDeviceStatus = false,
+                                showRealtimeUpdatesStatus = false,
                                 showApproximateLocation = false,
                                 showDuration = false,
                                 showMetadata = false,
                                 formattedEndTime = endTime,
                                 // nothing premium for personal space
-                                isPremiumSectionVisible = false,
+                                isPremiumSectionHeaderVisible = false,
                                 notifyOthers = false,
+                                realtimeUpdatesState = null,
                                 sharingPresetsMillis = presets,
                                 sharingTimeMillis = state.sharingTimeMillis.let {
                                     if (!isOverLimits) it
@@ -426,6 +432,7 @@ class SharingStartViewModel(
                     approximateLocationInMeters = _uiState.value.approximateLocationValue.meters.takeIf { _uiState.value.shareApproximateLocation },
                     saveToHistory = _uiState.value.saveToHistory,
                     isNotifyOthersOn = _uiState.value.notifyOthers,
+                    isRealtimeUpdatesOn = _uiState.value.realtimeUpdatesState ?: contract.isRealtimeUpdatesOn,
                     sharingDurationPreset = _uiState.value.sharingTimeMillis,
                 )
 
@@ -533,6 +540,7 @@ class SharingStartViewModel(
             approximateLocationInMeters = _uiState.value.approximateLocationValue.meters.takeIf { _uiState.value.shareApproximateLocation },
             saveToHistory = _uiState.value.saveToHistory,
             isNotifyOthersOn = _uiState.value.notifyOthers,
+            isRealtimeUpdatesOn = _uiState.value.realtimeUpdatesState ?: _uiState.value.currentContract?.isRealtimeUpdatesOn ?: uiState.value.realtimeUpdatesDefaultState,
             sharingDurationPreset = _uiState.value.sharingTimeMillis,
             isEnabled = true
         )
@@ -699,7 +707,7 @@ class SharingStartViewModel(
 
     fun toggleNotifyOthers(state: Boolean) {
         if (_uiState.value.showNotifyOthers) {
-            if (_uiState.value.isPremiumSectionVisible) {
+            if (_uiState.value.isPremiumSectionHeaderVisible) {
                 _eventChannel.trySend(SharingStartScreenEvent.OpenPaywall)
             } else {
                 _uiState.update {
@@ -708,6 +716,17 @@ class SharingStartViewModel(
             }
         } else {
             _eventChannel.trySend(SharingStartScreenEvent.OpenPaywall)
+        }
+    }
+
+    fun toggleRealtimeUpdates(state: Boolean) {
+        if (_uiState.value.isPremiumSectionHeaderVisible) {
+            _eventChannel.trySend(SharingStartScreenEvent.OpenPaywall)
+            return
+        }
+
+        _uiState.update {
+            it.copy(realtimeUpdatesState = state)
         }
     }
 
@@ -777,6 +796,8 @@ class SharingStartViewModel(
                 ?: this.shareDeviceStatus,
             notifyOthers = unfilteredContract?.isNotifyOthersOn
                 ?: this.notifyOthers,
+            realtimeUpdatesDefaultState = unfilteredContract?.isRealtimeUpdatesOn
+                ?: this.realtimeUpdatesDefaultState,
             sharingTimeMillis = unfilteredContract?.sharingDurationPreset
                 ?: this.sharingTimeMillis,
             shareApproximateLocation = unfilteredContract?.let { it.approximateLocationInMeters != null }

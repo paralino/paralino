@@ -35,6 +35,7 @@ class LocationSaveEventProcessingEngine(
                         LocationPerformanceType.BALANCED -> 6.seconds
                         LocationPerformanceType.MEDIUM_HIGH -> 4.seconds
                         LocationPerformanceType.HIGH,
+                        LocationPerformanceType.HIGHER_FOCUS,
                         LocationPerformanceType.VERY_HIGH,
                         LocationPerformanceType.MANUAL_BOOST -> 2.seconds
                     }

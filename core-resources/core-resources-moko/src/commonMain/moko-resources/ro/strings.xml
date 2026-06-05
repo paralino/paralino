@@ -951,4 +951,7 @@
     <string name="setting_mapInteractions_collapsed_title">Restrâns</string>
     <string name="group_members_status_distanceFromMe">%s departe</string>
     <string name="history_map_options_show_inaccurate">Locații inexacte</string>
+    <string name="groups_sharing_setting_realtimeUpdates_title">Actualizări ale locației în timp real</string>
+    <string name="groups_sharing_setting_realtimeUpdates_description_on">Permiteți altora să primească **continuu** actualizări ale locației în timp real de la acest dispozitiv. Dacă cineva vă urmărește pe hartă pentru o perioadă lungă de timp, acest lucru poate consuma mai multă baterie.</string>
+    <string name="groups_sharing_setting_realtimeUpdates_description_off">Alții vă pot localiza în continuare prin reîmprospătarea manuală a locației dvs., însă în toate celelalte cazuri actualizările locației vor fi limitate fără suport în timp real.</string>
 </resources>

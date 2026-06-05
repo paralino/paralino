@@ -951,4 +951,7 @@
     <string name="setting_mapInteractions_collapsed_info">De kaartbedieningselementen klappen in of verbergen zich om de kaartruimte te maximaliseren.</string>
     <string name="group_members_status_distanceFromMe">%s verwijderd</string>
     <string name="history_map_options_show_inaccurate">Onnauwkeurige locaties</string>
+    <string name="groups_sharing_setting_realtimeUpdates_title">Locatie-updates in real time</string>
+    <string name="groups_sharing_setting_realtimeUpdates_description_on">Sta anderen toe om **voortdurend** realtime locatie-updates van dit apparaat te ontvangen. Als iemand u gedurende langere tijd op de kaart volgt, kan dit meer batterij verbruiken.</string>
+    <string name="groups_sharing_setting_realtimeUpdates_description_off">Anderen kunnen u nog steeds lokaliseren door uw locatie handmatig te vernieuwen, maar in alle andere gevallen worden locatie-updates beperkt zonder realtime-ondersteuning.</string>
 </resources>

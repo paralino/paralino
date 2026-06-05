@@ -951,4 +951,7 @@
     <string name="setting_mapInteractions_collapsed_info">Die Kartensteuerungen klappen ein oder werden ausgeblendet, um den Kartenbereich zu maximieren.</string>
     <string name="group_members_status_distanceFromMe">%s entfernt</string>
     <string name="history_map_options_show_inaccurate">Ungenaue Standorte</string>
+    <string name="groups_sharing_setting_realtimeUpdates_title">Standortaktualisierungen in Echtzeit</string>
+    <string name="groups_sharing_setting_realtimeUpdates_description_on">Erlauben Sie anderen, von diesem Gerät aus **kontinuierlich** Standortaktualisierungen in Echtzeit zu erhalten. Wenn jemand Sie über einen längeren Zeitraum auf der Karte verfolgt, kann dies mehr Akku verbrauchen.</string>
+    <string name="groups_sharing_setting_realtimeUpdates_description_off">Andere können Ihren Standort weiterhin durch manuelles Aktualisieren abrufen, aber in allen anderen Fällen werden Standortaktualisierungen ohne Unterstützung in Echtzeit eingeschränkt.</string>
 </resources>

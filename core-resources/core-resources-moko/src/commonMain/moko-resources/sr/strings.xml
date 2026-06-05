@@ -951,4 +951,7 @@
     <string name="setting_mapInteractions_collapsed_info">Контроле мапе се склапају или сакривају како би се максимизовао простор за мапу.</string>
     <string name="group_members_status_distanceFromMe">%s од мене</string>
     <string name="history_map_options_show_inaccurate">Нетачне локације</string>
+    <string name="groups_sharing_setting_realtimeUpdates_title">Ажурирања локације у реалном времену</string>
+    <string name="groups_sharing_setting_realtimeUpdates_description_on">Дозволите другима да **непрекидно** добијају ажурирања локације у реалном времену са овог уређаја. Ако вас неко дуже време прати на мапи, ово може трошити више батерије.</string>
+    <string name="groups_sharing_setting_realtimeUpdates_description_off">Други и даље могу да вас пронађу ручним освежавањем ваше локације, али у свим осталим случајевима ажурирања локације биће ограничена без подршке за рад у реалном времену.</string>
 </resources>

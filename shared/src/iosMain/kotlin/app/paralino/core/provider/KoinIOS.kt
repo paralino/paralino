@@ -22,9 +22,12 @@ import app.paralino.core.domain.crypto.user.NoOpPersonalDeviceKeyRotation
 import app.paralino.core.domain.crypto.user.PersonalDeviceCryptoKeyRotation
 import app.paralino.core.domain.location.BatteryAlertUploadEngine
 import app.paralino.core.domain.location.IBatteryAlertUploadEngine
+import app.paralino.core.domain.location.ILocationRequestAutoUpgradeUseCase
 import app.paralino.core.domain.location.IOSLSEBatteryAlertUploadEngine
 import app.paralino.core.domain.location.IReRegisterDeviceUseCase
 import app.paralino.core.domain.location.LocationCacheRepository
+import app.paralino.core.domain.location.LocationRequestAutoUpgradeUseCase
+import app.paralino.core.domain.location.NoOpLocationRequestAutoUpgradeUseCase
 import app.paralino.core.domain.location.NoOpReRegisterDeviceUseCase
 import app.paralino.core.domain.location.ReRegisterDeviceUseCase
 import app.paralino.core.domain.location.history.ILocationHistoryUploadEngine
@@ -108,6 +111,7 @@ import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.location.IGeofenceManager
 import app.paralino.core.repo.location.LocationPerformanceManager
 import app.paralino.core.repo.location.LocationRepositoryWrapper
+import app.paralino.core.repo.location.LocationSharingContractFilter
 import app.paralino.core.repo.places.IOSLSEPlacesActivityProcessor
 import app.paralino.core.repo.places.IPlacesActivityProcessor
 import app.paralino.core.repo.places.PlaceActivityUploadEngine
@@ -185,7 +189,7 @@ object KoinIOS {
                     single { appUpdateManager() } bind IAppUpdateManager::class
                     single { appRatingPresenter() } bind IAppRatingPresenter::class
                     single { oneTimeLocationProvider(get(), get()) }
-                    single { LocationRepositoryWrapper(get(), get(), get()) }
+                    single { LocationRepositoryWrapper(get(), get(), get(), get()) }
                     single { IOSNSEPlaceCreatedNotificationProcessor(get(), get(), get(), get()) }
                     single { IOSNSEPushNotificationHandler(get(), get(), get(), get()) }
                     single { PlatformUrlHandler() } bind IPlatformUrlHandler::class
@@ -196,6 +200,7 @@ object KoinIOS {
                             single { MemberDeviceKeyRotation(get(), get(), get(), get(), get(), get(), get(), get()) } bind IMemberDeviceKeyRotation::class
                             single { PersonalDeviceCryptoKeyRotation(get(), get(), get(), get(), get(), get(), get(), get()) } bind IPersonalDeviceCryptoKeyRotation::class
                             single { ReRegisterDeviceUseCase(get(), get()) } bind IReRegisterDeviceUseCase::class
+                            single { LocationRequestAutoUpgradeUseCase(get(), get(), get(), get(), get()) } bind ILocationRequestAutoUpgradeUseCase::class
                             single { PlacesActivityProcessor(get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) } bind IPlacesActivityProcessor::class
                             single { LocationHistoryUploadEngine(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) } bind ILocationHistoryUploadEngine::class
                             single { BatteryAlertUploadEngine(get(), get(), get(), get(), get()) } bind IBatteryAlertUploadEngine::class
@@ -205,6 +210,7 @@ object KoinIOS {
                             single { NoOpMemberDeviceKeyRotation() } bind IMemberDeviceKeyRotation::class
                             single { NoOpPersonalDeviceKeyRotation() } bind IPersonalDeviceCryptoKeyRotation::class
                             single { NoOpReRegisterDeviceUseCase() } bind IReRegisterDeviceUseCase::class
+                            single { NoOpLocationRequestAutoUpgradeUseCase() } bind ILocationRequestAutoUpgradeUseCase::class
                             single { IOSLSEPlacesActivityProcessor() } bind IPlacesActivityProcessor::class
                             single { IOSLocationHistoryUploadEngine() } bind ILocationHistoryUploadEngine::class
                             single { IOSLSEBatteryAlertUploadEngine() } bind IBatteryAlertUploadEngine::class
@@ -347,6 +353,7 @@ object KoinIOS {
         val userConfigRepo: UserConfigRepository get() = get()
         val nseNotificationHandler: IOSNSEPushNotificationHandler get() = get()
         val placeActivityUploadEngine: PlaceActivityUploadEngine get() = get()
+        val sharingContractFilter: LocationSharingContractFilter get() = get()
     }
 
     object ViewModels : KoinComponent {

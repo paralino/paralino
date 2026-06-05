@@ -85,6 +85,21 @@ struct MapHomeScreen: View {
                             messageDispather: mapState.vm.messageDispatcher
                         )
                     },
+                    askLocationService: {
+                        appDelegate.locationPermissionHandler.requestLocationServices(
+                            messageDispather: mapState.vm.messageDispatcher
+                        )
+                    },
+                    askLocationPermission: {
+                        appDelegate.locationPermissionHandler.requestLocationPermission(
+                            messageDispather: mapState.vm.messageDispatcher
+                        )
+                    },
+                    askBackgroundLocationPermission: {
+                        appDelegate.locationPermissionHandler.requestLocationPermission(
+                            messageDispather: mapState.vm.messageDispatcher
+                        )
+                    },
                     mapUIView: { () -> UIViewController in
                         let controller = MapComponentVC()
                         controller.additionalSafeAreaInsets = .init(top: 65, left: 0, bottom: 0, right: 0)
