@@ -24,7 +24,8 @@ extension CLLocation {
             endTimeUTC: nil,
             speed: speed,
             altitude: altitude,
-            isMasked: false
+            isMasked: false,
+            isApproximate: false
         )
     }
 }
