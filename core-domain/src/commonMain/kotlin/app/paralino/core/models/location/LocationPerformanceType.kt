@@ -9,6 +9,7 @@ enum class LocationPerformanceType {
     BALANCED,
     MEDIUM_HIGH,
     HIGH,
+    HIGHER_FOCUS,
     VERY_HIGH,
     MANUAL_BOOST;
 
@@ -19,6 +20,7 @@ enum class LocationPerformanceType {
             BALANCED -> 0.seconds
             MEDIUM_HIGH -> 30.seconds
             HIGH -> 30.seconds
+            HIGHER_FOCUS -> 45.seconds
             VERY_HIGH -> 60.seconds
             MANUAL_BOOST -> 120.seconds
         }
@@ -30,6 +32,7 @@ enum class LocationPerformanceType {
             BALANCED -> BALANCED
             MEDIUM_HIGH -> BALANCED
             HIGH -> BALANCED
+            HIGHER_FOCUS -> BALANCED
             VERY_HIGH -> HIGH
             MANUAL_BOOST -> BALANCED
         }

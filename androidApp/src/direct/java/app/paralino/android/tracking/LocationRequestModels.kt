@@ -14,6 +14,7 @@ object LocationRequestModels {
         batterySaverSettings: LocationPerformanceManager.LocationPerformanceSettings,
     ): LocationRequestCompat {
         return when (type) {
+            LocationPerformanceType.HIGHER_FOCUS,
             LocationPerformanceType.VERY_HIGH,
             LocationPerformanceType.MANUAL_BOOST -> {
                 LocationRequestCompat.Builder(1_000L)

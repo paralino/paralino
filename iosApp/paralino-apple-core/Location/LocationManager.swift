@@ -99,7 +99,7 @@ public class LocationManager: NSObject, ObservableObject, CoreLocationManagerDel
                 self?.manager.pausesLocationUpdatesAutomatically = false
                 self?.manager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters
                 self?.manager.distanceFilter = 50
-            case .high:
+            case .high, .higherFocus:
                 self?.manager.pausesLocationUpdatesAutomatically = false
                 self?.manager.desiredAccuracy = kCLLocationAccuracyBest
                 self?.manager.distanceFilter = 2

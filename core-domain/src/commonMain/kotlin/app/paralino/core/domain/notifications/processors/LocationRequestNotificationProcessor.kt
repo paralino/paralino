@@ -1,6 +1,5 @@
 package app.paralino.core.domain.notifications.processors
 
-import app.paralino.core.domain.location.LocationRequestAutoUpgradeUseCase
 import app.paralino.core.domain.location.MemberDeviceStatusProcessor
 import app.paralino.core.domain.location.UserMemberIdUseCase
 import app.paralino.core.domain.notifications.IPushNotificationPresenter
@@ -28,7 +27,6 @@ class LocationRequestNotificationProcessor(
     private val memberIdUseCase: UserMemberIdUseCase,
     private val coroutineScopeProvider: ICoroutineScopeProvider,
     private val accessLogSource: AccessLogDataSource,
-    private val locationRequestAutoUpgrade: LocationRequestAutoUpgradeUseCase
 ) : BaseNotificationProcessor(accessLogSource) {
 
     override suspend fun constructPushPayload(
@@ -99,15 +97,6 @@ class LocationRequestNotificationProcessor(
             from = "location request notification"
         )
 
-        when (performanceType) {
-            LocationPerformanceType.HIGH,
-            LocationPerformanceType.VERY_HIGH -> {
-                locationRequestAutoUpgrade.markAsUpgradeRequested()
-            }
-
-            else -> {}
-        }
-
         try {
             deviceStatusProcessor.pushDeviceStatus(groupId = groupId)
         } catch (e: Exception) {
@@ -125,7 +114,7 @@ class LocationRequestNotificationProcessor(
                 PushNotificationType.LOCATION_FOCUS -> {
                     when (pushImportance) {
                         PushNotificationImportance.HIGH,
-                        PushNotificationImportance.MEDIUM -> LocationPerformanceType.HIGH
+                        PushNotificationImportance.MEDIUM -> LocationPerformanceType.HIGHER_FOCUS
                         PushNotificationImportance.NORMAL -> LocationPerformanceType.MEDIUM_HIGH
                         else -> LocationPerformanceType.MEDIUM_HIGH
                     }

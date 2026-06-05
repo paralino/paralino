@@ -42,6 +42,7 @@ class LocationUploadEventProcessingEngine(
                         LocationPerformanceType.BALANCED -> 40.seconds
                         LocationPerformanceType.MEDIUM_HIGH -> 10.seconds
                         LocationPerformanceType.HIGH,
+                        LocationPerformanceType.HIGHER_FOCUS,
                         LocationPerformanceType.VERY_HIGH,
                         LocationPerformanceType.MANUAL_BOOST -> 2.seconds
                     }

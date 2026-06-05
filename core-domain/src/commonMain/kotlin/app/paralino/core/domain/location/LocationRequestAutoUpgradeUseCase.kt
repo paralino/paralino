@@ -10,20 +10,14 @@ import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.location.LocationPerformanceManager
 import app.paralino.core.repo.user.IPushProviderManager
-import app.paralino.core.utils.extensions.nowUTC
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.seconds
-import kotlin.time.Instant
 
 interface ILocationRequestAutoUpgradeUseCase {
-    fun markAsUpgradeRequested()
     fun refreshNotificationsIfNeeded()
 }
 
 class NoOpLocationRequestAutoUpgradeUseCase : ILocationRequestAutoUpgradeUseCase {
-    override fun markAsUpgradeRequested() {}
     override fun refreshNotificationsIfNeeded() {}
 }
 
@@ -36,37 +30,27 @@ class LocationRequestAutoUpgradeUseCase(
 ) : LimitedExecution(), ILocationRequestAutoUpgradeUseCase {
 
     private val executionKey = "location_request_auto_upgrade"
-    private val lastUpgradeRequest = MutableStateFlow<Instant?>(null)
-
-    override fun markAsUpgradeRequested() {
-        lastUpgradeRequest.update { nowUTC() }
-    }
 
     override fun refreshNotificationsIfNeeded() {
         val performance = locationPerformanceManager.locationPerformanceType.value.current
         val isHigherPerformance = when (performance) {
-            LocationPerformanceType.HIGH,
+            LocationPerformanceType.HIGHER_FOCUS,
             LocationPerformanceType.VERY_HIGH -> true
 
             else -> false
         }
         val isInBackground =
             deviceApiProvider.appLifecycleState.value.current == AppLifecycleType.BACKGROUND
-        val hasUpcomingReset = locationPerformanceManager.isPerformanceResetScheduledIn(5.seconds)
+        val hasUpcomingReset = locationPerformanceManager.isPerformanceResetScheduledIn(10.seconds)
         val acceptsRealtime = locationSharingManager.allContractsFlow.value.data
             ?.any { it.isRealtimeUpdatesOn != false }
             ?: true
-        val wasUpgradeRequested = lastUpgradeRequest.value?.let {
-            val diff = nowUTC() - it
-            diff in 30.seconds..60.seconds
-        } ?: false
 
         if (
             !isHigherPerformance ||
             !isInBackground ||
             !hasUpcomingReset ||
             !acceptsRealtime ||
-            !wasUpgradeRequested ||
             isProcessing(executionKey)
         ) {
             return
@@ -76,7 +60,7 @@ class LocationRequestAutoUpgradeUseCase(
             try {
                 startProcessing(
                     key = executionKey,
-                    delayedThresholdMillis = 30.seconds.inWholeMilliseconds
+                    delayedThresholdMillis = 20.seconds.inWholeMilliseconds
                 )
             } catch (_: Exception) {
                 return@launch
@@ -84,7 +68,7 @@ class LocationRequestAutoUpgradeUseCase(
 
             try {
                 logg.tag(executionKey)
-                    .v("Triggering manual push sync for background auto-upgrade")
+                    .i("Triggering manual push sync for background auto-upgrade")
                 pushProviderManager.syncPushNotifications()
             } catch (e: Exception) {
                 logg.tag(executionKey).w("Error while syncing push notifications", e)

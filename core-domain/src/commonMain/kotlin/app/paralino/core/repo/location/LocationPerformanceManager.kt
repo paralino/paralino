@@ -335,7 +335,7 @@ class LocationPerformanceManager constructor(
                 if (didConsumedVeryHighPerformanceAllowance) {
                     // user consumed very high performance allowance, check with HIGH
                     adjustPerformanceType(
-                        type = LocationPerformanceType.HIGH,
+                        type = LocationPerformanceType.HIGHER_FOCUS,
                         currentMediumBoostDuration = currentMediumBoostDuration,
                         currentHighBoostDuration = currentHighBoostDuration,
                         currentVeryHighBoostDuration = currentVeryHighBoostDuration,
@@ -347,7 +347,8 @@ class LocationPerformanceManager constructor(
                 }
             }
 
-            LocationPerformanceType.HIGH -> {
+            LocationPerformanceType.HIGH,
+            LocationPerformanceType.HIGHER_FOCUS -> {
                 if (batteryVeryLow) {
                     LocationPerformanceType.BATTERY_SAVER
                 } else if (shouldUseLowPowerMode) {
@@ -368,7 +369,7 @@ class LocationPerformanceManager constructor(
                         LocationPerformanceType.MEDIUM_HIGH
                     }
                 } else {
-                    LocationPerformanceType.HIGH
+                    type
                 }
             }
 
