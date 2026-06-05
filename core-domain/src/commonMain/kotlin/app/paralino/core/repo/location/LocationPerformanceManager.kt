@@ -189,7 +189,7 @@ class LocationPerformanceManager constructor(
             val isManualBoostExpired = appPrefs.trackingBoostEndTime?.let { it < nowUTC() } ?: true
             if (_locationPerformanceType.value.current < LocationPerformanceType.MANUAL_BOOST) {
                 logg.tag("location_performance")
-                    .v("Reset location performance from ${_locationPerformanceType.value.current} to $type")
+                    .d("Reset location performance from ${_locationPerformanceType.value.current} to $type")
                 setPerformance(type = type, allowDowngrade = true)
                 performanceResetScheduleTime = null
 

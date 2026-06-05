@@ -61,7 +61,7 @@ class LocationUploadEngine constructor(
 
     fun registerNewLocation(data: LocationDataModel) {
         val sharingActive = locationSharingManager.isSharingActiveMaybe()
-        logg.d("location_service", "Register new location (active: $sharingActive)")
+        logg.d("location_service", "Register new location (sharing active: $sharingActive - ${locationPerformanceManager.locationPerformanceType.value.current})")
 
         if (!sharingActive) {
             throw NoValidContractsException()

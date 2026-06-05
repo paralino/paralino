@@ -37,7 +37,7 @@ class LocationRequestNotificationProcessor(
         val payload = push.content?.tryParseFromJson<LocationRequestNotificationPayload>()
 
         if (payload == null) {
-            logg.w("Location request payload is NULL")
+            logg.tag("location_performance").w("Location request payload is NULL")
             return null
         }
 
@@ -62,7 +62,7 @@ class LocationRequestNotificationProcessor(
                     stopProcessing(key = key)
                 }
             } catch (e: Exception) {
-                logg.w("Location $key already in progress: ${e.message}")
+                logg.tag("location_performance").w("Location $key already in progress: ${e.message}")
             }
         }
 
@@ -73,7 +73,7 @@ class LocationRequestNotificationProcessor(
         groupId: GroupOrSpaceId,
         performanceType: LocationPerformanceType
     ) {
-        logg.v("Update location status and performance for group $groupId")
+        logg.tag("location_performance").i("Location request: update status and performance to $performanceType for group $groupId")
         if (!sharingManager.isSharingActiveForGroup(id = groupId)) {
             if (performanceType == LocationPerformanceType.VERY_HIGH) {
                 // update not sharing status if someone manually requested device location
@@ -100,7 +100,7 @@ class LocationRequestNotificationProcessor(
         try {
             deviceStatusProcessor.pushDeviceStatus(groupId = groupId)
         } catch (e: Exception) {
-            logg.w("Error saving location status", e)
+            logg.tag("location_performance").w("Error saving location status", e)
         }
     }
 

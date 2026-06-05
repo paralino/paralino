@@ -28,7 +28,7 @@ public final class LocationLiveHandoffCoordinator {
     private static func recordLSEHandoffPing() {
         let now = Date().timeIntervalSince1970
         AppPrefs.companion.instance.iOSLastLSEHandoffPingTime = now
-        Logr.i(
+        Logr.d(
             tag: "location_service",
             message: "Recorded LSE handoff ping: \(now)"
         )
@@ -38,7 +38,7 @@ public final class LocationLiveHandoffCoordinator {
         let pingTime = AppPrefs.companion.instance.iOSLastLSEHandoffPingTime
         let now = Date().timeIntervalSince1970
         let age = now - pingTime
-        Logr.i(
+        Logr.d(
             tag: "location_service",
             message: "Checking LSE handoff ping: age is \(age) seconds"
         )
@@ -47,7 +47,7 @@ public final class LocationLiveHandoffCoordinator {
     
     public func clearHandoffPing() {
         AppPrefs.companion.instance.iOSLastLSEHandoffPingTime = 0
-        Logr.i(
+        Logr.d(
             tag: "location_service",
             message: "Cleared LSE handoff ping"
         )
