@@ -17,7 +17,6 @@ kotlin {
         androidResources.enable = true
     }
 
-    iosX64()
     iosArm64()
     iosSimulatorArm64()
 

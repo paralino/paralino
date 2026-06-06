@@ -17,7 +17,6 @@ kotlin {
         compilerOptions.optIn.add("kotlin.RequiresOptIn")
     }
 
-    iosX64()
     iosArm64()
     iosSimulatorArm64()
 
