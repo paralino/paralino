@@ -44,7 +44,6 @@ kotlin {
 
         androidMain.dependencies {
             implementation(libs.appcompat)
-            implementation(libs.androidx.core.ktx)
             implementation(libs.kotlinx.coroutines.android)
             implementation(libs.androidx.preference.ktx)
             implementation(libs.androidx.security.crypto.ktx)

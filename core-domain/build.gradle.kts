@@ -50,7 +50,6 @@ kotlin {
 
         androidMain.dependencies {
             implementation(libs.appcompat)
-            implementation(libs.androidx.core.ktx)
             implementation(libs.kotlinx.coroutines.android)
             implementation(libs.network.ktor.client.okhttp)
         }

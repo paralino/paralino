@@ -71,7 +71,6 @@ kotlin {
             api(libs.lifecycle.viewmodel.ktx)
             api(libs.activity.compose)
             api(libs.appcompat)
-            api(libs.androidx.core.ktx)
             api(libs.kotlinx.coroutines.android)
         }
     }
