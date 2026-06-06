@@ -1,6 +1,6 @@
 [versions]
-androidGradlePlugin = "9.1.0"
-kotlin = "2.3.10"
+androidGradlePlugin = "9.2.1"
+kotlin = "2.3.20"
 coreKtx = "1.18.0"
 composeBom = "2026.03.00"
 composeMultiplatform = "1.10.2"
