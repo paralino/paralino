@@ -44,6 +44,9 @@ struct PersonalSpaceScreen: View {
                     openPlaces: {
                         path.append(.home(.places(groupId: UserGroup.companion.groupPersonalDevicesId, isOnboarding: false)))
                     },
+                    openPlace: { item in
+                        path.append(.home(.placeDetail(groupId: GroupOrSpaceIdHelper.shared.unwrap(id: item.groupOrSpaceId)!, placeId: item.itemId)))
+                    },
                     openSharing: {
                         path.append(.home(.sharingStart(groupId: UserGroup.companion.groupPersonalDevicesId, isOnboarding: false)))
                     },
