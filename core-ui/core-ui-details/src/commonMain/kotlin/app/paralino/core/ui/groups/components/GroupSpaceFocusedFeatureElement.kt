@@ -8,13 +8,16 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -30,6 +33,7 @@ import app.paralino.core.presentation.groups.detail.GroupSpaceFocusedFeatureChil
 import app.paralino.core.resources.CoreAppIcons
 import app.paralino.core.resources.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.DataInfoChip
+import app.paralino.core.ui.components.ImageModelImage
 import app.paralino.core.ui.components.PlanLimitCount
 import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.utils.extensions.annotatedBoldCompose
@@ -172,14 +176,46 @@ fun GroupSpaceFocusedFeatureElement(
                 ) {
                     this.items(items, key = { it.itemId }) { item ->
                         DataInfoChip(
-                            modifier = Modifier,
+                            modifier = modifier,
+                            innerPaddingValues = PaddingValues(
+                                start = 4.dp,
+                                end = 6.dp,
+                                top = 4.dp,
+                                bottom = 4.dp
+                            ),
                             backgroundColor = AppColors.accent.copy(alpha = 0.3f),
-                            contentColor = MaterialTheme.colors.onSurface,
                             shape = RoundedCornerShape(100),
-                            imageShape = CircleShape,
-                            image = item.image,
-                            text = item.name,
-                            hasEndArrow = true,
+                            imageOrIcon = {
+                                ImageModelImage(
+                                    imageModel = item.image,
+                                    modifier = Modifier
+                                        .size(22.dp)
+                                        .border(
+                                            width = 0.5.dp,
+                                            color = MaterialTheme.colors.secondary.copy(alpha = ContentAlpha.disabled),
+                                            shape = CircleShape
+                                        ),
+                                    clipShape = CircleShape
+                                )
+                                Spacer(modifier = Modifier.size(4.dp))
+                            },
+                            text = {
+                                Text(
+                                    text = item.name,
+                                    style = MaterialTheme.typography.body2,
+                                    color = MaterialTheme.colors.onSurface
+                                )
+                            },
+                            endSection = {
+                                Icon(
+                                    modifier = Modifier
+                                        .padding(start = 3.dp)
+                                        .width(18.dp),
+                                    painter = CoreAppIcons.ChevronRight.asPainterResource(),
+                                    tint = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.disabled),
+                                    contentDescription = null
+                                )
+                            },
                             onClick = { onChildItemClick(item) }
                         )
                     }
