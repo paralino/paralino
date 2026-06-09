@@ -1,8 +1,10 @@
 package app.paralino.core.ui.privacyzones
 
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -15,8 +17,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.ContentAlpha
+import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
@@ -24,9 +30,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import app.paralino.core.MR
@@ -54,7 +64,6 @@ import app.paralino.core.ui.components.PremiumPlanBannerSmall
 import app.paralino.core.ui.components.SmallActionButton
 import app.paralino.core.ui.components.dialogs.Show
 import app.paralino.core.ui.places.PlaceListItem
-import app.paralino.core.ui.places.PlacesEmptyState
 import app.paralino.core.ui.theme.ButtonStyle
 import app.paralino.core.utils.extensions.conditional
 import dev.icerock.moko.resources.compose.stringResource
@@ -80,7 +89,8 @@ fun PrivacyZonesScreenCore(
             when (event) {
                 PrivacyZonesScreenEvent.AddPrivacyZone -> addNewPrivacyZone()
                 is PrivacyZonesScreenEvent.OpenPaywall -> openPaywall()
-                null -> { /* do nothing */ }
+                null -> { /* do nothing */
+                }
             }
         }
     }
@@ -188,22 +198,25 @@ private fun PrivacyZonesScreen(
     ) {
         if (state.zones.isEmpty()) {
             PrivacyZonesEmptyState(
-                modifier = Modifier.padding(it),
+                modifier = Modifier
+                    .verticalScroll(rememberScrollState())
+                    .padding(it),
             )
         } else {
+            var isIntroVisible by remember { mutableStateOf(false) }
+            val listState = rememberLazyListState()
             LazyColumn(
                 modifier = Modifier.fillMaxSize().padding(it),
+                state = listState,
                 contentPadding = PaddingValues(
                     top = contentPadding.calculateTopPadding() + 20.dp,
-                    bottom = contentPadding.calculateBottomPadding() + 40.dp,
-                    start = 20.dp,
-                    end = 20.dp
+                    bottom = contentPadding.calculateBottomPadding() + 40.dp
                 ),
                 userScrollEnabled = userScrollEnabled
             ) {
                 this.item(key = "main_header") {
                     DataInfoChip(
-                        modifier = Modifier,
+                        modifier = Modifier.padding(horizontal = 20.dp),
                         image = state.groupImage,
                         text = state.groupName,
                         backgroundColor = MaterialTheme.colors.surface
@@ -213,7 +226,10 @@ private fun PrivacyZonesScreen(
                 if (state.isOverLimit) {
                     this.item(key = "over_limit_notice") {
                         NoticeInfoChip(
-                            modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+                            modifier = Modifier
+                                .padding(horizontal = 20.dp)
+                                .fillMaxWidth()
+                                .padding(top = 8.dp),
                             text = stringResource(MR.strings.plan_limit_overLimit_privacy_zones_banner_title),
                             icon = CoreAppIcons.Warning.asPainterResource(),
                             backgroundColor = MaterialTheme.colors.error,
@@ -226,6 +242,7 @@ private fun PrivacyZonesScreen(
                 this.item(key = "map") {
                     Surface(
                         modifier = Modifier
+                            .padding(horizontal = 20.dp)
                             .zIndex(10f)
                             .fillMaxWidth()
                             .height(200.dp)
@@ -251,7 +268,9 @@ private fun PrivacyZonesScreen(
                 if (state.shouldShowPlanBanner) {
                     this.item(key = "plan_upgrade_banner") {
                         PremiumPlanBannerSmall(
-                            modifier = Modifier.zIndex(5f),
+                            modifier = Modifier
+                                .zIndex(5f)
+                                .padding(horizontal = 20.dp),
                             description = stringResource(MR.strings.plans_banner_inline_privacy_zones),
                             onClick = onPlanBannerClick
                         )
@@ -264,6 +283,7 @@ private fun PrivacyZonesScreen(
                         modifier = Modifier
                             .zIndex(0f)
                             .fillParentMaxWidth()
+                            .padding(horizontal = 20.dp)
                             .background(MaterialTheme.colors.background)
                             .padding(vertical = 8.dp),
                         verticalAlignment = Alignment.CenterVertically
@@ -305,11 +325,52 @@ private fun PrivacyZonesScreen(
                         Spacer(modifier = Modifier.size(8.dp))
                     }
                     PlaceListItem(
-                        modifier = Modifier.animateItem(),
+                        modifier = Modifier
+                            .padding(horizontal = 20.dp)
+                            .animateItem(),
                         state = item,
                         hasEndArrow = true,
                         onClick = { onZoneClick(item) },
                     )
+                }
+
+                this.item(key = "intro_toggle") {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 20.dp)
+                            .padding(top = 20.dp)
+                            .clickable { isIntroVisible = !isIntroVisible }
+                            .padding(8.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Text(
+                            text = "How it works",
+                            style = MaterialTheme.typography.caption
+                        )
+                        Icon(
+                            modifier = Modifier
+                                .size(26.dp)
+                                .padding(4.dp)
+                                .rotate(
+                                    animateFloatAsState(
+                                        if (isIntroVisible) -90f else 90f
+                                    ).value
+                                ),
+                            painter = CoreAppIcons.ChevronRight.asPainterResource(),
+                            contentDescription = null
+                        )
+                    }
+                }
+
+                if (isIntroVisible) {
+                    this.item(key = "intro") {
+                        PrivacyZonesEmptyState(
+                            modifier = Modifier
+                                .animateItem()
+                        )
+                    }
                 }
             }
         }
