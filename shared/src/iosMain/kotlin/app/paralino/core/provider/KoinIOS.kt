@@ -73,6 +73,7 @@ import app.paralino.core.presentation.places.create.CreatePlaceViewModel
 import app.paralino.core.presentation.places.detail.PlaceDetailViewModel
 import app.paralino.core.presentation.places.detail.PlaceSensitivityViewModel
 import app.paralino.core.presentation.places.list.PlacesViewModel
+import app.paralino.core.presentation.privacyzones.create.CreatePrivacyZoneViewModel
 import app.paralino.core.presentation.privacyzones.detail.PrivacyZoneDetailViewModel
 import app.paralino.core.presentation.privacyzones.list.PrivacyZonesViewModel
 import app.paralino.core.presentation.rawdata.RawDataPresentationViewModel
@@ -326,6 +327,22 @@ object KoinIOS {
                     valueFormatter = get(),
                     placeAddressSearch = get(),
                     cachedLocation = get()
+                )
+            }
+            factory { (groupID: String, zoneId: String?, lat: Double?, lng: Double?) ->
+                CreatePrivacyZoneViewModel(
+                    groupId = groupID,
+                    zoneId = zoneId,
+                    lat = lat,
+                    lng = lng,
+                    createPrivacyZoneUseCase = get(),
+                    updatePrivacyZoneUseCase = get(),
+                    privacyZonesLocalDataSource = get(),
+                    premiumStatusManager = get(),
+                    refreshEverythingUseCase = get(),
+                    valueFormatter = get(),
+                    placeAddressSearch = get(),
+                    cachedLocation = get(),
                 )
             }
             factory { (rawDataType: RawPresentationDataType) ->

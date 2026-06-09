@@ -70,7 +70,7 @@ import androidx.compose.ui.unit.sp
 import app.paralino.core.MR
 import app.paralino.core.models.Payload
 import app.paralino.core.models.data
-import app.paralino.core.presentation.places.create.CreatePlaceAddressSearchUiMode
+import app.paralino.core.presentation.places.create.PlaceAddressSearchUiMode
 import app.paralino.core.presentation.places.create.CreatePlaceScreenEvent
 import app.paralino.core.presentation.places.create.CreatePlaceScreenState
 import app.paralino.core.presentation.places.create.CreatePlaceScreenStep
@@ -176,7 +176,7 @@ fun CreatePlaceScreenCore(
                     AnimatedVisibility (
                         !screenDimensionType.isSmall ||
                         finalState.data.screenStep == CreatePlaceScreenStep.NAME_SUGGESTION ||
-                        finalState.data.addressUiMode == CreatePlaceAddressSearchUiMode.HIDDEN
+                        finalState.data.addressUiMode == PlaceAddressSearchUiMode.HIDDEN
                     ) {
                         ScaffoldBottomBarButton(
                             buttonState = AppButtonState.loadingStateWithCheck(finalState.data.actionLoading),
@@ -392,7 +392,7 @@ private fun CreatePlaceMapStep(
             .fillMaxSize()
     ) {
         AnimatedVisibility(
-            visible = state.addressUiMode == CreatePlaceAddressSearchUiMode.HIDDEN && !isSmallScreen
+            visible = state.addressUiMode == PlaceAddressSearchUiMode.HIDDEN && !isSmallScreen
         ) {
             Row(
                 modifier = Modifier
@@ -471,7 +471,7 @@ private fun CreatePlaceMapStep(
                 val sliderSize = remember {
                     EmbeddedSliderSize(minStepWidth = 120.dp)
                 }
-                AnimatedVisibility(visible = state.addressUiMode == CreatePlaceAddressSearchUiMode.HIDDEN) {
+                AnimatedVisibility(visible = state.addressUiMode == PlaceAddressSearchUiMode.HIDDEN) {
                     EmbeddedSlider(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -522,7 +522,7 @@ private fun CreatePlaceMapStep(
             PlaceAddressSearchComponent(
                 modifier = Modifier
                     .fillMaxSize()
-                    .conditional(state.addressUiMode == CreatePlaceAddressSearchUiMode.FULLY_EXPANDED) {
+                    .conditional(state.addressUiMode == PlaceAddressSearchUiMode.FULLY_EXPANDED) {
                         clickable(
                             interactionSource = remember { MutableInteractionSource() },
                             indication = null
@@ -567,7 +567,7 @@ private fun PlaceAddressSearchComponent(
     modifier: Modifier,
     focusManager: FocusManager,
     focusRequester: FocusRequester,
-    uiMode: CreatePlaceAddressSearchUiMode,
+    uiMode: PlaceAddressSearchUiMode,
     isLoading: Boolean,
     address: TextFieldValue,
     suggestions: List<PlaceAddressSuggestion>,
@@ -577,7 +577,7 @@ private fun PlaceAddressSearchComponent(
         modifier = modifier
             .background(
                 color = animateColorAsState(
-                    if (uiMode == CreatePlaceAddressSearchUiMode.FULLY_EXPANDED) {
+                    if (uiMode == PlaceAddressSearchUiMode.FULLY_EXPANDED) {
                         MaterialTheme.colors.background
                     } else {
                         Color.Transparent
@@ -594,7 +594,7 @@ private fun PlaceAddressSearchComponent(
                     .fillMaxWidth()
                     .background(
                         color = animateColorAsState(
-                            if (uiMode != CreatePlaceAddressSearchUiMode.HIDDEN) {
+                            if (uiMode != PlaceAddressSearchUiMode.HIDDEN) {
                                 MaterialTheme.colors.background
                             } else {
                                 Color.Transparent
@@ -607,7 +607,7 @@ private fun PlaceAddressSearchComponent(
             ) {
                 AnimatedVisibility(
                     modifier = Modifier.weight(1f),
-                    visible = uiMode != CreatePlaceAddressSearchUiMode.HIDDEN
+                    visible = uiMode != PlaceAddressSearchUiMode.HIDDEN
                 ) {
                     MainInputBasicField(
                         modifier = Modifier
@@ -654,7 +654,7 @@ private fun PlaceAddressSearchComponent(
                     )
                 }
 
-                val buttonColor = if (uiMode == CreatePlaceAddressSearchUiMode.HIDDEN) {
+                val buttonColor = if (uiMode == PlaceAddressSearchUiMode.HIDDEN) {
                     MaterialTheme.colors.background
                 } else {
                     MaterialTheme.colors.surface
@@ -663,13 +663,13 @@ private fun PlaceAddressSearchComponent(
                 Box(
                     modifier = Modifier
                         .padding(
-                            top = animateDpAsState(if (uiMode == CreatePlaceAddressSearchUiMode.HIDDEN) 8.dp else 4.dp).value,
+                            top = animateDpAsState(if (uiMode == PlaceAddressSearchUiMode.HIDDEN) 8.dp else 4.dp).value,
                             bottom = 8.dp,
-                            end = animateDpAsState(if (uiMode == CreatePlaceAddressSearchUiMode.HIDDEN) 8.dp else 4.dp).value
+                            end = animateDpAsState(if (uiMode == PlaceAddressSearchUiMode.HIDDEN) 8.dp else 4.dp).value
                         )
                         .size(48.dp)
                         .clickable { onEvent(CreatePlaceScreenUiEvent.ToggleSearchFieldFocus) }
-                        .conditional(uiMode == CreatePlaceAddressSearchUiMode.HIDDEN) {
+                        .conditional(uiMode == PlaceAddressSearchUiMode.HIDDEN) {
                             dropShadow(
                                 shape = buttonShape,
                                 shadow = Shadow(
@@ -704,7 +704,7 @@ private fun PlaceAddressSearchComponent(
                     ) {
                         Icon(
                             modifier = Modifier,
-                            painter = if (uiMode == CreatePlaceAddressSearchUiMode.HIDDEN) {
+                            painter = if (uiMode == PlaceAddressSearchUiMode.HIDDEN) {
                                 CoreAppIcons.Search.asPainterResource()
                             } else {
                                 CoreAppIcons.Close.asPainterResource()
@@ -716,7 +716,7 @@ private fun PlaceAddressSearchComponent(
                 }
             }
 
-            AnimatedVisibility(uiMode == CreatePlaceAddressSearchUiMode.FULLY_EXPANDED) {
+            AnimatedVisibility(uiMode == PlaceAddressSearchUiMode.FULLY_EXPANDED) {
                 LazyColumn(
                     modifier = Modifier.fillMaxSize()
                 ) {

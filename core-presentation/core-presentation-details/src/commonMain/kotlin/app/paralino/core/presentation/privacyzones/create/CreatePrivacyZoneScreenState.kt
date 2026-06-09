@@ -1,0 +1,189 @@
+package app.paralino.core.presentation.privacyzones.create
+
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.input.TextFieldValue
+import app.paralino.core.MR
+import app.paralino.core.models.base.DeviceType
+import app.paralino.core.models.base.GroupOrSpaceId
+import app.paralino.core.models.base.ImageModel
+import app.paralino.core.models.location.LatLng
+import app.paralino.core.models.settings.MapsSDKProvider
+import app.paralino.core.presentation.SuggestionSectionChipData
+import app.paralino.core.presentation.common.AlertDialogAction
+import app.paralino.core.presentation.common.MainAlertDialog
+import app.paralino.core.presentation.common.ScreenDimensionType
+import app.paralino.core.presentation.map.MapMarkerStyle
+import app.paralino.core.presentation.map.MapPinData
+import app.paralino.core.presentation.map.MapPinType
+import app.paralino.core.presentation.places.create.PlaceAddressSearchUiMode
+import app.paralino.core.presentation.places.create.PlaceAddressSuggestion
+import app.paralino.core.presentation.places.create.PlaceMapFallbackLatLng
+import app.paralino.core.presentation.share.ApproximateLocationDistancePair
+import app.paralino.core.provider.current
+import app.paralino.core.provider.localizedString
+import app.paralino.core.utils.Emojis
+import app.paralino.core.utils.extensions.annotatedBold
+
+data class CreatePrivacyZoneScreenState constructor(
+    val groupId: GroupOrSpaceId,
+    val isNewZone: Boolean,
+    val screenStep: CreatePrivacyZoneScreenStep,
+    val name: String,
+    val image: ImageModel,
+    val nameSuggestions: List<SuggestionSectionChipData>,
+    val address: TextFieldValue,
+    val addressUiMode: PlaceAddressSearchUiMode,
+    val addressSuggestions: List<PlaceAddressSuggestion>,
+    val isAddressLoading: Boolean,
+    val fallbackCenterLatLng: PlaceMapFallbackLatLng?,
+    val lat: Double?,
+    val lng: Double?,
+    val radiusPresets: List<ApproximateLocationDistancePair>,
+    val radiusValue: ApproximateLocationDistancePair,
+    val radiusText: String,
+    val hasNameError: Boolean,
+    val isSatelliteModeEnabled: Boolean,
+    val actionLoading: Boolean,
+    val fullLoading: Boolean,
+    val androidMapSDKProvider: MapsSDKProvider?,
+    val alertDialog: MainAlertDialog?
+) {
+    val deviceType: DeviceType = DeviceType.current
+    val hasSatelliteMode: Boolean = when (deviceType) {
+        DeviceType.Android -> androidMapSDKProvider?.hasSatelliteMaps != false
+        DeviceType.iOS -> true
+    }
+    val isSatelliteModeActive: Boolean = if (hasSatelliteMode) isSatelliteModeEnabled else false
+
+    val hintText: AnnotatedString = when (addressUiMode) {
+        PlaceAddressSearchUiMode.HIDDEN -> {
+            when (DeviceType.current) {
+                DeviceType.Android -> {
+                    MR.strings.privacy_zones_create_location_hint_longpress
+                        .localizedString()
+                        .annotatedBold()
+                }
+
+                DeviceType.iOS -> {
+                    MR.strings.privacy_zones_create_location_hint_tap
+                        .localizedString()
+                        .annotatedBold()
+                }
+            }
+        }
+
+        PlaceAddressSearchUiMode.SEARCH_EXPANDED -> {
+            MR.strings.privacy_zones_create_location_hint_searchTap
+                .localizedString()
+                .annotatedBold()
+        }
+
+        PlaceAddressSearchUiMode.FULLY_EXPANDED -> {
+            MR.strings.privacy_zones_create_location_hint_searchOnly
+                .localizedString()
+                .annotatedBold()
+        }
+    }
+
+    val radiusIndex: Int
+        get() {
+            return radiusPresets.indexOfFirst { it.meters == radiusValue.meters }
+                .takeIf { it >= 0 }
+                ?: radiusPresets.indexOfFirst { radiusValue.meters < it.meters }
+                    .takeIf { it >= 0 }
+                ?: radiusPresets.lastIndex
+        }
+
+    companion object {
+
+        fun empty(
+            groupId: GroupOrSpaceId,
+            lat: Double? = null,
+            lng: Double? = null,
+            radiusValue: ApproximateLocationDistancePair,
+            radiusText: String,
+            androidMapSDKProvider: MapsSDKProvider?,
+            fallbackCenterLatLng: PlaceMapFallbackLatLng?,
+            nameSuggestions: List<SuggestionSectionChipData>
+        ): CreatePrivacyZoneScreenState {
+            return CreatePrivacyZoneScreenState(
+                groupId = groupId,
+                isNewZone = true,
+                screenStep = CreatePrivacyZoneScreenStep.NAME_SUGGESTION,
+                name = "",
+                image = ImageModel.emoji(Emojis.circles.random()),
+                nameSuggestions = nameSuggestions,
+                address = TextFieldValue(text = ""),
+                addressUiMode = if (lat == null || lng == null) {
+                    PlaceAddressSearchUiMode.SEARCH_EXPANDED
+                } else {
+                    PlaceAddressSearchUiMode.HIDDEN
+                },
+                addressSuggestions = emptyList(),
+                isAddressLoading = false,
+                fallbackCenterLatLng = fallbackCenterLatLng,
+                lat = lat,
+                lng = lng,
+                radiusPresets = ApproximateLocationDistancePair.pairs,
+                radiusValue = radiusValue,
+                radiusText = radiusText,
+                hasNameError = false,
+                actionLoading = false,
+                fullLoading = false,
+                alertDialog = null,
+                androidMapSDKProvider = androidMapSDKProvider,
+                isSatelliteModeEnabled = false
+            )
+        }
+    }
+}
+
+enum class CreatePrivacyZoneScreenStep {
+    NAME_SUGGESTION, FULL
+}
+
+sealed class CreatePrivacyZoneScreenEvent() {
+    data object MissingInfo : CreatePrivacyZoneScreenEvent()
+    data object RequestKeyboardFocusOnAddressInput : CreatePrivacyZoneScreenEvent()
+    data object MissingLocation : CreatePrivacyZoneScreenEvent()
+    data object ZoneUpdated : CreatePrivacyZoneScreenEvent()
+}
+
+sealed interface CreatePrivacyZoneScreenUiEvent {
+    data object CreatePrivacyZone : CreatePrivacyZoneScreenUiEvent
+    data class OnUiReady(val size: ScreenDimensionType) : CreatePrivacyZoneScreenUiEvent
+    data class OnMapPositionChanged(val position: LatLng) : CreatePrivacyZoneScreenUiEvent
+    data class OnNameChanged(val name: String) : CreatePrivacyZoneScreenUiEvent
+    data class OnRadiusChanged(val index: Int) : CreatePrivacyZoneScreenUiEvent
+    data class OnImageChanged(val image: ImageModel) : CreatePrivacyZoneScreenUiEvent
+    data class OnAddressChanged(val address: TextFieldValue) : CreatePrivacyZoneScreenUiEvent
+    data class OnNameSuggestionSelected(val suggestion: SuggestionSectionChipData) : CreatePrivacyZoneScreenUiEvent
+    data class OnAddressSuggestionSelected(val suggestion: PlaceAddressSuggestion) : CreatePrivacyZoneScreenUiEvent
+    data object OnMapModeSwitch : CreatePrivacyZoneScreenUiEvent
+
+    data class ChangeSearchFieldFocus(val isFocused: Boolean) : CreatePrivacyZoneScreenUiEvent
+    data object ToggleSearchFieldFocus : CreatePrivacyZoneScreenUiEvent
+    data class OnMapTap(val lat: Double, val lng: Double) : CreatePrivacyZoneScreenUiEvent
+    data class DialogAction(val action: AlertDialogAction) : CreatePrivacyZoneScreenUiEvent
+}
+
+fun CreatePrivacyZoneScreenState.makeMapPin(): MapPinData {
+    val state = this
+    return MapPinData(
+        groupOrSpaceId = state.groupId,
+        markerId = "privacy_zone_marker",
+        pinType = MapPinType.PLACE,
+        markerStyle = MapMarkerStyle.CIRCLE,
+        focused = false,
+        active = true,
+        obsolete = false,
+        hidden = false,
+        title = state.name,
+        image = state.image,
+        lat = state.lat ?: 0.0,
+        lng = state.lng ?: 0.0,
+        accuracy = state.radiusValue.meters.toFloat(),
+        isApproximate = false,
+        shouldShowApproximateCircle = true
+    )
+}

@@ -138,7 +138,7 @@ class CreatePlaceViewModel(
                             image = place.data.data?.image ?: ImageModel.emoji(Emojis.lock),
                             nameSuggestions = emptyList(),
                             address = TextFieldValue(text = ""),
-                            addressUiMode = CreatePlaceAddressSearchUiMode.HIDDEN,
+                            addressUiMode = PlaceAddressSearchUiMode.HIDDEN,
                             addressSuggestions = emptyList(),
                             isAddressLoading = false,
                             hasNameError = false,
@@ -219,12 +219,12 @@ class CreatePlaceViewModel(
                         it.copy(
                             addressUiMode = if (event.isFocused) {
                                 if (it.addressSuggestions.isEmpty()) {
-                                    CreatePlaceAddressSearchUiMode.SEARCH_EXPANDED
+                                    PlaceAddressSearchUiMode.SEARCH_EXPANDED
                                 } else {
-                                    CreatePlaceAddressSearchUiMode.FULLY_EXPANDED
+                                    PlaceAddressSearchUiMode.FULLY_EXPANDED
                                 }
                             } else {
-                                CreatePlaceAddressSearchUiMode.HIDDEN
+                                PlaceAddressSearchUiMode.HIDDEN
                             }
                         )
                     }
@@ -237,18 +237,18 @@ class CreatePlaceViewModel(
 
             CreatePlaceScreenUiEvent.ToggleSearchFieldFocus -> {
                 val shouldFocus =
-                    _uiState.value.data?.addressUiMode == CreatePlaceAddressSearchUiMode.HIDDEN
+                    _uiState.value.data?.addressUiMode == PlaceAddressSearchUiMode.HIDDEN
                 _uiState.update {
                     it.mapSuccess {
                         it.copy(
                             addressUiMode = if (shouldFocus) {
                                 if (it.addressSuggestions.isEmpty()) {
-                                    CreatePlaceAddressSearchUiMode.SEARCH_EXPANDED
+                                    PlaceAddressSearchUiMode.SEARCH_EXPANDED
                                 } else {
-                                    CreatePlaceAddressSearchUiMode.FULLY_EXPANDED
+                                    PlaceAddressSearchUiMode.FULLY_EXPANDED
                                 }
                             } else {
-                                CreatePlaceAddressSearchUiMode.HIDDEN
+                                PlaceAddressSearchUiMode.HIDDEN
                             },
                             isAddressLoading = false
                         )
@@ -474,7 +474,7 @@ class CreatePlaceViewModel(
                     lng = lng,
                     addressUiMode = if (it.lat == null || it.lng == null) {
                         // if previous state didn't have location, hide search proceed
-                        CreatePlaceAddressSearchUiMode.HIDDEN
+                        PlaceAddressSearchUiMode.HIDDEN
                     } else {
                         it.addressUiMode
                     }
@@ -514,7 +514,7 @@ class CreatePlaceViewModel(
                         it.addressSuggestions
                     },
                     addressUiMode = if (address.text.isBlank()) {
-                        CreatePlaceAddressSearchUiMode.SEARCH_EXPANDED
+                        PlaceAddressSearchUiMode.SEARCH_EXPANDED
                     } else {
                         it.addressUiMode
                     }
@@ -553,7 +553,7 @@ class CreatePlaceViewModel(
                     it.mapSuccess {
                         it.copy(
                             isAddressLoading = false,
-                            addressUiMode = CreatePlaceAddressSearchUiMode.FULLY_EXPANDED,
+                            addressUiMode = PlaceAddressSearchUiMode.FULLY_EXPANDED,
                             addressSuggestions = suggestions
                         )
                     }
@@ -580,7 +580,7 @@ class CreatePlaceViewModel(
             it.mapSuccess {
                 it.copy(
                     isAddressLoading = false,
-                    addressUiMode = CreatePlaceAddressSearchUiMode.HIDDEN,
+                    addressUiMode = PlaceAddressSearchUiMode.HIDDEN,
                     lat = suggestion.latLng.lat,
                     lng = suggestion.latLng.lng,
                 )

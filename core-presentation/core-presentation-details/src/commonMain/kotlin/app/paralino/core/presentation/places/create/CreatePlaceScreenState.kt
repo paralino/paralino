@@ -19,7 +19,6 @@ import app.paralino.core.provider.current
 import app.paralino.core.provider.localizedString
 import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.extensions.annotatedBold
-import kotlin.text.toFloat
 
 data class CreatePlaceScreenState constructor(
     val groupId: GroupOrSpaceId,
@@ -29,7 +28,7 @@ data class CreatePlaceScreenState constructor(
     val image: ImageModel,
     val nameSuggestions: List<SuggestionSectionChipData>,
     val address: TextFieldValue,
-    val addressUiMode: CreatePlaceAddressSearchUiMode,
+    val addressUiMode: PlaceAddressSearchUiMode,
     val addressSuggestions: List<PlaceAddressSuggestion>,
     val isAddressLoading: Boolean,
     val private: Boolean,
@@ -53,7 +52,7 @@ data class CreatePlaceScreenState constructor(
     val isSatelliteModeActive: Boolean = if (hasSatelliteMode) isSatelliteModeEnabled else false
 
     val hintText: AnnotatedString = when (addressUiMode) {
-        CreatePlaceAddressSearchUiMode.HIDDEN -> {
+        PlaceAddressSearchUiMode.HIDDEN -> {
             when (DeviceType.current) {
                 DeviceType.Android -> {
                     MR.strings.places_create_location_hint_longpress
@@ -69,13 +68,13 @@ data class CreatePlaceScreenState constructor(
             }
         }
 
-        CreatePlaceAddressSearchUiMode.SEARCH_EXPANDED -> {
+        PlaceAddressSearchUiMode.SEARCH_EXPANDED -> {
             MR.strings.places_create_location_hint_searchTap
                 .localizedString()
                 .annotatedBold()
         }
 
-        CreatePlaceAddressSearchUiMode.FULLY_EXPANDED -> {
+        PlaceAddressSearchUiMode.FULLY_EXPANDED -> {
             MR.strings.places_create_location_hint_searchOnly
                 .localizedString()
                 .annotatedBold()
@@ -116,9 +115,9 @@ data class CreatePlaceScreenState constructor(
                 nameSuggestions = nameSuggestions,
                 address = TextFieldValue(text = ""),
                 addressUiMode = if (lat == null || lng == null) {
-                    CreatePlaceAddressSearchUiMode.SEARCH_EXPANDED
+                    PlaceAddressSearchUiMode.SEARCH_EXPANDED
                 } else {
-                    CreatePlaceAddressSearchUiMode.HIDDEN
+                    PlaceAddressSearchUiMode.HIDDEN
                 },
                 addressSuggestions = emptyList(),
                 isAddressLoading = false,
@@ -143,7 +142,7 @@ enum class CreatePlaceScreenStep {
     NAME_SUGGESTION, FULL
 }
 
-enum class CreatePlaceAddressSearchUiMode {
+enum class PlaceAddressSearchUiMode {
     HIDDEN, SEARCH_EXPANDED, FULLY_EXPANDED
 }
 
