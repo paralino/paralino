@@ -591,28 +591,28 @@ class CreatePrivacyZoneViewModel(
         return buildList {
             add(
                 SuggestionSectionChipData(
-                    image = ImageModel.emoji(Emojis.robot),
+                    image = ImageModel.emoji(Emojis.alien),
                     name = MR.strings.privacy_zone_create_suggestion_area51.localizedString()
                 )
             )
 
             add(
                 SuggestionSectionChipData(
-                    image = ImageModel.emoji(Emojis.shoppingCart),
+                    image = ImageModel.emoji(Emojis.shoppingBags),
                     name = MR.strings.privacy_zone_create_suggestion_secret_shopping.localizedString()
                 )
             )
 
             add(
                 SuggestionSectionChipData(
-                    image = ImageModel.emoji(Emojis.artMasks),
+                    image = ImageModel.emoji(Emojis.scenery),
                     name = MR.strings.privacy_zone_create_suggestion_hidden_place.localizedString()
                 )
             )
 
             add(
                 SuggestionSectionChipData(
-                    image = ImageModel.emoji(Emojis.heart),
+                    image = ImageModel.emoji(Emojis.star),
                     name = MR.strings.privacy_zone_create_suggestion_just_for_me.localizedString()
                 )
             )

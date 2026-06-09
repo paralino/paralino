@@ -62,6 +62,7 @@ fun PlaceAddressSearchComponent(
     onAddressChange: (TextFieldValue) -> Unit,
     onAddressSuggestionSelected: (PlaceAddressSuggestion) -> Unit,
     onFocusToggle: () -> Unit,
+    addressHint: String? = null,
 ) {
     Box(
         modifier = modifier
@@ -106,7 +107,7 @@ fun PlaceAddressSearchComponent(
                             .height(height = 48.dp)
                             .focusRequester(focusRequester),
                         textValue = address,
-                        hint = stringResource(MR.strings.places_create_address_placeholder),
+                        hint = addressHint ?: stringResource(MR.strings.places_create_address_placeholder),
                         focusManager = focusManager,
                         hasError = false,
                         keyboardType = KeyboardType.Text,

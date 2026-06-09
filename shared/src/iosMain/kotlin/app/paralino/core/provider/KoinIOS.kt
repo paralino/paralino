@@ -443,6 +443,13 @@ object KoinIOS {
             lat: Double? = null,
             lng: Double? = null
         ) = get<CreatePlaceViewModel> { parametersOf(groupId, placeId, lat, lng) }
+
+        fun privacyZoneCreateVM(
+            groupId: String,
+            zoneId: String?,
+            lat: Double? = null,
+            lng: Double? = null
+        ) = get<CreatePrivacyZoneViewModel> { parametersOf(groupId, zoneId, lat, lng) }
         val appStatusDebugVM get() = get<AppStatusDebugViewModel>()
         val subscriptionVM get() = get<SubscriptionViewModel>()
         fun paywallVM(type: BillingScreenSourceType) = get<PaywallViewModel> { parametersOf(type) }

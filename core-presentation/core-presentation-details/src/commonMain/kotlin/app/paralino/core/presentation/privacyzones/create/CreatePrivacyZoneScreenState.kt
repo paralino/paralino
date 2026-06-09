@@ -111,7 +111,7 @@ data class CreatePrivacyZoneScreenState constructor(
                 isNewZone = true,
                 screenStep = CreatePrivacyZoneScreenStep.NAME_SUGGESTION,
                 name = "",
-                image = ImageModel.emoji(Emojis.circles.random()),
+                image = ImageModel.emoji(Emojis.blackDot),
                 nameSuggestions = nameSuggestions,
                 address = TextFieldValue(text = ""),
                 addressUiMode = if (lat == null || lng == null) {
