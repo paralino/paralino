@@ -34,6 +34,8 @@ import app.paralino.core.presentation.places.detail.PlaceDetailViewModel
 import app.paralino.core.presentation.places.list.PlacesListScreenState
 import app.paralino.core.presentation.places.list.PlacesViewModel
 import app.paralino.core.presentation.privacyzones.create.CreatePrivacyZoneViewModel
+import app.paralino.core.presentation.privacyzones.detail.PrivacyZoneDetailScreenState
+import app.paralino.core.presentation.privacyzones.detail.PrivacyZoneDetailViewModel
 import app.paralino.core.presentation.privacyzones.list.PrivacyZonesListScreenState
 import app.paralino.core.presentation.privacyzones.list.PrivacyZonesViewModel
 import app.paralino.core.presentation.settings.billing.PlanInfoViewModel
@@ -53,6 +55,7 @@ import app.paralino.core.ui.places.PlaceAlertsSettingsScreenCore
 import app.paralino.core.ui.places.PlaceDetailScreenCore
 import app.paralino.core.ui.places.PlacesScreenCore
 import app.paralino.core.ui.privacyzones.CreatePrivacyZoneScreenCore
+import app.paralino.core.ui.privacyzones.PrivacyZoneDetailScreenCore
 import app.paralino.core.ui.privacyzones.PrivacyZonesScreenCore
 import app.paralino.core.ui.share.SharingStartScreenCore
 import kotlinx.cinterop.ExperimentalForeignApi
@@ -448,6 +451,46 @@ object HomeScreens {
                         UIKitViewController(
                             modifier = Modifier.fillMaxSize(),
                             factory = mapUIView,
+                            properties = UIKitInteropProperties(
+                                interactionMode = UIKitInteropInteractionMode.NonCooperative,
+                                isNativeAccessibilityEnabled = true
+                            )
+                        )
+                    }
+                }
+            )
+        }
+    }
+
+    @OptIn(ExperimentalComposeUiApi::class)
+    fun PrivacyZoneDetailScreenVC(
+        vm: PrivacyZoneDetailViewModel,
+        paddingValues: AppleScreenPaddingValues,
+        openPrivacyZoneRawDataScreen: () -> Unit,
+        openPrivacyZoneEditScreen: () -> Unit,
+        onNavigateBack: () -> Unit,
+        mapUIView: (PrivacyZoneDetailScreenState) -> UIViewController,
+    ) = ComposeUIViewController {
+        RootScreenIOS {
+            var userScroll by remember {
+                mutableStateOf(true)
+            }
+
+            PrivacyZoneDetailScreenCore(
+                appState = it,
+                vm = vm,
+                userScrollEnabled = userScroll,
+                contentPadding = paddingValues.toComposePaddingValues(),
+                onNavigateBack = onNavigateBack,
+                openPrivacyZoneRawDataScreen = openPrivacyZoneRawDataScreen,
+                openPrivacyZoneEditScreen = openPrivacyZoneEditScreen,
+                mapContent = { state ->
+                    Box(
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        UIKitViewController(
+                            modifier = Modifier.fillMaxSize(),
+                            factory = { mapUIView(state) },
                             properties = UIKitInteropProperties(
                                 interactionMode = UIKitInteropInteractionMode.NonCooperative,
                                 isNativeAccessibilityEnabled = true

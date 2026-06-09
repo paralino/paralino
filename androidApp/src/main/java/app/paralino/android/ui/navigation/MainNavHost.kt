@@ -32,6 +32,7 @@ import app.paralino.android.ui.places.PlaceAlertsSettingsScreen
 import app.paralino.android.ui.places.PlaceDetailScreen
 import app.paralino.android.ui.places.PlacesScreen
 import app.paralino.android.ui.privacyzones.CreatePrivacyZoneScreen
+import app.paralino.android.ui.privacyzones.PrivacyZoneDetailScreen
 import app.paralino.android.ui.privacyzones.PrivacyZonesScreen
 import app.paralino.core.ui.components.DefaultEmptyState
 import app.paralino.android.ui.settings.AppSettingsScreen
@@ -160,7 +161,13 @@ fun NavGraphBuilder.homeGraph(
             )
         }
         composable(AppScreen.MainHome.PrivacyZoneDetail.routeSignature) {
-            DefaultEmptyState(content = stringResource(MR.strings.alert_comingSoon_message))
+            val groupId = it.arguments?.getString(AppScreen.MainHome.PrivacyZoneDetail.argumentGroupId)!!
+            val zoneId = it.arguments?.getString(AppScreen.MainHome.PrivacyZoneDetail.argumentZoneId)!!
+            PrivacyZoneDetailScreen(
+                appState = appState,
+                groupId = groupId,
+                zoneId = zoneId
+            )
         }
         composable(AppScreen.MainHome.PlaceDetail.routeSignature) {
             val groupId =
