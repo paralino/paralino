@@ -121,7 +121,7 @@ fun MapMarkerContent(
                         )
                         .padding(1.dp)
                         .align(Alignment.BottomEnd),
-                    painter = CoreAppIcons.ShieldLock.asPainterResource(),
+                    painter = CoreAppIcons.PrivacyZone.asPainterResource(),
                     tint = AppColors.accentDark,
                     contentDescription = null
                 )

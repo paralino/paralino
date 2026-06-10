@@ -159,7 +159,7 @@ private fun PrivacyZonesScreen(
                     icon = if (state.privacyZonesLimitReached) {
                         null
                     } else {
-                        CoreAppIcons.ShieldLock.asPainterResource()
+                        CoreAppIcons.PrivacyZone.asPainterResource()
                     },
                     onClick = {
                         if (state.privacyZonesLimitReached) {

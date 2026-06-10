@@ -164,7 +164,7 @@ fun GroupSpaceDetailsHeader(
                 GroupSpaceFocusedFeatureElement(
                     modifier = Modifier.clickable(onClick = onPrivacyZonesClick),
                     title = stringResource(MR.strings.privacy_zones_list_screen_title),
-                    icon = CoreAppIcons.ShieldLock.asPainterResource(),
+                    icon = CoreAppIcons.PrivacyZone.asPainterResource(),
                     items = featurePrivacyZones,
                     isActive = featurePrivacyZones.isNotEmpty(),
                     bottomExtraContent = null,

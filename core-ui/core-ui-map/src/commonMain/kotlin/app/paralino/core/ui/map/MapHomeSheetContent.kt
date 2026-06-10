@@ -370,7 +370,7 @@ private fun SheetTabs(
                 selected = readyState.mapSheetSelectedContentType == MapSheetSelectedContentType.PRIVACY_ZONES,
                 focused = readyState.mapHomeScreenFocusType.arePrivacyZonesFocused,
                 text = MR.strings.privacy_zones_list_screen_title.localizedString(),
-                icon = CoreAppIcons.ShieldLock.asPainterResource(),
+                icon = CoreAppIcons.PrivacyZone.asPainterResource(),
                 onClick = {
                     onEvent(MapHomeScreenUiEvent.OnFocusOnPrivacyZonesClick)
                 }
@@ -466,7 +466,7 @@ private fun LazyListScope.privacyZonesList(
         this.item {
             DefaultEmptyState(
                 content = stringResource(MR.strings.privacy_zones_empty_state_info),
-                icon = CoreAppIcons.ShieldLock.asPainterResource(),
+                icon = CoreAppIcons.PrivacyZone.asPainterResource(),
                 buttonText = stringResource(MR.strings.privacy_zones_create_button_create),
                 buttonIcon = CoreAppIcons.Add.asPainterResource()
             ) {

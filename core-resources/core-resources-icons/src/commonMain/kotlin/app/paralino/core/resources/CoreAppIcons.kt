@@ -78,6 +78,7 @@ import app.paralino.core.resources.icons.ic_phone_android
 import app.paralino.core.resources.icons.ic_phonelink_setup
 import app.paralino.core.resources.icons.ic_polyline
 import app.paralino.core.resources.icons.ic_privacy_tip
+import app.paralino.core.resources.icons.ic_privacy_zone
 import app.paralino.core.resources.icons.ic_question_mark_circle
 import app.paralino.core.resources.icons.ic_radio_button_unchecked
 import app.paralino.core.resources.icons.ic_refresh
@@ -214,6 +215,7 @@ object CoreAppIcons {
 
     val NotListedLocation get() = Res.drawable.ic_not_listed_location
     val NotListedLocationFilled get() = Res.drawable.ic_not_listed_location_filled
+    val PrivacyZone get() = Res.drawable.ic_privacy_zone
     val NotificationsOff get() = Res.drawable.ic_notifications_off
     val CircleWithDot get() = Res.drawable.ic_circle_with_dot
     val Groups get() = Res.drawable.ic_groups
