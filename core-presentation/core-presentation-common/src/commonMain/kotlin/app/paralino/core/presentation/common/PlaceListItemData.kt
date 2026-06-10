@@ -49,7 +49,13 @@ data class PlaceListItemData constructor(
     )
 
     fun asFocusedMarker(): FocusedMarkerData {
-        return FocusedMarkerData(markerId = this.id, type = MapPinType.PLACE)
+        return FocusedMarkerData(
+            markerId = this.id,
+            type = when (type) {
+                PlaceZoneType.PlaceWithAlert -> MapPinType.PLACE
+                PlaceZoneType.PrivacyZone -> MapPinType.PRIVACY_ZONE
+            }
+        )
     }
 
     fun makeMapPin(groupOrSpaceId: GroupOrSpaceId): MapPinData {
@@ -57,8 +63,10 @@ data class PlaceListItemData constructor(
         return MapPinData(
             groupOrSpaceId = groupOrSpaceId,
             markerId = state.id,
-            // TODO adjust pin type
-            pinType = MapPinType.PLACE,
+            pinType = when (type) {
+                PlaceZoneType.PlaceWithAlert -> MapPinType.PLACE
+                PlaceZoneType.PrivacyZone -> MapPinType.PRIVACY_ZONE
+            },
             markerStyle = MapMarkerStyle.CIRCLE,
             focused = false,
             active = true,

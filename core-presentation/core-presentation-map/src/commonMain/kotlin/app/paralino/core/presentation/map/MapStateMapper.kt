@@ -17,6 +17,7 @@ import app.paralino.core.models.location.MemberModelWithLocations
 import app.paralino.core.models.location.UserPersonalSpaceModel
 import app.paralino.core.models.map.MapHomeScreenFocusType
 import app.paralino.core.models.places.GroupPlace
+import app.paralino.core.models.privacyzones.GroupPrivacyZone
 import app.paralino.core.models.user.UserMeData
 import app.paralino.core.presentation.common.GroupMemberItemLocationState
 import app.paralino.core.presentation.common.GroupMemberItemStateWithOneLocation
@@ -63,6 +64,7 @@ class MapStateMapper(
     suspend fun buildReadyState(
         groupOrSpace: GroupWithMembersOrUserSpace,
         places: List<GroupPlace>,
+        privacyZones: List<GroupPrivacyZone>,
         activeSharingContracts: List<LocationSharingContract>,
         userData: UserMeData,
         previousState: MapHomeScreenState.Ready?,
@@ -138,6 +140,10 @@ class MapStateMapper(
             .filter { it.data.data?.lat != null && it.data.data?.lng != null }
             .map { PlaceListItemData(it) }
 
+        val privacyZonesData = privacyZones
+            .filter { it.data.data?.lat != null && it.data.data?.lng != null }
+            .map { PlaceListItemData(it) }
+
         val membersData = memberLocationContextMapper.enrichOneLocationMemberItems(
             members = buildMembersData(
                 groupOrSpace = groupOrSpace,
@@ -152,6 +158,7 @@ class MapStateMapper(
             groupOrSpace = groupOrSpace,
             membersData = membersData,
             placesData = placesData,
+            privacyZones = privacyZonesData,
             previousFocusedMarker = previousState?.markers?.firstOrNull { it.focused }
         )
 
@@ -159,6 +166,7 @@ class MapStateMapper(
             previousFocusType = previousState?.mapHomeScreenFocusType,
             membersData = membersData,
             placesData = placesData,
+            privacyZones = privacyZonesData,
             markers = markers
         )
 
@@ -216,6 +224,7 @@ class MapStateMapper(
             currentUserImage = userData.userImage ?: ImageModel.emoji(Emojis.robot),
             allMembersOrDevices = membersData,
             places = placesData,
+            privacyZones = privacyZonesData,
             markers = markers,
             trackingMarker = trackingMarker,
             mapHomeScreenFocusType = focusType,
@@ -543,6 +552,7 @@ class MapStateMapper(
         groupOrSpace: GroupWithMembersOrUserSpace,
         membersData: List<GroupMemberItemStateWithOneLocation>,
         placesData: List<PlaceListItemData>,
+        privacyZones: List<PlaceListItemData>,
         previousFocusedMarker: MapPinData?
     ): List<MapPinData> {
 
@@ -621,7 +631,15 @@ class MapStateMapper(
                 )
         }
 
-        return (placeMarkers + memberMarkers)
+        val privacyZoneMarkers = privacyZones.map { zone ->
+            zone.makeMapPin(groupOrSpaceId = groupOrSpace.id)
+                .copy(
+                    active = true,
+                    focused = previousFocusedMarker?.markerId == zone.id
+                )
+        }
+
+        return (privacyZoneMarkers + placeMarkers + memberMarkers)
             .sortedBy { it.focused }
     }
 
@@ -629,6 +647,7 @@ class MapStateMapper(
         previousFocusType: MapHomeScreenFocusType?,
         membersData: List<GroupMemberItemStateWithOneLocation>,
         placesData: List<PlaceListItemData>,
+        privacyZones: List<PlaceListItemData>,
         markers: List<MapPinData>
     ): MapHomeScreenFocusType {
 
@@ -643,6 +662,10 @@ class MapStateMapper(
                     placesData.any { it.id == oldFocusType.placeId }
                 }
 
+                is MapHomeScreenFocusType.PRIVACY_ZONE -> {
+                    privacyZones.any { it.id == oldFocusType.privacyZoneId }
+                }
+
                 else -> true
             }
         }
@@ -650,6 +673,7 @@ class MapStateMapper(
         return validPreviousFocusType
             ?: MapHomeScreenFocusType.ALL_MEMBERS.takeIf { markers.any { it.pinType == MapPinType.MEMBER && !it.hidden } }
             ?: MapHomeScreenFocusType.ALL_PLACES.takeIf { markers.any { it.pinType == MapPinType.PLACE && !it.hidden } }
+            ?: MapHomeScreenFocusType.ALL_PRIVACY_ZONES.takeIf { markers.any { it.pinType == MapPinType.PRIVACY_ZONE && !it.hidden } }
             ?: MapHomeScreenFocusType.NONE
     }
 } 

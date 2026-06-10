@@ -50,6 +50,8 @@ object MainMapScreen {
         paddingValues: AppleScreenPaddingValues,
         onOpenPlacesScreen: (String) -> Unit,
         onOpenCreatePlaceScreen: (groupId: String, location: LatLng?) -> Unit,
+        onOpenPrivacyZonesScreen: (String) -> Unit,
+        onOpenCreatePrivacyZone: (groupId: String, location: LatLng?) -> Unit,
         onSheetOffsetChange: (Float) -> Unit,
         onGroupPickerClick: (Boolean) -> Unit,
         onGroupDetailsClick: (String) -> Unit,
@@ -58,6 +60,7 @@ object MainMapScreen {
         onMemberInviteClick: (String) -> Unit,
         onSettingsClick: () -> Unit,
         onPlaceClick: (MapHomeScreenEvent.OpenPlaceDetails) -> Unit,
+        onPrivacyZoneClick: (MapHomeScreenEvent.OpenPrivacyZoneDetails) -> Unit,
         onDirectionsRequest: (MapHomeScreenEvent.OpenExternalNavigation) -> Unit,
         onCreateGroup: () -> Unit,
         openPaywall: () -> Unit,
@@ -130,10 +133,13 @@ object MainMapScreen {
                             MapHomeScreenEvent.OpenGroupCreateScreen -> onCreateGroup()
                             MapHomeScreenEvent.OpenPaywall -> openPaywall()
                             is MapHomeScreenEvent.OpenCreatePlace -> onOpenCreatePlaceScreen(event.groupId, event.location)
+                            is MapHomeScreenEvent.OpenCreatePrivacyZone -> onOpenCreatePrivacyZone(event.groupId, event.location)
                             is MapHomeScreenEvent.OpenGroupDetails -> onGroupDetailsClick(event.groupId)
                             is MapHomeScreenEvent.OpenGroupPicker -> onGroupPickerClick(event.showPersonalSpace)
                             is MapHomeScreenEvent.OpenPlaceDetails -> onPlaceClick(event)
+                            is MapHomeScreenEvent.OpenPrivacyZoneDetails -> onPrivacyZoneClick(event)
                             is MapHomeScreenEvent.OpenPlaces -> onOpenPlacesScreen(event.groupId)
+                            is MapHomeScreenEvent.OpenPrivacyZones -> onOpenPrivacyZonesScreen(event.groupId)
                             is MapHomeScreenEvent.OpenMemberInviteScreen -> onMemberInviteClick(event.groupId)
                             MapHomeScreenEvent.OpenSettings -> onSettingsClick()
                             is MapHomeScreenEvent.OpenSharingStart -> onSharingStartClick(event.groupId)

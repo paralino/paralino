@@ -154,10 +154,16 @@ fun NavGraphBuilder.homeGraph(
         composable(AppScreen.MainHome.PrivacyZoneCreate.routeSignature) {
             val groupId = it.arguments?.getString(AppScreen.MainHome.PrivacyZoneCreate.argumentGroupId)!!
             val zoneId = it.arguments?.getString(AppScreen.MainHome.PrivacyZoneCreate.argumentZoneId)
+            val lat = it.arguments?.takeIf { it.containsKey(AppScreen.MainHome.PrivacyZoneCreate.argumentLat) }
+                ?.getString(AppScreen.MainHome.PrivacyZoneCreate.argumentLat)?.toDoubleOrNull()
+            val lng = it.arguments?.takeIf { it.containsKey(AppScreen.MainHome.PrivacyZoneCreate.argumentLng) }
+                ?.getString(AppScreen.MainHome.PrivacyZoneCreate.argumentLng)?.toDoubleOrNull()
             CreatePrivacyZoneScreen(
                 appState = appState,
                 groupId = groupId,
-                zoneId = zoneId
+                zoneId = zoneId,
+                lat = lat,
+                lng = lng
             )
         }
         composable(AppScreen.MainHome.PrivacyZoneDetail.routeSignature) {

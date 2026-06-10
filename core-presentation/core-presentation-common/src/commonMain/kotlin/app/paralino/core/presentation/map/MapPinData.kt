@@ -131,6 +131,13 @@ data class MapPinData constructor(
                     else -> 30
                 }
             }
+
+            MapPinType.PRIVACY_ZONE -> {
+                when {
+                    focused -> 50
+                    else -> 30
+                }
+            }
         }
     }
 
@@ -140,7 +147,7 @@ data class MapPinData constructor(
 }
 
 enum class MapPinType {
-    MEMBER, PLACE
+    MEMBER, PLACE, PRIVACY_ZONE
 }
 
 enum class MapMarkerStyle {

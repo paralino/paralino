@@ -71,6 +71,7 @@ private fun MapHomeMarkerComposable(
     val zIndex = when (model.pinType) {
         MapPinType.MEMBER -> if (model.focused) 100f else 30f
         MapPinType.PLACE -> if (model.focused) 100f else 20f
+        MapPinType.PRIVACY_ZONE -> if (model.focused) 100f else 10f
     }
 
     LaunchedEffect(model.markerId) {

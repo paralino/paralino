@@ -150,6 +150,7 @@ fun CameraPositionState.focusOnMap(
 ) {
     val focus = when (focusType) {
         is MapHomeScreenFocusType.PLACE,
+        is MapHomeScreenFocusType.PRIVACY_ZONE,
         is MapHomeScreenFocusType.MEMBER -> {
             listOfNotNull(
                 markers.firstOrNull { it.markerId == focusedMarker?.markerId }
@@ -160,6 +161,10 @@ fun CameraPositionState.focusOnMap(
             markers.filter { it.pinType == MapPinType.PLACE }
         }
 
+        MapHomeScreenFocusType.ALL_PRIVACY_ZONES -> {
+            markers.filter { it.pinType == MapPinType.PRIVACY_ZONE }
+        }
+
         MapHomeScreenFocusType.ALL_MEMBERS -> {
             markers.filter { it.pinType == MapPinType.MEMBER }
         }
@@ -167,18 +172,6 @@ fun CameraPositionState.focusOnMap(
         else -> {
             emptyList()
         }
-    }
-
-    val padding = when (focusType) {
-        MapHomeScreenFocusType.ALL_MEMBERS -> {
-            if (markers.size == 1) 200 else 100
-        }
-
-        MapHomeScreenFocusType.ALL_PLACES -> {
-            if (markers.size == 1) 300 else 100
-        }
-
-        else -> 100
     }
 
     val forceZoom = when (focusType) {

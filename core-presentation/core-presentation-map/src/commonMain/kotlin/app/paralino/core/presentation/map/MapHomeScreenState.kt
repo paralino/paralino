@@ -64,6 +64,7 @@ sealed class MapHomeScreenState {
 
         val allMembersOrDevices: List<GroupMemberItemStateWithOneLocation>,
         val places: List<PlaceListItemData>,
+        val privacyZones: List<PlaceListItemData>,
         val markers: List<MapPinData>,
         val trackingMarker: FocusedMarkerData?,
         val mapHomeScreenFocusType: MapHomeScreenFocusType,
@@ -176,6 +177,10 @@ sealed class MapHomeScreenState {
             places.firstOrNull { it.id == item.placeId }
         }
 
+        val focusedPrivacyZone: PlaceListItemData? = mapHomeScreenFocusType.asPrivacyZone?.let { item ->
+            privacyZones.firstOrNull { it.id == item.privacyZoneId }
+        }
+
         val focusedMember: GroupMemberItemStateWithOneLocation? = mapHomeScreenFocusType.asMember
             ?.let { item ->
                 allMembersOrDevices.firstOrNull { it.keyId == item.memberKeyId }
@@ -228,6 +233,9 @@ sealed class MapHomeScreenEvent {
     data class OpenCreatePlace(val groupId: String, val location: LatLng?) : MapHomeScreenEvent()
     data class OpenGroupDetails(val groupId: String) : MapHomeScreenEvent()
     data class OpenPlaceDetails(val groupId: String, val placeId: String) : MapHomeScreenEvent()
+    data class OpenPrivacyZones(val groupId: String) : MapHomeScreenEvent()
+    data class OpenCreatePrivacyZone(val groupId: String, val location: LatLng?) : MapHomeScreenEvent()
+    data class OpenPrivacyZoneDetails(val groupId: String, val zoneId: String) : MapHomeScreenEvent()
     data class OpenExternalNavigation(
         val lat: Double,
         val lng: Double,
@@ -241,6 +249,7 @@ sealed interface MapHomeScreenUiEvent {
     data class UiLifecycleChange(val active: Boolean) : MapHomeScreenUiEvent
     data class OnMarkerClick(val pin: MapPinData) : MapHomeScreenUiEvent
     data class OnPlaceClick(val place: PlaceListItemData) : MapHomeScreenUiEvent
+    data class OnPrivacyZoneClick(val zone: PlaceListItemData) : MapHomeScreenUiEvent
     data class OnMemberItemEvent(val event: GroupMemberItemEvent) : MapHomeScreenUiEvent
     data class OnGroupsEmptyStateEvent(val event: GroupsInitEmptyScreenUiEvent) : MapHomeScreenUiEvent
     data class OpenGroupDetails(val groupId: GroupOrSpaceId) : MapHomeScreenUiEvent
@@ -253,9 +262,12 @@ sealed interface MapHomeScreenUiEvent {
     data object TryCreateGroup : MapHomeScreenUiEvent
     data object OnFocusOnMembersClick : MapHomeScreenUiEvent
     data object OnFocusOnPlacesClick : MapHomeScreenUiEvent
+    data object OnFocusOnPrivacyZonesClick : MapHomeScreenUiEvent
     data object OnOpenPlacesScreen : MapHomeScreenUiEvent
+    data object OnOpenPrivacyZonesScreen : MapHomeScreenUiEvent
     data object OnOpenMemberInviteScreen : MapHomeScreenUiEvent
     data class OnOpenCreatePlaceScreen(val location: LatLng?) : MapHomeScreenUiEvent
+    data class OnOpenCreatePrivacyZoneScreen(val location: LatLng?) : MapHomeScreenUiEvent
     data object OnMapTouch : MapHomeScreenUiEvent
     data class OnMapClick(val location: LatLng) : MapHomeScreenUiEvent
     data object OnRefocusSelectedDeviceItem : MapHomeScreenUiEvent
@@ -274,7 +286,7 @@ sealed interface MapHomeScreenUiEvent {
 }
 
 enum class MapSheetSelectedContentType {
-    PLACES, MEMBERS
+    PLACES, MEMBERS, PRIVACY_ZONES
 }
 
 sealed interface MapScreenViewSourceType {

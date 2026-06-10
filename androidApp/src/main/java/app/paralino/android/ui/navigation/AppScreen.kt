@@ -204,13 +204,22 @@ sealed class AppScreen {
 
         object PrivacyZoneCreate : AppScreen() {
             val argumentZoneId: String = "zoneId"
+            val argumentLat: String = "lat"
+            val argumentLng: String = "lng"
             override val routeSignature: String =
-                "privacy-zone-create?$argumentGroupId={$argumentGroupId}&$argumentZoneId={$argumentZoneId}"
+                "privacy-zone-create?$argumentGroupId={$argumentGroupId}&$argumentZoneId={$argumentZoneId}&$argumentLat={$argumentLat}&$argumentLng={$argumentLng}"
 
-            fun route(groupId: String, zoneId: String?): String {
+            fun route(
+                groupId: String,
+                zoneId: String?,
+                lat: Double? = null,
+                lng: Double? = null
+            ): String {
                 val args = arrayOf(
                     "$argumentGroupId=$groupId",
                     zoneId?.let { "$argumentZoneId=$it" },
+                    lat?.let { "${argumentLat}=$lat" },
+                    lng?.let { "${argumentLng}=$lng" }
                 )
                     .filterNotNull()
                     .joinToString(separator = "&")

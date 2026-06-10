@@ -24,6 +24,8 @@ import app.paralino.core.presentation.map.MapPinData
 import app.paralino.core.presentation.map.MapPinType
 import app.paralino.core.presentation.map.asReady
 import app.paralino.core.ui.theme.AppColors
+import com.google.android.gms.maps.model.Dash
+import com.google.android.gms.maps.model.Gap
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.SphericalUtil
 import com.google.maps.android.compose.CameraMoveStartedReason
@@ -169,6 +171,7 @@ private fun MapHomeMarkerComposable(
     val zIndex = when (model.pinType) {
         MapPinType.MEMBER -> if (model.focused) 100f else 30f
         MapPinType.PLACE -> if (model.focused) 100f else 20f
+        MapPinType.PRIVACY_ZONE -> if (model.focused) 100f else 10f
     }
 
     LaunchedEffect(model.markerId) {
@@ -208,6 +211,7 @@ private fun MapHomeMarkerComposable(
             clickable = true,
             fillColor = when (model.pinType) {
                 MapPinType.MEMBER -> AppColors.accentDark.copy(alpha = 0.5f)
+
                 MapPinType.PLACE -> {
                     if (satelliteMode) {
                         Color.Blue.copy(alpha = 0.2f)
@@ -219,16 +223,40 @@ private fun MapHomeMarkerComposable(
                         }
                     }
                 }
+
+                MapPinType.PRIVACY_ZONE -> {
+                    if (satelliteMode) {
+                        Color.Black.copy(alpha = 0.4f)
+                    } else {
+                        if (isSystemInDarkTheme()) {
+                            AppColors.accentDark.copy(alpha = 0.25f)
+                        } else {
+                            Color.Black.copy(alpha = 0.25f)
+                        }
+                    }
+                }
             },
             radius = acc.value.toDouble(),
             strokeColor = when (model.pinType) {
                 MapPinType.MEMBER -> Color.White
                 MapPinType.PLACE -> Color.Blue
+                MapPinType.PRIVACY_ZONE -> {
+                    if (isSystemInDarkTheme() || satelliteMode) {
+                        AppColors.redMain
+                    } else {
+                        Color.Black
+                    }
+                }
             },
             strokeWidth = when (model.pinType) {
                 MapPinType.MEMBER -> 8f
                 MapPinType.PLACE -> 0f
+                MapPinType.PRIVACY_ZONE -> 8f
             },
+            strokePattern = listOf(
+                Dash(20f),
+                Gap(12f)
+            ),
             tag = model.markerId,
             zIndex = if (model.focused) 11f else 10f,
             onClick = {

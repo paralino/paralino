@@ -172,7 +172,7 @@ fun CreatePrivacyZoneScreenState.makeMapPin(): MapPinData {
     return MapPinData(
         groupOrSpaceId = state.groupId,
         markerId = "privacy_zone_marker",
-        pinType = MapPinType.PLACE,
+        pinType = MapPinType.PRIVACY_ZONE,
         markerStyle = MapMarkerStyle.CIRCLE,
         focused = false,
         active = true,

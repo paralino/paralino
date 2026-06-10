@@ -85,6 +85,17 @@ internal fun MapHomeScreenEventHandler(
                     )
                 }
 
+                is MapHomeScreenEvent.OpenCreatePrivacyZone -> {
+                    appState.navController.navigate(
+                        AppScreen.MainHome.PrivacyZoneCreate.route(
+                            groupId = event.groupId,
+                            zoneId = null,
+                            lat = event.location?.lat,
+                            lng = event.location?.lng
+                        )
+                    )
+                }
+
                 is MapHomeScreenEvent.OpenGroupDetails -> {
                     appState.navController.navigate(
                         AppScreen.MainHome.GroupDetails.route(
@@ -107,9 +118,26 @@ internal fun MapHomeScreenEventHandler(
                     )
                 }
 
+                is MapHomeScreenEvent.OpenPrivacyZoneDetails -> {
+                    appState.navController.navigate(
+                        AppScreen.MainHome.PrivacyZoneDetail.route(
+                            groupId = event.groupId,
+                            zoneId = event.zoneId
+                        )
+                    )
+                }
+
                 is MapHomeScreenEvent.OpenPlaces -> {
                     appState.navController.navigate(
                         AppScreen.MainHome.PlacesList.route(
+                            groupId = event.groupId
+                        )
+                    )
+                }
+
+                is MapHomeScreenEvent.OpenPrivacyZones -> {
+                    appState.navController.navigate(
+                        AppScreen.MainHome.PrivacyZonesList.route(
                             groupId = event.groupId
                         )
                     )
