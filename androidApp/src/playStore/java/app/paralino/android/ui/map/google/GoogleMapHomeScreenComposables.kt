@@ -17,20 +17,15 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
-import androidx.compose.ui.graphics.Color
 import app.paralino.core.presentation.map.MapHomeScreenState
 import app.paralino.core.presentation.map.MapHomeScreenUiEvent
 import app.paralino.core.presentation.map.MapPinData
 import app.paralino.core.presentation.map.MapPinType
 import app.paralino.core.presentation.map.asReady
-import app.paralino.core.ui.theme.AppColors
-import com.google.android.gms.maps.model.Dash
-import com.google.android.gms.maps.model.Gap
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.SphericalUtil
 import com.google.maps.android.compose.CameraMoveStartedReason
 import com.google.maps.android.compose.CameraPositionState
-import com.google.maps.android.compose.Circle
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -205,65 +200,14 @@ private fun MapHomeMarkerComposable(
         acc.animateTo(model.accuracy, animationSpec = animationSpec)
     }
 
-    if (model.shouldShowApproximateCircle) {
-        Circle(
-            center = LatLng(latValue, lngValue),
-            clickable = true,
-            fillColor = when (model.pinType) {
-                MapPinType.MEMBER -> AppColors.accentDark.copy(alpha = 0.5f)
-
-                MapPinType.PLACE -> {
-                    if (satelliteMode) {
-                        Color.Blue.copy(alpha = 0.2f)
-                    } else {
-                        if (isSystemInDarkTheme()) {
-                            AppColors.accent.copy(alpha = 0.15f)
-                        } else {
-                            Color.Blue.copy(alpha = 0.15f)
-                        }
-                    }
-                }
-
-                MapPinType.PRIVACY_ZONE -> {
-                    if (satelliteMode) {
-                        Color.Black.copy(alpha = 0.4f)
-                    } else {
-                        if (isSystemInDarkTheme()) {
-                            AppColors.accentDark.copy(alpha = 0.25f)
-                        } else {
-                            Color.Black.copy(alpha = 0.25f)
-                        }
-                    }
-                }
-            },
-            radius = acc.value.toDouble(),
-            strokeColor = when (model.pinType) {
-                MapPinType.MEMBER -> Color.White
-                MapPinType.PLACE -> Color.Blue
-                MapPinType.PRIVACY_ZONE -> {
-                    if (isSystemInDarkTheme() || satelliteMode) {
-                        AppColors.redMain
-                    } else {
-                        Color.Black
-                    }
-                }
-            },
-            strokeWidth = when (model.pinType) {
-                MapPinType.MEMBER -> 8f
-                MapPinType.PLACE -> 0f
-                MapPinType.PRIVACY_ZONE -> 8f
-            },
-            strokePattern = listOf(
-                Dash(20f),
-                Gap(12f)
-            ),
-            tag = model.markerId,
-            zIndex = if (model.focused) 11f else 10f,
-            onClick = {
-                onMarkerClick(model)
-            }
-        )
-    }
+    GoogleMapCircleComposable(
+        model = model,
+        isSatelliteMode = satelliteMode,
+        latValue = latValue,
+        lngValue = lngValue,
+        accuracy = acc.value.toDouble(),
+        onClick = { onMarkerClick(model) }
+    )
 
     GoogleMapMarkerComposable(
         state = model,

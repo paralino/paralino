@@ -23,7 +23,6 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInteropFilter
 import androidx.compose.ui.unit.dp
 import app.paralino.core.models.location.LatLng
@@ -31,7 +30,6 @@ import app.paralino.core.presentation.map.MapPinData
 import app.paralino.core.ui.theme.LocalScreenDimensionType
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.maps.android.compose.CameraPositionState
-import com.google.maps.android.compose.Circle
 import com.google.maps.android.compose.rememberCameraPositionState
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -165,25 +163,21 @@ fun GoogleMapSimpleMapComposable(
                         label = "accuracyAnim"
                     ).value.toDouble()
 
-                    if (model.shouldShowApproximateCircle) {
-                        Circle(
-                            center = com.google.android.gms.maps.model.LatLng(latAnim, lngAnim),
-                            clickable = canTapOnCircles,
-                            fillColor = Color.Blue.copy(alpha = 0.4f),
-                            radius = accuracyAnim,
-                            strokeColor = Color.Blue,
-                            strokeWidth = 0f,
-                            tag = model.markerId,
-                            zIndex = 10f,
-                            onClick = {
-                                cameraPositionState.refocus(
-                                    scope = scope,
-                                    markers = markers,
-                                    padding = screenPadding
-                                )
-                            }
-                        )
-                    }
+                    GoogleMapCircleComposable(
+                        model = model,
+                        isSatelliteMode = isSatelliteMode,
+                        latValue = latAnim,
+                        lngValue = lngAnim,
+                        accuracy = accuracyAnim,
+                        onClick = {
+                            cameraPositionState.refocus(
+                                scope = scope,
+                                markers = markers,
+                                padding = screenPadding
+                            )
+                        }
+                    )
+
                     GoogleMapMarkerComposable(
                         state = model,
                         position = com.google.android.gms.maps.model.LatLng(latAnim, lngAnim),
