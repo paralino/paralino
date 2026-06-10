@@ -45,6 +45,7 @@ import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.components.ScaffoldBottomBarButton
 import app.paralino.core.ui.components.dialogs.LoadingDialog
 import app.paralino.core.ui.components.dialogs.Show
+import app.paralino.core.ui.groups.components.InitialGroupContentCreationComponent
 import app.paralino.core.ui.theme.LocalScreenDimensionType
 import app.paralino.core.utils.Emojis
 import dev.icerock.moko.resources.compose.stringResource
@@ -214,14 +215,16 @@ private fun CreatePlaceScreenCore(
             enter = fadeIn() + slideInVertically(),
             exit = fadeOut() + slideOutVertically()
         ) {
-            CreatePlaceNameSuggestionStep(
+            InitialGroupContentCreationComponent(
                 modifier = Modifier.fillMaxSize(),
                 focusManager = focusManager,
                 shakeImage = state.isNewPlace,
                 image = state.image,
                 name = state.name,
+                hint = stringResource(MR.strings.places_create_name_placeholder),
                 hasNameError = state.hasNameError,
                 suggestions = state.nameSuggestions,
+                bottomContent = {},
                 onImageClick = onImageClick,
                 onNameChanged = { onEvent(CreatePlaceScreenUiEvent.OnNameChanged(it)) },
                 onSuggestionSelected = { onEvent(CreatePlaceScreenUiEvent.OnNameSuggestionSelected(it)) },

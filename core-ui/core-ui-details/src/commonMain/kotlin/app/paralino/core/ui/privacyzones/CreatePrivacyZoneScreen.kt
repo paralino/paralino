@@ -47,6 +47,7 @@ import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.components.ScaffoldBottomBarButton
 import app.paralino.core.ui.components.dialogs.LoadingDialog
 import app.paralino.core.ui.components.dialogs.Show
+import app.paralino.core.ui.groups.components.InitialGroupContentCreationComponent
 import app.paralino.core.ui.theme.LocalScreenDimensionType
 import app.paralino.core.utils.Emojis
 import dev.icerock.moko.resources.compose.stringResource
@@ -224,7 +225,7 @@ private fun CreatePrivacyZoneScreenContent(
             enter = fadeIn() + slideInVertically(),
             exit = fadeOut() + slideOutVertically()
         ) {
-            CreatePrivacyZoneNameSuggestionStep(
+            InitialGroupContentCreationComponent(
                 modifier = Modifier
                     .fillMaxSize()
                     .background(MaterialTheme.colors.background)
@@ -233,8 +234,10 @@ private fun CreatePrivacyZoneScreenContent(
                 shakeImage = state.isNewZone,
                 image = state.image,
                 name = state.name,
+                hint = stringResource(MR.strings.privacy_zones_create_name_placeholder),
                 hasNameError = state.hasNameError,
                 suggestions = state.nameSuggestions,
+                bottomContent = {},
                 onImageClick = onImageClick,
                 onNameChanged = { onEvent(CreatePrivacyZoneScreenUiEvent.OnNameChanged(it)) },
                 onSuggestionSelected = {

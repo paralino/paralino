@@ -1,5 +1,11 @@
-package app.paralino.core.ui.privacyzones
+package app.paralino.core.ui.groups.components
 
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.LinearOutSlowInEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.repeatable
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -13,6 +19,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -25,27 +32,26 @@ import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import app.paralino.core.MR
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.presentation.SuggestionSectionChipData
 import app.paralino.core.ui.components.EditImageIcon
 import app.paralino.core.ui.components.ImageModelImage
 import app.paralino.core.ui.components.MainInputField
-import app.paralino.core.ui.groups.ShakeEffect
-import app.paralino.core.ui.groups.components.ChipsSuggestionsSection
 import app.paralino.core.ui.theme.LocalScreenDimensionType
-import dev.icerock.moko.resources.compose.stringResource
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
-fun CreatePrivacyZoneNameSuggestionStep(
+fun InitialGroupContentCreationComponent(
     modifier: Modifier = Modifier,
     focusManager: FocusManager,
     shakeImage: Boolean,
     image: ImageModel,
     name: String,
+    hint: String,
     hasNameError: Boolean,
     suggestions: List<SuggestionSectionChipData>,
+    bottomContent: @Composable () -> Unit,
     onImageClick: () -> Unit,
     onNameChanged: (String) -> Unit,
     onSuggestionSelected: (SuggestionSectionChipData) -> Unit,
@@ -94,7 +100,7 @@ fun CreatePrivacyZoneNameSuggestionStep(
         MainInputField(
             modifier = Modifier.height(70.dp),
             text = name,
-            hint = stringResource(MR.strings.privacy_zones_create_name_placeholder),
+            hint = hint,
             hasError = hasNameError,
             keyboardType = KeyboardType.Text,
             imeAction = ImeAction.Done,
@@ -115,6 +121,47 @@ fun CreatePrivacyZoneNameSuggestionStep(
             )
         }
 
+        bottomContent()
+
         Spacer(modifier = Modifier.weight(1f))
+    }
+}
+
+
+@Composable
+fun ShakeEffect(
+    abort: Boolean = false,
+    onValueChange: (Float) -> Unit,
+) {
+    val shakeAnimation = remember { Animatable(0f) }
+    LaunchedEffect(onValueChange) {
+        delay(2000)
+
+        if (!abort) {
+            val shakeAmount = 8f
+            shakeAnimation.animateTo(
+                -shakeAmount,
+                animationSpec = tween(30, 0, easing = LinearOutSlowInEasing)
+            ) {
+                onValueChange(this.value)
+            }
+
+            shakeAnimation.animateTo(
+                shakeAmount, animationSpec = repeatable(
+                    iterations = 5,
+                    animation = tween(60, 0, easing = LinearEasing),
+                    repeatMode = RepeatMode.Reverse
+                )
+            ) {
+                onValueChange(this.value)
+            }
+
+            shakeAnimation.animateTo(
+                0f,
+                animationSpec = tween(30, 0, easing = LinearOutSlowInEasing)
+            ) {
+                onValueChange(this.value)
+            }
+        }
     }
 }
