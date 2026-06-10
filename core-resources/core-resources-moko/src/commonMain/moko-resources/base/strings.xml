@@ -788,7 +788,7 @@
     <string name="privacy_zone_create_suggestion_secret_shopping">Secret shopping</string>
     <string name="privacy_zone_create_suggestion_hidden_place">Hidden place</string>
     <string name="privacy_zone_create_suggestion_just_for_me">Just for me</string>
-    <string name="privacy_zones_empty_state_info">Create a privacy zone to **protect** your actual location when you need a little privacy.</string>
+    <string name="privacy_zones_empty_state_info">Privacy zone is a shield that **protects** your actual location when you need a little privacy.</string>
     <string name="privacy_zones_empty_state_encryption_info">Your privacy zone is **end-to-end encrypted** and only visible to you. Other group members cannot see it.</string>
     <string name="privacy_zones_empty_state_map_label_your_location">Your location</string>
     <string name="privacy_zones_empty_state_map_label_others_view">What others see</string>
