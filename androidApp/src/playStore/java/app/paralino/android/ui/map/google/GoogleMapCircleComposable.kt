@@ -64,14 +64,20 @@ fun GoogleMapCircleComposable(
                 }
             },
             strokeWidth = when (model.pinType) {
-                MapPinType.MEMBER -> 8f
+                MapPinType.MEMBER -> 6f
                 MapPinType.PLACE -> 0f
                 MapPinType.PRIVACY_ZONE -> 8f
             },
-            strokePattern = listOf(
-                Dash(20f),
-                Gap(12f)
-            ),
+            strokePattern = when (model.pinType) {
+                MapPinType.MEMBER,
+                MapPinType.PLACE -> null
+                MapPinType.PRIVACY_ZONE -> {
+                    listOf(
+                        Dash(20f),
+                        Gap(12f)
+                    )
+                }
+            },
             tag = model.markerId,
             zIndex = if (model.focused) 11f else 10f,
             onClick = { onClick() }

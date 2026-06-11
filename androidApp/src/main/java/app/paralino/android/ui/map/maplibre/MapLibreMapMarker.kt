@@ -28,6 +28,7 @@ import org.maplibre.android.geometry.LatLng
 import org.maplibre.compose.expressions.dsl.const
 import org.maplibre.compose.expressions.dsl.image
 import org.maplibre.compose.expressions.dsl.nil
+import org.maplibre.compose.expressions.value.LineCap
 import org.maplibre.compose.expressions.value.SymbolAnchor
 import org.maplibre.compose.layers.FillLayer
 import org.maplibre.compose.layers.LineLayer
@@ -199,6 +200,7 @@ fun MapLibreMapCircle(
                 color = const(strokeColor),
                 width = const(strokeWidth),
                 dasharray = strokeDash,
+                cap = const(LineCap.Round),
                 sortKey = circleSortKey,
                 onClick = {
                     onClick()
