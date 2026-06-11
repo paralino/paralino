@@ -40,7 +40,6 @@ import androidx.compose.ui.unit.sp
 import app.paralino.core.MR
 import app.paralino.core.presentation.places.create.PlaceAddressSearchUiMode
 import app.paralino.core.presentation.privacyzones.create.CreatePrivacyZoneScreenState
-import app.paralino.core.presentation.privacyzones.create.CreatePrivacyZoneScreenStep
 import app.paralino.core.presentation.privacyzones.create.CreatePrivacyZoneScreenUiEvent
 import app.paralino.core.resources.MokoResources.imageAsPainterResource
 import app.paralino.core.ui.components.EmbeddedSlider

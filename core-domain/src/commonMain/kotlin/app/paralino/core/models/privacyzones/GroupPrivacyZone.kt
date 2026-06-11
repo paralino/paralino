@@ -30,6 +30,8 @@ data class PrivacyZoneData constructor(
     val lng: Double,
     val radiusMeters: Int,
     val expiresAt: String,
+    val notifyOthersInZone: Boolean = false,
+    val inZoneMessage: String? = null,
 ) {
     fun isExpired(now: Instant = nowUTC()): Boolean {
         val expires = expiresAt.isoWithOffsetToInstant() ?: return false

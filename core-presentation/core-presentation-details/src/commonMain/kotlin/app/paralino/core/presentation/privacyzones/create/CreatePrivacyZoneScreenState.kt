@@ -42,6 +42,8 @@ data class CreatePrivacyZoneScreenState constructor(
     val radiusValue: ApproximateLocationDistancePair,
     val radiusText: String,
     val hasNameError: Boolean,
+    val notifyOthersInZone: Boolean,
+    val inZoneMessage: String?,
     val isSatelliteModeEnabled: Boolean,
     val actionLoading: Boolean,
     val fullLoading: Boolean,
@@ -128,6 +130,8 @@ data class CreatePrivacyZoneScreenState constructor(
                 radiusValue = radiusValue,
                 radiusText = radiusText,
                 hasNameError = false,
+                notifyOthersInZone = false,
+                inZoneMessage = null,
                 actionLoading = false,
                 fullLoading = false,
                 alertDialog = null,
@@ -154,6 +158,8 @@ sealed interface CreatePrivacyZoneScreenUiEvent {
     data class OnUiReady(val size: ScreenDimensionType) : CreatePrivacyZoneScreenUiEvent
     data class OnMapPositionChanged(val position: LatLng) : CreatePrivacyZoneScreenUiEvent
     data class OnNameChanged(val name: String) : CreatePrivacyZoneScreenUiEvent
+    data class OnNotifyOthersInZoneChanged(val enabled: Boolean) : CreatePrivacyZoneScreenUiEvent
+    data class OnInZoneMessageChanged(val message: String) : CreatePrivacyZoneScreenUiEvent
     data class OnRadiusChanged(val index: Int) : CreatePrivacyZoneScreenUiEvent
     data class OnImageChanged(val image: ImageModel) : CreatePrivacyZoneScreenUiEvent
     data class OnAddressChanged(val address: TextFieldValue) : CreatePrivacyZoneScreenUiEvent

@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
@@ -237,7 +238,22 @@ private fun CreatePrivacyZoneScreenContent(
                 hint = stringResource(MR.strings.privacy_zones_create_name_placeholder),
                 hasNameError = state.hasNameError,
                 suggestions = state.nameSuggestions,
-                bottomContent = {},
+                bottomContent = {
+                    PrivacyZoneNotifyOthersSettings(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 30.dp),
+                        focusManager = focusManager,
+                        notifyOthersInZone = state.notifyOthersInZone,
+                        inZoneMessage = state.inZoneMessage,
+                        onNotifyOthersInZoneChanged = {
+                            onEvent(CreatePrivacyZoneScreenUiEvent.OnNotifyOthersInZoneChanged(it))
+                        },
+                        onInZoneMessageChanged = {
+                            onEvent(CreatePrivacyZoneScreenUiEvent.OnInZoneMessageChanged(it))
+                        },
+                    )
+                },
                 onImageClick = onImageClick,
                 onNameChanged = { onEvent(CreatePrivacyZoneScreenUiEvent.OnNameChanged(it)) },
                 onSuggestionSelected = {
@@ -247,3 +263,4 @@ private fun CreatePrivacyZoneScreenContent(
         }
     }
 }
+

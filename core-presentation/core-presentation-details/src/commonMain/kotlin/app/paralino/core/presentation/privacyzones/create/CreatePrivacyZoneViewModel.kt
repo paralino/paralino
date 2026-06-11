@@ -44,11 +44,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
@@ -122,19 +118,6 @@ class CreatePrivacyZoneViewModel(
                     )
 
                     else -> value.mapSuccess { zone ->
-                        val screenStep = uiSizeState
-                            .filterNotNull()
-                            .distinctUntilChanged()
-                            .map { uiSize ->
-                                if (uiSize.isSmall) {
-                                    CreatePrivacyZoneScreenStep.NAME_SUGGESTION
-                                } else {
-                                    CreatePrivacyZoneScreenStep.FULL
-                                }
-                            }
-                            .firstOrNull()
-                            ?: CreatePrivacyZoneScreenStep.NAME_SUGGESTION
-
                         val zoneData = zone.data.data
                         val radiusValue = ApproximateLocationDistancePair.pairForSelectedMeters(
                             zoneData?.radiusMeters ?: ApproximateLocationDistancePair.default.meters
@@ -143,7 +126,7 @@ class CreatePrivacyZoneViewModel(
                         CreatePrivacyZoneScreenState(
                             groupId = groupId.asGroupOrSpaceId(),
                             isNewZone = false,
-                            screenStep = screenStep,
+                            screenStep = CreatePrivacyZoneScreenStep.NAME_SUGGESTION,
                             name = zoneData?.name ?: "---",
                             image = zoneData?.image ?: ImageModel.emoji(Emojis.lock),
                             nameSuggestions = emptyList(),
@@ -152,6 +135,8 @@ class CreatePrivacyZoneViewModel(
                             addressSuggestions = emptyList(),
                             isAddressLoading = false,
                             hasNameError = false,
+                            notifyOthersInZone = zoneData?.notifyOthersInZone ?: false,
+                            inZoneMessage = zoneData?.inZoneMessage,
                             fallbackCenterLatLng = null,
                             lat = zoneData?.lat,
                             lng = zoneData?.lng,
@@ -209,6 +194,8 @@ class CreatePrivacyZoneViewModel(
             is CreatePrivacyZoneScreenUiEvent.OnAddressChanged -> searchAddress(event.address)
             is CreatePrivacyZoneScreenUiEvent.OnImageChanged -> updateNameAndImage(image = event.image)
             is CreatePrivacyZoneScreenUiEvent.OnNameChanged -> updateNameAndImage(name = event.name)
+            is CreatePrivacyZoneScreenUiEvent.OnNotifyOthersInZoneChanged -> updateNotifyOthersInZone(event.enabled)
+            is CreatePrivacyZoneScreenUiEvent.OnInZoneMessageChanged -> updateInZoneMessage(event.message)
             is CreatePrivacyZoneScreenUiEvent.OnRadiusChanged -> updateRadius(event.index)
             is CreatePrivacyZoneScreenUiEvent.OnMapTap -> updatePosition(lat = event.lat, lng = event.lng)
             is CreatePrivacyZoneScreenUiEvent.OnMapPositionChanged -> mapPosition = event.position
@@ -302,6 +289,12 @@ class CreatePrivacyZoneViewModel(
             lng = data.lng,
             radiusMeters = data.radiusValue.meters,
             expiresAt = zone?.data?.data?.expiresAt ?: "",
+            notifyOthersInZone = data.notifyOthersInZone,
+            inZoneMessage = if (data.notifyOthersInZone) {
+                data.inZoneMessage?.trim()?.takeIf { it.isNotBlank() }
+            } else {
+                null
+            },
         )
 
         if (zone != null) {
@@ -432,6 +425,31 @@ class CreatePrivacyZoneViewModel(
         }
 
         _eventChannel.trySend(CreatePrivacyZoneScreenEvent.RequestKeyboardFocusOnAddressInput)
+    }
+
+    private fun updateNotifyOthersInZone(enabled: Boolean) {
+        _uiState.update {
+            it.mapSuccess { state ->
+                state.copy(
+                    notifyOthersInZone = enabled,
+                    inZoneMessage = if (enabled) state.inZoneMessage else null,
+                )
+            }
+        }
+    }
+
+    private fun updateInZoneMessage(message: String) {
+        val trimmedMessage = if (message.trim().length > zoneNameLengthLimit) {
+            uiState.value.data?.inZoneMessage ?: ""
+        } else {
+            message
+        }
+
+        _uiState.update {
+            it.mapSuccess {
+                it.copy(inZoneMessage = trimmedMessage)
+            }
+        }
     }
 
     private fun updateNameAndImage(
