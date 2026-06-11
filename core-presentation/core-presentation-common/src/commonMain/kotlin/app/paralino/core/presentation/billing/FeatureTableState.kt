@@ -373,7 +373,9 @@ data class FeatureTableState(
                             FeatureTableItemValue.Emoji(
                                 content = if (it.type.isSilverOrMore) "✅" else "❌",
                                 planType = it.type,
-                                highlightMode = if (it.isSelected) {
+                                highlightMode = if (isGroupPlanOnly) {
+                                    FeatureTableItemHighlightMode.BOTTOM
+                                } else if (it.isSelected) {
                                     FeatureTableItemHighlightMode.FULL
                                 } else {
                                     FeatureTableItemHighlightMode.NONE

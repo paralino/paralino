@@ -81,14 +81,15 @@ fun MembershipPlanFeatureTable(
                     Color.Transparent
                 }
             )
-            .padding(animateDpAsState(if (isExpanded) 4.dp else 0.dp).value)
             .clip(RoundedCornerShape(10.dp))
     ) {
         val maxWidth = this.maxWidth
         val scrollState = rememberScrollState()
         var containerWidth by remember { mutableStateOf(0f) }
 
-        Column() {
+        Column(
+            modifier = Modifier.padding(animateDpAsState(if (isExpanded) 4.dp else 0.dp).value)
+        ) {
             Column(
                 modifier = Modifier
                     .animateContentSize()
