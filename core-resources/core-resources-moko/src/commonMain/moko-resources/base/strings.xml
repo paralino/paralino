@@ -418,6 +418,7 @@
     <string name="paywall_feature_devices_member">Devices per member</string>
     <string name="paywall_feature_devices_personal">Activated devices</string>
     <string name="paywall_feature_places_group">Places with **unlimited alerts**</string>
+    <string name="paywall_feature_privacy_zones_group">Privacy zones</string>
     <string name="paywall_feature_places_personal">Places with **unlimited alerts**</string>
     <string name="paywall_feature_battery">Low battery alerts</string>
     <string name="paywall_feature_locate">Locate devices on demand</string>
@@ -433,6 +434,7 @@
     <string name="paywall_feature_history_days_minimum_info">Location history stores up to 100 most recent points for a maximum of 2 days. It is not saved persistently due to limited resources.</string>
     <string name="paywall_feature_summary_members">Members</string>
     <string name="paywall_feature_summary_places">Places</string>
+    <string name="paywall_feature_summary_privacy_zones">Privacy zones</string>
     <string name="paywall_feature_summary_history">Location history</string>
     <string name="paywall_feature_section_others">Common benefits</string>
     <string name="paywall_review_1_author">Diana</string>

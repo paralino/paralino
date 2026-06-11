@@ -63,7 +63,7 @@ import dev.icerock.moko.resources.compose.stringResource
 
 @Composable
 fun MembershipPlanFeatureTable(
-    modifier: Modifier = Modifier.Companion,
+    modifier: Modifier = Modifier,
     table: FeatureTableState,
     canExpand: Boolean = table.canExpand,
     isExpanded: Boolean,
@@ -90,7 +90,7 @@ fun MembershipPlanFeatureTable(
 
         Column() {
             Column(
-                modifier = Modifier.Companion
+                modifier = Modifier
                     .animateContentSize()
                     .horizontalScroll(scrollState)
                     .onSizeChanged { size ->
@@ -118,7 +118,7 @@ fun MembershipPlanFeatureTable(
                                     modifier = Modifier
                                         .width(with(LocalDensity.current) { containerWidth.toDp() })
                                         .padding(horizontal = 8.dp),
-                                    color = Color.Companion.Gray.copy(alpha = 0.2f),
+                                    color = Color.Gray.copy(alpha = 0.2f),
                                     thickness = 0.5.dp
                                 )
                             }
@@ -128,12 +128,12 @@ fun MembershipPlanFeatureTable(
 
             AnimatedVisibility(visible = canExpand) {
                 FilledButton(
-                    modifier = Modifier.Companion
+                    modifier = Modifier
                         .padding(bottom = 14.dp, top = 16.dp)
                         .padding(horizontal = 14.dp)
                         .border(
                             width = 1.dp,
-                            color = Color.Companion.Gray.copy(alpha = 0.2f),
+                            color = Color.Gray.copy(alpha = 0.2f),
                             shape = RoundedCornerShape(10.dp)
                         ),
                     style = remember {
@@ -153,7 +153,7 @@ fun MembershipPlanFeatureTable(
                 ) {
                     Text(text = stringResource(MR.strings.paywall_feature_table_expand_button))
                     Icon(
-                        modifier = Modifier.Companion.padding(start = 4.dp).width(20.dp),
+                        modifier = Modifier.padding(start = 4.dp).width(20.dp),
                         painter = CoreAppIcons.ChevronRight.asPainterResource(),
                         tint = MaterialTheme.colors.onSurface,
                         contentDescription = null
