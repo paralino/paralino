@@ -1,6 +1,7 @@
 package app.paralino.core.domain.notifications.processors
 
 import app.paralino.core.domain.notifications.IPushNotificationPresenter
+import app.paralino.core.domain.privacyzone.DeletePrivacyZoneUseCase
 import app.paralino.core.domain.privacyzone.GetPrivacyZonesUseCase
 import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.models.raw.PushNotificationRaw
@@ -13,6 +14,7 @@ import kotlin.time.Duration.Companion.seconds
 class PrivacyZoneSyncNotificationProcessor(
     private val accessLogSource: AccessLogDataSource,
     private val getPrivacyZonesUseCase: GetPrivacyZonesUseCase,
+    private val deletePrivacyZoneUseCase: DeletePrivacyZoneUseCase
 ) : BaseNotificationProcessor(accessLogSource) {
 
     override suspend fun constructPushPayload(
@@ -23,9 +25,9 @@ class PrivacyZoneSyncNotificationProcessor(
 
         when (push.pushType) {
             PushNotificationType.GROUP_PRIVACY_ZONE_DELETED -> {
-                getPrivacyZonesUseCase.deletePrivacyZoneLocally(
-                    zoneId = payload.privacyZoneId,
+                deletePrivacyZoneUseCase.deletePrivacyZoneLocally(
                     groupId = payload.groupId,
+                    privacyZoneId = payload.privacyZoneId,
                 )
             }
             PushNotificationType.GROUP_PRIVACY_ZONE_UPDATED -> {

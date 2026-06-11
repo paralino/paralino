@@ -335,7 +335,7 @@ val coreModule = module {
     single { ExpiredSessionHandler(get(), get(), get()) }
     single { LogoutUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { RegisterDeviceForSharingUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
-    single { RealtimeEventsProcessor(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+    single { RealtimeEventsProcessor(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { GroupCryptoKeyRotation(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { GroupMemberRemoveUseCase(get(), get(), get(), get(), get(), get(), get(), get()) }
     single { GroupMemberAddUseCase(get(), get(), get(), get(), get(), get(), get()) }
@@ -358,7 +358,7 @@ val coreModule = module {
     factory { CreatePrivacyZoneUseCase(get(), get()) }
     factory { UpdatePrivacyZoneUseCase(get(), get(), get()) }
     factory { DeletePrivacyZoneUseCase(get(), get(), get()) }
-    factory { GetPrivacyZonesUseCase(get(), get(), get(), get()) }
+    factory { GetPrivacyZonesUseCase(get(), get(), get()) }
 
     single { PersonalCodesRepository(get(), get(), get(), get(), get(), get(), get()) }
     single { UserRepository(get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
@@ -410,7 +410,7 @@ val coreModule = module {
     factory { PlaceDeletedNotificationProcessor(get()) }
     factory { PlaceUpdatedNotificationProcessor(get()) }
     factory { PrivacyZoneCreatedNotificationProcessor(get(), get(), get(), get(), get()) }
-    factory { PrivacyZoneSyncNotificationProcessor(get(), get()) }
+    factory { PrivacyZoneSyncNotificationProcessor(get(), get(), get()) }
     factory { GroupMemberAddedNotificationProcessor(get(), get(), get(), get()) }
     factory { GroupMemberDeletedNotificationProcessor(get()) }
     factory { LocationSharingStartedNotificationsProcessor(get(), get(), get(), get(), get()) }

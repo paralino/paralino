@@ -14,9 +14,13 @@ class DeletePrivacyZoneUseCase(
     fun invoke(privacyZoneId: String, groupId: String): Flow<Unit> {
         return flow {
             remote.deletePrivacyZone(privacyZoneId)
-            groupLocal.deletePrivacyZone(privacyZoneId)
-            sharedLocationLocal.delete(groupId = groupId, privacyZoneId = privacyZoneId)
+            deletePrivacyZoneLocally(groupId = groupId, privacyZoneId = privacyZoneId)
             emit(Unit)
         }
+    }
+
+    suspend fun deletePrivacyZoneLocally(groupId: String, privacyZoneId: String) {
+        groupLocal.deletePrivacyZone(privacyZoneId)
+        sharedLocationLocal.delete(groupId = groupId, privacyZoneId = privacyZoneId)
     }
 }

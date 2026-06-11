@@ -2,6 +2,7 @@ package app.paralino.core.repo.privacyzones
 
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.db.MainDatabaseHelper
+import app.paralino.core.models.data
 import app.paralino.core.models.mappers.GroupPrivacyZoneMapperLocal
 import app.paralino.core.models.privacyzones.GroupPrivacyZone
 import app.paralino.core.models.raw.GroupPrivacyZoneRaw
@@ -50,11 +51,13 @@ class PrivacyZonesLocalDataSource(
     }
 
     suspend fun getNonExpiredPrivacyZonesForGroupOnce(groupId: String): List<GroupPrivacyZone> {
+        val now = nowUTC()
         return database.groupRelatedDao.getNonExpiredPrivacyZonesForGroupOnce(
             groupId = groupId,
             ownerUserId = appPrefs.userId,
-            nowUtc = nowUTC().toString(),
-        ).map { mapper.local2Core(it) }
+        )
+            .map { mapper.local2Core(it) }
+            .filter { it.data.data?.isExpired(now) != true }
     }
 
     suspend fun deletePrivacyZone(zoneId: String) {

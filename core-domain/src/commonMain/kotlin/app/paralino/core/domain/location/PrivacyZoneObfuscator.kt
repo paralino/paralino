@@ -42,7 +42,10 @@ class PrivacyZoneObfuscator(
         val matches = zones.mapNotNull { zone ->
             val data = zone.data.data ?: return@mapNotNull null
             if (data.isExpired()) return@mapNotNull null
-            if (!isInsideZone(trueLat, trueLng, data)) return@mapNotNull null
+            if (!isInsideZone(trueLat, trueLng, data)) {
+                sharedLocationLocal.delete(groupId = groupId.id, privacyZoneId = zone.id)
+                return@mapNotNull null
+            }
             zone to data
         }
 

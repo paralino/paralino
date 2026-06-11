@@ -32,7 +32,7 @@ data class PrivacyZoneData constructor(
     val expiresAt: String,
 ) {
     fun isExpired(now: Instant = nowUTC()): Boolean {
-        val expires = expiresAt.isoWithOffsetToInstant() ?: return true
+        val expires = expiresAt.isoWithOffsetToInstant() ?: return false
         return expires <= now
     }
 }

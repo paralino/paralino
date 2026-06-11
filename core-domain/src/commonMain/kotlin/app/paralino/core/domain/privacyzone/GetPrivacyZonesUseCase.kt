@@ -1,6 +1,5 @@
 package app.paralino.core.domain.privacyzone
 
-import app.paralino.core.domain.location.PrivacyZoneSharedLocationLocalSource
 import app.paralino.core.models.privacyzones.GroupPrivacyZone
 import app.paralino.core.models.raw.GroupPrivacyZoneRaw
 import app.paralino.core.repo.base.BaseRepository
@@ -13,8 +12,7 @@ import kotlinx.coroutines.flow.Flow
 class GetPrivacyZonesUseCase(
     private val local: PrivacyZonesLocalDataSource,
     private val remoteGet: PrivacyZonesGetRemoteSource,
-    private val groupLocal: UserGroupLocalDataSource,
-    private val sharedLocationLocal: PrivacyZoneSharedLocationLocalSource,
+    private val groupLocal: UserGroupLocalDataSource
 ) : BaseRepository() {
 
     fun getPrivacyZonesForGroupLocally(groupId: String): Flow<List<GroupPrivacyZone>> {
@@ -48,10 +46,5 @@ class GetPrivacyZonesUseCase(
 
     suspend fun updatePrivacyZoneLocally(raw: GroupPrivacyZoneRaw) {
         groupLocal.updateOrCreatePrivacyZone(raw)
-    }
-
-    suspend fun deletePrivacyZoneLocally(zoneId: String, groupId: String) {
-        groupLocal.deletePrivacyZone(zoneId)
-        sharedLocationLocal.delete(groupId = groupId, privacyZoneId = zoneId)
     }
 }

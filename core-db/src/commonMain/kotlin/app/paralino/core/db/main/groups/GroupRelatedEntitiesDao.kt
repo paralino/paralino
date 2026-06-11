@@ -205,13 +205,12 @@ interface GroupRelatedEntitiesDao {
     @Query(
         """
         SELECT * FROM privacyZoneEntity
-        WHERE groupId = :groupId AND ownerUserId = :ownerUserId AND expiresAt > :nowUtc
+        WHERE groupId = :groupId AND ownerUserId = :ownerUserId
         """
     )
     suspend fun getNonExpiredPrivacyZonesForGroupOnce(
         groupId: String,
-        ownerUserId: String,
-        nowUtc: String,
+        ownerUserId: String
     ): List<PrivacyZoneEntity>
 
     @Query(

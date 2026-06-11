@@ -5,6 +5,8 @@ import app.paralino.core.crypto.PersonalSpaceDeviceKey
 import app.paralino.core.domain.crypto.group.CryptoKEKLocalRepository
 import app.paralino.core.domain.crypto.user.CryptoUserKeysLocalSource
 import app.paralino.core.domain.group.GroupPreRefreshUseCase
+import app.paralino.core.domain.privacyzone.DeletePrivacyZoneUseCase
+import app.paralino.core.domain.privacyzone.GetPrivacyZonesUseCase
 import app.paralino.core.domain.user.PersonalSpaceRefreshUseCase
 import app.paralino.core.domain.user.UserCryptoKeyRefreshUseCase
 import app.paralino.core.logg
@@ -23,7 +25,6 @@ import app.paralino.core.models.raw.UserDeviceRaw
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.location.LocationLocalDataSource
 import app.paralino.core.repo.location.LocationPerformanceManager
-import app.paralino.core.domain.privacyzone.GetPrivacyZonesUseCase
 import app.paralino.core.repo.places.PlacesRepository
 import app.paralino.core.repo.user.IPushProviderManager
 import app.paralino.core.repo.user.PersonalDevicesLocalDataSource
@@ -36,6 +37,7 @@ class RealtimeEventsProcessor constructor(
     private val personalDevicesLocal: PersonalDevicesLocalDataSource,
     private val placesRepo: PlacesRepository,
     private val getPrivacyZonesUseCase: GetPrivacyZonesUseCase,
+    private val deletePrivacyZoneUseCase: DeletePrivacyZoneUseCase,
     private val cryptoKEKRepo: CryptoKEKLocalRepository,
     private val userKeyRepo: CryptoUserKeysLocalSource,
     private val memberLocal: LocationLocalDataSource,
@@ -143,9 +145,9 @@ class RealtimeEventsProcessor constructor(
 
         if (response.events.any { it.endsWith(".delete") }) {
             logg.tag("realtime_events").v("Got privacy zone delete event")
-            getPrivacyZonesUseCase.deletePrivacyZoneLocally(
-                zoneId = zone.id,
+            deletePrivacyZoneUseCase.deletePrivacyZoneLocally(
                 groupId = zone.groupId,
+                privacyZoneId = zone.id,
             )
         } else {
             logg.tag("realtime_events").v("Got privacy zone create/update event")
