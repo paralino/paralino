@@ -32,6 +32,12 @@ struct MapHomeScreen: View {
                     onOpenCreatePlaceScreen: { groupId, latLng in
                         path.append(.home(.placeCreate(groupId: groupId, placeId: nil, lat: latLng?.lat, lng: latLng?.lng)))
                     },
+                    onOpenPrivacyZonesScreen: { groupId in
+                        path.append(.home(.privacyZones(groupId: groupId, isOnboarding: false)))
+                    },
+                    onOpenCreatePrivacyZone: { groupId, latLng in
+                        path.append(.home(.privacyZoneCreate(groupId: groupId, zoneId: nil, lat: latLng?.lat, lng: latLng?.lng)))
+                    },
                     onSheetOffsetChange: { offset in
                         mapState.bottomSafeArea = max(CGFloat(offset.floatValue - safeAreaInsets.bottom), 0)
                     },
@@ -55,6 +61,9 @@ struct MapHomeScreen: View {
                     },
                     onPlaceClick: { event in
                         path.append(.home(.placeDetail(groupId: event.groupId, placeId: event.placeId)))
+                    },
+                    onPrivacyZoneClick: { event in
+                        path.append(.home(.privacyZoneDetail(groupId: event.groupId, zoneId: event.zoneId)))
                     },
                     onDirectionsRequest: { event in
                         let url = event.navigationApp.buildLaunchURL(lat: event.lat, lng: event.lng, title: event.name)

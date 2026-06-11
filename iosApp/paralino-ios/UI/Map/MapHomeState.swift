@@ -52,11 +52,15 @@ class MapHomeState : BaseMapObservableObject {
                     
                     if readyState.mapHomeScreenFocusType is shared.MapHomeScreenFocusTypeALL_PLACES {
                         self?.focusToMarkers(markers.filter { $0.data.pinType == MapPinType.place }, animate: true)
+                    } else if readyState.mapHomeScreenFocusType is shared.MapHomeScreenFocusTypeALL_PRIVACY_ZONES {
+                        self?.focusToMarkers(markers.filter { $0.data.pinType == MapPinType.privacyZone }, animate: true)
                     } else if readyState.mapHomeScreenFocusType is shared.MapHomeScreenFocusTypeALL_MEMBERS {
                         self?.focusToMarkers(markers.filter { $0.data.pinType == MapPinType.member }, animate: true)
                     } else if let focus = readyState.mapHomeScreenFocusType as? shared.MapHomeScreenFocusTypeMEMBER {
                         self?.focusToMarker(data: readyState.trackingMarker, forceZoom: focus.forceZoom)
                     } else if readyState.mapHomeScreenFocusType is shared.MapHomeScreenFocusTypePLACE {
+                        self?.focusToMarker(data: readyState.trackingMarker)
+                    } else if readyState.mapHomeScreenFocusType is shared.MapHomeScreenFocusTypePRIVACY_ZONE {
                         self?.focusToMarker(data: readyState.trackingMarker)
                     } else if readyState.mapHomeScreenFocusType is shared.MapHomeScreenFocusTypeNONE {
 //                        do nothing

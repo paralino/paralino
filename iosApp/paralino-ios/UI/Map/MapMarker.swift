@@ -69,6 +69,23 @@ struct MapMarker: View {
                 )
             }
             .frame(width: realSize, height: realSize)
+            .overlay(alignment: .bottomTrailing) {
+                if markerItem.data.pinType == MapPinType.privacyZone {
+                    Image(
+                        resource: MR.shared.images.ic_privacy_zone
+                    )
+                        .resizable()
+                        .renderingMode(.template)
+                        .aspectRatio(contentMode: .fill)
+                        .frame(width: realSize * 0.35, height: realSize * 0.35)
+                        .foregroundStyle(Color.accentDark)
+                        .padding(pinSize * 0.03)
+                        .background(Color.accentDark.opacity(0.2))
+                        .clipShape(Circle())
+                        .background(Color.themebackground)
+                        .clipShape(Circle())
+                }
+            }
         }
         
         if markerItem.data.active {
@@ -114,7 +131,7 @@ class MapAnnotatedItem: MKPointAnnotation, ObservableObject, Identifiable {
     }
     
     func shouldUpdateView(other: MapAnnotatedItem) -> Bool {
-        return data.image != other.data.image || data.active != other.data.active || data.focused != other.data.focused || data.markerStyle != other.data.markerStyle || data.getPinSize() != other.data.getPinSize()
+        return data.image != other.data.image || data.active != other.data.active || data.focused != other.data.focused || data.markerStyle != other.data.markerStyle || data.pinType != other.data.pinType || data.getPinSize() != other.data.getPinSize()
     }
 }
 

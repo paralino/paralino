@@ -44,10 +44,13 @@ struct GroupDetailScreen: View {
                         path.append(.home(.placeDetail(groupId: GroupOrSpaceIdHelper.shared.unwrap(id: item.groupOrSpaceId)!, placeId: item.itemId)))
                     },
                     openPrivacyZones: {
-                        
+                        path.append(.home(.privacyZones(groupId: appState.vm.groupId, isOnboarding: false)))
                     },
                     openPrivacyZone: { item in
-                        
+                        path.append(.home(.privacyZoneDetail(
+                            groupId: GroupOrSpaceIdHelper.shared.unwrap(id: item.groupOrSpaceId)!,
+                            zoneId: item.itemId
+                        )))
                     },
                     openGroupSettings: {
                         path.append(.home(.groupSettings(groupId: appState.vm.groupId)))

@@ -179,7 +179,7 @@ class MapComponentVC: UIViewController, UIGestureRecognizerDelegate {
         let currentAnnotations = mapView.annotations.filter {
             $0 is HistoryMapMarkerData || $0 is HistoryStartStopMapMarkerData
         }
-        let currentOverlays = mapView.overlays.filter { $0 is MKPolyline }
+        let currentOverlays = mapView.overlays.filter { $0 is MKPolyline || $0 is MapCircleOverlay }
         
         print("Refreshing annotations: \(currentAnnotations.count)")
         
@@ -225,7 +225,7 @@ class MapComponentVC: UIViewController, UIGestureRecognizerDelegate {
     
     private func updateMarkers(_ newMarkers: [MapAnnotatedItem]) {
         
-        let existingOverlays = mapView.overlays.filter { $0 is MKCircle }
+        let existingOverlays = mapView.overlays.filter { $0 is MapCircleOverlay }
         let existingAnnotations = mapView.annotations.filter { $0 is MapAnnotatedItem }
         
         for marker in newMarkers {
@@ -245,25 +245,22 @@ class MapComponentVC: UIViewController, UIGestureRecognizerDelegate {
         }
         
         for marker in newMarkers {
-            if let currentOverlay = existingOverlays.first(where: { marker.id == ($0 as? MapAnnotatedItem)?.id }) {
+            if let currentOverlay = existingOverlays.first(where: { marker.id == ($0 as? MapCircleOverlay)?.markerId }) {
                 mapView.removeOverlay(currentOverlay)
                 if marker.data.shouldShowApproximateCircle {
-                    let circle = MKCircle(center: marker.coordinate, radius: Double(marker.data.accuracy))
-                    mapView.addOverlay(circle)
+                    mapView.addOverlay(makeCircleOverlay(for: marker))
                 }
-            } else {
-                if marker.data.shouldShowApproximateCircle {
-                    let circle = MKCircle(center: marker.coordinate, radius: Double(marker.data.accuracy))
-                    mapView.addOverlay(circle)
-                }
+            } else if marker.data.shouldShowApproximateCircle {
+                mapView.addOverlay(makeCircleOverlay(for: marker))
             }
         }
-        
+
         let toRemove = existingAnnotations.filter { current in
             !newMarkers.contains(where: { $0.id == (current as? MapAnnotatedItem)?.id })
         }
         let toRemoveOverlays = existingOverlays.filter { current in
-            !newMarkers.contains(where: { $0.id == (current as? MapAnnotatedItem)?.id })
+            guard let overlay = current as? MapCircleOverlay else { return true }
+            return !newMarkers.contains(where: { $0.id == overlay.markerId })
         }
         mapView.removeAnnotations(toRemove)
         mapView.removeOverlays(toRemoveOverlays)
@@ -449,10 +446,72 @@ extension MapComponentVC: MKMapViewDelegate {
         }
     }
     
+    private func makeCircleOverlay(for marker: MapAnnotatedItem) -> MapCircleOverlay {
+        MapCircleOverlay.circle(
+            center: marker.coordinate,
+            radius: Double(marker.data.accuracy),
+            markerId: marker.id,
+            pinType: marker.data.pinType,
+            isFocused: marker.data.focused
+        )
+    }
+
+    private func circleStyle(
+        for pinType: MapPinType,
+        isSatellite: Bool,
+        isDark: Bool
+    ) -> (fill: UIColor, stroke: UIColor, strokeWidth: CGFloat, dashPattern: [NSNumber]?) {
+        let dashPattern: [NSNumber] = [6, 4]
+
+        switch pinType {
+        case .member:
+            return (
+                UIColor(withAlphaRGB: AppColors.Raw.accentDark).withAlphaComponent(0.5),
+                .white,
+                0.5,
+                dashPattern
+            )
+        case .place:
+            let fill: UIColor
+            if isSatellite {
+                fill = UIColor(withAlphaRGB: AppColors.Raw.accent).withAlphaComponent(0.35)
+            } else if isDark {
+                fill = UIColor.blue.withAlphaComponent(0.2)
+            } else {
+                fill = UIColor.blue.withAlphaComponent(0.2)
+            }
+            return (fill, .clear, 0, nil)
+        case .privacyZone:
+            let fill: UIColor
+            let stroke: UIColor
+            if isSatellite {
+                fill = UIColor.black.withAlphaComponent(0.4)
+                stroke = UIColor(withAlphaRGB: AppColors.Raw.redMain)
+            } else if isDark {
+                fill = UIColor(withAlphaRGB: AppColors.Raw.accentDark).withAlphaComponent(0.4)
+                stroke = UIColor(withAlphaRGB: AppColors.Raw.redMain)
+            } else {
+                fill = UIColor.black.withAlphaComponent(0.25)
+                stroke = .black
+            }
+            return (fill, stroke, 1, dashPattern)
+        default:
+            return (UIColor.blue.withAlphaComponent(0.2), .systemBlue, 0, nil)
+        }
+    }
+
     func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
-        if let circle = overlay as? MKCircle {
+        if let circle = overlay as? MapCircleOverlay {
             let renderer = MKCircleRenderer(circle: circle)
-            renderer.fillColor = UIColor.blue.withAlphaComponent(0.2)
+            let isSatellite = mapView.mapType == .hybrid
+            let isDark = traitCollection.userInterfaceStyle == .dark
+            let style = circleStyle(for: circle.pinType, isSatellite: isSatellite, isDark: isDark)
+            renderer.fillColor = style.fill
+            renderer.strokeColor = style.stroke
+            renderer.lineWidth = style.strokeWidth
+            if let dashPattern = style.dashPattern, style.strokeWidth > 0 {
+                renderer.lineDashPattern = dashPattern
+            }
             return renderer
         } else if let polyline = overlay as? MKPolyline {
             let renderer = MKPolylineRenderer(polyline: polyline)
@@ -505,5 +564,25 @@ extension MKCoordinateRegion {
         )
         
         self.init(center: center, span: span)
+    }
+}
+
+class MapCircleOverlay: MKCircle {
+    var markerId: String = ""
+    var pinType: MapPinType = .place
+    var isFocused: Bool = false
+
+    static func circle(
+        center: CLLocationCoordinate2D,
+        radius: CLLocationDistance,
+        markerId: String,
+        pinType: MapPinType,
+        isFocused: Bool
+    ) -> MapCircleOverlay {
+        let circle = MapCircleOverlay(center: center, radius: radius)
+        circle.markerId = markerId
+        circle.pinType = pinType
+        circle.isFocused = isFocused
+        return circle
     }
 }
