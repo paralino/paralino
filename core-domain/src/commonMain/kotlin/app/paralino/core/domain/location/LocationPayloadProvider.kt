@@ -73,14 +73,26 @@ class LocationPayloadProvider(
                     val isSharingApproximate = approximateRadius != null
                     val isInsidePrivacyZone = privacyZoneUploadAccuracy != null
                     val adjustedCoordinates = if (approximateRadius != null) {
-                        approximateLocationObfuscator.obfuscate(
-                            groupId = groupId,
-                            trueLat = workingLat,
-                            trueLng = workingLng,
-                            radiusMeters = approximateRadius
-                        )
+                        if (privacyZoneUploadAccuracy != null && privacyZoneUploadAccuracy < approximateRadius) {
+                            approximateLocationObfuscator.obfuscate(
+                                groupId = groupId,
+                                trueLat = workingLat,
+                                trueLng = workingLng,
+                                radiusMeters = approximateRadius
+                            )
+                        } else {
+                            null
+                        }
                     } else {
                         null
+                    }
+
+                    val adjustedAccuracy = if (approximateRadius != null && privacyZoneUploadAccuracy != null) {
+                        maxOf(approximateRadius.toFloat(), privacyZoneUploadAccuracy.toFloat())
+                    } else {
+                        approximateRadius?.toFloat()
+                            ?: privacyZoneUploadAccuracy?.toFloat()
+                            ?: data.accuracy
                     }
 
                     val isApproximate = (isSharingApproximate || isInsidePrivacyZone) &&
@@ -91,9 +103,7 @@ class LocationPayloadProvider(
                         endTimeUTC = contract.endTimeUTC?.takeIf { contract.shareDeviceStatus },
                         lat = (adjustedCoordinates?.lat ?: workingLat).roundToPrecision(decimalPlaces = 6),
                         lng = (adjustedCoordinates?.lng ?: workingLng).roundToPrecision(decimalPlaces = 6),
-                        accuracy = approximateRadius?.toFloat()
-                            ?: privacyZoneUploadAccuracy?.toFloat()
-                            ?: data.accuracy,
+                        accuracy = adjustedAccuracy,
                         speed = data.speed?.takeIf {
                             contract.shareSpeed && it != 0f && !isApproximate
                         },
