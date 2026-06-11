@@ -62,7 +62,7 @@ class PrivacyZoneCreatedNotificationProcessor(
         val title = if (zoneName.isNullOrBlank() || groupName.isNullOrBlank()) {
             MR.strings.privacy_zone_created_notification_default.localizedString()
         } else {
-            MR.strings.privacy_zone_created_notification.localizedString(groupName, zoneName)
+            MR.strings.privacy_zone_created_notification.localizedString(zoneName, groupName)
         }
 
         val notificationGroup = when (appPrefs.notificationGrouping) {
