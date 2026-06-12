@@ -66,8 +66,8 @@ class PrivacyZoneObfuscator(
             radiusMeters = data.radiusMeters,
             trueLat = trueLat,
             trueLng = trueLng,
-            shareStatus = zone.data.data?.notifyOthersInZone ?: false,
-            message = zone.data.data?.inZoneMessage
+            shareStatus = data.notifyOthersInZone,
+            message = data.inZoneMessage
         )
     }
 
