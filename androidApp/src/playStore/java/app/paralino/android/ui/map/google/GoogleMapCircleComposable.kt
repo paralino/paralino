@@ -64,7 +64,7 @@ fun GoogleMapCircleComposable(
                 }
             },
             strokeWidth = when (model.pinType) {
-                MapPinType.MEMBER -> 6f
+                MapPinType.MEMBER -> 5f
                 MapPinType.PLACE -> 0f
                 MapPinType.PRIVACY_ZONE -> 8f
             },

@@ -468,8 +468,8 @@ extension MapComponentVC: MKMapViewDelegate {
             return (
                 UIColor(withAlphaRGB: AppColors.Raw.accentDark).withAlphaComponent(0.5),
                 .white,
-                0.5,
-                dashPattern
+                1,
+                nil
             )
         case .place:
             let fill: UIColor

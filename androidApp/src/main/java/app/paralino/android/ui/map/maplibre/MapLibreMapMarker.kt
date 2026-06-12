@@ -167,7 +167,7 @@ fun MapLibreMapCircle(
     }
 
     val strokeWidth = when (pinType) {
-        MapPinType.MEMBER -> 4.dp
+        MapPinType.MEMBER -> 2.dp
         MapPinType.PLACE -> 0.dp
         MapPinType.PRIVACY_ZONE -> 4.dp
     }
