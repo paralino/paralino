@@ -51,6 +51,7 @@ fun InitialGroupContentCreationComponent(
     hint: String,
     hasNameError: Boolean,
     suggestions: List<SuggestionSectionChipData>,
+    isSmallScreen: Boolean = LocalScreenDimensionType.current.isSmall,
     bottomContent: @Composable () -> Unit,
     onImageClick: () -> Unit,
     onNameChanged: (String) -> Unit,
@@ -75,7 +76,6 @@ fun InitialGroupContentCreationComponent(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Spacer(modifier = Modifier.weight(1f))
-        val isSmallScreen = LocalScreenDimensionType.current.isSmall
 
         Box(
             modifier = Modifier.size(if (isSmallScreen) 80.dp else 120.dp),

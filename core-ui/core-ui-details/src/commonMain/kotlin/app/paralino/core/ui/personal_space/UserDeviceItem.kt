@@ -214,7 +214,10 @@ fun UserDeviceItem(
                         verticalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterVertically)
                     ) {
                         if (state.device != null) {
-                            GroupStatusTagContent((state.device?.location?.deviceStatus ?: MemberDeviceStatusType.INACTIVE).toStatusTagType())
+                            GroupStatusTagContent(
+                                status = (state.device?.location?.deviceStatus ?: MemberDeviceStatusType.INACTIVE).toStatusTagType(),
+                                extraMessage = null
+                            )
 
                             if (state.device?.device?.deviceType != null) {
                                 Text(

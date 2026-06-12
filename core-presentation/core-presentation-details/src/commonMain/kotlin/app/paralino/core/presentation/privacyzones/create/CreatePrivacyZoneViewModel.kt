@@ -2,8 +2,12 @@ package app.paralino.core.presentation.privacyzones.create
 
 import androidx.compose.ui.text.input.TextFieldValue
 import app.paralino.core.MR
+import app.paralino.core.appPrefs
+import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.group.PlaceAddressSearchUseCase
+import app.paralino.core.domain.location.GetMemberWithLocationsUseCase
 import app.paralino.core.domain.location.LocationCacheRepository
+import app.paralino.core.domain.location.UserMemberIdUseCase
 import app.paralino.core.domain.privacyzone.CreatePrivacyZoneUseCase
 import app.paralino.core.domain.privacyzone.UpdatePrivacyZoneUseCase
 import app.paralino.core.domain.user.PremiumStatusLimitState
@@ -14,13 +18,23 @@ import app.paralino.core.models.Payload
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.models.data
+import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.location.LatLng
+import app.paralino.core.models.location.MemberDeviceOnlineStatusType
+import app.paralino.core.models.location.MemberDeviceStatusType
 import app.paralino.core.models.mapSuccess
 import app.paralino.core.models.privacyzones.GroupPrivacyZone
 import app.paralino.core.models.privacyzones.PrivacyZoneData
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.presentation.SuggestionSectionChipData
+import app.paralino.core.presentation.common.GroupMemberItemLocationState
+import app.paralino.core.presentation.common.GroupMemberItemStateWithOneLocation
+import app.paralino.core.presentation.common.GroupMemberState
 import app.paralino.core.presentation.common.MainAlertDialog
+import app.paralino.core.presentation.common.MemberActionItemState
+import app.paralino.core.presentation.common.MemberActionType
+import app.paralino.core.presentation.common.MemberActionsState
+import app.paralino.core.presentation.common.MemberLocationVisibilityType
 import app.paralino.core.presentation.common.ScreenDimensionType
 import app.paralino.core.presentation.places.create.PlaceAddressSearchUiMode
 import app.paralino.core.presentation.places.create.PlaceAddressSuggestion
@@ -30,12 +44,17 @@ import app.paralino.core.provider.DistanceType
 import app.paralino.core.provider.FormattingFractionsMode
 import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.provider.MeasurementSystemType
+import app.paralino.core.provider.NetworkSignalStrength
+import app.paralino.core.provider.NetworkType
 import app.paralino.core.provider.localizedString
+import app.paralino.core.repo.location.LocationLocalDataSource
 import app.paralino.core.repo.privacyzones.PrivacyZonesLocalDataSource
+import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.exceptions.asRemoteException
 import app.paralino.core.utils.extensions.errorString
 import app.paralino.core.utils.extensions.mapToPayload
+import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.Job
@@ -49,6 +68,8 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import kotlin.coroutines.cancellation.CancellationException
 
 class CreatePrivacyZoneViewModel(
@@ -63,7 +84,9 @@ class CreatePrivacyZoneViewModel(
     private val refreshEverythingUseCase: RefreshEverythingUseCase,
     private val valueFormatter: IValueFormatter,
     private val placeAddressSearch: PlaceAddressSearchUseCase,
-    private val cachedLocation: LocationCacheRepository
+    private val cachedLocation: LocationCacheRepository,
+    private val getMemberWithLocations: GetMemberWithLocationsUseCase,
+    private val userRepo: UserRepository
 ) : CoreViewModel() {
 
     private val zoneFlow = MutableStateFlow<Payload<GroupPrivacyZone>>(Payload.Loading)
@@ -78,7 +101,7 @@ class CreatePrivacyZoneViewModel(
     private var mapPosition: LatLng? = null
     val isNewZone: Boolean = zoneId.isNullOrBlank()
 
-    val zoneNameLengthLimit = 30
+    private val zoneNameLengthLimit = 30
 
     init {
         coroutineScope.launch {
@@ -87,6 +110,12 @@ class CreatePrivacyZoneViewModel(
                 else -> privacyZonesLocalDataSource.getPrivacyZoneOnce(zoneId)
                     ?.let { Payload.Success(it) }
             } ?: Payload.Error(NullPointerException("No such privacy zone"))
+
+//            memberIdUseCase.getCurrentLocationForGroup(groupId = groupId.asGroupOrSpaceId())?.let {
+//                GroupMemberItemStateWithOneLocation(
+//
+//                )
+//            }
 
             zoneFlow.update { value }
             _uiState.update {
@@ -112,6 +141,10 @@ class CreatePrivacyZoneViewModel(
                             },
                             radiusValue = ApproximateLocationDistancePair.default,
                             radiusText = formatRadius(ApproximateLocationDistancePair.default),
+                            memberPreviewState = getMemberPreviewState(
+                                isInPrivacyZone = true,
+                                zoneMessage = null
+                            ),
                             androidMapSDKProvider = premiumStatusManager.defaultMapProvider(),
                             nameSuggestions = getNameSuggestions()
                         )
@@ -135,8 +168,12 @@ class CreatePrivacyZoneViewModel(
                             addressSuggestions = emptyList(),
                             isAddressLoading = false,
                             hasNameError = false,
-                            notifyOthersInZone = zoneData?.notifyOthersInZone ?: false,
+                            notifyOthersInZone = zoneData?.notifyOthersInZone ?: true,
                             inZoneMessage = zoneData?.inZoneMessage,
+                            memberPreviewState = getMemberPreviewState(
+                                isInPrivacyZone = zoneData?.notifyOthersInZone ?: true,
+                                zoneMessage = zoneData?.inZoneMessage
+                            ),
                             fallbackCenterLatLng = null,
                             lat = zoneData?.lat,
                             lng = zoneData?.lng,
@@ -291,7 +328,10 @@ class CreatePrivacyZoneViewModel(
             expiresAt = zone?.data?.data?.expiresAt ?: "",
             notifyOthersInZone = data.notifyOthersInZone,
             inZoneMessage = if (data.notifyOthersInZone) {
-                data.inZoneMessage?.trim()?.takeIf { it.isNotBlank() }
+                data.inZoneMessage
+                    ?.trim()
+                    ?.take(CreatePrivacyZoneScreenState.maxMessageLength)
+                    ?.takeIf { it.isNotBlank() }
             } else {
                 null
             },
@@ -400,6 +440,67 @@ class CreatePrivacyZoneViewModel(
             .launchIn(coroutineScope)
     }
 
+    private suspend fun getMemberPreviewState(
+        isInPrivacyZone: Boolean,
+        zoneMessage: String?
+    ): GroupMemberItemStateWithOneLocation {
+        val member = getMemberWithLocations.getMemberWithLocationsOnce(
+            groupId = groupId,
+            userId = userRepo.cachedUser?.id ?: ""
+        )
+
+        val time = valueFormatter.formatTimeOnly(
+            timeUTC = nowUTC().toLocalDateTime(TimeZone.UTC),
+            showSeconds = false
+        )
+
+        return GroupMemberItemStateWithOneLocation(
+            memberState = GroupMemberState(
+                groupId = UserGroup.groupPersonalDevicesId,
+                memberId = "",
+                userId = "",
+                name = userRepo.cachedUser?.name ?: "",
+                image = userRepo.cachedUser?.data?.userImage ?: ImageModel.emoji(Emojis.robot),
+                paralinoId = null,
+                isCurrentUser = true,
+                isVerified = true,
+                canHaveExpandButton = false
+            ),
+            singleLocation = GroupMemberItemLocationState(
+                locationId = "",
+                deviceId = "",
+                name = member?.currentDeviceLocation?.name,
+                image = ImageModel.emoji(Emojis.lock),
+                lat = null,
+                lng = null,
+                actualBatteryLevel = member?.currentDeviceLocation?.status?.data?.validBatteryLevel(checkForTime = false),
+                adjustedBatteryLevel = member?.currentDeviceLocation?.status?.data?.validBatteryLevel(checkForTime = true),
+                isBatteryCharging = false,
+                speed = null,
+                elevation = null,
+                lastLocationPing = time,
+                lastStatusPing = time,
+                accuracyMeters = 1000f,
+                deviceStatus = MemberDeviceStatusType.ACTIVE,
+                canEdit = true,
+                currentDevice = true,
+                isApproximate = true,
+                isInPrivacyZone = isInPrivacyZone,
+                privacyZoneMessage = zoneMessage,
+                onlineStatus = MemberDeviceOnlineStatusType.ONLINE,
+                networkType = NetworkType.G4,
+                signalStrength = NetworkSignalStrength.GOOD,
+                visibility = MemberLocationVisibilityType.VISIBLE_ALWAYS,
+                distanceFromMeText = null,
+                atPlace = null
+            ),
+            deviceId = "",
+            actions = MemberActionsState(),
+            isHighlighted = true,
+            isCollapsedOrMinimized = false
+        )
+    }
+
     private fun goToFinalCreateStep() {
         val data = _uiState.value.data ?: return
 
@@ -433,21 +534,34 @@ class CreatePrivacyZoneViewModel(
                 state.copy(
                     notifyOthersInZone = enabled,
                     inZoneMessage = if (enabled) state.inZoneMessage else null,
+                    memberPreviewState = state.memberPreviewState.copy(
+                        singleLocation = state.memberPreviewState.singleVisibleLocation?.copy(
+                            isInPrivacyZone = enabled,
+                            privacyZoneMessage = if (enabled) state.inZoneMessage else null
+                        )
+                    )
                 )
             }
         }
     }
 
     private fun updateInZoneMessage(message: String) {
-        val trimmedMessage = if (message.trim().length > zoneNameLengthLimit) {
+        val trimmedMessage = if (message.length > CreatePrivacyZoneScreenState.maxMessageLength) {
             uiState.value.data?.inZoneMessage ?: ""
         } else {
             message
         }
 
         _uiState.update {
-            it.mapSuccess {
-                it.copy(inZoneMessage = trimmedMessage)
+            it.mapSuccess { state ->
+                state.copy(
+                    inZoneMessage = trimmedMessage,
+                    memberPreviewState = state.memberPreviewState.copy(
+                        singleLocation = state.memberPreviewState.singleVisibleLocation?.copy(
+                            privacyZoneMessage = trimmedMessage.takeIf { it.isNotBlank() }
+                        )
+                    )
+                )
             }
         }
     }

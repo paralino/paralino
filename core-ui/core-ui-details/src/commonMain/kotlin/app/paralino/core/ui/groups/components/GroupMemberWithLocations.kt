@@ -280,7 +280,10 @@ fun GroupMemberWithLocations(
                             modifier = Modifier.align(Alignment.CenterVertically),
                             horizontalArrangement = Arrangement.spacedBy(4.dp, Alignment.Start)
                         ) {
-                            GroupStatusTagContent(it)
+                            GroupStatusTagContent(
+                                status = it,
+                                extraMessage = singleVisibleLocation?.privacyZoneMessage
+                            )
                         }
                     }
 
@@ -731,7 +734,7 @@ private fun GroupMemberLocationChild(
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(4.dp, Alignment.Start)
                     ) {
-                        GroupStatusTagContent(it)
+                        GroupStatusTagContent(status = it, extraMessage = state.privacyZoneMessage)
                     }
                 }
 

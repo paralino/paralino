@@ -278,7 +278,7 @@ object KoinSetup {
         viewModel { (groupID: String, isOnboarding: Boolean) -> PrivacyZonesViewModel(groupID, isOnboarding, get(), get(), get(), get()) }
         viewModel { (groupID: String, zoneId: String) -> PrivacyZoneDetailViewModel(groupID, zoneId, get(), get(), get(), get(), get()) }
         viewModel { (groupID: String, placeId: String?, lat: Double?, lng: Double?) -> CreatePlaceViewModel(groupId = groupID, placeId = placeId, lat = lat, lng = lng, get(), get(), get(), get(), get(), get(), get()) }
-        viewModel { (groupID: String, zoneId: String?, lat: Double?, lng: Double?) -> CreatePrivacyZoneViewModel(groupId = groupID, zoneId = zoneId, lat = lat, lng = lng, get(), get(), get(), get(), get(), get(), get(), get()) }
+        viewModel { (groupID: String, zoneId: String?, lat: Double?, lng: Double?) -> CreatePrivacyZoneViewModel(groupId = groupID, zoneId = zoneId, lat = lat, lng = lng, get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
         viewModel { (rawDataType: RawPresentationDataType) -> RawDataPresentationViewModel(rawDataType, get(), get()) }
         viewModel { BlocklistViewModel(get()) }
         viewModel { AppStatusDebugViewModel(get(), get(), get(), get(), get()) }

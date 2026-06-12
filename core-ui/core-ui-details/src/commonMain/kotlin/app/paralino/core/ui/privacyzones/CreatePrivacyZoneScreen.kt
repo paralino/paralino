@@ -232,6 +232,8 @@ private fun CreatePrivacyZoneScreenContent(
                     .background(MaterialTheme.colors.background)
                     .padding(horizontal = 20.dp),
                 focusManager = focusManager,
+                // always assumed true for privacy zone
+                isSmallScreen = true,
                 shakeImage = state.isNewZone,
                 image = state.image,
                 name = state.name,
@@ -246,6 +248,8 @@ private fun CreatePrivacyZoneScreenContent(
                         focusManager = focusManager,
                         notifyOthersInZone = state.notifyOthersInZone,
                         inZoneMessage = state.inZoneMessage,
+                        maxMessageLength = state.maxMessageLength,
+                        memberPreviewState = state.memberPreviewState,
                         onNotifyOthersInZoneChanged = {
                             onEvent(CreatePrivacyZoneScreenUiEvent.OnNotifyOthersInZoneChanged(it))
                         },

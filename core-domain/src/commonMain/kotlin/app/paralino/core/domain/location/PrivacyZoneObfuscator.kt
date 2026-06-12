@@ -22,6 +22,8 @@ data class PrivacyZoneObfuscationResult(
     val lat: Double,
     val lng: Double,
     val uploadAccuracyMeters: Int,
+    val shareStatus: Boolean,
+    val message: String?,
 )
 
 class PrivacyZoneObfuscator(
@@ -64,6 +66,8 @@ class PrivacyZoneObfuscator(
             radiusMeters = data.radiusMeters,
             trueLat = trueLat,
             trueLng = trueLng,
+            shareStatus = zone.data.data?.notifyOthersInZone ?: false,
+            message = zone.data.data?.inZoneMessage
         )
     }
 
@@ -75,6 +79,8 @@ class PrivacyZoneObfuscator(
         radiusMeters: Int,
         trueLat: Double,
         trueLng: Double,
+        shareStatus: Boolean,
+        message: String?,
     ): PrivacyZoneObfuscationResult {
         val cached = sharedLocationLocal.load(groupId = groupId, privacyZoneId = privacyZoneId)
         if (cached != null && cached.zoneRadiusMeters == radiusMeters) {
@@ -90,6 +96,8 @@ class PrivacyZoneObfuscator(
                     lat = cached.lat,
                     lng = cached.lng,
                     uploadAccuracyMeters = cached.uploadAccuracyMeters,
+                    shareStatus = shareStatus,
+                    message = message
                 )
             }
         }
@@ -128,6 +136,8 @@ class PrivacyZoneObfuscator(
             lat = point.lat,
             lng = point.lng,
             uploadAccuracyMeters = uploadAccuracyMeters,
+            shareStatus = shareStatus,
+            message = message
         )
     }
 

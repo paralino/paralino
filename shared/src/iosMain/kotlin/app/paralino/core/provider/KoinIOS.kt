@@ -343,6 +343,8 @@ object KoinIOS {
                     valueFormatter = get(),
                     placeAddressSearch = get(),
                     cachedLocation = get(),
+                    getMemberWithLocations = get(),
+                    userRepo = get()
                 )
             }
             factory { (rawDataType: RawPresentationDataType) ->

@@ -36,20 +36,22 @@ fun GroupStatusTag(
             horizontalArrangement = Arrangement.spacedBy(4.dp, Alignment.Start),
             verticalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterVertically)
         ) {
-            GroupStatusTagContent(status)
+            GroupStatusTagContent(status = status, extraMessage = null)
         }
     }
 }
 
 @Composable
 fun RowScope.GroupStatusTagContent(
-    status: GroupStatusTagType
+    status: GroupStatusTagType,
+    extraMessage: String?
 ) {
     val tagIconColor = when (status) {
         GroupStatusTagType.SHARING_ACTIVE,
         GroupStatusTagType.SHARING_ACTIVE_NO_LOCATION,
         GroupStatusTagType.SHARING_ACTIVE_NOT_ACCURATE,
-        GroupStatusTagType.SHARING_ACTIVE_LOCATION_HIDDEN -> AppColors.accent
+        GroupStatusTagType.SHARING_ACTIVE_LOCATION_HIDDEN,
+        GroupStatusTagType.SHARING_ACTIVE_PRIVACY_ZONE -> AppColors.accent
 
         GroupStatusTagType.UNVERIFIED,
         GroupStatusTagType.GPS_OFF,
@@ -62,7 +64,9 @@ fun RowScope.GroupStatusTagContent(
         GroupStatusTagType.IDLE_NOT_ACCURATE,
         GroupStatusTagType.INACTIVE_NOT_ACCURATE,
         GroupStatusTagType.IDLE_LOCATION_HIDDEN,
+        GroupStatusTagType.IDLE_PRIVACY_ZONE,
         GroupStatusTagType.INACTIVE_LOCATION_HIDDEN,
+        GroupStatusTagType.INACTIVE_PRIVACY_ZONE,
         GroupStatusTagType.BATTERY_SAVING -> AppColors.highlightGold
 
         GroupStatusTagType.INACTIVE,
@@ -72,7 +76,8 @@ fun RowScope.GroupStatusTagContent(
 
     val tagBackgroundColor = when (status) {
         GroupStatusTagType.SHARING_ACTIVE_NOT_ACCURATE,
-        GroupStatusTagType.SHARING_ACTIVE_LOCATION_HIDDEN -> AppColors.highlightGold
+        GroupStatusTagType.SHARING_ACTIVE_LOCATION_HIDDEN,
+        GroupStatusTagType.SHARING_ACTIVE_PRIVACY_ZONE -> AppColors.highlightGold
         else -> tagIconColor
     }
 
@@ -95,6 +100,12 @@ fun RowScope.GroupStatusTagContent(
         GroupStatusTagType.IDLE_LOCATION_HIDDEN,
         GroupStatusTagType.INACTIVE_LOCATION_HIDDEN -> stringResource(resource = MR.strings.group_members_status_location_hidden)
 
+        GroupStatusTagType.SHARING_ACTIVE_PRIVACY_ZONE,
+        GroupStatusTagType.IDLE_PRIVACY_ZONE,
+        GroupStatusTagType.INACTIVE_PRIVACY_ZONE -> {
+            extraMessage ?: stringResource(resource = MR.strings.group_members_status_privacy_zone)
+        }
+
         GroupStatusTagType.OVER_LIMITS -> stringResource(resource = MR.strings.plan_limit_alert_title)
         GroupStatusTagType.UNVERIFIED -> stringResource(resource = MR.strings.dashboard_groups_section_unverified)
         GroupStatusTagType.INACTIVE -> stringResource(resource = MR.strings.group_members_status_inactive)
@@ -113,10 +124,13 @@ fun RowScope.GroupStatusTagContent(
         GroupStatusTagType.SHARING_ACTIVE,
         GroupStatusTagType.SHARING_ACTIVE_NOT_ACCURATE,
         GroupStatusTagType.SHARING_ACTIVE_LOCATION_HIDDEN,
+        GroupStatusTagType.SHARING_ACTIVE_PRIVACY_ZONE,
         GroupStatusTagType.IDLE_NOT_ACCURATE,
         GroupStatusTagType.IDLE_LOCATION_HIDDEN,
+        GroupStatusTagType.IDLE_PRIVACY_ZONE,
         GroupStatusTagType.INACTIVE_NOT_ACCURATE,
         GroupStatusTagType.INACTIVE_LOCATION_HIDDEN,
+        GroupStatusTagType.INACTIVE_PRIVACY_ZONE,
         GroupStatusTagType.IDLE -> null
 
         GroupStatusTagType.SHARING_ACTIVE_NO_LOCATION -> CoreAppIcons.ShareLocation.asPainterResource()

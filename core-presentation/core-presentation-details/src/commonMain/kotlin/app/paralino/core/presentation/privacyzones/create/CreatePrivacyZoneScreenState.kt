@@ -10,6 +10,7 @@ import app.paralino.core.models.location.LatLng
 import app.paralino.core.models.settings.MapsSDKProvider
 import app.paralino.core.presentation.SuggestionSectionChipData
 import app.paralino.core.presentation.common.AlertDialogAction
+import app.paralino.core.presentation.common.GroupMemberItemStateWithOneLocation
 import app.paralino.core.presentation.common.MainAlertDialog
 import app.paralino.core.presentation.common.ScreenDimensionType
 import app.paralino.core.presentation.map.MapMarkerStyle
@@ -44,12 +45,14 @@ data class CreatePrivacyZoneScreenState constructor(
     val hasNameError: Boolean,
     val notifyOthersInZone: Boolean,
     val inZoneMessage: String?,
+    val memberPreviewState: GroupMemberItemStateWithOneLocation,
     val isSatelliteModeEnabled: Boolean,
     val actionLoading: Boolean,
     val fullLoading: Boolean,
     val androidMapSDKProvider: MapsSDKProvider?,
     val alertDialog: MainAlertDialog?
 ) {
+    val maxMessageLength: Int = CreatePrivacyZoneScreenState.maxMessageLength
     val deviceType: DeviceType = DeviceType.current
     val hasSatelliteMode: Boolean = when (deviceType) {
         DeviceType.Android -> androidMapSDKProvider?.hasSatelliteMaps != false
@@ -97,13 +100,14 @@ data class CreatePrivacyZoneScreenState constructor(
         }
 
     companion object {
-
+        const val maxMessageLength: Int = 40
         fun empty(
             groupId: GroupOrSpaceId,
             lat: Double? = null,
             lng: Double? = null,
             radiusValue: ApproximateLocationDistancePair,
             radiusText: String,
+            memberPreviewState: GroupMemberItemStateWithOneLocation,
             androidMapSDKProvider: MapsSDKProvider?,
             fallbackCenterLatLng: PlaceMapFallbackLatLng?,
             nameSuggestions: List<SuggestionSectionChipData>
@@ -130,8 +134,9 @@ data class CreatePrivacyZoneScreenState constructor(
                 radiusValue = radiusValue,
                 radiusText = radiusText,
                 hasNameError = false,
-                notifyOthersInZone = false,
+                notifyOthersInZone = true,
                 inZoneMessage = null,
+                memberPreviewState = memberPreviewState,
                 actionLoading = false,
                 fullLoading = false,
                 alertDialog = null,
