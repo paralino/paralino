@@ -3,7 +3,9 @@ package app.paralino.core.ui.places
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -15,6 +17,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.MaterialTheme
@@ -27,6 +30,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.dropShadow
+import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import app.paralino.core.MR
@@ -270,22 +276,34 @@ private fun PlacesScreen(
 
                     this.item(key = "map") {
                         // map
-                        Surface(
+                        Box(
                             modifier = Modifier
                                 .zIndex(10f)
                                 .fillMaxWidth()
                                 .height(200.dp)
-                                .padding(top = 8.dp),
-                            shape = MaterialTheme.shapes.medium,
-                            color = MaterialTheme.colors.background,
-                            border = BorderStroke(6.dp, MaterialTheme.colors.surface),
-                            elevation = 12.dp
+                                .padding(top = 12.dp)
+                                .background(
+                                    color = MaterialTheme.colors.background,
+                                    shape = RoundedCornerShape(20.dp)
+                                )
+                                .border(
+                                    border = BorderStroke(6.dp, MaterialTheme.colors.background),
+                                    shape = RoundedCornerShape(20.dp)
+                                )
+                                .dropShadow(
+                                    shape = RoundedCornerShape(20.dp),
+                                    shadow = Shadow(
+                                        radius = 12.dp,
+                                        color = MaterialTheme.colors.onBackground.copy(alpha = 0.2f),
+                                    )
+                                )
+                                .clip(RoundedCornerShape(20.dp)),
                         ) {
                             Surface(
                                 modifier = Modifier
                                     .fillMaxSize()
-                                    .padding(4.dp),
-                                shape = MaterialTheme.shapes.medium,
+                                    .padding(5.dp),
+                                shape = RoundedCornerShape(14.dp),
                                 color = MaterialTheme.colors.background,
                             ) {
                                 mapContent(state)

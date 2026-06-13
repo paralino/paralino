@@ -238,6 +238,12 @@ fun SmallActionButton(
             .conditional(onClick != null) {
                 clickable(onClick = { onClick?.invoke()} )
             }
+            .conditional(backgroundColor.alpha > 0f) {
+                background(
+                    color = MaterialTheme.colors.background,
+                    shape = shape
+                )
+            }
             .background(
                 color = backgroundColor,
                 shape = shape

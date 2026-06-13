@@ -24,6 +24,7 @@ data class CreatePlaceScreenState constructor(
     val groupId: GroupOrSpaceId,
     val isNewPlace: Boolean,
     val screenStep: CreatePlaceScreenStep,
+    val editOnlyCurrentStep: Boolean,
     val name: String,
     val image: ImageModel,
     val nameSuggestions: List<SuggestionSectionChipData>,
@@ -109,7 +110,8 @@ data class CreatePlaceScreenState constructor(
             return CreatePlaceScreenState(
                 groupId = groupId,
                 isNewPlace = true,
-                screenStep = CreatePlaceScreenStep.NAME_SUGGESTION,
+                screenStep = CreatePlaceScreenStep.NAME_AND_IMAGE,
+                editOnlyCurrentStep = false,
                 name = "",
                 image = ImageModel.emoji(Emojis.circles.random()),
                 nameSuggestions = nameSuggestions,
@@ -138,8 +140,15 @@ data class CreatePlaceScreenState constructor(
     }
 }
 
-enum class CreatePlaceScreenStep {
-    NAME_SUGGESTION, FULL
+enum class CreatePlaceScreenStep constructor(val key: String) {
+    NAME_AND_IMAGE("name_image"),
+    ADDRESS("address");
+
+    companion object {
+        fun fromKey(key: String?): CreatePlaceScreenStep? {
+            return entries.firstOrNull { it.key == key }
+        }
+    }
 }
 
 enum class PlaceAddressSearchUiMode {

@@ -121,24 +121,30 @@ fun CreatePlaceScreenCore(
                 is Payload.Success -> {
                     AnimatedVisibility(
                         !screenDimensionType.isSmall ||
-                                finalState.data.screenStep == CreatePlaceScreenStep.NAME_SUGGESTION ||
+                                finalState.data.screenStep == CreatePlaceScreenStep.NAME_AND_IMAGE ||
                                 finalState.data.addressUiMode == PlaceAddressSearchUiMode.HIDDEN
                     ) {
-                        ScaffoldBottomBarButton(
-                            buttonState = AppButtonState.loadingStateWithCheck(finalState.data.actionLoading),
-                            buttonText = when (finalState.data.screenStep) {
-                                CreatePlaceScreenStep.NAME_SUGGESTION -> {
+                        val buttonText = if (finalState.data.editOnlyCurrentStep) {
+                            stringResource(MR.strings.button_save)
+                        } else {
+                            when (finalState.data.screenStep) {
+                                CreatePlaceScreenStep.NAME_AND_IMAGE -> {
                                     stringResource(MR.strings.button_next)
                                 }
 
-                                CreatePlaceScreenStep.FULL -> {
+                                CreatePlaceScreenStep.ADDRESS -> {
                                     if (finalState.data.isNewPlace) {
                                         stringResource(MR.strings.places_create_button_create)
                                     } else {
                                         stringResource(MR.strings.button_save)
                                     }
                                 }
-                            },
+                            }
+                        }
+
+                        ScaffoldBottomBarButton(
+                            buttonState = AppButtonState.loadingStateWithCheck(finalState.data.actionLoading),
+                            buttonText = buttonText,
                             buttonIcon = null,
                             onClick = { vm.onEvent(CreatePlaceScreenUiEvent.CreatePlace) }
                         )
@@ -211,7 +217,7 @@ private fun CreatePlaceScreenCore(
             .padding(horizontal = 20.dp)
     ) {
         AnimatedVisibility(
-            visible = state.screenStep == CreatePlaceScreenStep.NAME_SUGGESTION,
+            visible = state.screenStep == CreatePlaceScreenStep.NAME_AND_IMAGE,
             enter = fadeIn() + slideInVertically(),
             exit = fadeOut() + slideOutVertically()
         ) {
@@ -232,7 +238,7 @@ private fun CreatePlaceScreenCore(
         }
 
         AnimatedVisibility(
-            visible = state.screenStep == CreatePlaceScreenStep.FULL,
+            visible = state.screenStep == CreatePlaceScreenStep.ADDRESS,
             enter = fadeIn() + slideInVertically(),
             exit = fadeOut() + slideOutVertically()
         ) {

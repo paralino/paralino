@@ -67,7 +67,7 @@ fun CreatePlaceMapStep(
             .fillMaxSize()
     ) {
         AnimatedVisibility(
-            visible = state.addressUiMode == PlaceAddressSearchUiMode.HIDDEN && !isSmallScreen
+            visible = state.addressUiMode == PlaceAddressSearchUiMode.HIDDEN && !isSmallScreen && !state.editOnlyCurrentStep
         ) {
             Row(
                 modifier = Modifier
@@ -117,16 +117,16 @@ fun CreatePlaceMapStep(
                 )
                 .border(
                     border = BorderStroke(6.dp, MaterialTheme.colors.background),
-                    shape = androidx.compose.foundation.shape.RoundedCornerShape(20.dp)
+                    shape = RoundedCornerShape(20.dp)
                 )
                 .dropShadow(
-                    shape = androidx.compose.foundation.shape.RoundedCornerShape(20.dp),
+                    shape = RoundedCornerShape(20.dp),
                     shadow = Shadow(
                         radius = 12.dp,
                         color = MaterialTheme.colors.onBackground.copy(alpha = 0.2f),
                     )
                 )
-                .clip(androidx.compose.foundation.shape.RoundedCornerShape(20.dp))
+                .clip(RoundedCornerShape(20.dp))
         ) {
             Column(
                 modifier = Modifier
@@ -136,8 +136,8 @@ fun CreatePlaceMapStep(
                 Surface(
                     modifier = Modifier
                         .weight(1f)
-                        .padding(6.dp),
-                    shape = androidx.compose.foundation.shape.RoundedCornerShape(15.dp),
+                        .padding(5.dp),
+                    shape = RoundedCornerShape(14.dp),
                     color = MaterialTheme.colors.background,
                 ) {
                     mapContent(state)
@@ -186,10 +186,10 @@ fun CreatePlaceMapStep(
                         .clickable { onEvent(CreatePlaceScreenUiEvent.OnMapModeSwitch) }
                         .background(
                             color = AppColors.accentDark,
-                            shape = androidx.compose.foundation.shape.RoundedCornerShape(12.dp)
+                            shape = RoundedCornerShape(12.dp)
                         )
                         .padding(4.dp)
-                        .clip(androidx.compose.foundation.shape.RoundedCornerShape(8.dp)),
+                        .clip(RoundedCornerShape(8.dp)),
                     contentScale = ContentScale.Crop
                 )
             }

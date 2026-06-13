@@ -51,6 +51,7 @@ import kotlin.coroutines.cancellation.CancellationException
 class CreatePlaceViewModel(
     val groupId: String,
     placeId: String?,
+    editStep: CreatePlaceScreenStep?,
     lat: Double? = null,
     lng: Double? = null,
     private val placesRepo: PlacesRepository,
@@ -117,23 +118,11 @@ class CreatePlaceViewModel(
                     )
 
                     else -> value.mapSuccess { place ->
-                        val screenStep = uiSizeState
-                            .filterNotNull()
-                            .distinctUntilChanged()
-                            .map { uiSize ->
-                                if (uiSize.isSmall) {
-                                    CreatePlaceScreenStep.NAME_SUGGESTION
-                                } else {
-                                    CreatePlaceScreenStep.FULL
-                                }
-                            }
-                            .firstOrNull()
-                            ?: CreatePlaceScreenStep.NAME_SUGGESTION
-
                         CreatePlaceScreenState(
                             groupId = groupId.asGroupOrSpaceId(),
                             isNewPlace = false,
-                            screenStep = screenStep,
+                            screenStep = editStep ?: CreatePlaceScreenStep.NAME_AND_IMAGE,
+                            editOnlyCurrentStep = editStep != null,
                             name = place.data.data?.name ?: "---",
                             image = place.data.data?.image ?: ImageModel.emoji(Emojis.lock),
                             nameSuggestions = emptyList(),
@@ -170,10 +159,15 @@ class CreatePlaceViewModel(
             }
 
             CreatePlaceScreenUiEvent.CreatePlace -> {
-                when (uiState.value.data?.screenStep) {
-                    CreatePlaceScreenStep.NAME_SUGGESTION -> goToFinalCreateStep()
-                    CreatePlaceScreenStep.FULL -> tryCreatePlace()
-                    null -> {}
+                if (placeFlow.value.data != null && uiState.value.data?.editOnlyCurrentStep == true) {
+                    // update current step
+                    tryCreatePlace()
+                } else {
+                    when (uiState.value.data?.screenStep) {
+                        CreatePlaceScreenStep.NAME_AND_IMAGE -> goToFinalCreateStep()
+                        CreatePlaceScreenStep.ADDRESS -> tryCreatePlace()
+                        null -> {}
+                    }
                 }
             }
 
@@ -425,7 +419,7 @@ class CreatePlaceViewModel(
 
         _uiState.update {
             it.mapSuccess {
-                it.copy(screenStep = CreatePlaceScreenStep.FULL)
+                it.copy(screenStep = CreatePlaceScreenStep.ADDRESS)
             }
         }
 

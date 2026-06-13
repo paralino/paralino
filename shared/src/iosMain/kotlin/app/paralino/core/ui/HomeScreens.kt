@@ -380,7 +380,8 @@ object HomeScreens {
         openPlaceRawDataScreen: () -> Unit,
         openPlaceAlertsScreen: () -> Unit,
         openPlaceSensitivityScreen: () -> Unit,
-        openPlaceEditScreen: () -> Unit,
+        openPlaceNameEditScreen: () -> Unit,
+        openPlacePositionEditScreen: () -> Unit,
         onNavigateBack: () -> Unit,
         mapUIView: (PlaceDetailScreenState) -> UIViewController,
     ) = ComposeUIViewController {
@@ -399,7 +400,8 @@ object HomeScreens {
                 openPlaceRawDataScreen = openPlaceRawDataScreen,
                 openPlaceAlertsScreen = openPlaceAlertsScreen,
                 openPlaceSensitivityScreen = openPlaceSensitivityScreen,
-                openPlaceEditScreen = openPlaceEditScreen,
+                openPlaceNameEditScreen = openPlaceNameEditScreen,
+                openPlacePositionEditScreen = openPlacePositionEditScreen,
                 mapContent = { state ->
                     Box(
                         modifier = Modifier.fillMaxSize()

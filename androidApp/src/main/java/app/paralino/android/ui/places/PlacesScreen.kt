@@ -79,7 +79,8 @@ fun PlacesScreen(
                 appState.navController.navigate(
                     AppScreen.MainHome.PlaceCreate.route(
                         groupId = groupId,
-                        placeId = null
+                        placeId = null,
+                        editStep = null
                     )
                 )
             },

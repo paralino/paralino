@@ -723,6 +723,7 @@
     <string name="place_create_suggestion_coffee">Best Coffee</string>
     <string name="place_list_menu_delete">Delete place</string>
     <string name="place_list_delete_place_alert_title">Are you sure you want to delete this place?</string>
+    <string name="place_detail_change_location">Change location</string>
     <string name="place_detail_setting_button_notify_enter">Enter</string>
     <string name="place_detail_setting_button_notify_exit">Exit</string>
     <string name="place_detail_notification_settings_title">Place alerts</string>

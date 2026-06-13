@@ -69,6 +69,7 @@ import app.paralino.core.presentation.onboarding.WelcomeOnboardingViewModel
 import app.paralino.core.presentation.paralinoid.PersonalCodeViewModel
 import app.paralino.core.presentation.personal_space.PersonalSpaceViewModel
 import app.paralino.core.presentation.personal_space.settings.PersonalSpaceSettingsViewModel
+import app.paralino.core.presentation.places.create.CreatePlaceScreenStep
 import app.paralino.core.presentation.places.create.CreatePlaceViewModel
 import app.paralino.core.presentation.places.detail.PlaceDetailViewModel
 import app.paralino.core.presentation.places.detail.PlaceSensitivityViewModel
@@ -314,10 +315,11 @@ object KoinIOS {
                     appPrefs = get(),
                 )
             }
-            factory { (groupID: String, placeId: String?, lat: Double?, lng: Double?) ->
+            factory { (groupID: String, placeId: String?, editStep: CreatePlaceScreenStep?, lat: Double?, lng: Double?) ->
                 CreatePlaceViewModel(
                     groupId = groupID,
                     placeId = placeId,
+                    editStep = editStep,
                     lat = lat,
                     lng = lng,
                     placesRepo = get(),
@@ -442,9 +444,10 @@ object KoinIOS {
         fun placeCreateVM(
             groupId: String,
             placeId: String?,
+            editStep: CreatePlaceScreenStep?,
             lat: Double? = null,
             lng: Double? = null
-        ) = get<CreatePlaceViewModel> { parametersOf(groupId, placeId, lat, lng) }
+        ) = get<CreatePlaceViewModel> { parametersOf(groupId, placeId, editStep, lat, lng) }
 
         fun privacyZoneCreateVM(
             groupId: String,

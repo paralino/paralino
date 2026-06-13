@@ -86,8 +86,17 @@ struct MapRootScreen: View {
                                         vm: KoinIOS.ViewModels.shared.placeSensitivityVM(groupId: groupId, placeId: placeId)
                                     )
                                 )
-                            case .placeCreate(groupId: let groupId, placeId: let placeId, lat: let lat, lng: let lng):
-                                PlaceCreateScreen(path: $mainAppState.userReadyGraph, appState: PlaceCreateScreen.createState(groupId: groupId, placeId: placeId, lat: lat, lng: lng))
+                            case .placeCreate(groupId: let groupId, placeId: let placeId, editStep: let editStep, lat: let lat, lng: let lng):
+                                PlaceCreateScreen(
+                                    path: $mainAppState.userReadyGraph,
+                                    appState: PlaceCreateScreen.createState(
+                                        groupId: groupId,
+                                        placeId: placeId,
+                                        editStep: editStep,
+                                        lat: lat,
+                                        lng: lng
+                                    )
+                                )
                             case .privacyZones(let groupId, let isOnboarding):
                                 PrivacyZonesScreen(
                                     path: $mainAppState.userReadyGraph,

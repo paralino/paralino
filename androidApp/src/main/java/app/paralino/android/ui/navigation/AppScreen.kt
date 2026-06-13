@@ -4,6 +4,7 @@ import app.paralino.core.presentation.login.LoginScreenUiType
 import app.paralino.core.models.settings.RawPresentationDataType
 import app.paralino.core.utils.DeeplinkType
 import app.paralino.core.presentation.billing.BillingScreenSourceType
+import app.paralino.core.presentation.places.create.CreatePlaceScreenStep
 import app.paralino.core.utils.BaseRemoteModule
 
 sealed class AppScreen {
@@ -243,20 +244,23 @@ sealed class AppScreen {
 
         object PlaceCreate : AppScreen() {
             val argumentPlaceId: String = "placeId"
+            val argumentEditStep: String = "editStep"
             val argumentLat: String = "lat"
             val argumentLng: String = "lng"
             override val routeSignature: String =
-                "places-create?$argumentGroupId={$argumentGroupId}&$argumentPlaceId={$argumentPlaceId}&$argumentLat={$argumentLat}&$argumentLng={$argumentLng}"
+                "places-create?$argumentGroupId={$argumentGroupId}&$argumentPlaceId={$argumentPlaceId}&$argumentEditStep={$argumentEditStep}&$argumentLat={$argumentLat}&$argumentLng={$argumentLng}"
 
             fun route(
                 groupId: String,
                 placeId: String?,
+                editStep: CreatePlaceScreenStep?,
                 lat: Double? = null,
                 lng: Double? = null
             ): String {
                 val args = arrayOf(
                     "$argumentGroupId=$groupId",
                     placeId?.let { "$argumentPlaceId=$placeId" },
+                    editStep?.let { "$argumentEditStep=${editStep.key}" },
                     lat?.let { "$argumentLat=$lat" },
                     lng?.let { "$argumentLng=$lng" }
                 )

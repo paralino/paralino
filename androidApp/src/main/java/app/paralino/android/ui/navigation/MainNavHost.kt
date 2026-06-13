@@ -66,6 +66,7 @@ import app.paralino.core.presentation.settings.generic.NotificationsGroupingView
 import app.paralino.core.presentation.settings.generic.PlaceSearchSettingsViewModel
 import app.paralino.android.presentation.settings.generic.NotificationSocketSettingsViewModel
 import app.paralino.core.presentation.billing.BillingScreenSourceType
+import app.paralino.core.presentation.places.create.CreatePlaceScreenStep
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -192,6 +193,9 @@ fun NavGraphBuilder.homeGraph(
         composable(AppScreen.MainHome.PlaceCreate.routeSignature) {
             val groupId = it.arguments?.getString(AppScreen.MainHome.PlaceCreate.argumentGroupId)!!
             val placeId = it.arguments?.getString(AppScreen.MainHome.PlaceCreate.argumentPlaceId)
+            val editStep = it.arguments?.getString(AppScreen.MainHome.PlaceCreate.argumentEditStep)?.let {
+                CreatePlaceScreenStep.fromKey(it)
+            }
             val lat = it.arguments?.takeIf { it.containsKey(AppScreen.MainHome.PlaceCreate.argumentLat) }
                 ?.getString(AppScreen.MainHome.PlaceCreate.argumentLat)?.toDoubleOrNull()
             val lng = it.arguments?.takeIf { it.containsKey(AppScreen.MainHome.PlaceCreate.argumentLng) }
@@ -200,6 +204,7 @@ fun NavGraphBuilder.homeGraph(
                 appState = appState,
                 groupId = groupId,
                 placeId = placeId,
+                editStep = editStep,
                 lat = lat.takeIf { lng != null },
                 lng = lng.takeIf { lat != null }
             )

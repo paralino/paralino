@@ -79,6 +79,7 @@ internal fun MapHomeScreenEventHandler(
                         AppScreen.MainHome.PlaceCreate.route(
                             groupId = event.groupId,
                             placeId = null,
+                            editStep = null,
                             lat = event.location?.lat,
                             lng = event.location?.lng
                         )
