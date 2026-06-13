@@ -36,7 +36,7 @@ struct MapHomeScreen: View {
                         path.append(.home(.privacyZones(groupId: groupId, isOnboarding: false)))
                     },
                     onOpenCreatePrivacyZone: { groupId, latLng in
-                        path.append(.home(.privacyZoneCreate(groupId: groupId, zoneId: nil, lat: latLng?.lat, lng: latLng?.lng)))
+                        path.append(.home(.privacyZoneCreate(groupId: groupId, zoneId: nil, editStep: nil, lat: latLng?.lat, lng: latLng?.lng)))
                     },
                     onSheetOffsetChange: { offset in
                         mapState.bottomSafeArea = max(CGFloat(offset.floatValue - safeAreaInsets.bottom), 0)

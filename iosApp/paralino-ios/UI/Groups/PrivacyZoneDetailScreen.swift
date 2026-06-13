@@ -30,8 +30,11 @@ struct PrivacyZoneDetailScreen: View {
                     openPrivacyZoneRawDataScreen: {
                         path.append(.settings(.rawData(type: RawPresentationDataType.GroupPrivacyZonePresentation(privacyZoneId: appState.vm.zoneId))))
                     },
-                    openPrivacyZoneEditScreen: {
-                        path.append(.home(.privacyZoneCreate(groupId: appState.groupId, zoneId: appState.zoneId, lat: nil, lng: nil)))
+                    openPrivacyZoneNameEditScreen: {
+                        path.append(.home(.privacyZoneCreate(groupId: appState.groupId, zoneId: appState.zoneId, editStep: CreatePrivacyZoneScreenStep.nameSuggestion, lat: nil, lng: nil)))
+                    },
+                    openPrivacyZonePositionEditScreen: {
+                        path.append(.home(.privacyZoneCreate(groupId: appState.groupId, zoneId: appState.zoneId, editStep: CreatePrivacyZoneScreenStep.address, lat: nil, lng: nil)))
                     },
                     onNavigateBack: {
                         path.removeLast()

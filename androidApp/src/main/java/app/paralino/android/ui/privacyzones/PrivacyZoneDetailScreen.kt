@@ -18,6 +18,7 @@ import app.paralino.android.ui.main.MainAppState
 import app.paralino.android.ui.map.SimpleGenericMapComposable
 import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.core.models.settings.RawPresentationDataType
+import app.paralino.core.presentation.privacyzones.create.CreatePrivacyZoneScreenStep
 import app.paralino.core.presentation.privacyzones.detail.PrivacyZoneDetailScreenState
 import app.paralino.core.presentation.privacyzones.detail.PrivacyZoneDetailViewModel
 import app.paralino.core.presentation.privacyzones.detail.makeMapPin
@@ -61,11 +62,21 @@ fun PrivacyZoneDetailScreen(
                     )
                 )
             },
-            openPrivacyZoneEditScreen = {
+            openPrivacyZoneNameEditScreen = {
                 appState.navController.navigate(
                     AppScreen.MainHome.PrivacyZoneCreate.route(
                         groupId = groupId,
-                        zoneId = zoneId
+                        zoneId = zoneId,
+                        editStep = CreatePrivacyZoneScreenStep.NAME_SUGGESTION
+                    )
+                )
+            },
+            openPrivacyZonePositionEditScreen = {
+                appState.navController.navigate(
+                    AppScreen.MainHome.PrivacyZoneCreate.route(
+                        groupId = groupId,
+                        zoneId = zoneId,
+                        editStep = CreatePrivacyZoneScreenStep.ADDRESS
                     )
                 )
             },

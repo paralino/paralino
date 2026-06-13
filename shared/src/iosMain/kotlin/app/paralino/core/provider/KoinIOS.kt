@@ -70,6 +70,7 @@ import app.paralino.core.presentation.paralinoid.PersonalCodeViewModel
 import app.paralino.core.presentation.personal_space.PersonalSpaceViewModel
 import app.paralino.core.presentation.personal_space.settings.PersonalSpaceSettingsViewModel
 import app.paralino.core.presentation.places.create.CreatePlaceScreenStep
+import app.paralino.core.presentation.privacyzones.create.CreatePrivacyZoneScreenStep
 import app.paralino.core.presentation.places.create.CreatePlaceViewModel
 import app.paralino.core.presentation.places.detail.PlaceDetailViewModel
 import app.paralino.core.presentation.places.detail.PlaceSensitivityViewModel
@@ -331,10 +332,11 @@ object KoinIOS {
                     cachedLocation = get()
                 )
             }
-            factory { (groupID: String, zoneId: String?, lat: Double?, lng: Double?) ->
+            factory { (groupID: String, zoneId: String?, editStep: CreatePrivacyZoneScreenStep?, lat: Double?, lng: Double?) ->
                 CreatePrivacyZoneViewModel(
                     groupId = groupID,
                     zoneId = zoneId,
+                    editStep = editStep,
                     lat = lat,
                     lng = lng,
                     createPrivacyZoneUseCase = get(),
@@ -452,9 +454,10 @@ object KoinIOS {
         fun privacyZoneCreateVM(
             groupId: String,
             zoneId: String?,
+            editStep: CreatePrivacyZoneScreenStep?,
             lat: Double? = null,
             lng: Double? = null
-        ) = get<CreatePrivacyZoneViewModel> { parametersOf(groupId, zoneId, lat, lng) }
+        ) = get<CreatePrivacyZoneViewModel> { parametersOf(groupId, zoneId, editStep, lat, lng) }
         val appStatusDebugVM get() = get<AppStatusDebugViewModel>()
         val subscriptionVM get() = get<SubscriptionViewModel>()
         fun paywallVM(type: BillingScreenSourceType) = get<PaywallViewModel> { parametersOf(type) }

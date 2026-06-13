@@ -29,6 +29,7 @@ data class CreatePrivacyZoneScreenState constructor(
     val groupId: GroupOrSpaceId,
     val isNewZone: Boolean,
     val screenStep: CreatePrivacyZoneScreenStep,
+    val editOnlyCurrentStep: Boolean,
     val name: String,
     val image: ImageModel,
     val nameSuggestions: List<SuggestionSectionChipData>,
@@ -116,6 +117,7 @@ data class CreatePrivacyZoneScreenState constructor(
                 groupId = groupId,
                 isNewZone = true,
                 screenStep = CreatePrivacyZoneScreenStep.NAME_SUGGESTION,
+                editOnlyCurrentStep = false,
                 name = "",
                 image = ImageModel.emoji(Emojis.blackDot),
                 nameSuggestions = nameSuggestions,
@@ -147,8 +149,15 @@ data class CreatePrivacyZoneScreenState constructor(
     }
 }
 
-enum class CreatePrivacyZoneScreenStep {
-    NAME_SUGGESTION, FULL
+enum class CreatePrivacyZoneScreenStep constructor(val key: String) {
+    NAME_SUGGESTION("name_suggestion"),
+    ADDRESS("address");
+
+    companion object {
+        fun fromKey(key: String?): CreatePrivacyZoneScreenStep? {
+            return entries.firstOrNull { it.key == key }
+        }
+    }
 }
 
 sealed class CreatePrivacyZoneScreenEvent() {

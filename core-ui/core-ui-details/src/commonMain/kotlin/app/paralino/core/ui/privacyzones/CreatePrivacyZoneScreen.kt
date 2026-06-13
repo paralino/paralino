@@ -126,16 +126,20 @@ fun CreatePrivacyZoneScreenCore(
                     ) {
                         ScaffoldBottomBarButton(
                             buttonState = AppButtonState.loadingStateWithCheck(finalState.data.actionLoading),
-                            buttonText = when (finalState.data.screenStep) {
-                                CreatePrivacyZoneScreenStep.NAME_SUGGESTION -> {
-                                    stringResource(MR.strings.button_next)
-                                }
+                            buttonText = if (finalState.data.editOnlyCurrentStep) {
+                                stringResource(MR.strings.button_save)
+                            } else {
+                                when (finalState.data.screenStep) {
+                                    CreatePrivacyZoneScreenStep.NAME_SUGGESTION -> {
+                                        stringResource(MR.strings.button_next)
+                                    }
 
-                                CreatePrivacyZoneScreenStep.FULL -> {
-                                    if (finalState.data.isNewZone) {
-                                        stringResource(MR.strings.privacy_zones_create_button_create)
-                                    } else {
-                                        stringResource(MR.strings.button_save)
+                                    CreatePrivacyZoneScreenStep.ADDRESS -> {
+                                        if (finalState.data.isNewZone) {
+                                            stringResource(MR.strings.privacy_zones_create_button_create)
+                                        } else {
+                                            stringResource(MR.strings.button_save)
+                                        }
                                     }
                                 }
                             },

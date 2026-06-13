@@ -67,6 +67,7 @@ import app.paralino.core.presentation.settings.generic.PlaceSearchSettingsViewMo
 import app.paralino.android.presentation.settings.generic.NotificationSocketSettingsViewModel
 import app.paralino.core.presentation.billing.BillingScreenSourceType
 import app.paralino.core.presentation.places.create.CreatePlaceScreenStep
+import app.paralino.core.presentation.privacyzones.create.CreatePrivacyZoneScreenStep
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -155,6 +156,9 @@ fun NavGraphBuilder.homeGraph(
         composable(AppScreen.MainHome.PrivacyZoneCreate.routeSignature) {
             val groupId = it.arguments?.getString(AppScreen.MainHome.PrivacyZoneCreate.argumentGroupId)!!
             val zoneId = it.arguments?.getString(AppScreen.MainHome.PrivacyZoneCreate.argumentZoneId)
+            val editStep = it.arguments?.getString(AppScreen.MainHome.PrivacyZoneCreate.argumentEditStep)?.let {
+                CreatePrivacyZoneScreenStep.fromKey(it)
+            }
             val lat = it.arguments?.takeIf { it.containsKey(AppScreen.MainHome.PrivacyZoneCreate.argumentLat) }
                 ?.getString(AppScreen.MainHome.PrivacyZoneCreate.argumentLat)?.toDoubleOrNull()
             val lng = it.arguments?.takeIf { it.containsKey(AppScreen.MainHome.PrivacyZoneCreate.argumentLng) }
@@ -163,6 +167,7 @@ fun NavGraphBuilder.homeGraph(
                 appState = appState,
                 groupId = groupId,
                 zoneId = zoneId,
+                editStep = editStep,
                 lat = lat,
                 lng = lng
             )

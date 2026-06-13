@@ -280,8 +280,8 @@ private fun PlacesScreen(
                             modifier = Modifier
                                 .zIndex(10f)
                                 .fillMaxWidth()
-                                .height(200.dp)
                                 .padding(top = 12.dp)
+                                .height(200.dp)
                                 .background(
                                     color = MaterialTheme.colors.background,
                                     shape = RoundedCornerShape(20.dp)

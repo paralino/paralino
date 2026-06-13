@@ -5,6 +5,7 @@ import app.paralino.core.models.settings.RawPresentationDataType
 import app.paralino.core.utils.DeeplinkType
 import app.paralino.core.presentation.billing.BillingScreenSourceType
 import app.paralino.core.presentation.places.create.CreatePlaceScreenStep
+import app.paralino.core.presentation.privacyzones.create.CreatePrivacyZoneScreenStep
 import app.paralino.core.utils.BaseRemoteModule
 
 sealed class AppScreen {
@@ -205,20 +206,23 @@ sealed class AppScreen {
 
         object PrivacyZoneCreate : AppScreen() {
             val argumentZoneId: String = "zoneId"
+            val argumentEditStep: String = "editStep"
             val argumentLat: String = "lat"
             val argumentLng: String = "lng"
             override val routeSignature: String =
-                "privacy-zone-create?$argumentGroupId={$argumentGroupId}&$argumentZoneId={$argumentZoneId}&$argumentLat={$argumentLat}&$argumentLng={$argumentLng}"
+                "privacy-zone-create?$argumentGroupId={$argumentGroupId}&$argumentZoneId={$argumentZoneId}&$argumentEditStep={$argumentEditStep}&$argumentLat={$argumentLat}&$argumentLng={$argumentLng}"
 
             fun route(
                 groupId: String,
                 zoneId: String?,
+                editStep: CreatePrivacyZoneScreenStep? = null,
                 lat: Double? = null,
                 lng: Double? = null
             ): String {
                 val args = arrayOf(
                     "$argumentGroupId=$groupId",
                     zoneId?.let { "$argumentZoneId=$it" },
+                    editStep?.let { "$argumentEditStep=${editStep.key}" },
                     lat?.let { "${argumentLat}=$lat" },
                     lng?.let { "${argumentLng}=$lng" }
                 )

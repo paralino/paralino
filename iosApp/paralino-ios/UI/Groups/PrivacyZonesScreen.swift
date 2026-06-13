@@ -29,7 +29,7 @@ struct PrivacyZonesScreen: View {
                         bottom: safeAreaInsets.bottom
                     ),
                     addNewPrivacyZone: {
-                        path.append(.home(.privacyZoneCreate(groupId: appState.groupId, zoneId: nil, lat: nil, lng: nil)))
+                        path.append(.home(.privacyZoneCreate(groupId: appState.groupId, zoneId: nil, editStep: nil, lat: nil, lng: nil)))
                     },
                     openPaywall: {
                         path.append(.settings(.paywall(type: BillingScreenSourceType.upgrade)))

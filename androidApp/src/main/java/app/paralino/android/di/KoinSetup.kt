@@ -137,6 +137,7 @@ import app.paralino.core.repo.user.IImportPersonalLocationHistoryUseCase
 import app.paralino.core.repo.user.IPushProviderManager
 import app.paralino.core.presentation.billing.BillingScreenSourceType
 import app.paralino.core.presentation.places.create.CreatePlaceScreenStep
+import app.paralino.core.presentation.privacyzones.create.CreatePrivacyZoneScreenStep
 import app.paralino.core.presentation.privacyzones.create.CreatePrivacyZoneViewModel
 import org.koin.android.ext.koin.androidApplication
 import org.koin.android.ext.koin.androidContext
@@ -279,7 +280,7 @@ object KoinSetup {
         viewModel { (groupID: String, isOnboarding: Boolean) -> PrivacyZonesViewModel(groupID, isOnboarding, get(), get(), get(), get()) }
         viewModel { (groupID: String, zoneId: String) -> PrivacyZoneDetailViewModel(groupID, zoneId, get(), get(), get(), get(), get()) }
         viewModel { (groupID: String, placeId: String?, editStep: CreatePlaceScreenStep?, lat: Double?, lng: Double?) -> CreatePlaceViewModel(groupId = groupID, placeId = placeId, editStep = editStep, lat = lat, lng = lng, get(), get(), get(), get(), get(), get(), get()) }
-        viewModel { (groupID: String, zoneId: String?, lat: Double?, lng: Double?) -> CreatePrivacyZoneViewModel(groupId = groupID, zoneId = zoneId, lat = lat, lng = lng, get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+        viewModel { (groupID: String, zoneId: String?, editStep: CreatePrivacyZoneScreenStep?, lat: Double?, lng: Double?) -> CreatePrivacyZoneViewModel(groupId = groupID, zoneId = zoneId, editStep = editStep, lat = lat, lng = lng, get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
         viewModel { (rawDataType: RawPresentationDataType) -> RawDataPresentationViewModel(rawDataType, get(), get()) }
         viewModel { BlocklistViewModel(get()) }
         viewModel { AppStatusDebugViewModel(get(), get(), get(), get(), get()) }

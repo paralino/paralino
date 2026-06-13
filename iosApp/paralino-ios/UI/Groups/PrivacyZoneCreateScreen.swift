@@ -55,8 +55,8 @@ struct PrivacyZoneCreateScreen: View {
         }
     }
 
-    static func createState(groupId: String, zoneId: String?, lat: Double? = nil, lng: Double? = nil) -> CreatePrivacyZoneState {
-        CreatePrivacyZoneState(groupId: groupId, zoneId: zoneId, lat: lat, lng: lng)
+    static func createState(groupId: String, zoneId: String?, editStep: CreatePrivacyZoneScreenStep?, lat: Double? = nil, lng: Double? = nil) -> CreatePrivacyZoneState {
+        CreatePrivacyZoneState(groupId: groupId, zoneId: zoneId, editStep: editStep, lat: lat, lng: lng)
     }
 }
 
@@ -65,7 +65,7 @@ class CreatePrivacyZoneState: BaseMapObservableObject {
     let vm: CreatePrivacyZoneViewModel
     @Published var screenTitle: String = ""
 
-    init(groupId: String, zoneId: String?, lat: Double? = nil, lng: Double? = nil) {
+    init(groupId: String, zoneId: String?, editStep: CreatePrivacyZoneScreenStep?, lat: Double? = nil, lng: Double? = nil) {
         if zoneId == nil {
             screenTitle = MR.shared.strings.privacy_zones_create_screen_title.localizedString()
         } else {
@@ -74,7 +74,7 @@ class CreatePrivacyZoneState: BaseMapObservableObject {
 
         let lat = lat != nil ? KotlinDouble(value: lat!) : nil
         let lng = lng != nil ? KotlinDouble(value: lng!) : nil
-        self.vm = KoinIOS.ViewModels.shared.privacyZoneCreateVM(groupId: groupId, zoneId: zoneId, lat: lat, lng: lng)
+        self.vm = KoinIOS.ViewModels.shared.privacyZoneCreateVM(groupId: groupId, zoneId: zoneId, editStep: editStep, lat: lat, lng: lng)
 
         super.init()
 

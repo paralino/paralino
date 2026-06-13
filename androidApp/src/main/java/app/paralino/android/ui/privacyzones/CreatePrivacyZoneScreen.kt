@@ -15,6 +15,7 @@ import app.paralino.android.ui.map.SimpleGenericMapComposable
 import app.paralino.core.MR
 import app.paralino.core.models.location.LatLng
 import app.paralino.core.presentation.privacyzones.create.CreatePrivacyZoneScreenState
+import app.paralino.core.presentation.privacyzones.create.CreatePrivacyZoneScreenStep
 import app.paralino.core.presentation.privacyzones.create.CreatePrivacyZoneScreenUiEvent
 import app.paralino.core.presentation.privacyzones.create.CreatePrivacyZoneViewModel
 import app.paralino.core.presentation.privacyzones.create.makeMapPin
@@ -34,9 +35,10 @@ fun CreatePrivacyZoneScreen(
     appState: MainAppState,
     groupId: String,
     zoneId: String?,
+    editStep: CreatePrivacyZoneScreenStep?,
     lat: Double? = null,
     lng: Double? = null,
-    vm: CreatePrivacyZoneViewModel = koinViewModel { parametersOf(groupId, zoneId, lat, lng) },
+    vm: CreatePrivacyZoneViewModel = koinViewModel { parametersOf(groupId, zoneId, editStep, lat, lng) },
 ) {
     val pickerState = rememberEmojiBottomSheetPickerState()
 

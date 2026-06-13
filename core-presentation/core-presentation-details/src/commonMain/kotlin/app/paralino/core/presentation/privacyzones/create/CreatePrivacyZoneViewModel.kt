@@ -75,6 +75,7 @@ import kotlin.coroutines.cancellation.CancellationException
 class CreatePrivacyZoneViewModel(
     val groupId: String,
     zoneId: String?,
+    editStep: CreatePrivacyZoneScreenStep?,
     lat: Double? = null,
     lng: Double? = null,
     private val createPrivacyZoneUseCase: CreatePrivacyZoneUseCase,
@@ -159,7 +160,8 @@ class CreatePrivacyZoneViewModel(
                         CreatePrivacyZoneScreenState(
                             groupId = groupId.asGroupOrSpaceId(),
                             isNewZone = false,
-                            screenStep = CreatePrivacyZoneScreenStep.NAME_SUGGESTION,
+                            screenStep = editStep ?: CreatePrivacyZoneScreenStep.NAME_SUGGESTION,
+                            editOnlyCurrentStep = editStep != null,
                             name = zoneData?.name ?: "---",
                             image = zoneData?.image ?: ImageModel.emoji(Emojis.lock),
                             nameSuggestions = emptyList(),
@@ -199,10 +201,14 @@ class CreatePrivacyZoneViewModel(
             }
 
             CreatePrivacyZoneScreenUiEvent.CreatePrivacyZone -> {
-                when (uiState.value.data?.screenStep) {
-                    CreatePrivacyZoneScreenStep.NAME_SUGGESTION -> goToFinalCreateStep()
-                    CreatePrivacyZoneScreenStep.FULL -> tryCreatePrivacyZone()
-                    null -> {}
+                if (zoneFlow.value.data != null && uiState.value.data?.editOnlyCurrentStep == true) {
+                    tryCreatePrivacyZone()
+                } else {
+                    when (uiState.value.data?.screenStep) {
+                        CreatePrivacyZoneScreenStep.NAME_SUGGESTION -> goToFinalCreateStep()
+                        CreatePrivacyZoneScreenStep.ADDRESS -> tryCreatePrivacyZone()
+                        null -> {}
+                    }
                 }
             }
 
@@ -521,7 +527,7 @@ class CreatePrivacyZoneViewModel(
 
         _uiState.update {
             it.mapSuccess {
-                it.copy(screenStep = CreatePrivacyZoneScreenStep.FULL)
+                it.copy(screenStep = CreatePrivacyZoneScreenStep.ADDRESS)
             }
         }
 

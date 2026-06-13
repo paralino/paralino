@@ -469,7 +469,8 @@ object HomeScreens {
         vm: PrivacyZoneDetailViewModel,
         paddingValues: AppleScreenPaddingValues,
         openPrivacyZoneRawDataScreen: () -> Unit,
-        openPrivacyZoneEditScreen: () -> Unit,
+        openPrivacyZoneNameEditScreen: () -> Unit,
+        openPrivacyZonePositionEditScreen: () -> Unit,
         onNavigateBack: () -> Unit,
         mapUIView: (PrivacyZoneDetailScreenState) -> UIViewController,
     ) = ComposeUIViewController {
@@ -485,7 +486,8 @@ object HomeScreens {
                 contentPadding = paddingValues.toComposePaddingValues(),
                 onNavigateBack = onNavigateBack,
                 openPrivacyZoneRawDataScreen = openPrivacyZoneRawDataScreen,
-                openPrivacyZoneEditScreen = openPrivacyZoneEditScreen,
+                openPrivacyZoneNameEditScreen = openPrivacyZoneNameEditScreen,
+                openPrivacyZonePositionEditScreen = openPrivacyZonePositionEditScreen,
                 mapContent = { state ->
                     Box(
                         modifier = Modifier.fillMaxSize()

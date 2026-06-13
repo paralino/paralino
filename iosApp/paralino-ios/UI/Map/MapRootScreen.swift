@@ -107,10 +107,16 @@ struct MapRootScreen: View {
                                     path: $mainAppState.userReadyGraph,
                                     appState: PrivacyZoneDetailScreen.createState(groupId: groupId, zoneId: zoneId)
                                 )
-                            case .privacyZoneCreate(groupId: let groupId, zoneId: let zoneId, lat: let lat, lng: let lng):
+                            case .privacyZoneCreate(groupId: let groupId, zoneId: let zoneId, editStep: let editStep, lat: let lat, lng: let lng):
                                 PrivacyZoneCreateScreen(
                                     path: $mainAppState.userReadyGraph,
-                                    appState: PrivacyZoneCreateScreen.createState(groupId: groupId, zoneId: zoneId, lat: lat, lng: lng)
+                                    appState: PrivacyZoneCreateScreen.createState(
+                                        groupId: groupId,
+                                        zoneId: zoneId,
+                                        editStep: editStep,
+                                        lat: lat,
+                                        lng: lng
+                                    )
                                 )
                             case .freePlanInfo: FreePlanInfoScreen(path: $mainAppState.userReadyGraph)
                             case .locationHistorySettings(groupId: let groupId): LocationHistoryDeleteScreen(path: $mainAppState.userReadyGraph, appState: LocationHistoryDeleteScreen.createState(groupId: groupId))

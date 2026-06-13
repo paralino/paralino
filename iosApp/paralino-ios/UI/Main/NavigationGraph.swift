@@ -43,7 +43,7 @@ enum HomeGraph: Hashable {
     case placeCreate(groupId: String, placeId: String?, editStep: CreatePlaceScreenStep?, lat: Double? = nil, lng: Double? = nil)
     case privacyZones(groupId: String, isOnboarding: Bool)
     case privacyZoneDetail(groupId: String, zoneId: String)
-    case privacyZoneCreate(groupId: String, zoneId: String?, lat: Double? = nil, lng: Double? = nil)
+    case privacyZoneCreate(groupId: String, zoneId: String?, editStep: CreatePrivacyZoneScreenStep?, lat: Double? = nil, lng: Double? = nil)
     case personalSpace
     case personalSpaceSettings
     case locationHistorySettings(groupId: String)

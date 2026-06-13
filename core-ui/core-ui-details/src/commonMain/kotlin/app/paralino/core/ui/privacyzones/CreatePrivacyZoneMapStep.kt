@@ -67,7 +67,7 @@ fun CreatePrivacyZoneMapStep(
         modifier = modifier.fillMaxSize()
     ) {
         AnimatedVisibility(
-            visible = state.addressUiMode == PlaceAddressSearchUiMode.HIDDEN && !isSmallScreen
+            visible = state.addressUiMode == PlaceAddressSearchUiMode.HIDDEN && !isSmallScreen && !state.editOnlyCurrentStep
         ) {
             Row(
                 modifier = Modifier
