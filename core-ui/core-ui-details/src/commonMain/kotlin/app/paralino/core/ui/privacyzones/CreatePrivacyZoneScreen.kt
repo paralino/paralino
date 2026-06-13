@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.CircularProgressIndicator
@@ -50,6 +51,7 @@ import app.paralino.core.ui.components.AppButtonState
 import app.paralino.core.ui.components.DefaultEmptyState
 import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.components.ScaffoldBottomBarButton
+import app.paralino.core.ui.components.SettingsSectionHeader
 import app.paralino.core.ui.components.dialogs.LoadingDialog
 import app.paralino.core.ui.components.dialogs.Show
 import app.paralino.core.ui.groups.components.InitialGroupContentCreationComponent
@@ -258,10 +260,14 @@ private fun CreatePrivacyZoneScreenContent(
                 suggestions = state.nameSuggestions,
                 bottomContent = {
                     if (state.isNewZone) {
+                        Spacer(modifier = Modifier.size(10.dp))
+                        SettingsSectionHeader(
+                            modifier = Modifier.fillMaxWidth(),
+                            name = stringResource(MR.strings.title_settings)
+                        )
                         PrivacyZoneNotifyOthersSettings(
                             modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(top = 30.dp),
+                                .fillMaxWidth(),
                             focusManager = focusManager,
                             notifyOthersInZone = state.notifyOthersInZone,
                             inZoneMessage = state.inZoneMessage,
