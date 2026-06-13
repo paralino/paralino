@@ -69,6 +69,7 @@ fun PrivacyZoneDetailScreenCore(
     openPrivacyZoneRawDataScreen: () -> Unit,
     openPrivacyZoneNameEditScreen: () -> Unit,
     openPrivacyZonePositionEditScreen: () -> Unit,
+    openPrivacyZoneSettingsEditScreen: () -> Unit,
     mapContent: @Composable (PrivacyZoneDetailScreenState) -> Unit,
 ) {
     MessageDispatcherEffect(vm, appState)
@@ -111,6 +112,7 @@ fun PrivacyZoneDetailScreenCore(
                 openPrivacyZoneRawDataScreen = openPrivacyZoneRawDataScreen,
                 openPrivacyZoneNameEditScreen = openPrivacyZoneNameEditScreen,
                 openPrivacyZonePositionEditScreen = openPrivacyZonePositionEditScreen,
+                openPrivacyZoneSettingsEditScreen = openPrivacyZoneSettingsEditScreen,
                 onZoneDelete = { vm.onEvent(PrivacyZoneDetailScreenUiEvent.DeleteZone) },
                 mapContent = mapContent
             )
@@ -134,6 +136,7 @@ private fun PrivacyZoneDetailScreen(
     openPrivacyZoneRawDataScreen: () -> Unit,
     openPrivacyZoneNameEditScreen: () -> Unit,
     openPrivacyZonePositionEditScreen: () -> Unit,
+    openPrivacyZoneSettingsEditScreen: () -> Unit,
     onZoneDelete: () -> Unit,
     mapContent: @Composable (PrivacyZoneDetailScreenState) -> Unit,
 ) {
@@ -256,6 +259,12 @@ private fun PrivacyZoneDetailScreen(
                 }
 
                 if (state.canEdit) {
+                    SettingsActionItem(
+                        name = stringResource(MR.strings.privacy_zone_detail_edit_settings),
+                        icon = CoreAppIcons.Edit.asPainterResource(),
+                    ) {
+                        openPrivacyZoneSettingsEditScreen()
+                    }
                     SettingsActionItem(
                         name = stringResource(MR.strings.privacy_zone_menu_delete),
                         icon = CoreAppIcons.Delete.asPainterResource(),

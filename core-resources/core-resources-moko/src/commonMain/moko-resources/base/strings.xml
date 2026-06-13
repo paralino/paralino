@@ -774,6 +774,7 @@
     <string name="privacy_zone_created_notification">New privacy zone %1$s created in group %2$s</string>
     <string name="privacy_zone_created_notification_default">New privacy zone created</string>
     <string name="privacy_zone_menu_delete">Delete privacy zone</string>
+    <string name="privacy_zone_detail_edit_settings">Edit settings</string>
     <string name="privacy_zone_delete_alert_title">Are you sure you want to delete this privacy zone?</string>
     <string name="privacy_zones_list_screen_title">Privacy zones</string>
     <string name="privacy_zones_list_add_button">New zone</string>

@@ -71,7 +71,8 @@ fun InitialGroupContentCreationComponent(
         modifier = modifier
             .fillMaxSize()
             .verticalScroll(scrollState)
-            .padding(vertical = 20.dp),
+            .padding(vertical = 20.dp)
+            .padding(bottom = 20.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {

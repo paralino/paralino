@@ -471,6 +471,7 @@ object HomeScreens {
         openPrivacyZoneRawDataScreen: () -> Unit,
         openPrivacyZoneNameEditScreen: () -> Unit,
         openPrivacyZonePositionEditScreen: () -> Unit,
+        openPrivacyZoneSettingsEditScreen: () -> Unit,
         onNavigateBack: () -> Unit,
         mapUIView: (PrivacyZoneDetailScreenState) -> UIViewController,
     ) = ComposeUIViewController {
@@ -488,6 +489,7 @@ object HomeScreens {
                 openPrivacyZoneRawDataScreen = openPrivacyZoneRawDataScreen,
                 openPrivacyZoneNameEditScreen = openPrivacyZoneNameEditScreen,
                 openPrivacyZonePositionEditScreen = openPrivacyZonePositionEditScreen,
+                openPrivacyZoneSettingsEditScreen = openPrivacyZoneSettingsEditScreen,
                 mapContent = { state ->
                     Box(
                         modifier = Modifier.fillMaxSize()

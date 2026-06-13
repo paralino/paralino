@@ -205,8 +205,9 @@ class CreatePrivacyZoneViewModel(
                     tryCreatePrivacyZone()
                 } else {
                     when (uiState.value.data?.screenStep) {
-                        CreatePrivacyZoneScreenStep.NAME_SUGGESTION -> goToFinalCreateStep()
-                        CreatePrivacyZoneScreenStep.ADDRESS -> tryCreatePrivacyZone()
+                        CreatePrivacyZoneScreenStep.ADDRESS -> goFromAddressToNameStep()
+                        CreatePrivacyZoneScreenStep.NAME_SUGGESTION -> tryCreatePrivacyZone()
+                        CreatePrivacyZoneScreenStep.SETTINGS -> tryCreatePrivacyZone()
                         null -> {}
                     }
                 }
@@ -507,31 +508,25 @@ class CreatePrivacyZoneViewModel(
         )
     }
 
-    private fun goToFinalCreateStep() {
+    private fun goFromAddressToNameStep() {
         val data = _uiState.value.data ?: return
 
         if (data.fullLoading || data.actionLoading) {
             return
         }
 
-        val filteredName = data.name.trim().replace("\n", " ")
-        if (filteredName.isBlank()) {
+        if (data.lat == null || data.lng == null) {
             coroutineScope.launch {
-                _eventChannel.send(CreatePrivacyZoneScreenEvent.MissingInfo)
-            }
-            _uiState.update {
-                it.mapSuccess { it.copy(hasNameError = true) }
+                _eventChannel.send(CreatePrivacyZoneScreenEvent.MissingLocation)
             }
             return
         }
 
         _uiState.update {
             it.mapSuccess {
-                it.copy(screenStep = CreatePrivacyZoneScreenStep.ADDRESS)
+                it.copy(screenStep = CreatePrivacyZoneScreenStep.NAME_SUGGESTION)
             }
         }
-
-        _eventChannel.trySend(CreatePrivacyZoneScreenEvent.RequestKeyboardFocusOnAddressInput)
     }
 
     private fun updateNotifyOthersInZone(enabled: Boolean) {

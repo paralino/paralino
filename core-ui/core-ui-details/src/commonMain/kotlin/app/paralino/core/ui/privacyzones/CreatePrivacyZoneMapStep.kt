@@ -40,6 +40,7 @@ import androidx.compose.ui.unit.sp
 import app.paralino.core.MR
 import app.paralino.core.presentation.places.create.PlaceAddressSearchUiMode
 import app.paralino.core.presentation.privacyzones.create.CreatePrivacyZoneScreenState
+import app.paralino.core.presentation.privacyzones.create.CreatePrivacyZoneScreenStep
 import app.paralino.core.presentation.privacyzones.create.CreatePrivacyZoneScreenUiEvent
 import app.paralino.core.resources.MokoResources.imageAsPainterResource
 import app.paralino.core.ui.components.EmbeddedSlider
@@ -66,42 +67,45 @@ fun CreatePrivacyZoneMapStep(
     Column(
         modifier = modifier.fillMaxSize()
     ) {
-        AnimatedVisibility(
-            visible = state.addressUiMode == PlaceAddressSearchUiMode.HIDDEN && !isSmallScreen && !state.editOnlyCurrentStep
-        ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 12.dp)
-                    .height(64.dp),
-                verticalAlignment = Alignment.Bottom
-            ) {
-                ImageModelImage(
-                    imageModel = state.image,
-                    modifier = Modifier
-                        .size(56.dp)
-                        .clickable { onImageClick() }
-                        .align(Alignment.Bottom),
-                )
-
-                Spacer(modifier = Modifier.size(8.dp))
-
-                MainInputField(
-                    modifier = Modifier
-                        .fillMaxHeight()
-                        .weight(1f),
-                    text = state.name,
-                    hint = stringResource(MR.strings.privacy_zones_create_name_placeholder),
-                    focusManager = focusManager,
-                    hasError = state.hasNameError,
-                    keyboardType = KeyboardType.Text,
-                    imeAction = ImeAction.Done,
-                    onInputChange = {
-                        onEvent(CreatePrivacyZoneScreenUiEvent.OnNameChanged(it))
-                    }
-                )
-            }
-        }
+//        AnimatedVisibility(
+//            visible = state.screenStep == CreatePrivacyZoneScreenStep.ADDRESS &&
+//                    state.addressUiMode == PlaceAddressSearchUiMode.HIDDEN &&
+//                    !isSmallScreen &&
+//                    !state.editOnlyCurrentStep
+//        ) {
+//            Row(
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//                    .padding(top = 12.dp)
+//                    .height(64.dp),
+//                verticalAlignment = Alignment.Bottom
+//            ) {
+//                ImageModelImage(
+//                    imageModel = state.image,
+//                    modifier = Modifier
+//                        .size(56.dp)
+//                        .clickable { onImageClick() }
+//                        .align(Alignment.Bottom),
+//                )
+//
+//                Spacer(modifier = Modifier.size(8.dp))
+//
+//                MainInputField(
+//                    modifier = Modifier
+//                        .fillMaxHeight()
+//                        .weight(1f),
+//                    text = state.name,
+//                    hint = stringResource(MR.strings.privacy_zones_create_name_placeholder),
+//                    focusManager = focusManager,
+//                    hasError = state.hasNameError,
+//                    keyboardType = KeyboardType.Text,
+//                    imeAction = ImeAction.Done,
+//                    onInputChange = {
+//                        onEvent(CreatePrivacyZoneScreenUiEvent.OnNameChanged(it))
+//                    }
+//                )
+//            }
+//        }
 
         Box(
             modifier = Modifier

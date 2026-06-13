@@ -80,6 +80,15 @@ fun PrivacyZoneDetailScreen(
                     )
                 )
             },
+            openPrivacyZoneSettingsEditScreen = {
+                appState.navController.navigate(
+                    AppScreen.MainHome.PrivacyZoneCreate.route(
+                        groupId = groupId,
+                        zoneId = zoneId,
+                        editStep = CreatePrivacyZoneScreenStep.SETTINGS
+                    )
+                )
+            },
             mapContent = { state ->
                 PrivacyZoneDetailMapComposable(
                     modifier = Modifier.fillMaxSize(),

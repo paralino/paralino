@@ -36,6 +36,9 @@ struct PrivacyZoneDetailScreen: View {
                     openPrivacyZonePositionEditScreen: {
                         path.append(.home(.privacyZoneCreate(groupId: appState.groupId, zoneId: appState.zoneId, editStep: CreatePrivacyZoneScreenStep.address, lat: nil, lng: nil)))
                     },
+                    openPrivacyZoneSettingsEditScreen: {
+                        path.append(.home(.privacyZoneCreate(groupId: appState.groupId, zoneId: appState.zoneId, editStep: CreatePrivacyZoneScreenStep.settings, lat: nil, lng: nil)))
+                    },
                     onNavigateBack: {
                         path.removeLast()
                     },

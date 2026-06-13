@@ -11,9 +11,12 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
@@ -25,6 +28,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -122,6 +126,7 @@ fun CreatePrivacyZoneScreenCore(
                     AnimatedVisibility(
                         !screenDimensionType.isSmall ||
                                 finalState.data.screenStep == CreatePrivacyZoneScreenStep.NAME_SUGGESTION ||
+                                finalState.data.screenStep == CreatePrivacyZoneScreenStep.SETTINGS ||
                                 finalState.data.addressUiMode == PlaceAddressSearchUiMode.HIDDEN
                     ) {
                         ScaffoldBottomBarButton(
@@ -130,16 +135,20 @@ fun CreatePrivacyZoneScreenCore(
                                 stringResource(MR.strings.button_save)
                             } else {
                                 when (finalState.data.screenStep) {
-                                    CreatePrivacyZoneScreenStep.NAME_SUGGESTION -> {
+                                    CreatePrivacyZoneScreenStep.ADDRESS -> {
                                         stringResource(MR.strings.button_next)
                                     }
 
-                                    CreatePrivacyZoneScreenStep.ADDRESS -> {
+                                    CreatePrivacyZoneScreenStep.NAME_SUGGESTION -> {
                                         if (finalState.data.isNewZone) {
                                             stringResource(MR.strings.privacy_zones_create_button_create)
                                         } else {
-                                            stringResource(MR.strings.button_save)
+                                            stringResource(MR.strings.button_next)
                                         }
+                                    }
+
+                                    CreatePrivacyZoneScreenStep.SETTINGS -> {
+                                        stringResource(MR.strings.privacy_zones_create_button_create)
                                     }
                                 }
                             },
@@ -236,8 +245,11 @@ private fun CreatePrivacyZoneScreenContent(
                     .background(MaterialTheme.colors.background)
                     .padding(horizontal = 20.dp),
                 focusManager = focusManager,
-                // always assumed true for privacy zone
-                isSmallScreen = true,
+                isSmallScreen = if (state.isNewZone) {
+                    true
+                } else {
+                    LocalScreenDimensionType.current.isSmall
+                },
                 shakeImage = state.isNewZone,
                 image = state.image,
                 name = state.name,
@@ -245,22 +257,24 @@ private fun CreatePrivacyZoneScreenContent(
                 hasNameError = state.hasNameError,
                 suggestions = state.nameSuggestions,
                 bottomContent = {
-                    PrivacyZoneNotifyOthersSettings(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 30.dp),
-                        focusManager = focusManager,
-                        notifyOthersInZone = state.notifyOthersInZone,
-                        inZoneMessage = state.inZoneMessage,
-                        maxMessageLength = state.maxMessageLength,
-                        memberPreviewState = state.memberPreviewState,
-                        onNotifyOthersInZoneChanged = {
-                            onEvent(CreatePrivacyZoneScreenUiEvent.OnNotifyOthersInZoneChanged(it))
-                        },
-                        onInZoneMessageChanged = {
-                            onEvent(CreatePrivacyZoneScreenUiEvent.OnInZoneMessageChanged(it))
-                        },
-                    )
+                    if (state.isNewZone) {
+                        PrivacyZoneNotifyOthersSettings(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 30.dp),
+                            focusManager = focusManager,
+                            notifyOthersInZone = state.notifyOthersInZone,
+                            inZoneMessage = state.inZoneMessage,
+                            maxMessageLength = state.maxMessageLength,
+                            memberPreviewState = state.memberPreviewState,
+                            onNotifyOthersInZoneChanged = {
+                                onEvent(CreatePrivacyZoneScreenUiEvent.OnNotifyOthersInZoneChanged(it))
+                            },
+                            onInZoneMessageChanged = {
+                                onEvent(CreatePrivacyZoneScreenUiEvent.OnInZoneMessageChanged(it))
+                            },
+                        )
+                    }
                 },
                 onImageClick = onImageClick,
                 onNameChanged = { onEvent(CreatePrivacyZoneScreenUiEvent.OnNameChanged(it)) },
@@ -269,6 +283,59 @@ private fun CreatePrivacyZoneScreenContent(
                 }
             )
         }
+
+        AnimatedVisibility(
+            visible = state.screenStep == CreatePrivacyZoneScreenStep.SETTINGS && !state.isNewZone,
+            enter = fadeIn() + slideInVertically(),
+            exit = fadeOut() + slideOutVertically()
+        ) {
+            PrivacyZoneSettingsStep(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(MaterialTheme.colors.background)
+                    .padding(horizontal = 20.dp),
+                focusManager = focusManager,
+                state = state,
+                onEvent = onEvent
+            )
+        }
     }
 }
 
+@Composable
+private fun PrivacyZoneSettingsStep(
+    modifier: Modifier = Modifier,
+    focusManager: FocusManager,
+    state: CreatePrivacyZoneScreenState,
+    onEvent: (CreatePrivacyZoneScreenUiEvent) -> Unit,
+) {
+    val scrollState = rememberScrollState()
+
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .verticalScroll(scrollState)
+            .padding(vertical = 20.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Spacer(modifier = Modifier.weight(1f))
+
+        PrivacyZoneNotifyOthersSettings(
+            modifier = Modifier.fillMaxWidth(),
+            focusManager = focusManager,
+            notifyOthersInZone = state.notifyOthersInZone,
+            inZoneMessage = state.inZoneMessage,
+            maxMessageLength = state.maxMessageLength,
+            memberPreviewState = state.memberPreviewState,
+            onNotifyOthersInZoneChanged = {
+                onEvent(CreatePrivacyZoneScreenUiEvent.OnNotifyOthersInZoneChanged(it))
+            },
+            onInZoneMessageChanged = {
+                onEvent(CreatePrivacyZoneScreenUiEvent.OnInZoneMessageChanged(it))
+            },
+        )
+
+        Spacer(modifier = Modifier.weight(1f))
+    }
+}

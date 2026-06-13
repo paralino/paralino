@@ -116,7 +116,7 @@ data class CreatePrivacyZoneScreenState constructor(
             return CreatePrivacyZoneScreenState(
                 groupId = groupId,
                 isNewZone = true,
-                screenStep = CreatePrivacyZoneScreenStep.NAME_SUGGESTION,
+                screenStep = CreatePrivacyZoneScreenStep.ADDRESS,
                 editOnlyCurrentStep = false,
                 name = "",
                 image = ImageModel.emoji(Emojis.blackDot),
@@ -150,8 +150,9 @@ data class CreatePrivacyZoneScreenState constructor(
 }
 
 enum class CreatePrivacyZoneScreenStep constructor(val key: String) {
+    ADDRESS("address"),
     NAME_SUGGESTION("name_suggestion"),
-    ADDRESS("address");
+    SETTINGS("settings");
 
     companion object {
         fun fromKey(key: String?): CreatePrivacyZoneScreenStep? {
