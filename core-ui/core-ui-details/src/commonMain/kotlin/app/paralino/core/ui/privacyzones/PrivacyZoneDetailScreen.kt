@@ -35,8 +35,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.unit.dp
 import app.paralino.core.MR
-import app.paralino.core.models.PlaceZoneType
 import app.paralino.core.models.Payload
+import app.paralino.core.models.PlaceZoneExpirationStatus
+import app.paralino.core.models.PlaceZoneType
 import app.paralino.core.models.data
 import app.paralino.core.presentation.common.AlertDialogAction
 import app.paralino.core.presentation.common.PlaceListItemData
@@ -146,7 +147,8 @@ private fun PrivacyZoneDetailScreen(
             top = paddingValues.calculateTopPadding(),
             bottom = paddingValues.calculateBottomPadding() + 40.dp,
         ),
-        userScrollEnabled = userScrollEnabled
+        userScrollEnabled = userScrollEnabled,
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         item(key = "main_header") {
             Row(
@@ -164,6 +166,7 @@ private fun PrivacyZoneDetailScreen(
                             type = PlaceZoneType.PrivacyZone,
                             name = state.name,
                             image = state.image,
+                            expirationStatus = PlaceZoneExpirationStatus.ActiveAlways(showStatus = false),
                             private = true,
                             lat = null,
                             lng = null,
@@ -188,7 +191,7 @@ private fun PrivacyZoneDetailScreen(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 20.dp)
+                    .padding(top = 20.dp, bottom = 20.dp)
                     .padding(horizontal = 20.dp)
                     .height(240.dp)
                     .background(
@@ -248,9 +251,21 @@ private fun PrivacyZoneDetailScreen(
             }
         }
 
+        if (state.expirationStatus.status.isNotBlank()) {
+            item(key = "expiration") {
+                PrivacyZoneExpirationBanner(
+                    modifier = Modifier
+                        .padding(horizontal = 20.dp)
+                        .padding(vertical = 10.dp),
+                    expirationTime = state.expirationStatus.status,
+                    isExpired = state.expirationStatus.isExpired,
+                    canEdit = false
+                )
+            }
+        }
+
         item(key = "settings") {
             Column(modifier = Modifier.padding(horizontal = 20.dp)) {
-                Spacer(modifier = Modifier.size(20.dp))
                 SettingsActionItem(
                     name = stringResource(MR.strings.raw_data_screen_title),
                     icon = CoreAppIcons.Security.asPainterResource(),
@@ -261,7 +276,7 @@ private fun PrivacyZoneDetailScreen(
                 if (state.canEdit) {
                     SettingsActionItem(
                         name = stringResource(MR.strings.privacy_zone_detail_edit_settings),
-                        icon = CoreAppIcons.Edit.asPainterResource(),
+                        icon = CoreAppIcons.Settings.asPainterResource(),
                     ) {
                         openPrivacyZoneSettingsEditScreen()
                     }

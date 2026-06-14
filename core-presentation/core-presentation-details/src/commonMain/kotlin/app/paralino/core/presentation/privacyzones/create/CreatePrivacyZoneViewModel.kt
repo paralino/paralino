@@ -2,12 +2,9 @@ package app.paralino.core.presentation.privacyzones.create
 
 import androidx.compose.ui.text.input.TextFieldValue
 import app.paralino.core.MR
-import app.paralino.core.appPrefs
-import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.group.PlaceAddressSearchUseCase
 import app.paralino.core.domain.location.GetMemberWithLocationsUseCase
 import app.paralino.core.domain.location.LocationCacheRepository
-import app.paralino.core.domain.location.UserMemberIdUseCase
 import app.paralino.core.domain.privacyzone.CreatePrivacyZoneUseCase
 import app.paralino.core.domain.privacyzone.UpdatePrivacyZoneUseCase
 import app.paralino.core.domain.user.PremiumStatusLimitState
@@ -15,6 +12,7 @@ import app.paralino.core.domain.user.PremiumStatusManager
 import app.paralino.core.domain.user.RefreshEverythingUseCase
 import app.paralino.core.models.CryptoResource
 import app.paralino.core.models.Payload
+import app.paralino.core.models.PlaceZoneExpirationStatus
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.models.data
@@ -31,8 +29,6 @@ import app.paralino.core.presentation.common.GroupMemberItemLocationState
 import app.paralino.core.presentation.common.GroupMemberItemStateWithOneLocation
 import app.paralino.core.presentation.common.GroupMemberState
 import app.paralino.core.presentation.common.MainAlertDialog
-import app.paralino.core.presentation.common.MemberActionItemState
-import app.paralino.core.presentation.common.MemberActionType
 import app.paralino.core.presentation.common.MemberActionsState
 import app.paralino.core.presentation.common.MemberLocationVisibilityType
 import app.paralino.core.presentation.common.ScreenDimensionType
@@ -47,12 +43,12 @@ import app.paralino.core.provider.MeasurementSystemType
 import app.paralino.core.provider.NetworkSignalStrength
 import app.paralino.core.provider.NetworkType
 import app.paralino.core.provider.localizedString
-import app.paralino.core.repo.location.LocationLocalDataSource
 import app.paralino.core.repo.privacyzones.PrivacyZonesLocalDataSource
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.exceptions.asRemoteException
 import app.paralino.core.utils.extensions.errorString
+import app.paralino.core.utils.extensions.isoWithOffsetToInstant
 import app.paralino.core.utils.extensions.mapToPayload
 import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.coroutines.Dispatchers
@@ -71,6 +67,7 @@ import kotlinx.coroutines.launch
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import kotlin.coroutines.cancellation.CancellationException
+import kotlin.time.Duration.Companion.milliseconds
 
 class CreatePrivacyZoneViewModel(
     val groupId: String,
@@ -156,6 +153,7 @@ class CreatePrivacyZoneViewModel(
                         val radiusValue = ApproximateLocationDistancePair.pairForSelectedMeters(
                             zoneData?.radiusMeters ?: ApproximateLocationDistancePair.default.meters
                         ) ?: ApproximateLocationDistancePair.default
+                        val existingExpiresAt = zoneData?.expiresAt
 
                         CreatePrivacyZoneScreenState(
                             groupId = groupId.asGroupOrSpaceId(),
@@ -172,6 +170,16 @@ class CreatePrivacyZoneViewModel(
                             hasNameError = false,
                             notifyOthersInZone = zoneData?.notifyOthersInZone ?: true,
                             inZoneMessage = zoneData?.inZoneMessage,
+                            durationPresetsMillis = PrivacyZoneDurationPreset.presets,
+                            durationMillis = if (existingExpiresAt.isNullOrBlank()) {
+                                PrivacyZoneDurationPreset.infinite
+                            } else {
+                                durationMillisForExpiresAt(existingExpiresAt)
+                            },
+                            expirationStatus = valueFormatter.formatExpirationDateTimeUTC(
+                                expiresAtTimeUTC = existingExpiresAt,
+                                showActiveStatus = false
+                            ).takeIf { it !is PlaceZoneExpirationStatus.ActiveAlways },
                             memberPreviewState = getMemberPreviewState(
                                 isInPrivacyZone = zoneData?.notifyOthersInZone ?: true,
                                 zoneMessage = zoneData?.inZoneMessage
@@ -239,9 +247,16 @@ class CreatePrivacyZoneViewModel(
             is CreatePrivacyZoneScreenUiEvent.OnImageChanged -> updateNameAndImage(image = event.image)
             is CreatePrivacyZoneScreenUiEvent.OnNameChanged -> updateNameAndImage(name = event.name)
             is CreatePrivacyZoneScreenUiEvent.OnNotifyOthersInZoneChanged -> updateNotifyOthersInZone(event.enabled)
+
             is CreatePrivacyZoneScreenUiEvent.OnInZoneMessageChanged -> updateInZoneMessage(event.message)
+            is CreatePrivacyZoneScreenUiEvent.OnDurationChanged -> updateDuration(event.index)
+            CreatePrivacyZoneScreenUiEvent.OnExpirationEditRequested -> unlockExpirationEdit()
             is CreatePrivacyZoneScreenUiEvent.OnRadiusChanged -> updateRadius(event.index)
-            is CreatePrivacyZoneScreenUiEvent.OnMapTap -> updatePosition(lat = event.lat, lng = event.lng)
+            is CreatePrivacyZoneScreenUiEvent.OnMapTap -> updatePosition(
+                lat = event.lat,
+                lng = event.lng
+            )
+
             is CreatePrivacyZoneScreenUiEvent.OnMapPositionChanged -> mapPosition = event.position
             is CreatePrivacyZoneScreenUiEvent.OnMapModeSwitch -> {
                 _uiState.update {
@@ -326,13 +341,17 @@ class CreatePrivacyZoneViewModel(
         }
 
         val zone = zoneFlow.value.data
+        val existingExpiresAt = zone?.data?.data?.expiresAt
         val zoneData = PrivacyZoneData(
             name = data.name,
             image = data.image,
             lat = data.lat,
             lng = data.lng,
             radiusMeters = data.radiusValue.meters,
-            expiresAt = zone?.data?.data?.expiresAt ?: "",
+            expiresAt = resolveExpiresAt(
+                data = data,
+                existingExpiresAt = existingExpiresAt
+            ),
             notifyOthersInZone = data.notifyOthersInZone,
             inZoneMessage = if (data.notifyOthersInZone) {
                 data.inZoneMessage
@@ -361,7 +380,8 @@ class CreatePrivacyZoneViewModel(
     }
 
     private suspend fun checkPrivacyZoneLimits(): Boolean {
-        val premiumStatus = premiumStatusManager.checkPrivacyZoneCountLimits(groupId.asGroupOrSpaceId())
+        val premiumStatus =
+            premiumStatusManager.checkPrivacyZoneCountLimits(groupId.asGroupOrSpaceId())
         when (premiumStatus) {
             is PremiumStatusLimitState.ServiceLimitReached -> {
                 _uiState.update {
@@ -480,8 +500,12 @@ class CreatePrivacyZoneViewModel(
                 image = ImageModel.emoji(Emojis.lock),
                 lat = null,
                 lng = null,
-                actualBatteryLevel = member?.currentDeviceLocation?.status?.data?.validBatteryLevel(checkForTime = false),
-                adjustedBatteryLevel = member?.currentDeviceLocation?.status?.data?.validBatteryLevel(checkForTime = true),
+                actualBatteryLevel = member?.currentDeviceLocation?.status?.data?.validBatteryLevel(
+                    checkForTime = false
+                ),
+                adjustedBatteryLevel = member?.currentDeviceLocation?.status?.data?.validBatteryLevel(
+                    checkForTime = true
+                ),
                 isBatteryCharging = false,
                 speed = null,
                 elevation = null,
@@ -525,6 +549,59 @@ class CreatePrivacyZoneViewModel(
         _uiState.update {
             it.mapSuccess {
                 it.copy(screenStep = CreatePrivacyZoneScreenStep.NAME_SUGGESTION)
+            }
+        }
+    }
+
+    private fun resolveExpiresAt(
+        data: CreatePrivacyZoneScreenState,
+        existingExpiresAt: String?,
+    ): String {
+        if (data.expirationStatus != null) {
+            return existingExpiresAt ?: ""
+        }
+
+        if (data.editOnlyCurrentStep && data.screenStep != CreatePrivacyZoneScreenStep.SETTINGS) {
+            return existingExpiresAt ?: ""
+        }
+
+        return if (data.durationMillis <= 0L) {
+            ""
+        } else {
+            nowUTC()
+                .plus(data.durationMillis.milliseconds)
+                .toString()
+        }
+    }
+
+    private fun unlockExpirationEdit() {
+        val existingExpiresAt = zoneFlow.value.data?.data?.data?.expiresAt.orEmpty()
+        _uiState.update {
+            it.mapSuccess { state ->
+                state.copy(
+                    expirationStatus = null,
+                    durationMillis = durationMillisForExpiresAt(existingExpiresAt),
+                )
+            }
+        }
+    }
+
+    private fun durationMillisForExpiresAt(expiresAt: String): Long {
+        if (expiresAt.isBlank()) return PrivacyZoneDurationPreset.infinite
+        val end = expiresAt.isoWithOffsetToInstant() ?: return PrivacyZoneDurationPreset.infinite
+        val remaining = (end - nowUTC()).inWholeMilliseconds
+        if (remaining <= 0L) return 8 * PrivacyZoneDurationPreset.hour
+        val presets = PrivacyZoneDurationPreset.presets
+        return presets.firstOrNull { it > 0L && it >= remaining } ?: presets.dropLast(1).last()
+    }
+
+    private fun updateDuration(index: Int) {
+        _uiState.update {
+            it.mapSuccess { state ->
+                state.copy(
+                    durationMillis = state.durationPresetsMillis.getOrNull(index)
+                        ?: state.durationMillis
+                )
             }
         }
     }

@@ -303,6 +303,7 @@ object KoinIOS {
                     getPrivacyZonesUseCase = get(),
                     groupRepo = get(),
                     premiumStatusManager = get(),
+                    valueFormatter = get()
                 )
             }
             factory { (groupID: String, zoneId: String) ->
@@ -314,6 +315,7 @@ object KoinIOS {
                     groupRepo = get(),
                     premiumStatusManager = get(),
                     appPrefs = get(),
+                    valueFormatter = get()
                 )
             }
             factory { (groupID: String, placeId: String?, editStep: CreatePlaceScreenStep?, lat: Double?, lng: Double?) ->

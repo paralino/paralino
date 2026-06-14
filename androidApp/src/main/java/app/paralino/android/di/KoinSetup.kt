@@ -277,8 +277,8 @@ object KoinSetup {
         viewModel { (userId: String, secret: String) -> ResetPasswordViewModel(userId = userId, secret = secret, get()) }
         viewModel { (groupID: String, isOnboarding: Boolean) -> PlacesViewModel(groupID, isOnboarding, get(), get(), get(), get(), get(), get(), get(), get()) }
         viewModel { (groupID: String, placeId: String) -> PlaceDetailViewModel(groupID, placeId, get(), get(), get(), get(), get(), get(), get()) }
-        viewModel { (groupID: String, isOnboarding: Boolean) -> PrivacyZonesViewModel(groupID, isOnboarding, get(), get(), get(), get()) }
-        viewModel { (groupID: String, zoneId: String) -> PrivacyZoneDetailViewModel(groupID, zoneId, get(), get(), get(), get(), get()) }
+        viewModel { (groupID: String, isOnboarding: Boolean) -> PrivacyZonesViewModel(groupID, isOnboarding, get(), get(), get(), get(), get()) }
+        viewModel { (groupID: String, zoneId: String) -> PrivacyZoneDetailViewModel(groupID, zoneId, get(), get(), get(), get(), get(), get()) }
         viewModel { (groupID: String, placeId: String?, editStep: CreatePlaceScreenStep?, lat: Double?, lng: Double?) -> CreatePlaceViewModel(groupId = groupID, placeId = placeId, editStep = editStep, lat = lat, lng = lng, get(), get(), get(), get(), get(), get(), get()) }
         viewModel { (groupID: String, zoneId: String?, editStep: CreatePrivacyZoneScreenStep?, lat: Double?, lng: Double?) -> CreatePrivacyZoneViewModel(groupId = groupID, zoneId = zoneId, editStep = editStep, lat = lat, lng = lng, get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
         viewModel { (rawDataType: RawPresentationDataType) -> RawDataPresentationViewModel(rawDataType, get(), get()) }

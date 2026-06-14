@@ -1,5 +1,6 @@
 package app.paralino.core.presentation.privacyzones.detail
 
+import app.paralino.core.MR
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.privacyzone.DeletePrivacyZoneUseCase
 import app.paralino.core.domain.privacyzone.GetPrivacyZonesUseCase
@@ -11,6 +12,8 @@ import app.paralino.core.models.data
 import app.paralino.core.models.mapSuccess
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.presentation.common.MainAlertDialog
+import app.paralino.core.provider.IValueFormatter
+import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.utils.extensions.errorString
 import app.paralino.core.utils.extensions.mapToPayload
@@ -37,6 +40,7 @@ class PrivacyZoneDetailViewModel(
     private val groupRepo: UserGroupLocalDataSource,
     private val premiumStatusManager: PremiumStatusManager,
     private val appPrefs: AppPrefs,
+    private val valueFormatter: IValueFormatter
 ) : CoreViewModel() {
 
     private val _uiState = MutableStateFlow<Payload<PrivacyZoneDetailScreenState>>(Payload.Loading)
@@ -82,7 +86,10 @@ class PrivacyZoneDetailViewModel(
                 lat = zoneData.lat,
                 lng = zoneData.lng,
                 radiusMeters = zoneData.radiusMeters,
-                expiresAt = zoneData.expiresAt,
+                expirationStatus = valueFormatter.formatExpirationDateTimeUTC(
+                    expiresAtTimeUTC = zoneData.expiresAt,
+                    showActiveStatus = true
+                ),
                 canEdit = zone.ownerUserId == appPrefs.userId,
                 fullLoading = _uiState.value.data?.fullLoading ?: false,
                 androidMapSDKProvider = premiumStatusManager.defaultMapProvider(),

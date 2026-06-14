@@ -1,5 +1,6 @@
 package app.paralino.core.presentation.privacyzones.detail
 
+import app.paralino.core.models.PlaceZoneExpirationStatus
 import app.paralino.core.models.base.GroupOrSpaceId
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.settings.MapsSDKProvider
@@ -18,7 +19,7 @@ data class PrivacyZoneDetailScreenState constructor(
     val lat: Double?,
     val lng: Double?,
     val radiusMeters: Int,
-    val expiresAt: String,
+    val expirationStatus: PlaceZoneExpirationStatus,
     val canEdit: Boolean,
     val fullLoading: Boolean,
     val androidMapSDKProvider: MapsSDKProvider?,

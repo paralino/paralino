@@ -42,7 +42,11 @@ class PrivacyZonesLocalDataSource(
             ownerUserId = appPrefs.userId,
         )
             .distinctFlowOfList()
-            .map { entities -> entities.map { mapper.local2Core(it) } }
+            .map { entities ->
+                entities
+                    .map { mapper.local2Core(it) }
+                    .sortedBy { it.data.data?.name }
+            }
     }
 
     suspend fun getPrivacyZoneOnce(zoneId: String): GroupPrivacyZone? {

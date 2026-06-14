@@ -15,6 +15,7 @@ import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.presentation.common.SnackbarDuration
 import app.paralino.core.presentation.common.MainAlertDialog
 import app.paralino.core.presentation.common.PlaceListItemData
+import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.utils.extensions.errorString
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -42,6 +43,7 @@ class PrivacyZonesViewModel(
     private val getPrivacyZonesUseCase: GetPrivacyZonesUseCase,
     private val groupRepo: UserGroupLocalDataSource,
     private val premiumStatusManager: PremiumStatusManager,
+    private val valueFormatter: IValueFormatter
 ) : CoreViewModel() {
 
     private val _uiState = MutableStateFlow<Payload<PrivacyZonesListScreenState>>(Payload.Loading)
@@ -79,7 +81,15 @@ class PrivacyZonesViewModel(
         ) { group, zones ->
 
             val zonesState = zones.mapNotNull { zone ->
-                zone.data.data?.let { PlaceListItemData(zone) }
+                zone.data.data?.let {
+                    PlaceListItemData(
+                        zone = zone,
+                        expirationStatus = valueFormatter.formatExpirationDateTimeUTC(
+                            expiresAtTimeUTC = it.expiresAt,
+                            showActiveStatus = false
+                        )
+                    )
+                }
             }
 
             val privacyZonesLimit = group.privacyZonesLimit(remoteConfig.getConfigOnce())

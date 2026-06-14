@@ -71,7 +71,7 @@ fun PrivacyZoneNotifyOthersSettings(
         AnimatedVisibility(visible = notifyOthersInZone) {
             MainInputField(
                 modifier = Modifier
-                    .padding(top = 12.dp)
+                    .padding(top = 8.dp)
                     .height(70.dp),
                 text = inZoneMessage.orEmpty(),
                 hint = stringResource(MR.strings.privacy_zones_create_status_message_placeholder),

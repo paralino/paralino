@@ -48,6 +48,7 @@ import app.paralino.core.presentation.privacyzones.create.CreatePrivacyZoneViewM
 import app.paralino.core.provider.localizedString
 import app.paralino.core.ui.CoreUiState
 import app.paralino.core.ui.components.AppButtonState
+import app.paralino.core.ui.components.DataInfoChip
 import app.paralino.core.ui.components.DefaultEmptyState
 import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.components.ScaffoldBottomBarButton
@@ -265,20 +266,11 @@ private fun CreatePrivacyZoneScreenContent(
                             modifier = Modifier.fillMaxWidth(),
                             name = stringResource(MR.strings.title_settings)
                         )
-                        PrivacyZoneNotifyOthersSettings(
-                            modifier = Modifier
-                                .fillMaxWidth(),
+                        PrivacyZoneCreateSettingsSection(
+                            modifier = Modifier.fillMaxWidth(),
                             focusManager = focusManager,
-                            notifyOthersInZone = state.notifyOthersInZone,
-                            inZoneMessage = state.inZoneMessage,
-                            maxMessageLength = state.maxMessageLength,
-                            memberPreviewState = state.memberPreviewState,
-                            onNotifyOthersInZoneChanged = {
-                                onEvent(CreatePrivacyZoneScreenUiEvent.OnNotifyOthersInZoneChanged(it))
-                            },
-                            onInZoneMessageChanged = {
-                                onEvent(CreatePrivacyZoneScreenUiEvent.OnInZoneMessageChanged(it))
-                            },
+                            state = state,
+                            onEvent = onEvent,
                         )
                     }
                 },
@@ -321,27 +313,19 @@ private fun PrivacyZoneSettingsStep(
         modifier = modifier
             .fillMaxSize()
             .verticalScroll(scrollState)
-            .padding(vertical = 20.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+            .padding(bottom = 40.dp, top = 20.dp)
     ) {
-        Spacer(modifier = Modifier.weight(1f))
-
-        PrivacyZoneNotifyOthersSettings(
+        DataInfoChip(
+            modifier = Modifier,
+            image = state.image,
+            text = state.name
+        )
+        Spacer(modifier = Modifier.size(8.dp))
+        PrivacyZoneCreateSettingsSection(
             modifier = Modifier.fillMaxWidth(),
             focusManager = focusManager,
-            notifyOthersInZone = state.notifyOthersInZone,
-            inZoneMessage = state.inZoneMessage,
-            maxMessageLength = state.maxMessageLength,
-            memberPreviewState = state.memberPreviewState,
-            onNotifyOthersInZoneChanged = {
-                onEvent(CreatePrivacyZoneScreenUiEvent.OnNotifyOthersInZoneChanged(it))
-            },
-            onInZoneMessageChanged = {
-                onEvent(CreatePrivacyZoneScreenUiEvent.OnInZoneMessageChanged(it))
-            },
+            state = state,
+            onEvent = onEvent,
         )
-
-        Spacer(modifier = Modifier.weight(1f))
     }
 }

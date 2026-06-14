@@ -1,5 +1,6 @@
 package app.paralino.core.presentation.common
 
+import app.paralino.core.models.PlaceZoneExpirationStatus
 import app.paralino.core.models.PlaceZoneType
 import app.paralino.core.models.base.GroupOrSpaceId
 import app.paralino.core.models.base.ImageModel
@@ -19,6 +20,7 @@ data class PlaceListItemData constructor(
     val type: PlaceZoneType,
     val name: String,
     val image: ImageModel,
+    val expirationStatus: PlaceZoneExpirationStatus,
     val private: Boolean,
     val lat: Double?,
     val lng: Double?,
@@ -30,18 +32,23 @@ data class PlaceListItemData constructor(
         type = PlaceZoneType.PlaceWithAlert,
         name = place.data.data?.name ?: "---",
         image = place.data.data?.image ?: ImageModel.emoji(Emojis.robot),
+        expirationStatus = PlaceZoneExpirationStatus.ActiveAlways(showStatus = false),
         private = place.private,
         lat = place.data.data?.lat,
         lng = place.data.data?.lng,
         radiusMeters = place.data.data?.radiusMeters ?: 0
     )
 
-    constructor(zone: GroupPrivacyZone) : this(
+    constructor(
+        zone: GroupPrivacyZone,
+        expirationStatus: PlaceZoneExpirationStatus
+    ) : this(
         id = zone.id,
         groupOrSpaceId = zone.groupId.asGroupOrSpaceId(),
         type = PlaceZoneType.PrivacyZone,
         name = zone.data.data?.name ?: "---",
         image = zone.data.data?.image ?: ImageModel.emoji(Emojis.robot),
+        expirationStatus = expirationStatus,
         private = true,
         lat = zone.data.data?.lat,
         lng = zone.data.data?.lng,

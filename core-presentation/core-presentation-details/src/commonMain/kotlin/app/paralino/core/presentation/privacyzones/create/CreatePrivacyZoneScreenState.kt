@@ -3,6 +3,7 @@ package app.paralino.core.presentation.privacyzones.create
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.input.TextFieldValue
 import app.paralino.core.MR
+import app.paralino.core.models.PlaceZoneExpirationStatus
 import app.paralino.core.models.base.DeviceType
 import app.paralino.core.models.base.GroupOrSpaceId
 import app.paralino.core.models.base.ImageModel
@@ -46,6 +47,9 @@ data class CreatePrivacyZoneScreenState constructor(
     val hasNameError: Boolean,
     val notifyOthersInZone: Boolean,
     val inZoneMessage: String?,
+    val durationPresetsMillis: List<Long>,
+    val durationMillis: Long,
+    val expirationStatus: PlaceZoneExpirationStatus?,
     val memberPreviewState: GroupMemberItemStateWithOneLocation,
     val isSatelliteModeEnabled: Boolean,
     val actionLoading: Boolean,
@@ -100,6 +104,16 @@ data class CreatePrivacyZoneScreenState constructor(
                 ?: radiusPresets.lastIndex
         }
 
+    val durationIndex: Int
+        get() {
+            return durationPresetsMillis.indexOfFirst { it == durationMillis }.takeIf { it >= 0 }
+                ?: durationPresetsMillis.indexOfFirst { durationMillis < it }.takeIf { it >= 0 }
+                ?: durationPresetsMillis.lastIndex
+        }
+
+    val showDurationSeekbar: Boolean
+        get() = expirationStatus == null
+
     companion object {
         const val maxMessageLength: Int = 40
         fun empty(
@@ -138,6 +152,9 @@ data class CreatePrivacyZoneScreenState constructor(
                 hasNameError = false,
                 notifyOthersInZone = true,
                 inZoneMessage = null,
+                durationPresetsMillis = PrivacyZoneDurationPreset.presets,
+                durationMillis = PrivacyZoneDurationPreset.default,
+                expirationStatus = null,
                 memberPreviewState = memberPreviewState,
                 actionLoading = false,
                 fullLoading = false,
@@ -175,6 +192,8 @@ sealed interface CreatePrivacyZoneScreenUiEvent {
     data class OnNameChanged(val name: String) : CreatePrivacyZoneScreenUiEvent
     data class OnNotifyOthersInZoneChanged(val enabled: Boolean) : CreatePrivacyZoneScreenUiEvent
     data class OnInZoneMessageChanged(val message: String) : CreatePrivacyZoneScreenUiEvent
+    data class OnDurationChanged(val index: Int) : CreatePrivacyZoneScreenUiEvent
+    data object OnExpirationEditRequested : CreatePrivacyZoneScreenUiEvent
     data class OnRadiusChanged(val index: Int) : CreatePrivacyZoneScreenUiEvent
     data class OnImageChanged(val image: ImageModel) : CreatePrivacyZoneScreenUiEvent
     data class OnAddressChanged(val address: TextFieldValue) : CreatePrivacyZoneScreenUiEvent
@@ -186,6 +205,32 @@ sealed interface CreatePrivacyZoneScreenUiEvent {
     data object ToggleSearchFieldFocus : CreatePrivacyZoneScreenUiEvent
     data class OnMapTap(val lat: Double, val lng: Double) : CreatePrivacyZoneScreenUiEvent
     data class DialogAction(val action: AlertDialogAction) : CreatePrivacyZoneScreenUiEvent
+}
+
+object PrivacyZoneDurationPreset {
+    private const val second = 1_000L
+    private const val minute = 60 * second
+    const val hour = 60 * minute
+    private const val day = 24 * hour
+    const val infinite = -1L
+
+    val presets = listOf(
+        hour,
+        4 * hour,
+        8 * hour,
+        day,
+        2 * day,
+        3 * day,
+        5 * day,
+        7 * day,
+        10 * day,
+        15 * day,
+        20 * day,
+        30 * day,
+        infinite,
+    )
+
+    val default: Long = infinite
 }
 
 fun CreatePrivacyZoneScreenState.makeMapPin(): MapPinData {

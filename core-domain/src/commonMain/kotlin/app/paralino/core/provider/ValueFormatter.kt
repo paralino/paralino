@@ -1,10 +1,13 @@
 package app.paralino.core.provider
 
 import app.paralino.core.MR
+import app.paralino.core.models.PlaceZoneExpirationStatus
 import app.paralino.core.models.data
 import app.paralino.core.models.location.MemberLocation
 import app.paralino.core.models.location.MemberModelWithLocations
+import app.paralino.core.utils.extensions.isInPast
 import app.paralino.core.utils.extensions.isoToLocalDateTime
+import app.paralino.core.utils.extensions.isoWithOffsetToInstant
 import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.DateTimeUnit
@@ -230,8 +233,48 @@ abstract class IValueFormatter {
         }
     }
 
+    fun formatExpirationDateTimeUTC(
+        expiresAtTimeUTC: String?,
+        showActiveStatus: Boolean
+    ): PlaceZoneExpirationStatus {
+        val dateTimeUTC = expiresAtTimeUTC?.isoWithOffsetToInstant()
+            ?: return PlaceZoneExpirationStatus.ActiveAlways(
+                showStatus = showActiveStatus,
+                status = MR.strings.privacy_zones_create_status_active.localizedString()
+            )
+
+        val time = fromUTCtoMapSharingTime(
+            dateTimeUTC = dateTimeUTC.toLocalDateTime(TimeZone.UTC),
+            splitTimeToOneLine = false
+        ) ?: return PlaceZoneExpirationStatus.ActiveAlways(
+            showStatus = showActiveStatus,
+            status = MR.strings.privacy_zones_create_status_active.localizedString()
+        )
+
+        return if (dateTimeUTC.isInPast()) {
+            PlaceZoneExpirationStatus.WithExpiration(
+                isExpired = true,
+                expirationTime = dateTimeUTC,
+                status = MR.strings.privacy_zones_create_status_expired.localizedString()
+            )
+        } else {
+            PlaceZoneExpirationStatus.WithExpiration(
+                isExpired = false,
+                expirationTime = dateTimeUTC,
+                status = MR.strings.privacy_zones_create_status_expiration_time.localizedString(time)
+            )
+        }
+    }
+
     fun fromUTCtoMapSharingTime(timeUTC: String, splitTimeToOneLine: Boolean = true): String? {
-        val dateTimeUTC = timeUTC.isoToLocalDateTime() ?: return null
+        val dateTimeUTC = timeUTC.isoToLocalDateTime()
+            ?: timeUTC.isoWithOffsetToInstant()?.toLocalDateTime(TimeZone.UTC)
+            ?: return null
+
+        return fromUTCtoMapSharingTime(dateTimeUTC = dateTimeUTC, splitTimeToOneLine = splitTimeToOneLine)
+    }
+
+    fun fromUTCtoMapSharingTime(dateTimeUTC: LocalDateTime, splitTimeToOneLine: Boolean): String? {
         val timeZone = TimeZone.currentSystemDefault()
         val local = dateTimeUTC.fromUTCtoLocal(timeZone)
         val now = nowUTC()

@@ -547,17 +547,20 @@ fun SharingStartScreenCore(
                             } else {
                                 stringResource(MR.strings.groups_sharing_setting_approximateLocation_description_off)
                             },
-                            bigTag = if (state.shareApproximateLocation)
+                            bigTag = if (state.shareApproximateLocation) {
                                 state.formattedApproximateLocation
-                            else null,
+                            } else {
+                                null
+                            },
+                            isMinimumVerticalSpacing = !state.shareApproximateLocation,
                             state = rememberSeekbarState(
                                 key = state,
                                 state = LargeSeekbarSwitchState.SeekbarSwitchState(
                                     seekbarState = LargeSeekbarSwitchState.Seekbar(
                                         seekbarProgress = state.approximateLocationIndex + 1,
                                         seekbarRange = IntRange(
-                                            1,
-                                            state.approximateLocationPresets.size
+                                            start = 1,
+                                            endInclusive = state.approximateLocationPresets.size
                                         )
                                     ),
                                     switchState = LargeSeekbarSwitchState.Switch(state.shareApproximateLocation)

@@ -38,6 +38,7 @@ import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.unit.dp
 import app.paralino.core.MR
 import app.paralino.core.models.Payload
+import app.paralino.core.models.PlaceZoneExpirationStatus
 import app.paralino.core.models.PlaceZoneType
 import app.paralino.core.presentation.common.MainAlertDialog
 import app.paralino.core.presentation.common.PlaceListItemData
@@ -193,6 +194,7 @@ private fun PlaceDetailScreen(
                             type = PlaceZoneType.PlaceWithAlert,
                             name = state.name,
                             image = state.image,
+                            expirationStatus = PlaceZoneExpirationStatus.ActiveAlways(showStatus = false),
                             private = state.private,
                             lat = 0.0,
                             lng = 0.0,

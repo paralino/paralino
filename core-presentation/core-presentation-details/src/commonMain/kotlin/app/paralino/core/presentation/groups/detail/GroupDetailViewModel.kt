@@ -128,7 +128,15 @@ class GroupDetailViewModel(
                 .map { PlaceListItemData(it) }
             val privacyZonesData = privacyZones
                 .filter { it.data.data != null }
-                .map { PlaceListItemData(it) }
+                .map { zone ->
+                    PlaceListItemData(
+                        zone = zone,
+                        expirationStatus = valueFormatter.formatExpirationDateTimeUTC(
+                            expiresAtTimeUTC = zone.data.data?.expiresAt,
+                            showActiveStatus = false
+                        )
+                    )
+                }
 
             val members = group.members
                 .sortedBy { it.member.name }

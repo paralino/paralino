@@ -9,8 +9,8 @@ import app.paralino.core.models.base.PlanConfig
 import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.models.data
 import app.paralino.core.models.group.UserGroup
-import app.paralino.core.models.location.LocationSharingContract
 import app.paralino.core.models.location.LocationDataModel
+import app.paralino.core.models.location.LocationSharingContract
 import app.paralino.core.models.location.MemberDeviceStatusType
 import app.paralino.core.models.location.MemberLocation
 import app.paralino.core.models.location.MemberModelWithLocations
@@ -24,20 +24,20 @@ import app.paralino.core.presentation.common.GroupMemberItemStateWithOneLocation
 import app.paralino.core.presentation.common.GroupMemberState
 import app.paralino.core.presentation.common.LocationHistoryActionItemState
 import app.paralino.core.presentation.common.LocationRequestItemState
-import app.paralino.core.provider.IValueFormatter
-import app.paralino.core.provider.localizedString
-import app.paralino.core.repo.base.RemoteConfigRepository
-import app.paralino.core.repo.group.UserGroupLocalDataSource
-import app.paralino.core.repo.location.IGeofenceManager
 import app.paralino.core.presentation.common.MainAlertDialog
 import app.paralino.core.presentation.common.MemberActionItemState
 import app.paralino.core.presentation.common.MemberActionType
 import app.paralino.core.presentation.common.MemberActionsState
-import app.paralino.core.presentation.common.MemberLocationVisibilityType
 import app.paralino.core.presentation.common.MemberLocationContextMapper
+import app.paralino.core.presentation.common.MemberLocationVisibilityType
 import app.paralino.core.presentation.common.MemberNavigateItemState
 import app.paralino.core.presentation.common.PlaceListItemData
+import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.provider.LocationConditionStatus
+import app.paralino.core.provider.localizedString
+import app.paralino.core.repo.base.RemoteConfigRepository
+import app.paralino.core.repo.group.UserGroupLocalDataSource
+import app.paralino.core.repo.location.IGeofenceManager
 import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.extensions.fromUTCtoInstant
 import app.paralino.core.utils.extensions.nowUTC
@@ -103,6 +103,7 @@ class MapStateMapper(
                     ?.isGroupOverLimits(remoteConfig.getConfigOnce())
                     ?: false
             }
+
             is GroupWithMembersOrUserSpace.PersonalSpace -> groupOrSpace.space.isSpaceOverLimits()
         }
 
@@ -142,7 +143,15 @@ class MapStateMapper(
 
         val privacyZonesData = privacyZones
             .filter { it.data.data?.lat != null && it.data.data?.lng != null }
-            .map { PlaceListItemData(it) }
+            .map { zone ->
+                PlaceListItemData(
+                    zone = zone,
+                    expirationStatus = valueFormatter.formatExpirationDateTimeUTC(
+                        expiresAtTimeUTC = zone.data.data?.expiresAt,
+                        showActiveStatus = false
+                    )
+                )
+            }
 
         val membersData = memberLocationContextMapper.enrichOneLocationMemberItems(
             members = buildMembersData(
@@ -466,12 +475,12 @@ class MapStateMapper(
 
         val deleteLocation = takeIf {
             location != null &&
-            memberActionHandler.canDeleteLocation(
-                groupId = groupId.asGroupOrSpaceId(),
-                isCurrentUser = memberUserId == appPrefs.userId,
-                isCurrentDevice = location.deviceId == appPrefs.deviceId,
-                hasLocation = locationVisibility.isVisible()
-            )
+                    memberActionHandler.canDeleteLocation(
+                        groupId = groupId.asGroupOrSpaceId(),
+                        isCurrentUser = memberUserId == appPrefs.userId,
+                        isCurrentDevice = location.deviceId == appPrefs.deviceId,
+                        hasLocation = locationVisibility.isVisible()
+                    )
         }?.let {
             MemberActionItemState(
                 type = MemberActionType.DELETE_LOCATION,
@@ -631,13 +640,15 @@ class MapStateMapper(
                 )
         }
 
-        val privacyZoneMarkers = privacyZones.map { zone ->
-            zone.makeMapPin(groupOrSpaceId = groupOrSpace.id)
-                .copy(
-                    active = true,
-                    focused = previousFocusedMarker?.markerId == zone.id
-                )
-        }
+        val privacyZoneMarkers = privacyZones
+            .filter { !it.expirationStatus.isExpired }
+            .map { zone ->
+                zone.makeMapPin(groupOrSpaceId = groupOrSpace.id)
+                    .copy(
+                        active = true,
+                        focused = previousFocusedMarker?.markerId == zone.id
+                    )
+            }
 
         return (privacyZoneMarkers + placeMarkers + memberMarkers)
             .sortedBy { it.focused }
