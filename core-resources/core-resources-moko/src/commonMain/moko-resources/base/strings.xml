@@ -629,6 +629,7 @@
     <string name="group_details_block_group_alert_title">Are you sure you want to block this group?\nThis is irreversible, will delete all data you shared to group and you will not be able to rejoin the group!</string>
     <string name="group_details_block_group_alert_button">Block</string>
     <string name="group_details_add_member_button">Add</string>
+    <string name="group_details_add_member_admin_only_info">Only group administrator can add new members</string>
     <string name="group_details_sharing_status_time">Sharing until: **%s**</string>
     <string name="group_details_sharing_status_infinite">**Always on** sharing is active</string>
     <string name="group_details_sharing_action">Location sharing</string>
