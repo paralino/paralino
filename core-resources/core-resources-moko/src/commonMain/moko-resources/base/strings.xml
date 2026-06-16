@@ -607,6 +607,7 @@
     <string name="group_members_marker_circle_info">%s is somewhere inside this circle</string>
     <string name="group_members_marker_circle_info_inaccurate">%s might be somewhere inside this circle</string>
     <string name="group_member_title">Member</string>
+    <string name="group_member_role_admin">Administrator</string>
     <string name="group_member_device_title">Device</string>
     <string name="group_members_block_user">Block user</string>
     <string name="group_members_block_user_alert_message">If you proceed, user will not be able to add you to a group and you will not receive users\' location notifications in any shared groups.</string>

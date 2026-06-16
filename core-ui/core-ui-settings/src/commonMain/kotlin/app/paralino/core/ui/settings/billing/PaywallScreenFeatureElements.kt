@@ -371,6 +371,7 @@ private fun MemberItemWithLocations(
             locations = locations,
             actions = memberActions,
             allowShowingDevices = true,
+            allowShowingRoles = false,
             lastLocationPing = locations.first().lastLocationPing,
             lastStatusPing = locations.first().lastStatusPing
         ),

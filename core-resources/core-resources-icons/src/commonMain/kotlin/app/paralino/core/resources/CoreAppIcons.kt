@@ -8,6 +8,9 @@ import org.jetbrains.compose.resources.painterResource
 import app.paralino.core.resources.icons.ic_account_circle
 import app.paralino.core.resources.icons.ic_add
 import app.paralino.core.resources.icons.ic_add_link
+import app.paralino.core.resources.icons.ic_admin_shield_person
+import app.paralino.core.resources.icons.ic_admin_shield_person_v2
+import app.paralino.core.resources.icons.ic_admin_shield_star
 import app.paralino.core.resources.icons.ic_arrow_open_in_new
 import app.paralino.core.resources.icons.ic_arrow_spinny
 import app.paralino.core.resources.icons.ic_assignment_list
@@ -197,6 +200,9 @@ object CoreAppIcons {
     val AssignmentList get() = Res.drawable.ic_assignment_list
     val Search get() = Res.drawable.ic_search
     val DownloadArrow get() = Res.drawable.ic_download_arrow
+    val AdminShieldStar get() = Res.drawable.ic_admin_shield_star
+    val AdminShieldPerson get() = Res.drawable.ic_admin_shield_person
+    val AdminShieldPersonV2 get() = Res.drawable.ic_admin_shield_person_v2
 
     val Refresh get() = Res.drawable.ic_refresh
     val Replay get() = Res.drawable.ic_replay
