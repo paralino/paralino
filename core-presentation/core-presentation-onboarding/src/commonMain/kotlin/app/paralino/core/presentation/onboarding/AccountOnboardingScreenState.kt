@@ -11,6 +11,7 @@ data class AccountOnboardingScreenState constructor(
     val onboardingStep: AccountOnboardingContent?,
     val isGroupModeChecked: Boolean,
     val isPersonalSpaceModeChecked: Boolean,
+    val didShareParalinoID: Boolean,
     val groupCount: Int,
     val fullScreenLoading: Boolean,
 ) {

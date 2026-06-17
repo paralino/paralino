@@ -162,6 +162,7 @@ class AccountOnboardingViewModel(
             groupCount = groupCount,
             fullScreenLoading = previousState?.fullScreenLoading ?: false,
             isGroupModeChecked = previousState?.isGroupModeChecked ?: false,
+            didShareParalinoID = previousState?.didShareParalinoID ?: false,
             isPersonalSpaceModeChecked = previousState?.isPersonalSpaceModeChecked ?: false,
         )
     }
@@ -183,7 +184,8 @@ class AccountOnboardingViewModel(
                                         personalCode = it.personalCode,
                                         didShareCode = false
                                     ),
-                                    isGroupModeChecked = true
+                                    isGroupModeChecked = true,
+                                    didShareParalinoID = false
                                 )
                             }
                         }
@@ -246,8 +248,11 @@ class AccountOnboardingViewModel(
     private fun skipOnboarding() {
         when (val step = uiState.value.data?.onboardingStep) {
             AccountOnboardingContent.GroupCreate -> {
-                // go back
-                startAccountStartOnboarding()
+                if (uiState.value.data?.didShareParalinoID == true) {
+                    finishOnboarding()
+                } else {
+                    skipAccountStartOnboarding()
+                }
             }
 
             is AccountOnboardingContent.ParalinoID -> {
@@ -452,7 +457,9 @@ class AccountOnboardingViewModel(
                 ?.copy(didShareCode = true)
                 ?.let { newStep ->
                     _uiState.update {
-                        it.mapReady { it.copy(onboardingStep = newStep) }
+                        it.mapReady {
+                            it.copy(onboardingStep = newStep, didShareParalinoID = true)
+                        }
                     }
                 }
         }
