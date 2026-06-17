@@ -4,6 +4,7 @@ import androidx.compose.ui.text.AnnotatedString
 import app.paralino.core.MR
 import app.paralino.core.app_rating.AppRatingManager
 import app.paralino.core.app_rating.AppRatingSource
+import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.user.BillingRefreshMonitor
 import app.paralino.core.domain.user.GetDirectCheckoutWebPortalUseCase
 import app.paralino.core.domain.user.RefreshEverythingUseCase
@@ -38,6 +39,7 @@ import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.extensions.annotatedBold
 import app.paralino.core.utils.extensions.errorString
 import app.paralino.core.utils.extensions.isOlderThan
+import app.paralino.core.utils.extensions.nowUTC
 import app.paralino.core.utils.extensions.mapToPayload
 import app.paralino.core.utils.poll
 import dev.icerock.moko.resources.StringResource
@@ -53,6 +55,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
@@ -68,7 +71,8 @@ class PaywallViewModel(
     private val getWebPortal: GetDirectCheckoutWebPortalUseCase,
     val valueFormatter: IValueFormatter,
     val billingProvider: IBillingProvider,
-    private val billingRefreshMonitor: BillingRefreshMonitor
+    private val billingRefreshMonitor: BillingRefreshMonitor,
+    private val appPrefs: AppPrefs
 ) : CoreViewModel() {
 
     private val _uiState = MutableStateFlow(
@@ -261,8 +265,12 @@ class PaywallViewModel(
 
             PaywallScreenUiEvent.StartPurchase -> {
                 when (uiState.value.screenStep) {
-                    PaywallScreenStep.ONBOARDING -> {
+                    PaywallScreenStep.ONBOARDING_WITH_HISTORY -> {
                         _uiState.update { it.copy(screenStep = PaywallScreenStep.DEMO_TO_HISTORY) }
+                    }
+
+                    PaywallScreenStep.ONBOARDING_NO_HISTORY -> {
+                        _uiState.update { it.copy(screenStep = PaywallScreenStep.DEMO_TO_PAYWALL) }
                     }
 
                     PaywallScreenStep.DEMO_TO_HISTORY -> {
@@ -488,9 +496,17 @@ class PaywallViewModel(
                 BillingScreenSourceType.GROUP_ONBOARDING,
                 BillingScreenSourceType.PERSONAL_SPACE_ONBOARDING,
                 BillingScreenSourceType.SKIPPED_ONBOARDING,
-                BillingScreenSourceType.FREE_PLAN_NEW_GROUP_MEMBER -> PaywallScreenStep.ONBOARDING
-                BillingScreenSourceType.UPGRADE_BILLING_PROMO -> PaywallScreenStep.DEMO_TO_PAYWALL
+                BillingScreenSourceType.FREE_PLAN_NEW_GROUP_MEMBER -> PaywallScreenStep.ONBOARDING_WITH_HISTORY
                 BillingScreenSourceType.UPGRADE_MAP_SHEET -> PaywallScreenStep.DEMO_TO_PAYWALL
+                BillingScreenSourceType.UPGRADE_BILLING_PROMO -> {
+                    val lastUsed = appPrefs.lastBillingPromoOnboardingNoHistoryTime
+                    if (lastUsed != null && !lastUsed.isOlderThan(30.days)) {
+                        PaywallScreenStep.PAYWALL
+                    } else {
+                        appPrefs.lastBillingPromoOnboardingNoHistoryTime = nowUTC()
+                        PaywallScreenStep.ONBOARDING_NO_HISTORY
+                    }
+                }
                 BillingScreenSourceType.UPGRADE_DEFAULT,
                 BillingScreenSourceType.NORMAL -> PaywallScreenStep.PAYWALL
             }

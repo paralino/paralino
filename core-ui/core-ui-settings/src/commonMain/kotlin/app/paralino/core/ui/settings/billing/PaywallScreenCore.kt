@@ -208,7 +208,7 @@ fun PaywallScreenCore(
         ) {
             AnimatedVisibility(
                 modifier = Modifier.fillMaxSize(),
-                visible = uiState.screenStep == PaywallScreenStep.ONBOARDING,
+                visible = uiState.screenStep == PaywallScreenStep.ONBOARDING_WITH_HISTORY || uiState.screenStep == PaywallScreenStep.ONBOARDING_NO_HISTORY,
                 enter = fadeIn() + slideInVertically { it / 2 },
                 exit = fadeOut() + slideOutVertically { -it / 2 }
             ) {
@@ -227,10 +227,10 @@ fun PaywallScreenCore(
                             .padding(top = 8.dp)
                             .padding(horizontal = 20.dp)
                             .fillMaxWidth(),
-                        text = if (uiState.screenType == BillingScreenSourceType.PERSONAL_SPACE_ONBOARDING) {
-                            stringResource(MR.strings.paywall_header_feature_list_screen_solo)
-                        } else {
+                        text = if (uiState.screenType == BillingScreenSourceType.GROUP_ONBOARDING) {
                             stringResource(MR.strings.paywall_header_feature_list_screen_family)
+                        } else {
+                            stringResource(MR.strings.paywall_header_feature_list_screen_solo)
                         },
                         style = MaterialTheme.typography.h4,
                         fontWeight = FontWeight.Bold,

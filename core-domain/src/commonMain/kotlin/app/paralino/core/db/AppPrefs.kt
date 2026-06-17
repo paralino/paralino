@@ -73,6 +73,7 @@ class AppPrefs(
         const val keyIsPersonalSpaceSelected = "prefs.device.isPersonalSpaceSelected"
         const val keyDismissedAppVersionID = "prefs.device.dismissedAppVersion"
         const val keyDismissedFreePlanPromoBillingId = "prefs.device.dismissedFreePlanPromoBillingId"
+        const val keyLastBillingPromoOnboardingNoHistoryTime = "prefs.user.billingPromo.onboardingNoHistoryTime"
         const val keyTrackingBoost = "prefs.device.trackingBoostEndTimeUTC"
         const val keyWasUserLoggedIn = "prefs.device.hadUser"
         const val keyDidEverFullyRefreshed = "prefs.device.everRefreshedData"
@@ -347,6 +348,16 @@ class AppPrefs(
         get() = provider.userSettings.getString(keyDismissedFreePlanPromoBillingId, "")
         set(value) {
             provider.userSettings.putString(keyDismissedFreePlanPromoBillingId, value)
+        }
+
+    var lastBillingPromoOnboardingNoHistoryTime: Instant?
+        get() = provider.userSettings.getString(keyLastBillingPromoOnboardingNoHistoryTime, "").isoWithOffsetToInstant()
+        set(value) {
+            if (value != null) {
+                provider.userSettings.putString(keyLastBillingPromoOnboardingNoHistoryTime, value.toString())
+            } else {
+                provider.userSettings.remove(keyLastBillingPromoOnboardingNoHistoryTime)
+            }
         }
 
     var trackingBoostEndTime: Instant?
