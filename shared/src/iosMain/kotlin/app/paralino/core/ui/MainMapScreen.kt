@@ -140,7 +140,7 @@ object MainMapScreen {
                             is MapHomeScreenEvent.OpenSharingStart -> onSharingStartClick(event.groupId)
                             is MapHomeScreenEvent.OpenExternalNavigation -> onDirectionsRequest(event)
                             MapHomeScreenEvent.OpenPersonalSpace -> openPersonalSpace()
-                            is MapHomeScreenEvent.ShowPlanLimitAlert -> openPaywall(BillingScreenSourceType.UPGRADE)
+                            is MapHomeScreenEvent.ShowPlanLimitAlert -> openPaywall(BillingScreenSourceType.UPGRADE_DEFAULT)
                             MapHomeScreenEvent.OpenMapProviderSettings -> {}
                             null -> {}
                             MapHomeScreenEvent.AskNotificationPermission -> askNotificationPermission()
@@ -160,7 +160,7 @@ object MainMapScreen {
                             LocationHistoryScreenEvent.NavigateBack -> vm.onEvent(MapHomeScreenUiEvent.CloseLocationHistory)
                             is LocationHistoryScreenEvent.OpenNavigation -> onDirectionsRequest(event.event)
                             LocationHistoryScreenEvent.OpenHistorySettings -> uiState.selectedGroupId?.let { onHistorySettingsClick(it) }
-                            LocationHistoryScreenEvent.OpenPaywall -> openPaywall(BillingScreenSourceType.UPGRADE)
+                            LocationHistoryScreenEvent.OpenPaywall -> openPaywall(BillingScreenSourceType.UPGRADE_DEFAULT)
                             is LocationHistoryScreenEvent.OpenRawDataScreen -> openRawDataScreen(event.type)
 
                             null -> {}

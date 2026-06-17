@@ -161,7 +161,7 @@ struct MapHomeScreen: View {
             },
             onOpenSubscription: {
                 groupPicker = nil
-                path.append(.settings(.paywall(groupId: nil, type: .upgrade)))
+                path.append(.settings(.paywall(groupId: nil, type: .upgradeDefault)))
             }
         )
         .sheet(item: $shareText) { shareText in

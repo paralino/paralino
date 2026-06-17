@@ -438,7 +438,7 @@ class MapEventHandler(
                     actionText = MR.strings.plans_banner_settings_action_small.localizedString()
                 )
             )?.result?.onAction {
-                eventChannel.trySend(MapHomeScreenEvent.OpenPaywall(type = BillingScreenSourceType.UPGRADE))
+                eventChannel.trySend(MapHomeScreenEvent.OpenPaywall(type = BillingScreenSourceType.UPGRADE_DEFAULT))
             }
         } else {
             val group = groupLocal.allGroupsState.value.data?.firstOrNull {
@@ -453,7 +453,7 @@ class MapEventHandler(
                         actionText = MR.strings.plans_banner_settings_action_small.localizedString()
                     )
                 )?.result?.onAction {
-                    eventChannel.trySend(MapHomeScreenEvent.OpenPaywall(type = BillingScreenSourceType.UPGRADE))
+                    eventChannel.trySend(MapHomeScreenEvent.OpenPaywall(type = BillingScreenSourceType.UPGRADE_DEFAULT))
                 }
             } else {
                 messageDispatcher.showSnackbar(

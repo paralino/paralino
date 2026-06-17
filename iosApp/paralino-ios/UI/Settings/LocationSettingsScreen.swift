@@ -19,7 +19,7 @@ struct LocationSettingsScreen: View {
                 ScreensIOS.shared.settings.LocationSettingsScreenVC(
                     vm: appState.vm,
                     openPaywall: {
-                        path.append(.settings(.paywall(groupId: nil, type: .upgrade)))
+                        path.append(.settings(.paywall(groupId: nil, type: .upgradeDefault)))
                     }
                 )
             }

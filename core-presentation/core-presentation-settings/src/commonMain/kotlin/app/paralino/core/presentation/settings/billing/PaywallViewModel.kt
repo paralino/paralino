@@ -93,7 +93,7 @@ class PaywallViewModel(
             }
 
             BillingScreenSourceType.FREE_PLAN_NEW_GROUP_MEMBER,
-            BillingScreenSourceType.UPGRADE,
+            BillingScreenSourceType.UPGRADE_DEFAULT,
             BillingScreenSourceType.UPGRADE_MAP_SHEET,
             BillingScreenSourceType.UPGRADE_BILLING_PROMO,
             BillingScreenSourceType.NORMAL -> {
@@ -491,7 +491,7 @@ class PaywallViewModel(
                 BillingScreenSourceType.FREE_PLAN_NEW_GROUP_MEMBER -> PaywallScreenStep.ONBOARDING
                 BillingScreenSourceType.UPGRADE_BILLING_PROMO -> PaywallScreenStep.DEMO_TO_PAYWALL
                 BillingScreenSourceType.UPGRADE_MAP_SHEET -> PaywallScreenStep.DEMO_TO_PAYWALL
-                BillingScreenSourceType.UPGRADE,
+                BillingScreenSourceType.UPGRADE_DEFAULT,
                 BillingScreenSourceType.NORMAL -> PaywallScreenStep.PAYWALL
             }
         }
@@ -506,7 +506,7 @@ class PaywallViewModel(
                     BillingScreenSourceType.PERSONAL_SPACE_ONBOARDING -> false
                     BillingScreenSourceType.SKIPPED_ONBOARDING,
                     BillingScreenSourceType.FREE_PLAN_NEW_GROUP_MEMBER,
-                    BillingScreenSourceType.UPGRADE,
+                    BillingScreenSourceType.UPGRADE_DEFAULT,
                     BillingScreenSourceType.UPGRADE_MAP_SHEET,
                     BillingScreenSourceType.UPGRADE_BILLING_PROMO,
                     BillingScreenSourceType.NORMAL -> true
@@ -658,8 +658,18 @@ class PaywallViewModel(
                     .filter { it.isActive }
                     .filter { it.planTypeEnum.isPremium }
 
-                val defaultPlan = premiumPlans
-                    .firstOrNull { it.planTypeEnum == config.defaultPremiumPlan }
+
+                val defaultPlan = when (sourceType) {
+                    BillingScreenSourceType.UPGRADE_DEFAULT,
+                    BillingScreenSourceType.UPGRADE_BILLING_PROMO,
+                    BillingScreenSourceType.UPGRADE_MAP_SHEET -> {
+                        premiumPlans.minByOrNull { it.planTypeEnum.order }
+                    }
+
+                    else -> {
+                        premiumPlans.firstOrNull { it.planTypeEnum == config.defaultPremiumPlan }
+                    }
+                }
 
                 if (defaultPlan != null) {
                     return defaultPlan.planTypeEnum == planType

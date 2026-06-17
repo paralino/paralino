@@ -397,7 +397,7 @@ sealed class AppScreen {
         open class BillingPaywall(private val parent: String) : AppScreen() {
             val argumentSourceType: String = "type"
             override val routeSignature: String = "$parent-subscriptions-paywall?$argumentGroupId={$argumentGroupId}&$argumentSourceType={$argumentSourceType}"
-            fun route(groupId: String? = null, type: BillingScreenSourceType = BillingScreenSourceType.UPGRADE): String {
+            fun route(groupId: String? = null, type: BillingScreenSourceType = BillingScreenSourceType.UPGRADE_DEFAULT): String {
                 val args = arrayOf(
                     groupId?.let { "$argumentGroupId=$groupId" },
                     "$argumentSourceType=${type.key}"

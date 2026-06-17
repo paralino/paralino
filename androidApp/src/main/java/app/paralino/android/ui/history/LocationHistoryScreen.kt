@@ -62,7 +62,7 @@ fun LocationHistoryScreenEventHandler(
                 LocationHistoryScreenEvent.OpenPaywall -> {
                     appState.navController.navigate(
                         AppScreen.MainHome.BillingPaywall.route(
-                            type = BillingScreenSourceType.UPGRADE
+                            type = BillingScreenSourceType.UPGRADE_DEFAULT
                         )
                     )
                 }

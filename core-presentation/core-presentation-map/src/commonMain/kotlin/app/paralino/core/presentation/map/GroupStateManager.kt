@@ -102,7 +102,7 @@ class GroupStateManager(
                         actionText = MR.strings.plans_banner_settings_action_small.localizedString()
                     )
                 )?.result?.onAction {
-                    eventChannel.trySend(MapHomeScreenEvent.OpenPaywall(type = BillingScreenSourceType.UPGRADE))
+                    eventChannel.trySend(MapHomeScreenEvent.OpenPaywall(type = BillingScreenSourceType.UPGRADE_DEFAULT))
                 }
             } else {
                 messageDispatcher.showSnackbar(
@@ -125,7 +125,7 @@ class GroupStateManager(
                     actionText = MR.strings.plans_banner_settings_action_small.localizedString()
                 )
             )?.result?.onAction {
-                eventChannel.trySend(MapHomeScreenEvent.OpenPaywall(type = BillingScreenSourceType.UPGRADE))
+                eventChannel.trySend(MapHomeScreenEvent.OpenPaywall(type = BillingScreenSourceType.UPGRADE_DEFAULT))
             }
         }
     }
@@ -140,7 +140,7 @@ class GroupStateManager(
                 // This would need to be handled by the main ViewModel to update alertDialog
                 eventChannel.trySend(MapHomeScreenEvent.ShowPlanLimitAlert(limit))
             } else if (limit in 0..groupCount) {
-                eventChannel.trySend(MapHomeScreenEvent.OpenPaywall(type = BillingScreenSourceType.UPGRADE))
+                eventChannel.trySend(MapHomeScreenEvent.OpenPaywall(type = BillingScreenSourceType.UPGRADE_DEFAULT))
             } else {
                 eventChannel.trySend(MapHomeScreenEvent.OpenGroupCreateScreen)
             }

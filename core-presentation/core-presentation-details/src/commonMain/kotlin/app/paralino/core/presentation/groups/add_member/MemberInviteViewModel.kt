@@ -211,7 +211,7 @@ class MemberInviteViewModel(
         when (val premiumStatus = uiState.value.premiumStatus) {
             is PremiumStatusLimitState.PlanLimitReached -> {
                 coroutineScope.launch {
-                    _eventChannel.send(MemberInviteScreenEvent.OpenPaywall(BillingScreenSourceType.UPGRADE))
+                    _eventChannel.send(MemberInviteScreenEvent.OpenPaywall(BillingScreenSourceType.UPGRADE_DEFAULT))
                 }
             }
 

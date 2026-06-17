@@ -160,7 +160,7 @@ class MemberActionHandler(
                                 duration = SnackbarDuration.Long
                             )
                         )?.result?.onAction {
-                            eventChannel.trySend(MapHomeScreenEvent.OpenPaywall(type = BillingScreenSourceType.UPGRADE))
+                            eventChannel.trySend(MapHomeScreenEvent.OpenPaywall(type = BillingScreenSourceType.UPGRADE_DEFAULT))
                         }
                     } else {
                         messageDispatcher.showSnackbar(MR.strings.plan_limit_locationRequest_groupMember_message.localizedString())
