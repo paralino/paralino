@@ -72,6 +72,7 @@ class AppPrefs(
         const val keySelectedGroupID = "prefs.group.selectedGroupID"
         const val keyIsPersonalSpaceSelected = "prefs.device.isPersonalSpaceSelected"
         const val keyDismissedAppVersionID = "prefs.device.dismissedAppVersion"
+        const val keyDismissedFreePlanPromoBillingId = "prefs.device.dismissedFreePlanPromoBillingId"
         const val keyTrackingBoost = "prefs.device.trackingBoostEndTimeUTC"
         const val keyWasUserLoggedIn = "prefs.device.hadUser"
         const val keyDidEverFullyRefreshed = "prefs.device.everRefreshedData"
@@ -103,6 +104,8 @@ class AppPrefs(
         const val keyDeviceTheme = "prefs.device.theme"
         const val keyLocationHistoryPerformance = "prefs.location.history.performance"
         const val keyEmailVerificationSkipTime = "prefs.user.emailVerification.skipTime"
+        const val keyFirstLoginTime = "prefs.user.firstLoginTime"
+        const val keyDetectedAppReadyTime = "prefs.user.appReadyTime"
         const val keyPlaceSensitivityType = "prefs.device.placeSensitivity"
         const val keyDevModeEnabled = "prefs.device.devModeOverride"
         const val keyAppTappedOnReview = "prefs.device.appReviewOpened"
@@ -340,6 +343,12 @@ class AppPrefs(
             provider.appSettings.putLong(keyDismissedAppVersionID, value)
         }
 
+    var dismissedFreePlanPromoBillingId: String
+        get() = provider.userSettings.getString(keyDismissedFreePlanPromoBillingId, "")
+        set(value) {
+            provider.userSettings.putString(keyDismissedFreePlanPromoBillingId, value)
+        }
+
     var trackingBoostEndTime: Instant?
         get() = provider.userSettings.getString(keyTrackingBoost, "").isoWithOffsetToInstant()
         set(value) {
@@ -465,6 +474,26 @@ class AppPrefs(
                 provider.userSettings.putString(keyEmailVerificationSkipTime, value.toString())
             } else {
                 provider.userSettings.remove(keyEmailVerificationSkipTime)
+            }
+        }
+
+    var detectedLoginTime: Instant?
+        get() = provider.userSettings.getString(keyFirstLoginTime, "").isoWithOffsetToInstant()
+        set(value) {
+            if (value != null) {
+                provider.userSettings.putString(keyFirstLoginTime, value.toString())
+            } else {
+                provider.userSettings.remove(keyFirstLoginTime)
+            }
+        }
+
+    var detectedAppReadyTime: Instant?
+        get() = provider.userSettings.getString(keyDetectedAppReadyTime, "").isoWithOffsetToInstant()
+        set(value) {
+            if (value != null) {
+                provider.userSettings.putString(keyDetectedAppReadyTime, value.toString())
+            } else {
+                provider.userSettings.remove(keyDetectedAppReadyTime)
             }
         }
 

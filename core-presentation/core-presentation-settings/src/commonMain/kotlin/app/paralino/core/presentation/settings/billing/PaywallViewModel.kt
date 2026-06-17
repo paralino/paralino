@@ -95,6 +95,7 @@ class PaywallViewModel(
             BillingScreenSourceType.FREE_PLAN_NEW_GROUP_MEMBER,
             BillingScreenSourceType.UPGRADE,
             BillingScreenSourceType.UPGRADE_MAP_SHEET,
+            BillingScreenSourceType.UPGRADE_BILLING_PROMO,
             BillingScreenSourceType.NORMAL -> {
             }
         }
@@ -483,12 +484,15 @@ class PaywallViewModel(
         val screenStep = if (currentState?.screenStep != null) {
             currentState.screenStep
         } else {
-            if (sourceType.isOnboarding) {
-                PaywallScreenStep.ONBOARDING
-            } else if (sourceType == BillingScreenSourceType.UPGRADE_MAP_SHEET) {
-                PaywallScreenStep.DEMO_TO_PAYWALL
-            } else {
-                PaywallScreenStep.PAYWALL
+            when (sourceType) {
+                BillingScreenSourceType.GROUP_ONBOARDING,
+                BillingScreenSourceType.PERSONAL_SPACE_ONBOARDING,
+                BillingScreenSourceType.SKIPPED_ONBOARDING,
+                BillingScreenSourceType.FREE_PLAN_NEW_GROUP_MEMBER -> PaywallScreenStep.ONBOARDING
+                BillingScreenSourceType.UPGRADE_BILLING_PROMO -> PaywallScreenStep.DEMO_TO_PAYWALL
+                BillingScreenSourceType.UPGRADE_MAP_SHEET -> PaywallScreenStep.DEMO_TO_PAYWALL
+                BillingScreenSourceType.UPGRADE,
+                BillingScreenSourceType.NORMAL -> PaywallScreenStep.PAYWALL
             }
         }
 
@@ -504,6 +508,7 @@ class PaywallViewModel(
                     BillingScreenSourceType.FREE_PLAN_NEW_GROUP_MEMBER,
                     BillingScreenSourceType.UPGRADE,
                     BillingScreenSourceType.UPGRADE_MAP_SHEET,
+                    BillingScreenSourceType.UPGRADE_BILLING_PROMO,
                     BillingScreenSourceType.NORMAL -> true
                 }
             } else {

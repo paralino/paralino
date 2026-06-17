@@ -29,6 +29,7 @@ import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.DeeplinkType
 import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.extensions.errorString
+import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.channels.Channel
@@ -43,6 +44,7 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -99,6 +101,18 @@ class AccountOnboardingViewModel(
         }
             .catch {
                 showSnackbar(it.errorString())
+            }
+            .flowOn(Dispatchers.IO)
+            .launchIn(coroutineScope)
+
+        canDisplayMap
+            .distinctUntilChanged()
+            .onEach {
+                if (it.data == true) {
+                    if (appPrefs.detectedAppReadyTime == null) {
+                        appPrefs.detectedAppReadyTime = nowUTC()
+                    }
+                }
             }
             .flowOn(Dispatchers.IO)
             .launchIn(coroutineScope)
