@@ -65,6 +65,8 @@ class LocationPayloadProvider(
                         null
                     }
 
+                    val isApproximate = isSharingApproximate && contract.shareDeviceStatus
+
                     LocationDataModel(
                         timeUTC = data.timeUTC,
                         endTimeUTC = contract.endTimeUTC?.takeIf { contract.shareDeviceStatus },
@@ -72,11 +74,13 @@ class LocationPayloadProvider(
                         lng = (adjustedCoordinates?.lng ?: data.lng).roundToPrecision(decimalPlaces = 6),
                         accuracy = approximateRadius?.toFloat() ?: data.accuracy,
                         speed = data.speed?.takeIf {
-                            contract.shareSpeed && it != 0f && !isSharingApproximate
+                            contract.shareSpeed && it != 0f && !isApproximate
                         },
-                        altitude = data.altitude?.takeIf { contract.shareElevation && it != 0f },
+                        altitude = data.altitude?.takeIf {
+                            contract.shareElevation && it != 0f && !isApproximate
+                        },
                         isMasked = false,
-                        isApproximate = isSharingApproximate && contract.shareDeviceStatus,
+                        isApproximate = isApproximate,
                     )
                 }
 
