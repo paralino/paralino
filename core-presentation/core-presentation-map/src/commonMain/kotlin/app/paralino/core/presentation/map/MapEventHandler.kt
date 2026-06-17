@@ -8,6 +8,7 @@ import app.paralino.core.models.data
 import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.map.MapHomeScreenFocusType
 import app.paralino.core.models.settings.MapInteractionsType
+import app.paralino.core.presentation.billing.BillingScreenSourceType
 import app.paralino.core.presentation.common.AppSnackbarData
 import app.paralino.core.presentation.common.GroupMemberItemEvent
 import app.paralino.core.presentation.common.GroupMemberItemStateWithFullStateLocations
@@ -309,6 +310,10 @@ class MapEventHandler(
                     }
                 }
             }
+
+            is MapHomeScreenUiEvent.OpenPaywall -> {
+                eventChannel.trySend(MapHomeScreenEvent.OpenPaywall(type = event.type))
+            }
         }
     }
 
@@ -433,7 +438,7 @@ class MapEventHandler(
                     actionText = MR.strings.plans_banner_settings_action_small.localizedString()
                 )
             )?.result?.onAction {
-                eventChannel.trySend(MapHomeScreenEvent.OpenPaywall)
+                eventChannel.trySend(MapHomeScreenEvent.OpenPaywall(type = BillingScreenSourceType.UPGRADE))
             }
         } else {
             val group = groupLocal.allGroupsState.value.data?.firstOrNull {
@@ -448,7 +453,7 @@ class MapEventHandler(
                         actionText = MR.strings.plans_banner_settings_action_small.localizedString()
                     )
                 )?.result?.onAction {
-                    eventChannel.trySend(MapHomeScreenEvent.OpenPaywall)
+                    eventChannel.trySend(MapHomeScreenEvent.OpenPaywall(type = BillingScreenSourceType.UPGRADE))
                 }
             } else {
                 messageDispatcher.showSnackbar(

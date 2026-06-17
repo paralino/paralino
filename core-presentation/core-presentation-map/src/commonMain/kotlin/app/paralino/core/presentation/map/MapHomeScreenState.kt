@@ -13,6 +13,7 @@ import app.paralino.core.models.map.MapHomeScreenFocusType
 import app.paralino.core.models.settings.IOSNavigationAppType
 import app.paralino.core.models.settings.MapInteractionsType
 import app.paralino.core.models.settings.MapsSDKProvider
+import app.paralino.core.presentation.billing.BillingScreenSourceType
 import app.paralino.core.provider.current
 import app.paralino.core.presentation.common.AlertDialogAction
 import app.paralino.core.presentation.common.GroupMemberItemEvent
@@ -215,7 +216,7 @@ sealed class MapHomeScreenEvent {
     data object AskLocationServices: MapHomeScreenEvent()
     data object OpenPersonalCodes: MapHomeScreenEvent()
     data object OpenGroupCreateScreen : MapHomeScreenEvent()
-    data object OpenPaywall : MapHomeScreenEvent()
+    data class OpenPaywall(val type: BillingScreenSourceType) : MapHomeScreenEvent()
     data object OpenSettings : MapHomeScreenEvent()
     data object OpenMapProviderSettings : MapHomeScreenEvent()
     data class OpenGroupPicker(val showPersonalSpace: Boolean) : MapHomeScreenEvent()
@@ -271,6 +272,7 @@ sealed interface MapHomeScreenUiEvent {
     data object CloseLocationHistory : MapHomeScreenUiEvent
     data object OnOverLimitsBannerTap : MapHomeScreenUiEvent
     data class OnConditionErrorItemClick(val item: ConditionErrorType) : MapHomeScreenUiEvent
+    data class OpenPaywall(val type: BillingScreenSourceType) : MapHomeScreenUiEvent
 }
 
 enum class MapSheetSelectedContentType {

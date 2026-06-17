@@ -245,7 +245,7 @@ fun PaywallScreenCore(
 
             AnimatedVisibility(
                 modifier = Modifier.fillMaxSize(),
-                visible = uiState.screenStep == PaywallScreenStep.DEMO,
+                visible = uiState.screenStep == PaywallScreenStep.DEMO_TO_HISTORY || uiState.screenStep == PaywallScreenStep.DEMO_TO_PAYWALL,
                 enter = fadeIn() + slideInVertically { it / 2 },
                 exit = fadeOut() + slideOutVertically { -it / 2 }
             ) {
@@ -294,7 +294,7 @@ fun PaywallScreenCore(
 
             AnimatedVisibility(
                 modifier = Modifier.fillMaxSize(),
-                visible = uiState.screenStep == PaywallScreenStep.LOCATION_HISTORY,
+                visible = uiState.screenStep == PaywallScreenStep.PERSONAL_LOCATION_HISTORY,
                 enter = fadeIn() + slideInVertically { it / 2 },
                 exit = fadeOut() + slideOutVertically { -it / 2 }
             ) {

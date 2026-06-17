@@ -94,6 +94,7 @@ class PaywallViewModel(
 
             BillingScreenSourceType.FREE_PLAN_NEW_GROUP_MEMBER,
             BillingScreenSourceType.UPGRADE,
+            BillingScreenSourceType.UPGRADE_MAP_SHEET,
             BillingScreenSourceType.NORMAL -> {
             }
         }
@@ -260,14 +261,18 @@ class PaywallViewModel(
             PaywallScreenUiEvent.StartPurchase -> {
                 when (uiState.value.screenStep) {
                     PaywallScreenStep.ONBOARDING -> {
-                        _uiState.update { it.copy(screenStep = PaywallScreenStep.DEMO) }
+                        _uiState.update { it.copy(screenStep = PaywallScreenStep.DEMO_TO_HISTORY) }
                     }
 
-                    PaywallScreenStep.DEMO -> {
-                        _uiState.update { it.copy(screenStep = PaywallScreenStep.LOCATION_HISTORY) }
+                    PaywallScreenStep.DEMO_TO_HISTORY -> {
+                        _uiState.update { it.copy(screenStep = PaywallScreenStep.PERSONAL_LOCATION_HISTORY) }
                     }
 
-                    PaywallScreenStep.LOCATION_HISTORY -> {
+                    PaywallScreenStep.DEMO_TO_PAYWALL -> {
+                        _uiState.update { it.copy(screenStep = PaywallScreenStep.PAYWALL) }
+                    }
+
+                    PaywallScreenStep.PERSONAL_LOCATION_HISTORY -> {
                         _uiState.update { it.copy(screenStep = PaywallScreenStep.PAYWALL) }
                     }
 
@@ -475,15 +480,22 @@ class PaywallViewModel(
             }
         }
 
+        val screenStep = if (currentState?.screenStep != null) {
+            currentState.screenStep
+        } else {
+            if (sourceType.isOnboarding) {
+                PaywallScreenStep.ONBOARDING
+            } else if (sourceType == BillingScreenSourceType.UPGRADE_MAP_SHEET) {
+                PaywallScreenStep.DEMO_TO_PAYWALL
+            } else {
+                PaywallScreenStep.PAYWALL
+            }
+        }
+
         return PaywallScreenState(
             canShowMoreInfo = appConfig.isInAppDevMode,
             freePlanInfo = freeUiPlan,
-            plans = buildList {
-//                if (sourceType == BillingScreenSourceType.ONBOARDING && !plans.highestValidPlanConfig.planTypeEnum.isPremium) {
-//                    add(freeUiPlan)
-//                }
-                addAll(uiPlans)
-            },
+            plans = uiPlans,
             canCloseScreen = if (billingConfig?.canCloseOnboardingPaywall == false) {
                 when (sourceType) {
                     BillingScreenSourceType.GROUP_ONBOARDING,
@@ -491,6 +503,7 @@ class PaywallViewModel(
                     BillingScreenSourceType.SKIPPED_ONBOARDING,
                     BillingScreenSourceType.FREE_PLAN_NEW_GROUP_MEMBER,
                     BillingScreenSourceType.UPGRADE,
+                    BillingScreenSourceType.UPGRADE_MAP_SHEET,
                     BillingScreenSourceType.NORMAL -> true
                 }
             } else {
@@ -503,11 +516,7 @@ class PaywallViewModel(
             canRestorePurchases = !billingProvider.isExternalProvider,
             isPurchaseButtonLoading = currentState?.isPurchaseButtonLoading ?: false,
             faq = currentState?.faq ?: getFaqSection(config),
-            screenStep = currentState?.screenStep ?: if (sourceType.isOnboarding) {
-                PaywallScreenStep.ONBOARDING
-            } else {
-                PaywallScreenStep.PAYWALL
-            },
+            screenStep = screenStep,
             screenType = sourceType,
             memberName = userRepo.cachedUser?.data?.userName ?: "Peter",
             memberImageModel = userRepo.cachedUser?.data?.userImage

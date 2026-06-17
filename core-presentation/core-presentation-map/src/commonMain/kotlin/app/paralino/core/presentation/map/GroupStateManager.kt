@@ -8,6 +8,7 @@ import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.models.data
 import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.group.UserGroupWithMetadata
+import app.paralino.core.presentation.billing.BillingScreenSourceType
 import app.paralino.core.presentation.common.ICoreMessageDispatcher
 import app.paralino.core.presentation.common.GroupItemState
 import app.paralino.core.provider.localizedString
@@ -98,7 +99,7 @@ class GroupStateManager(
                         actionText = MR.strings.plans_banner_settings_action_small.localizedString()
                     )
                 )?.result?.onAction {
-                    eventChannel.trySend(MapHomeScreenEvent.OpenPaywall)
+                    eventChannel.trySend(MapHomeScreenEvent.OpenPaywall(type = BillingScreenSourceType.UPGRADE))
                 }
             } else {
                 messageDispatcher.showSnackbar(
@@ -121,7 +122,7 @@ class GroupStateManager(
                     actionText = MR.strings.plans_banner_settings_action_small.localizedString()
                 )
             )?.result?.onAction {
-                eventChannel.trySend(MapHomeScreenEvent.OpenPaywall)
+                eventChannel.trySend(MapHomeScreenEvent.OpenPaywall(type = BillingScreenSourceType.UPGRADE))
             }
         }
     }
@@ -136,7 +137,7 @@ class GroupStateManager(
                 // This would need to be handled by the main ViewModel to update alertDialog
                 eventChannel.trySend(MapHomeScreenEvent.ShowPlanLimitAlert(limit))
             } else if (limit in 0..groupCount) {
-                eventChannel.trySend(MapHomeScreenEvent.OpenPaywall)
+                eventChannel.trySend(MapHomeScreenEvent.OpenPaywall(type = BillingScreenSourceType.UPGRADE))
             } else {
                 eventChannel.trySend(MapHomeScreenEvent.OpenGroupCreateScreen)
             }

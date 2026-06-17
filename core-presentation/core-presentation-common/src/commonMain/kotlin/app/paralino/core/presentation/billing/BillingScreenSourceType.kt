@@ -5,6 +5,7 @@ enum class BillingScreenSourceType(val key: String) {
     PERSONAL_SPACE_ONBOARDING("personalSpace_onboarding"),
     SKIPPED_ONBOARDING("skipped_onboarding"),
     FREE_PLAN_NEW_GROUP_MEMBER("new_group_member_added"),
+    UPGRADE_MAP_SHEET("map_sheet_upgrade"),
     UPGRADE("notice"),
     NORMAL("normal");
 
@@ -14,6 +15,7 @@ enum class BillingScreenSourceType(val key: String) {
         SKIPPED_ONBOARDING,
         FREE_PLAN_NEW_GROUP_MEMBER -> true
 
+        UPGRADE_MAP_SHEET,
         UPGRADE,
         NORMAL -> false
     }

@@ -170,7 +170,11 @@ data class PaywallScreenState(
 }
 
 enum class PaywallScreenStep {
-    ONBOARDING, DEMO, LOCATION_HISTORY, PAYWALL
+    ONBOARDING,
+    DEMO_TO_HISTORY,
+    DEMO_TO_PAYWALL,
+    PERSONAL_LOCATION_HISTORY,
+    PAYWALL
 }
 
 sealed interface PaywallContinueButtonType {
