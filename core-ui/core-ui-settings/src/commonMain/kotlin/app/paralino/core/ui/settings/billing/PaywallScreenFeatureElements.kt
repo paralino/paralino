@@ -1,14 +1,19 @@
 package app.paralino.core.ui.settings.billing
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -21,8 +26,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.dropShadow
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -51,6 +59,7 @@ import app.paralino.core.ui.components.rememberSeekbarState
 import app.paralino.core.ui.groups.components.GroupMember
 import app.paralino.core.ui.groups.components.dummyMemberState
 import app.paralino.core.ui.settings.HistoryMapOnboardingContent
+import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.extensions.nowUTC
 import dev.icerock.moko.resources.compose.stringResource
@@ -96,33 +105,55 @@ fun PaywallScreenFeatureElements(
             contentDescription = null
         )
 
-        if (displayLocationHistory) {
-            Box(
-                modifier = Modifier
-                    .padding(top = 12.dp)
-                    .height(400.dp)
-                    .rotate(2f)
-                    .shadow(8.dp, RoundedCornerShape(12.dp))
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(MaterialTheme.colors.surface)
-                    .padding(6.dp)
-                    .clip(RoundedCornerShape(8.dp))
-            ) {
-                HistoryMapOnboardingContent(
-                    modifier = Modifier.fillMaxSize(),
-                    animate = false,
-                )
-            }
-        }
+        TitleChip(
+            modifier = Modifier.padding(top = 14.dp, bottom = 14.dp),
+            text = stringResource(MR.strings.paywall_feature_locate)
+        )
 
         MemberItem(
             modifier = Modifier
-                .padding(top = 20.dp)
                 .rotate(-2f),
             memberName = memberName,
             memberImageModel = memberImageModel,
             memberDeviceName = memberDeviceName,
             valueFormatter = valueFormatter
+        )
+
+        Icon(
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+                .padding(top = 24.dp)
+                .size(24.dp)
+                .padding(2.dp)
+                .rotate(90f),
+            painter = CoreAppIcons.ChevronRight.asPainterResource(),
+            contentDescription = null
+        )
+
+        TitleChip(
+            modifier = Modifier.padding(top = 14.dp, bottom = 14.dp),
+            text = stringResource(MR.strings.paywall_feature_demo_realtime_location)
+        )
+
+        RealtimeLocationSwitch(
+            modifier = Modifier
+                .rotate(2f),
+        )
+
+        Icon(
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+                .padding(top = 24.dp)
+                .size(24.dp)
+                .padding(2.dp)
+                .rotate(90f),
+            painter = CoreAppIcons.ChevronRight.asPainterResource(),
+            contentDescription = null
+        )
+
+        TitleChip(
+            modifier = Modifier.padding(top = 14.dp, bottom = 16.dp),
+            text = stringResource(MR.strings.paywall_feature_demo_performance)
         )
 
         var itemState1 by remember { mutableStateOf(true) }
@@ -148,20 +179,135 @@ fun PaywallScreenFeatureElements(
             }
         )
 
+        if (displayLocationHistory) {
+            Icon(
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .padding(top = 24.dp)
+                    .size(24.dp)
+                    .padding(2.dp)
+                    .rotate(90f),
+                painter = CoreAppIcons.ChevronRight.asPainterResource(),
+                contentDescription = null
+            )
+
+            TitleChip(
+                modifier = Modifier.padding(top = 14.dp, bottom = 16.dp),
+                text = stringResource(MR.strings.paywall_feature_demo_location_history)
+            )
+
+            Box(
+                modifier = Modifier
+                    .height(400.dp)
+                    .rotate(2f)
+                    .shadow(8.dp, RoundedCornerShape(12.dp))
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(MaterialTheme.colors.surface)
+                    .padding(6.dp)
+                    .clip(RoundedCornerShape(8.dp))
+            ) {
+                HistoryMapOnboardingContent(
+                    modifier = Modifier.fillMaxSize(),
+                    animate = false,
+                )
+            }
+        }
+
+        Icon(
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+                .padding(top = 28.dp)
+                .size(24.dp)
+                .padding(2.dp)
+                .rotate(90f),
+            painter = CoreAppIcons.ChevronRight.asPainterResource(),
+            contentDescription = null
+        )
+
+        TitleChip(
+            modifier = Modifier.padding(top = 14.dp, bottom = 14.dp),
+            text = stringResource(MR.strings.paywall_feature_demo_notify_members)
+        )
+
         NotifyMembersSwitch(
             modifier = Modifier
-                .padding(top = 8.dp)
                 .rotate(2f),
+        )
+
+        Icon(
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+                .padding(top = 24.dp)
+                .size(24.dp)
+                .padding(2.dp)
+                .rotate(90f),
+            painter = CoreAppIcons.ChevronRight.asPainterResource(),
+            contentDescription = null
+        )
+
+        TitleChip(
+            modifier = Modifier.padding(top = 14.dp, bottom = 16.dp),
+            text = stringResource(MR.strings.paywall_feature_demo_multi_device)
         )
 
         MemberItemWithLocations(
             modifier = Modifier
-                .padding(top = 8.dp)
                 .rotate(-2f),
             memberName = memberName,
             memberImageModel = memberImageModel,
             memberDeviceName = memberDeviceName,
             valueFormatter = valueFormatter
+        )
+    }
+}
+
+@Composable
+private fun ColumnScope.TitleChip(
+    modifier: Modifier = Modifier,
+    text: String
+) {
+    Row(
+        modifier = modifier
+            .align(Alignment.CenterHorizontally)
+            .padding(horizontal = 8.dp, vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        Divider(
+            modifier = Modifier.weight(1f),
+            color = Color.Gray.copy(alpha = 0.2f),
+            thickness = 0.5.dp
+        )
+        Text(
+            modifier = Modifier
+                .dropShadow(
+                    shape = RoundedCornerShape(100),
+                    shadow = Shadow(
+                        radius = 8.dp,
+                        color = MaterialTheme.colors.onBackground.copy(alpha = 0.2f),
+                    )
+                )
+                .background(
+                    color = if (isSystemInDarkTheme()) {
+                        MaterialTheme.colors.primary.copy(alpha = 0.4f)
+                    } else {
+                        AppColors.accent.copy(alpha = 0.3f)
+                    },
+                    shape = RoundedCornerShape(100)
+                )
+                .padding(horizontal = 10.dp, vertical = 5.dp),
+            text = text,
+            style = MaterialTheme.typography.caption.copy(
+                fontWeight = FontWeight.Medium
+            ),
+            color = AppColors.lightBackground.copy(
+                alpha = if (isSystemInDarkTheme()) 0.8f else 1f
+            )
+        )
+        Divider(
+            modifier = Modifier.weight(1f),
+            color = Color.Gray.copy(alpha = 0.2f),
+            thickness = 0.5.dp
         )
     }
 }
@@ -189,7 +335,10 @@ private fun MemberItem(
                 adjustedBatteryLevel = 58,
                 isBatteryCharging = false,
                 speed = valueFormatter.getSpeedSmall(metersPerSecond = 1.4f),
-                elevation = valueFormatter.getDistanceSmall(meters = 250.0, distanceType = DistanceType.ELEVATION),
+                elevation = valueFormatter.getDistanceSmall(
+                    meters = 250.0,
+                    distanceType = DistanceType.ELEVATION
+                ),
                 lastLocationPing = valueFormatter.formatRelativeDateTime(
                     nowUTC().minus(30.minutes).toLocalDateTime(TimeZone.UTC)
                 ),
@@ -275,7 +424,10 @@ private fun MemberItem(
                         signalStrength = NetworkSignalStrength.GREAT,
                         lastLocationPing = MR.strings.group_members_last_active_status_now.localizedString(),
                         speed = valueFormatter.getSpeedSmall(metersPerSecond = 1.2f),
-                        elevation = valueFormatter.getDistanceSmall(meters = 180.0, distanceType = DistanceType.ELEVATION),
+                        elevation = valueFormatter.getDistanceSmall(
+                            meters = 180.0,
+                            distanceType = DistanceType.ELEVATION
+                        ),
                     )
                 }
             }
@@ -308,7 +460,10 @@ private fun MemberItemWithLocations(
                 adjustedBatteryLevel = 58,
                 isBatteryCharging = false,
                 speed = valueFormatter.getSpeedSmall(metersPerSecond = 1.4f),
-                elevation = valueFormatter.getDistanceSmall(meters = 250.0, distanceType = DistanceType.ELEVATION),
+                elevation = valueFormatter.getDistanceSmall(
+                    meters = 250.0,
+                    distanceType = DistanceType.ELEVATION
+                ),
                 lastLocationPing = valueFormatter.formatRelativeDateTime(
                     nowUTC().toLocalDateTime(TimeZone.UTC)
                 ),
@@ -323,7 +478,7 @@ private fun MemberItemWithLocations(
                 networkType = NetworkType.G2,
                 signalStrength = NetworkSignalStrength.POOR,
                 visibility = MemberLocationVisibilityType.VISIBLE_ALWAYS,
-                distanceFromMeText = "250m away",
+                distanceFromMeText = MR.strings.group_members_status_distanceFromMe.localizedString("250m"),
                 atPlace = null
             ),
             GroupMemberItemLocationState(
@@ -337,7 +492,10 @@ private fun MemberItemWithLocations(
                 adjustedBatteryLevel = 75,
                 isBatteryCharging = true,
                 speed = valueFormatter.getSpeedSmall(metersPerSecond = 1.3f),
-                elevation = valueFormatter.getDistanceSmall(meters = 280.0, distanceType = DistanceType.ELEVATION),
+                elevation = valueFormatter.getDistanceSmall(
+                    meters = 280.0,
+                    distanceType = DistanceType.ELEVATION
+                ),
                 lastLocationPing = valueFormatter.formatRelativeDateTime(
                     nowUTC().minus(20.minutes).toLocalDateTime(TimeZone.UTC)
                 ),
@@ -353,7 +511,7 @@ private fun MemberItemWithLocations(
                 signalStrength = NetworkSignalStrength.GREAT,
                 visibility = MemberLocationVisibilityType.VISIBLE_ALWAYS,
                 distanceFromMeText = null,
-                atPlace = "Home"
+                atPlace = MR.strings.places_notification_demo_home.localizedString()
             )
         )
     }
@@ -430,6 +588,31 @@ private fun NotifyMembersSwitch(modifier: Modifier = Modifier) {
         icon = CoreAppIcons.NotificationsActive.asPainterResource(),
         title = stringResource(MR.strings.groups_sharing_setting_notifyOthers_title),
         description = stringResource(MR.strings.groups_sharing_setting_notifyOthers_description),
+        state = rememberSeekbarState(
+            key = itemState,
+            state = LargeSeekbarSwitchState.SeekbarSwitchState(
+                seekbarState = null,
+                switchState = LargeSeekbarSwitchState.Switch(itemState)
+            )
+        ).value,
+        onStateChange = {
+            itemState = !itemState
+        }
+    )
+}
+
+@Composable
+private fun RealtimeLocationSwitch(modifier: Modifier = Modifier) {
+    var itemState by remember { mutableStateOf(true) }
+    LargeSeekbarSwitch(
+        modifier = modifier.fillMaxWidth(),
+        icon = CoreAppIcons.ShareLocation.asPainterResource(),
+        title = stringResource(MR.strings.groups_sharing_setting_realtimeUpdates_title),
+        description = if (itemState) {
+            stringResource(MR.strings.groups_sharing_setting_realtimeUpdates_description_on)
+        } else {
+            stringResource(MR.strings.groups_sharing_setting_realtimeUpdates_description_off)
+        },
         state = rememberSeekbarState(
             key = itemState,
             state = LargeSeekbarSwitchState.SeekbarSwitchState(

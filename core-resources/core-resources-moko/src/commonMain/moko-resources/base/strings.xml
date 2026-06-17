@@ -421,6 +421,11 @@
     <string name="paywall_feature_places_personal">Places with **unlimited alerts**</string>
     <string name="paywall_feature_battery">Low battery alerts</string>
     <string name="paywall_feature_locate">Locate devices on demand</string>
+    <string name="paywall_feature_demo_realtime_location">Real-time location</string>
+    <string name="paywall_feature_demo_performance">Best location performance</string>
+    <string name="paywall_feature_demo_location_history">More location history</string>
+    <string name="paywall_feature_demo_notify_members">Notify others when you share your location</string>
+    <string name="paywall_feature_demo_multi_device">Use multiple devices</string>
     <string name="paywall_feature_performance">Best location performance and **fast location updates**</string>
     <string name="paywall_feature_multi_device">Share location from multiple devices</string>
     <string name="paywall_feature_notify">Location sharing alerts</string>

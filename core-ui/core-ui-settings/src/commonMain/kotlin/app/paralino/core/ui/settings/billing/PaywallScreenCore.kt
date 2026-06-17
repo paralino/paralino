@@ -281,7 +281,7 @@ fun PaywallScreenCore(
                             .padding(bottom = 20.dp, top = 20.dp)
                             .fillMaxWidth(),
                         displayTitle = false,
-                        displayLocationHistory = false,
+                        displayLocationHistory = uiState.screenStep == PaywallScreenStep.DEMO_TO_PAYWALL,
                         memberName = uiState.memberName,
                         memberImageModel = uiState.memberImageModel,
                         memberDeviceName = uiState.memberDeviceName,
