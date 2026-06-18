@@ -615,14 +615,7 @@ class SharingStartViewModel(
         _uiState.update {
             it.copy(
                 shareApproximateLocation = state,
-                formattedApproximateLocation = valueFormatter.getDistanceSmall(
-                    meters = when (valueFormatter.measurementSystem) {
-                        MeasurementSystemType.METRIC -> it.approximateLocationValue.meters.toDouble()
-                        MeasurementSystemType.IMPERIAL -> it.approximateLocationValue.metersForImperial
-                    },
-                    distanceType = DistanceType.DISTANCE,
-                    fractionsMode = FormattingFractionsMode.MINIMAL
-                )
+                formattedApproximateLocation = getFormattedApproximateLocationRadius(it.approximateLocationValue)
             )
         }
     }
@@ -639,14 +632,7 @@ class SharingStartViewModel(
                 ?: it.approximateLocationValue
             it.copy(
                 approximateLocationValue = approximateLocationValue,
-                formattedApproximateLocation = valueFormatter.getDistanceSmall(
-                    meters = when (valueFormatter.measurementSystem) {
-                        MeasurementSystemType.METRIC -> approximateLocationValue.meters.toDouble()
-                        MeasurementSystemType.IMPERIAL -> approximateLocationValue.metersForImperial
-                    },
-                    distanceType = DistanceType.DISTANCE,
-                    fractionsMode = FormattingFractionsMode.MINIMAL
-                )
+                formattedApproximateLocation = getFormattedApproximateLocationRadius(approximateLocationValue)
             )
         }
     }
@@ -742,6 +728,21 @@ class SharingStartViewModel(
     fun onDeviceNameChange(name: String) {
         if (_uiState.value.loadingAction) return
         _uiState.update { it.copy(deviceName = name) }
+    }
+
+    private fun getFormattedApproximateLocationRadius(
+        approximateLocationValue: ApproximateLocationDistancePair
+    ): String {
+        val distance = valueFormatter.getDistanceSmall(
+            meters = when (valueFormatter.measurementSystem) {
+                MeasurementSystemType.METRIC -> approximateLocationValue.meters.toDouble()
+                MeasurementSystemType.IMPERIAL -> approximateLocationValue.metersForImperial
+            },
+            distanceType = DistanceType.DISTANCE,
+            fractionsMode = FormattingFractionsMode.MINIMAL
+        )
+
+        return "~ $distance"
     }
 
     private fun hasSharingStartErrors(isForLongTerm: Boolean): Boolean {
