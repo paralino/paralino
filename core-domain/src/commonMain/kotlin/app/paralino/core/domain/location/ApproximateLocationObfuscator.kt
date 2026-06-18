@@ -13,6 +13,7 @@ import kotlin.math.cos
 import kotlin.math.sin
 import kotlin.math.sqrt
 import kotlin.random.Random
+import kotlin.random.nextInt
 
 class ApproximateLocationObfuscator(
     private val localSource: ApproximateSharedLocationLocalSource,
@@ -27,7 +28,7 @@ class ApproximateLocationObfuscator(
         trueLat: Double,
         trueLng: Double,
         radiusMeters: Int,
-    ): LatLng {
+    ): ApproximateLocationObfuscationResult {
         val cached = localSource.load(groupId = groupId)
         if (cached != null && cached.radiusMeters == radiusMeters) {
             logg.i(
@@ -46,7 +47,11 @@ class ApproximateLocationObfuscator(
                     tag = "approximate_location",
                     message = "Location matches current approximate location area"
                 )
-                return LatLng(lat = cached.lat, lng = cached.lng)
+
+                return ApproximateLocationObfuscationResult(
+                    location = LatLng(lat = cached.lat, lng = cached.lng),
+                    radiusMeters = cached.adjustedRadiusMeters
+                )
             }
         }
 
@@ -58,6 +63,7 @@ class ApproximateLocationObfuscator(
         val random = Random(
             seed = cryptoCore.randomId(length = 16, alphabet = AlphabetType.EXTENDED).hashCode()
         )
+
         val point = destinationPoint(
             centerLat = trueLat,
             centerLng = trueLng,
@@ -65,16 +71,26 @@ class ApproximateLocationObfuscator(
             random = random
         )
 
+        val radiusNoise = Random.nextInt(
+            from = -radiusMeters.times(0.1f).toInt(),
+            until = radiusMeters.times(0.1f).toInt()
+        )
+        val adjustedRadiusMeters = radiusMeters + radiusNoise
+
         localSource.save(
             groupId = groupId,
             payload = ApproximateSharedLocationPayload(
                 lat = point.lat,
                 lng = point.lng,
                 radiusMeters = radiusMeters,
+                adjustedRadiusMeters = adjustedRadiusMeters
             )
         )
 
-        return point
+        return ApproximateLocationObfuscationResult(
+            location = point,
+            radiusMeters = adjustedRadiusMeters
+        )
     }
 
     private fun destinationPoint(
@@ -104,3 +120,8 @@ class ApproximateLocationObfuscator(
     private fun Double.toRadians() = this * kotlin.math.PI / 180.0
     private fun Double.toDegrees() = this * 180.0 / kotlin.math.PI
 }
+
+data class ApproximateLocationObfuscationResult(
+    val location: LatLng,
+    val radiusMeters: Int
+)

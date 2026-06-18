@@ -54,7 +54,7 @@ class LocationPayloadProvider(
                 val locationData = safeLet(data, contract) { data, contract ->
                     val approximateRadius = contract.approximateLocationInMeters
                     val isSharingApproximate = approximateRadius != null
-                    val adjustedCoordinates = if (approximateRadius != null) {
+                    val adjustedLocation = if (approximateRadius != null) {
                         approximateLocationObfuscator.obfuscate(
                             groupId = groupId,
                             trueLat = data.lat,
@@ -70,9 +70,9 @@ class LocationPayloadProvider(
                     LocationDataModel(
                         timeUTC = data.timeUTC,
                         endTimeUTC = contract.endTimeUTC?.takeIf { contract.shareDeviceStatus },
-                        lat = (adjustedCoordinates?.lat ?: data.lat).roundToPrecision(decimalPlaces = 6),
-                        lng = (adjustedCoordinates?.lng ?: data.lng).roundToPrecision(decimalPlaces = 6),
-                        accuracy = approximateRadius?.toFloat() ?: data.accuracy,
+                        lat = (adjustedLocation?.location?.lat ?: data.lat).roundToPrecision(decimalPlaces = 6),
+                        lng = (adjustedLocation?.location?.lng ?: data.lng).roundToPrecision(decimalPlaces = 6),
+                        accuracy = adjustedLocation?.radiusMeters?.toFloat() ?: data.accuracy,
                         speed = data.speed?.takeIf {
                             contract.shareSpeed && it != 0f && !isApproximate
                         },
