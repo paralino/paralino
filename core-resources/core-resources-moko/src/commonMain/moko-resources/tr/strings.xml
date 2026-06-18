@@ -954,4 +954,16 @@
     <string name="groups_sharing_setting_realtimeUpdates_title">Gerçek zamanlı konum güncellemeleri</string>
     <string name="groups_sharing_setting_realtimeUpdates_description_on">Başkalarının bu cihazdan **sürekli** gerçek zamanlı konum güncellemeleri almasına izin verin. Birisi sizi haritada uzun süre izliyorsa, bu daha fazla pil tüketebilir.</string>
     <string name="groups_sharing_setting_realtimeUpdates_description_off">Diğer kişiler konumunuzu manuel olarak yenileyerek yine de sizi bulabilir, ancak gerçek zamanlı destek olmadan diğer tüm durumlarda konum güncellemeleri sınırlandırılacaktır.</string>
+    <string name="plans_banner_inline_realtime_location">Sınırsız canlı konum güncellemeleri için yükseltin!</string>
+    <string name="paywall_feature_demo_realtime_location">Gerçek zamanlı konum</string>
+    <string name="paywall_feature_demo_performance">En iyi konum performansı</string>
+    <string name="paywall_feature_demo_location_history">Daha fazla konum geçmişi</string>
+    <string name="paywall_feature_demo_notify_members">Konumunuzu paylaştığınızda diğerlerini bilgilendirin</string>
+    <string name="paywall_feature_demo_multi_device">Birden fazla cihaz kullanın</string>
+    <string name="groups_sharing_setting_approximateLocation_title">Yaklaşık konum</string>
+    <string name="groups_sharing_setting_approximateLocation_description_off">Konumunuz doğru olsa bile yalnızca yaklaşık konum alanını paylaşın.</string>
+    <string name="groups_sharing_setting_approximateLocation_description_on">Yaklaşık bir alanın yarıçapını seçin. Kesin konumunuz gizlenecek ve seçilen yarıçapın içindeki bir noktayla değiştirilecektir.</string>
+    <string name="group_member_role_admin">Yönetici</string>
+    <string name="group_details_add_member_admin_only_info">Yalnızca grup yöneticisi yeni üyeler ekleyebilir</string>
+    <string name="group_members_status_location_hidden">Yalnızca yaklaşık konum</string>
 </resources>

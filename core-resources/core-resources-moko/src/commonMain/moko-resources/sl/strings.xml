@@ -954,4 +954,16 @@
     <string name="groups_sharing_setting_realtimeUpdates_title">Posodobitve lokacije v realnem času</string>
     <string name="groups_sharing_setting_realtimeUpdates_description_on">Dovolite drugim, da s te naprave **neprekinjeno** prejemajo posodobitve lokacije v realnem času. Če vas nekdo na zemljevidu opazuje dlje časa, lahko to porabi več baterije.</string>
     <string name="groups_sharing_setting_realtimeUpdates_description_off">Drugi vas lahko še vedno poiščejo z ročnim osveževanjem vaše lokacije, vendar bodo v vseh drugih primerih posodobitve lokacije brez podpore v realnem času omejene.</string>
+    <string name="plans_banner_inline_realtime_location">Nadgradnja za neomejene posodobitve lokacije v živo!</string>
+    <string name="paywall_feature_demo_realtime_location">Lokacija v realnem času</string>
+    <string name="paywall_feature_demo_performance">Najboljša zmogljivost lokacije</string>
+    <string name="paywall_feature_demo_location_history">Več zgodovine lokacij</string>
+    <string name="paywall_feature_demo_notify_members">Obvesti druge, ko delite svojo lokacijo</string>
+    <string name="paywall_feature_demo_multi_device">Uporabite več naprav</string>
+    <string name="groups_sharing_setting_approximateLocation_title">Približna lokacija</string>
+    <string name="groups_sharing_setting_approximateLocation_description_off">Delite le približno območje lokacije, tudi če je vaša lokacija natančna.</string>
+    <string name="groups_sharing_setting_approximateLocation_description_on">Izberite polmer približnega območja. Vaša natančna lokacija bo skrita in nadomeščena s točko nekje znotraj izbranega polmera.</string>
+    <string name="group_member_role_admin">Administrator</string>
+    <string name="group_details_add_member_admin_only_info">Samo skrbnik skupine lahko doda nove člane</string>
+    <string name="group_members_status_location_hidden">Samo približna lokacija</string>
 </resources>

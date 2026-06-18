@@ -954,4 +954,16 @@
     <string name="groups_sharing_setting_realtimeUpdates_title">Opdateringer af placering i realtid</string>
     <string name="groups_sharing_setting_realtimeUpdates_description_on">Giv andre mulighed for **kontinuerligt** at modtage opdateringer af placering i realtid fra denne enhed. Hvis nogen følger dig på kortet i lang tid, kan dette bruge mere batteri.</string>
     <string name="groups_sharing_setting_realtimeUpdates_description_off">Andre kan stadig finde dig ved manuelt at opdatere din placering, men i alle andre tilfælde vil opdateringer af placering være begrænsede uden understøttelse af realtid.</string>
+    <string name="plans_banner_inline_realtime_location">Opgrader for ubegrænsede live lokaliseringsopdateringer!</string>
+    <string name="paywall_feature_demo_realtime_location">Lokalitet i realtid</string>
+    <string name="paywall_feature_demo_performance">Bedste lokaliseringsydelse</string>
+    <string name="paywall_feature_demo_location_history">Mere lokaliseringshistorik</string>
+    <string name="paywall_feature_demo_notify_members">Underret andre, når du deler din placering</string>
+    <string name="paywall_feature_demo_multi_device">Brug flere enheder</string>
+    <string name="groups_sharing_setting_approximateLocation_title">Omtrentlig placering</string>
+    <string name="groups_sharing_setting_approximateLocation_description_off">Del kun et omtrentligt placeringsområde, selv hvis din placering er nøjagtig.</string>
+    <string name="groups_sharing_setting_approximateLocation_description_on">Vælg radius for et omtrentligt område. Din præcise placering skjules og erstattes af et punkt et sted inden for den valgte radius.</string>
+    <string name="group_member_role_admin">Administrator</string>
+    <string name="group_details_add_member_admin_only_info">Kun gruppeadministratoren kan tilføje nye medlemmer</string>
+    <string name="group_members_status_location_hidden">Kun omtrentlig placering</string>
 </resources>

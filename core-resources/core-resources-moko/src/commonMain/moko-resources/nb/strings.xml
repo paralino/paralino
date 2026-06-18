@@ -954,4 +954,16 @@
     <string name="groups_sharing_setting_realtimeUpdates_title">Oppdateringer av posisjon i sanntid</string>
     <string name="groups_sharing_setting_realtimeUpdates_description_on">Tillat andre å få posisjonsoppdateringer i sanntid **kontinuerlig** fra denne enheten. Hvis noen følger deg på kartet over lengre tid, kan dette bruke mer batteri.</string>
     <string name="groups_sharing_setting_realtimeUpdates_description_off">Andre kan fortsatt finne deg ved å oppdatere posisjonen din manuelt, men i alle andre tilfeller vil posisjonsoppdateringer være begrenset uten støtte for sanntid.</string>
+    <string name="plans_banner_inline_realtime_location">Oppgrader for ubegrensede oppdateringer av live-posisjon!</string>
+    <string name="paywall_feature_demo_realtime_location">Sanntidsposisjon</string>
+    <string name="paywall_feature_demo_performance">Beste posisjonsytelse</string>
+    <string name="paywall_feature_demo_location_history">Mer posisjonshistorikk</string>
+    <string name="paywall_feature_demo_notify_members">Varsle andre når du deler posisjonen din</string>
+    <string name="paywall_feature_demo_multi_device">Bruk flere enheter</string>
+    <string name="groups_sharing_setting_approximateLocation_title">Omtrentlig posisjon</string>
+    <string name="groups_sharing_setting_approximateLocation_description_off">Del bare et omtrentlig posisjonsområde, selv om posisjonen din er nøyaktig.</string>
+    <string name="groups_sharing_setting_approximateLocation_description_on">Velg radiusen for et omtrentlig område. Den nøyaktige posisjonen din blir skjult og erstattet med et punkt et sted innenfor den valgte radiusen.</string>
+    <string name="group_member_role_admin">Administrator</string>
+    <string name="group_details_add_member_admin_only_info">Bare gruppeadministrator kan legge til nye medlemmer</string>
+    <string name="group_members_status_location_hidden">Kun omtrentlig posisjon</string>
 </resources>
