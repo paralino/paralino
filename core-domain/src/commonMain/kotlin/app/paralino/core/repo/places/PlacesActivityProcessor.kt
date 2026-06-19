@@ -144,12 +144,26 @@ class PlacesActivityProcessor(
             placesIds.forEach { placeId ->
                 try {
                     val groupId = local.getGroupIdFromPlaceId(placeId = placeId)!!
-                    startPlaceNotifySchedule(
-                        placeId = placeId,
-                        groupId = groupId,
-                        enter = true,
-                        trigger = trigger
-                    )
+                    val contract = locationSharingManager.currentSharingContractForGroup(id = groupId)
+                    if (contract?.approximateLocationInMeters != null) {
+                        logg.i("place_activity_geofence", "Skip place enter from geofence - approximate location on")
+                        // this will trigger regular location flow so we get obfuscated location for processing
+                        locationPerformanceManager.locationBoostRequested(
+                            request = LocationPerformanceRequest(
+                                type = LocationPerformanceType.HIGH,
+                                duration = 10.seconds
+                            ),
+                            groupId = groupId,
+                            from = "place enter geofence"
+                        )
+                    } else {
+                        startPlaceNotifySchedule(
+                            placeId = placeId,
+                            groupId = groupId,
+                            enter = true,
+                            trigger = trigger
+                        )
+                    }
                 } catch (e: Exception) {
                     logg.w("place_activity", "Error notifying place enter: ${e.message}")
                 }
@@ -163,12 +177,26 @@ class PlacesActivityProcessor(
             placesIds.forEach { placeId ->
                 try {
                     val groupId = local.getGroupIdFromPlaceId(placeId = placeId)!!
-                    startPlaceNotifySchedule(
-                        placeId = placeId,
-                        groupId = groupId,
-                        enter = false,
-                        trigger = trigger
-                    )
+                    val contract = locationSharingManager.currentSharingContractForGroup(id = groupId)
+                    if (contract?.approximateLocationInMeters != null) {
+                        logg.i("place_activity_geofence", "Skip place exit from geofence - approximate location on")
+                        // this will trigger regular location flow so we get obfuscated location for processing
+                        locationPerformanceManager.locationBoostRequested(
+                            request = LocationPerformanceRequest(
+                                type = LocationPerformanceType.HIGH,
+                                duration = 10.seconds
+                            ),
+                            groupId = groupId,
+                            from = "place exit geofence"
+                        )
+                    } else {
+                        startPlaceNotifySchedule(
+                            placeId = placeId,
+                            groupId = groupId,
+                            enter = false,
+                            trigger = trigger
+                        )
+                    }
                 } catch (e: Exception) {
                     logg.w("place_activity", "Error notifying place exit: ${e.message}")
                 }
