@@ -19,8 +19,11 @@ import app.paralino.core.models.location.LocationHistoryPointModel
 import app.paralino.core.models.location.LocationHistoryPointStatusModel
 import app.paralino.core.models.location.LocationSharingContract
 import app.paralino.core.models.location.MemberGroupId
+import app.paralino.core.utils.extensions.isLocationInaccurate
 import app.paralino.core.utils.extensions.roundToPrecision
 import app.paralino.core.utils.extensions.safeLet
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 
 class LocationPayloadProvider(
     private val database: MainDatabaseHelper,
@@ -33,12 +36,28 @@ class LocationPayloadProvider(
     private val approximateLocationObfuscator: ApproximateLocationObfuscator,
 ) {
 
+    private val mutex = Mutex()
+
     suspend fun getLocationPayload(
         groupId: GroupOrSpaceId,
         data: LocationDataModel?,
         /**
          * if there is no contract, location data is ignored
          */
+        contract: LocationSharingContract?
+    ): LocationPayloadStatus {
+        return mutex.withLock {
+            tryGetLocationPayload(
+                groupId = groupId,
+                data = data,
+                contract = contract
+            )
+        }
+    }
+
+    private suspend fun tryGetLocationPayload(
+        groupId: GroupOrSpaceId,
+        data: LocationDataModel?,
         contract: LocationSharingContract?
     ): LocationPayloadStatus {
 
