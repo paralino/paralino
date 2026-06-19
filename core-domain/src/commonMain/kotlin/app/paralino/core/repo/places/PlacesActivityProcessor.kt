@@ -9,6 +9,8 @@ import app.paralino.core.models.data
 import app.paralino.core.models.location.LocationDataModel
 import app.paralino.core.models.location.LocationPerformanceRequest
 import app.paralino.core.models.location.LocationPerformanceType
+import app.paralino.core.models.location.MemberGroupId
+import app.paralino.core.models.location.MemberGroupIdForUpload
 import app.paralino.core.models.places.GroupPlace
 import app.paralino.core.models.places.GroupPlaceData
 import app.paralino.core.models.places.GroupPlaceGeofenceData
@@ -34,11 +36,11 @@ import kotlin.time.Duration.Companion.seconds
 import kotlin.time.Instant
 
 abstract class IPlacesActivityProcessor {
-    abstract suspend fun processLocation(data: LocationDataModel)
+    abstract suspend fun processLocation(mappedLocations: List<MemberGroupId>)
 }
 
 class IOSLSEPlacesActivityProcessor : IPlacesActivityProcessor() {
-    override suspend fun processLocation(data: LocationDataModel) {}
+    override suspend fun processLocation(mappedLocations: List<MemberGroupId>) {}
 }
 
 class PlacesActivityProcessor(
@@ -54,11 +56,14 @@ class PlacesActivityProcessor(
     private val appPrefs: AppPrefs
 ) : IPlacesActivityProcessor() {
 
-    override suspend fun processLocation(data: LocationDataModel) {
-        // TODO filter out frequent calls and calculations of distance between points
+    override suspend fun processLocation(mappedLocations: List<MemberGroupId>) {
         logg.v("place_activity", "Process new location in places")
 
         placeActivityUploadEngine.syncPendingEventsInBackground()
+
+        if (mappedLocations.isEmpty()) {
+            return
+        }
 
         val places = local.getAllPlacesOnce().filter { place ->
             val contract = locationSharingManager.currentSharingContractForGroup(place.groupOrSpaceId)
@@ -68,53 +73,66 @@ class PlacesActivityProcessor(
             contract != null && approximateLocationRadiusCheck && place.canSendAlert
         }
         places.forEach { place ->
-            place.data.data?.let { placeData ->
-                val movementType = getMovementType(
-                    location = data,
-                    place = place,
-                    placeData = placeData
+            processLocationForPlace(
+                place = place,
+                mappedLocations = mappedLocations
+            )
+        }
+    }
+
+    private suspend fun processLocationForPlace(
+        place: GroupPlace,
+        mappedLocations: List<MemberGroupId>
+    ) {
+        val placeData = place.data.data ?: return
+        val locationForGroup = mappedLocations.firstOrNull { it.groupId == place.groupOrSpaceId }
+            ?.locationData
+            ?: return
+
+        val movementType = getMovementType(
+            location = locationForGroup,
+            place = place,
+            placeData = placeData
+        )
+        val previousState = placeActivityRepo.getPlaceActivity(placeId = place.id)
+
+//      logg.tag("place_activity").d("Process place activity (enter: $isEnter - exit: $isExit - previous: ${previousState?.enter}) - ${place.id}")
+
+        when (movementType) {
+            PlaceActivityMovementType.ENTER -> {
+                startPlaceNotifySchedule(
+                    placeId = place.id,
+                    groupId = place.groupOrSpaceId,
+                    enter = true,
+                    trigger = PlaceActivityTriggerType.LOCATION
                 )
-                val previousState = placeActivityRepo.getPlaceActivity(placeId = place.id)
+            }
 
-//                logg.tag("place_activity").d("Process place activity (enter: $isEnter - exit: $isExit - previous: ${previousState?.enter}) - ${place.id}")
+            PlaceActivityMovementType.EXIT -> {
+                startPlaceNotifySchedule(
+                    placeId = place.id,
+                    groupId = place.groupOrSpaceId,
+                    enter = false,
+                    trigger = PlaceActivityTriggerType.LOCATION
+                )
+            }
 
-                when (movementType) {
-                    PlaceActivityMovementType.ENTER -> {
-                        startPlaceNotifySchedule(
-                            placeId = place.id,
-                            groupId = place.groupOrSpaceId,
-                            enter = true,
-                            trigger = PlaceActivityTriggerType.LOCATION
-                        )
-                    }
-
-                    PlaceActivityMovementType.EXIT -> {
-                        startPlaceNotifySchedule(
-                            placeId = place.id,
-                            groupId = place.groupOrSpaceId,
-                            enter = false,
-                            trigger = PlaceActivityTriggerType.LOCATION
-                        )
-                    }
-
-                    PlaceActivityMovementType.UNKNOWN -> {
-                        // else -> there is no certain change to place activity, or it is the same as previous one
-                        if (previousState?.isEnter == true) {
-                            startPlaceNotifySchedule(
-                                placeId = place.id,
-                                groupId = place.groupOrSpaceId,
-                                enter = true,
-                                trigger = PlaceActivityTriggerType.LOCATION
-                            )
-                        } else if (previousState?.isEnter == false) {
-                            startPlaceNotifySchedule(
-                                placeId = place.id,
-                                groupId = place.groupOrSpaceId,
-                                enter = false,
-                                trigger = PlaceActivityTriggerType.LOCATION
-                            )
-                        }
-                    }
+            PlaceActivityMovementType.UNKNOWN -> {
+                // else -> there is no certain change to place activity, or it is the same as previous one
+                if (previousState?.isEnter == true) {
+                    startPlaceNotifySchedule(
+                        placeId = place.id,
+                        groupId = place.groupOrSpaceId,
+                        enter = true,
+                        trigger = PlaceActivityTriggerType.LOCATION
+                    )
+                } else if (previousState?.isEnter == false) {
+                    startPlaceNotifySchedule(
+                        placeId = place.id,
+                        groupId = place.groupOrSpaceId,
+                        enter = false,
+                        trigger = PlaceActivityTriggerType.LOCATION
+                    )
                 }
             }
         }
