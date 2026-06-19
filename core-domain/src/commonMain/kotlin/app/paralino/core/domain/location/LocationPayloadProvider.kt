@@ -54,7 +54,14 @@ class LocationPayloadProvider(
                 val locationData = safeLet(data, contract) { data, contract ->
                     val approximateRadius = contract.approximateLocationInMeters
                     val isSharingApproximate = approximateRadius != null
-                    val adjustedLocation = if (approximateRadius != null) {
+                    val adjustedLocation = if (isSharingApproximate) {
+
+                        if (data.accuracy.isLocationInaccurate()) {
+                            // ignore inaccurate when sharing approximate location since it will cause jumps
+                            // and since location is already spoofed, this just pollutes obfuscator
+                            return@safeLet null
+                        }
+
                         approximateLocationObfuscator.obfuscate(
                             groupId = groupId,
                             trueLat = data.lat,
