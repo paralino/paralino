@@ -954,4 +954,16 @@
     <string name="groups_sharing_setting_realtimeUpdates_title">Actualitzacions d’ubicació en temps real</string>
     <string name="groups_sharing_setting_realtimeUpdates_description_on">Permeteu que altres obtinguin **contínuament** actualitzacions d’ubicació en temps real d’aquest dispositiu. Si algú us està seguint al mapa durant molt de temps, això pot consumir més bateria.</string>
     <string name="groups_sharing_setting_realtimeUpdates_description_off">Les altres persones encara us poden localitzar actualitzant manualment la vostra ubicació, però en tots els altres casos les actualitzacions d’ubicació es veuran limitades sense suport en temps real.</string>
+    <string name="plans_banner_inline_realtime_location">Actualitzeu per a actualitzacions il·limitades de la ubicació en directe!</string>
+    <string name="paywall_feature_demo_realtime_location">Ubicació en temps real</string>
+    <string name="paywall_feature_demo_performance">Millor rendiment de la ubicació</string>
+    <string name="paywall_feature_demo_location_history">Més historial d\'ubicacions</string>
+    <string name="paywall_feature_demo_notify_members">Notifiqueu els altres quan compartiu la vostra ubicació</string>
+    <string name="paywall_feature_demo_multi_device">Utilitzeu diversos dispositius</string>
+    <string name="groups_sharing_setting_approximateLocation_title">Ubicació aproximada</string>
+    <string name="groups_sharing_setting_approximateLocation_description_off">Compartiu només l\'àrea aproximada de la ubicació, fins i tot si la vostra ubicació és exacta.</string>
+    <string name="groups_sharing_setting_approximateLocation_description_on">Seleccioneu el radi d\'una àrea aproximada. La vostra ubicació precisa s\'amagarà i es substituirà per un punt en algun lloc dins del radi escollit.</string>
+    <string name="group_member_role_admin">Administrador</string>
+    <string name="group_details_add_member_admin_only_info">Només l\'administrador del grup pot afegir nous membres</string>
+    <string name="group_members_status_location_hidden">Només ubicació aproximada</string>
 </resources>

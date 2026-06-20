@@ -5,6 +5,7 @@ import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.location.ClearUserLocationUseCase
 import app.paralino.core.domain.location.LocationRequestUseCase
 import app.paralino.core.models.base.asGroupOrSpaceId
+import app.paralino.core.presentation.billing.BillingScreenSourceType
 import app.paralino.core.presentation.common.ICoreMessageDispatcher
 import app.paralino.core.presentation.common.GroupItemState
 import app.paralino.core.provider.localizedString
@@ -159,7 +160,7 @@ class MemberActionHandler(
                                 duration = SnackbarDuration.Long
                             )
                         )?.result?.onAction {
-                            eventChannel.trySend(MapHomeScreenEvent.OpenPaywall)
+                            eventChannel.trySend(MapHomeScreenEvent.OpenPaywall(type = BillingScreenSourceType.UPGRADE_DEFAULT))
                         }
                     } else {
                         messageDispatcher.showSnackbar(MR.strings.plan_limit_locationRequest_groupMember_message.localizedString())

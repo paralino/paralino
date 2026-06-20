@@ -19,8 +19,11 @@ import app.paralino.core.models.location.LocationHistoryPointModel
 import app.paralino.core.models.location.LocationHistoryPointStatusModel
 import app.paralino.core.models.location.LocationSharingContract
 import app.paralino.core.models.location.MemberGroupId
+import app.paralino.core.utils.extensions.isLocationInaccurate
 import app.paralino.core.utils.extensions.roundToPrecision
 import app.paralino.core.utils.extensions.safeLet
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 
 class LocationPayloadProvider(
     private val database: MainDatabaseHelper,
@@ -34,12 +37,28 @@ class LocationPayloadProvider(
     private val privacyZoneObfuscator: PrivacyZoneObfuscator,
 ) {
 
+    private val mutex = Mutex()
+
     suspend fun getLocationPayload(
         groupId: GroupOrSpaceId,
         data: LocationDataModel?,
         /**
          * if there is no contract, location data is ignored
          */
+        contract: LocationSharingContract?
+    ): LocationPayloadStatus {
+        return mutex.withLock {
+            tryGetLocationPayload(
+                groupId = groupId,
+                data = data,
+                contract = contract
+            )
+        }
+    }
+
+    private suspend fun tryGetLocationPayload(
+        groupId: GroupOrSpaceId,
+        data: LocationDataModel?,
         contract: LocationSharingContract?
     ): LocationPayloadStatus {
 
@@ -70,9 +89,20 @@ class LocationPayloadProvider(
                     }
 
                     val approximateRadius = contract.approximateLocationInMeters
-                    val isInsidePrivacyZone = zoneResult?.uploadAccuracyMeters != null
+
+                    if (zoneResult != null || approximateRadius != null) {
+                        if (data.accuracy.isLocationInaccurate()) {
+                            // ignore inaccurate locations since it will cause jumps
+                            // and since location is already spoofed, this just pollutes obfuscators
+                            return@safeLet null
+                        }
+                    }
+
+                    val isInsidePrivacyZone = zoneResult != null
                     val adjustedCoordinates = if (approximateRadius != null) {
-                        if (zoneResult?.uploadAccuracyMeters != null && zoneResult.uploadAccuracyMeters < approximateRadius) {
+                        // sharing approximate
+                        if (zoneResult != null && zoneResult.uploadAccuracyMeters < approximateRadius) {
+                            // adjust with approximate only if its radius is bigger than current privacy zone radius
                             approximateLocationObfuscator.obfuscate(
                                 groupId = groupId,
                                 trueLat = workingLat,
@@ -86,7 +116,7 @@ class LocationPayloadProvider(
                         null
                     }
 
-                    val adjustedAccuracy = if (approximateRadius != null && zoneResult?.uploadAccuracyMeters != null) {
+                    val adjustedAccuracy = if (approximateRadius != null && zoneResult != null) {
                         maxOf(approximateRadius.toFloat(), zoneResult.uploadAccuracyMeters.toFloat())
                     } else {
                         approximateRadius?.toFloat()
@@ -94,15 +124,15 @@ class LocationPayloadProvider(
                             ?: data.accuracy
                     }
 
-                    val isSharingApproximate = approximateRadius != null && contract.shareDeviceStatus
                     val isSharingInPrivacyZone = isInsidePrivacyZone && contract.shareDeviceStatus && zoneResult.shareStatus
+                    val isSharingApproximate = (approximateRadius != null || isInsidePrivacyZone) && contract.shareDeviceStatus
                     val isApproximate = isSharingApproximate || isSharingInPrivacyZone
 
                     LocationDataModel(
                         timeUTC = data.timeUTC,
                         endTimeUTC = contract.endTimeUTC?.takeIf { contract.shareDeviceStatus },
-                        lat = (adjustedCoordinates?.lat ?: workingLat).roundToPrecision(decimalPlaces = 6),
-                        lng = (adjustedCoordinates?.lng ?: workingLng).roundToPrecision(decimalPlaces = 6),
+                        lat = (adjustedCoordinates?.location?.lat ?: workingLat).roundToPrecision(decimalPlaces = 6),
+                        lng = (adjustedCoordinates?.location?.lng ?: workingLng).roundToPrecision(decimalPlaces = 6),
                         accuracy = adjustedAccuracy,
                         speed = data.speed?.takeIf {
                             contract.shareSpeed && it != 0f && !isApproximate

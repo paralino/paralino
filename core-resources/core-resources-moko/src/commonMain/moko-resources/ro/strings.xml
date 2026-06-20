@@ -954,4 +954,16 @@
     <string name="groups_sharing_setting_realtimeUpdates_title">Actualizări ale locației în timp real</string>
     <string name="groups_sharing_setting_realtimeUpdates_description_on">Permiteți altora să primească **continuu** actualizări ale locației în timp real de la acest dispozitiv. Dacă cineva vă urmărește pe hartă pentru o perioadă lungă de timp, acest lucru poate consuma mai multă baterie.</string>
     <string name="groups_sharing_setting_realtimeUpdates_description_off">Alții vă pot localiza în continuare prin reîmprospătarea manuală a locației dvs., însă în toate celelalte cazuri actualizările locației vor fi limitate fără suport în timp real.</string>
+    <string name="plans_banner_inline_realtime_location">Upgrade pentru actualizări nelimitate ale locației live!</string>
+    <string name="paywall_feature_demo_realtime_location">Localizare în timp real</string>
+    <string name="paywall_feature_demo_performance">Cea mai bună performanță a localizării</string>
+    <string name="paywall_feature_demo_location_history">Mai mult istoric al locației</string>
+    <string name="paywall_feature_demo_notify_members">Notificați-i pe ceilalți când vă partajați locația</string>
+    <string name="paywall_feature_demo_multi_device">Utilizați mai multe dispozitive</string>
+    <string name="groups_sharing_setting_approximateLocation_title">Localizare aproximativă</string>
+    <string name="groups_sharing_setting_approximateLocation_description_off">Partajați doar zona de localizare aproximativă, chiar dacă locația dvs. este precisă.</string>
+    <string name="groups_sharing_setting_approximateLocation_description_on">Selectați raza unei zone aproximative. Locația dvs. precisă va fi ascunsă și înlocuită cu un punct aflat undeva în interiorul razei alese.</string>
+    <string name="group_member_role_admin">Administrator</string>
+    <string name="group_details_add_member_admin_only_info">Doar administratorul grupului poate adăuga membri noi</string>
+    <string name="group_members_status_location_hidden">Numai localizare aproximativă</string>
 </resources>

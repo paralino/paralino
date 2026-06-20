@@ -21,7 +21,7 @@ struct GenericSettingsScreen: View {
                 ScreensIOS.shared.settings.GenericSettingsScreenVC(
                     vm: appState.vm,
                     openPaywall: {
-                        path.append(.settings(.paywall(type: BillingScreenSourceType.upgrade)))
+                        path.append(.settings(.paywall(type: BillingScreenSourceType.upgradeDefault)))
                     },
                     askNotificationPermission: {
                         appDelegate.notificationPermissionHandler.requestNotificationPermission(

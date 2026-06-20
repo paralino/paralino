@@ -21,6 +21,7 @@ import app.paralino.core.models.privacyzones.GroupPrivacyZone
 import app.paralino.core.models.user.UserMeData
 import app.paralino.core.presentation.common.GroupMemberItemLocationState
 import app.paralino.core.presentation.common.GroupMemberItemStateWithOneLocation
+import app.paralino.core.presentation.common.GroupMemberRole
 import app.paralino.core.presentation.common.GroupMemberState
 import app.paralino.core.presentation.common.LocationHistoryActionItemState
 import app.paralino.core.presentation.common.LocationRequestItemState
@@ -274,6 +275,7 @@ class MapStateMapper(
                 buildGroupMembersData(
                     groupMembers = groupOrSpace.group.members,
                     groupId = groupOrSpace.group.id,
+                    ownerUserId = groupOrSpace.group.ownerUserId,
                     groupPlanConfig = groupPlanConfig,
                     previousState = previousState
                 )
@@ -292,6 +294,7 @@ class MapStateMapper(
     private fun buildGroupMembersData(
         groupMembers: List<MemberModelWithLocations>,
         groupId: String,
+        ownerUserId: String,
         groupPlanConfig: PlanConfig,
         previousState: MapHomeScreenState.Ready?
     ): List<GroupMemberItemStateWithOneLocation> {
@@ -299,7 +302,12 @@ class MapStateMapper(
             val memberState = GroupMemberState(
                 member = member.member,
                 isCurrentUser = member.member.userId == appPrefs.userId,
-                canHaveExpandButton = false
+                canHaveExpandButton = false,
+                role = if (member.member.userId == ownerUserId) {
+                    GroupMemberRole.ADMIN
+                } else {
+                    GroupMemberRole.MEMBER
+                }
             ).copy(paralinoId = null)
 
             if (member.locations.isEmpty()) {
@@ -386,7 +394,8 @@ class MapStateMapper(
                 paralinoId = null,
                 isCurrentUser = device.ownerUserId == appPrefs.userId,
                 isVerified = true,
-                canHaveExpandButton = false
+                canHaveExpandButton = false,
+                role = GroupMemberRole.MEMBER,
             )
 
             val location = device.location

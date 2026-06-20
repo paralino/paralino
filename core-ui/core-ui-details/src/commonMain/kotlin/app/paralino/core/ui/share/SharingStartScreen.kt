@@ -7,6 +7,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -20,6 +21,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -340,14 +342,16 @@ fun SharingStartScreenCore(
                 )
             }
 
-            NoticeInfoChip(
-                modifier = Modifier.padding(top = 10.dp),
-                text = if (state.isPersonalSpace) {
-                    stringResource(MR.strings.personalSpace_tracking_encryption_info)
-                } else {
-                    stringResource(MR.strings.groups_sharing_encryption_info)
-                }
-            )
+            if (vm.isOnboarding) {
+                NoticeInfoChip(
+                    modifier = Modifier.padding(top = 10.dp),
+                    text = if (state.isPersonalSpace) {
+                        stringResource(MR.strings.personalSpace_tracking_encryption_info)
+                    } else {
+                        stringResource(MR.strings.groups_sharing_encryption_info)
+                    }
+                )
+            }
 
             AnimatedVisibility(visible = state.groupState.data != null && state.canChangeGroup) {
                 Column(modifier = Modifier.fillMaxWidth()) {
@@ -668,6 +672,25 @@ fun SharingStartScreenCore(
                         )
                     }
                 }
+            }
+
+            if (!vm.isOnboarding) {
+                Divider(
+                    modifier = Modifier
+                        .padding(top = 20.dp)
+                        .padding(horizontal = 20.dp)
+                        .fillMaxWidth(),
+                    color = Color.Gray.copy(alpha = 0.2f),
+                    thickness = 0.5.dp
+                )
+                NoticeInfoChip(
+                    modifier = Modifier.padding(top = 20.dp),
+                    text = if (state.isPersonalSpace) {
+                        stringResource(MR.strings.personalSpace_tracking_encryption_info)
+                    } else {
+                        stringResource(MR.strings.groups_sharing_encryption_info)
+                    }
+                )
             }
         }
     }

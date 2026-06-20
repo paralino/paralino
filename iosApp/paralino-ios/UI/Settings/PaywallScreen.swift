@@ -67,7 +67,7 @@ struct PaywallScreen: View {
                 path.append(.home(.map))
             }
 
-        case .skippedOnboarding, .normal, .upgrade:
+        case .skippedOnboarding, .normal, .upgradeDefault, .upgradeBillingPromo, .upgradeMapSheet:
             path.removeLast()
             
         default:

@@ -954,4 +954,16 @@
     <string name="groups_sharing_setting_realtimeUpdates_title">Ενημερώσεις τοποθεσίας σε πραγματικό χρόνο</string>
     <string name="groups_sharing_setting_realtimeUpdates_description_on">Επιτρέψτε σε άλλους να λαμβάνουν **συνεχώς** ενημερώσεις τοποθεσίας σε πραγματικό χρόνο από αυτήν τη συσκευή. Εάν κάποιος σας παρακολουθεί στον χάρτη για μεγάλο χρονικό διάστημα, αυτό ενδέχεται να καταναλώσει περισσότερη μπαταρία.</string>
     <string name="groups_sharing_setting_realtimeUpdates_description_off">Οι άλλοι μπορούν ακόμη να εντοπίσουν τη θέση σας με μη αυτόματη ανανέωση της τοποθεσίας σας, αλλά σε όλες τις άλλες περιπτώσεις οι ενημερώσεις τοποθεσίας θα είναι περιορισμένες χωρίς υποστήριξη σε πραγματικό χρόνο.</string>
+    <string name="plans_banner_inline_realtime_location">Αναβαθμίστε για απεριόριστες ενημερώσεις ζωντανής τοποθεσίας!</string>
+    <string name="paywall_feature_demo_realtime_location">Τοποθεσία σε πραγματικό χρόνο</string>
+    <string name="paywall_feature_demo_performance">Καλύτερη απόδοση τοποθεσίας</string>
+    <string name="paywall_feature_demo_location_history">Περισσότερο ιστορικό τοποθεσίας</string>
+    <string name="paywall_feature_demo_notify_members">Ειδοποιήστε τους άλλους όταν κοινοποιείτε την τοποθεσία σας</string>
+    <string name="paywall_feature_demo_multi_device">Χρήση πολλαπλών συσκευών</string>
+    <string name="groups_sharing_setting_approximateLocation_title">Κατά προσέγγιση τοποθεσία</string>
+    <string name="groups_sharing_setting_approximateLocation_description_off">Να κοινοποιείται μόνο η κατά προσέγγιση περιοχή τοποθεσίας, ακόμη και αν η τοποθεσία σας είναι ακριβής.</string>
+    <string name="groups_sharing_setting_approximateLocation_description_on">Επιλέξτε την ακτίνα μιας κατά προσέγγιση περιοχής. Η ακριβής τοποθεσία σας θα αποκρυφτεί και θα αντικατασταθεί από ένα σημείο κάπου μέσα στην επιλεγμένη ακτίνα.</string>
+    <string name="group_member_role_admin">Διαχειριστής</string>
+    <string name="group_details_add_member_admin_only_info">Μόνο ο διαχειριστής της ομάδας μπορεί να προσθέσει νέα μέλη</string>
+    <string name="group_members_status_location_hidden">Μόνο κατά προσέγγιση τοποθεσία</string>
 </resources>

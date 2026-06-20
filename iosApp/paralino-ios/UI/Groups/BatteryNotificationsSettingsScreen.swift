@@ -27,7 +27,7 @@ struct BatteryNotificationsSettingsScreen: View {
                         bottom: safeAreaInsets.bottom
                     ),
                     openPaywall: {
-                        path.append(.settings(.paywall(type: BillingScreenSourceType.upgrade)))
+                        path.append(.settings(.paywall(type: BillingScreenSourceType.upgradeDefault)))
                     }
                 )
             }

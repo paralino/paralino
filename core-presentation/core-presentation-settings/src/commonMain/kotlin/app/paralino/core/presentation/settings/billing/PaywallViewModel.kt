@@ -4,6 +4,7 @@ import androidx.compose.ui.text.AnnotatedString
 import app.paralino.core.MR
 import app.paralino.core.app_rating.AppRatingManager
 import app.paralino.core.app_rating.AppRatingSource
+import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.user.BillingRefreshMonitor
 import app.paralino.core.domain.user.GetDirectCheckoutWebPortalUseCase
 import app.paralino.core.domain.user.RefreshEverythingUseCase
@@ -38,6 +39,7 @@ import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.extensions.annotatedBold
 import app.paralino.core.utils.extensions.errorString
 import app.paralino.core.utils.extensions.isOlderThan
+import app.paralino.core.utils.extensions.nowUTC
 import app.paralino.core.utils.extensions.mapToPayload
 import app.paralino.core.utils.poll
 import dev.icerock.moko.resources.StringResource
@@ -53,6 +55,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
@@ -68,7 +71,8 @@ class PaywallViewModel(
     private val getWebPortal: GetDirectCheckoutWebPortalUseCase,
     val valueFormatter: IValueFormatter,
     val billingProvider: IBillingProvider,
-    private val billingRefreshMonitor: BillingRefreshMonitor
+    private val billingRefreshMonitor: BillingRefreshMonitor,
+    private val appPrefs: AppPrefs
 ) : CoreViewModel() {
 
     private val _uiState = MutableStateFlow(
@@ -93,7 +97,9 @@ class PaywallViewModel(
             }
 
             BillingScreenSourceType.FREE_PLAN_NEW_GROUP_MEMBER,
-            BillingScreenSourceType.UPGRADE,
+            BillingScreenSourceType.UPGRADE_DEFAULT,
+            BillingScreenSourceType.UPGRADE_MAP_SHEET,
+            BillingScreenSourceType.UPGRADE_BILLING_PROMO,
             BillingScreenSourceType.NORMAL -> {
             }
         }
@@ -259,15 +265,23 @@ class PaywallViewModel(
 
             PaywallScreenUiEvent.StartPurchase -> {
                 when (uiState.value.screenStep) {
-                    PaywallScreenStep.ONBOARDING -> {
-                        _uiState.update { it.copy(screenStep = PaywallScreenStep.DEMO) }
+                    PaywallScreenStep.ONBOARDING_WITH_HISTORY -> {
+                        _uiState.update { it.copy(screenStep = PaywallScreenStep.DEMO_TO_HISTORY) }
                     }
 
-                    PaywallScreenStep.DEMO -> {
-                        _uiState.update { it.copy(screenStep = PaywallScreenStep.LOCATION_HISTORY) }
+                    PaywallScreenStep.ONBOARDING_NO_HISTORY -> {
+                        _uiState.update { it.copy(screenStep = PaywallScreenStep.DEMO_TO_PAYWALL) }
                     }
 
-                    PaywallScreenStep.LOCATION_HISTORY -> {
+                    PaywallScreenStep.DEMO_TO_HISTORY -> {
+                        _uiState.update { it.copy(screenStep = PaywallScreenStep.PERSONAL_LOCATION_HISTORY) }
+                    }
+
+                    PaywallScreenStep.DEMO_TO_PAYWALL -> {
+                        _uiState.update { it.copy(screenStep = PaywallScreenStep.PAYWALL) }
+                    }
+
+                    PaywallScreenStep.PERSONAL_LOCATION_HISTORY -> {
                         _uiState.update { it.copy(screenStep = PaywallScreenStep.PAYWALL) }
                     }
 
@@ -475,22 +489,42 @@ class PaywallViewModel(
             }
         }
 
+        val screenStep = if (currentState?.screenStep != null) {
+            currentState.screenStep
+        } else {
+            when (sourceType) {
+                BillingScreenSourceType.GROUP_ONBOARDING,
+                BillingScreenSourceType.PERSONAL_SPACE_ONBOARDING,
+                BillingScreenSourceType.SKIPPED_ONBOARDING,
+                BillingScreenSourceType.FREE_PLAN_NEW_GROUP_MEMBER -> PaywallScreenStep.ONBOARDING_WITH_HISTORY
+                BillingScreenSourceType.UPGRADE_MAP_SHEET -> PaywallScreenStep.DEMO_TO_PAYWALL
+                BillingScreenSourceType.UPGRADE_BILLING_PROMO -> {
+                    val lastUsed = appPrefs.lastBillingPromoOnboardingNoHistoryTime
+                    if (lastUsed != null && !lastUsed.isOlderThan(30.days)) {
+                        PaywallScreenStep.PAYWALL
+                    } else {
+                        appPrefs.lastBillingPromoOnboardingNoHistoryTime = nowUTC()
+                        PaywallScreenStep.ONBOARDING_NO_HISTORY
+                    }
+                }
+                BillingScreenSourceType.UPGRADE_DEFAULT,
+                BillingScreenSourceType.NORMAL -> PaywallScreenStep.PAYWALL
+            }
+        }
+
         return PaywallScreenState(
             canShowMoreInfo = appConfig.isInAppDevMode,
             freePlanInfo = freeUiPlan,
-            plans = buildList {
-//                if (sourceType == BillingScreenSourceType.ONBOARDING && !plans.highestValidPlanConfig.planTypeEnum.isPremium) {
-//                    add(freeUiPlan)
-//                }
-                addAll(uiPlans)
-            },
+            plans = uiPlans,
             canCloseScreen = if (billingConfig?.canCloseOnboardingPaywall == false) {
                 when (sourceType) {
                     BillingScreenSourceType.GROUP_ONBOARDING,
                     BillingScreenSourceType.PERSONAL_SPACE_ONBOARDING -> false
                     BillingScreenSourceType.SKIPPED_ONBOARDING,
                     BillingScreenSourceType.FREE_PLAN_NEW_GROUP_MEMBER,
-                    BillingScreenSourceType.UPGRADE,
+                    BillingScreenSourceType.UPGRADE_DEFAULT,
+                    BillingScreenSourceType.UPGRADE_MAP_SHEET,
+                    BillingScreenSourceType.UPGRADE_BILLING_PROMO,
                     BillingScreenSourceType.NORMAL -> true
                 }
             } else {
@@ -503,11 +537,7 @@ class PaywallViewModel(
             canRestorePurchases = !billingProvider.isExternalProvider,
             isPurchaseButtonLoading = currentState?.isPurchaseButtonLoading ?: false,
             faq = currentState?.faq ?: getFaqSection(config),
-            screenStep = currentState?.screenStep ?: if (sourceType.isOnboarding) {
-                PaywallScreenStep.ONBOARDING
-            } else {
-                PaywallScreenStep.PAYWALL
-            },
+            screenStep = screenStep,
             screenType = sourceType,
             memberName = userRepo.cachedUser?.data?.userName ?: "Peter",
             memberImageModel = userRepo.cachedUser?.data?.userImage
@@ -644,8 +674,18 @@ class PaywallViewModel(
                     .filter { it.isActive }
                     .filter { it.planTypeEnum.isPremium }
 
-                val defaultPlan = premiumPlans
-                    .firstOrNull { it.planTypeEnum == config.defaultPremiumPlan }
+
+                val defaultPlan = when (sourceType) {
+                    BillingScreenSourceType.UPGRADE_DEFAULT,
+                    BillingScreenSourceType.UPGRADE_BILLING_PROMO,
+                    BillingScreenSourceType.UPGRADE_MAP_SHEET -> {
+                        premiumPlans.minByOrNull { it.planTypeEnum.order }
+                    }
+
+                    else -> {
+                        premiumPlans.firstOrNull { it.planTypeEnum == config.defaultPremiumPlan }
+                    }
+                }
 
                 if (defaultPlan != null) {
                     return defaultPlan.planTypeEnum == planType

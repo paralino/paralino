@@ -41,9 +41,9 @@ sealed class AccountOnboardingContent(
         skipButtonText = if (didShareCode) {
             null
         } else {
-            MR.strings.button_notNow
+            MR.strings.button_skip
         },
-        minHeaderSize = Dp.Companion.Unspecified
+        minHeaderSize = Dp.Unspecified
     ) {
         @Composable
         override fun infoText(): String {

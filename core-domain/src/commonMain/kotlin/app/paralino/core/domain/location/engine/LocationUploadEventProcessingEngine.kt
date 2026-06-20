@@ -9,10 +9,10 @@ import app.paralino.core.models.location.LocationDataModel
 import app.paralino.core.models.location.LocationPerformanceType
 import app.paralino.core.models.location.MemberGroupIdForUpload
 import app.paralino.core.provider.ICoroutineScopeProvider
-import app.paralino.core.repo.location.LocationSharingContractFilter
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.base.AppConfigRepository
 import app.paralino.core.repo.location.LocationPerformanceManager
+import app.paralino.core.repo.location.LocationSharingContractFilter
 import app.paralino.core.repo.places.IPlacesActivityProcessor
 import kotlinx.coroutines.launch
 import kotlin.time.Duration
@@ -127,10 +127,7 @@ class LocationUploadEventProcessingEngine(
 
         // extra processing
         triggerRemoteOnly {
-            if (data != null) {
-                placesActivityProcessor.processLocation(data)
-            }
-
+            placesActivityProcessor.processLocation(payloads)
             batteryAlertUploadEngine.sendBatteryAlert(payloads = payloads)
         }
 

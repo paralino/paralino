@@ -954,4 +954,16 @@
     <string name="groups_sharing_setting_realtimeUpdates_title">Valós idejű helyfrissítések</string>
     <string name="groups_sharing_setting_realtimeUpdates_description_on">Engedélyezze másoknak, hogy erről az eszközről **folyamatosan** valós idejű helyfrissítéseket kapjanak. Ha valaki hosszabb ideig figyeli Önt a térképen, ez több akkumulátort használhat.</string>
     <string name="groups_sharing_setting_realtimeUpdates_description_off">Mások továbbra is megtalálhatják Önt a helyzetének kézi frissítésével, de minden más esetben a helyfrissítések valós idejű támogatás nélkül korlátozottak lesznek.</string>
+    <string name="plans_banner_inline_realtime_location">Frissítsen korlátlan élő helymegosztási frissítésekért!</string>
+    <string name="paywall_feature_demo_realtime_location">Valós idejű helymeghatározás</string>
+    <string name="paywall_feature_demo_performance">A legjobb helymeghatározási teljesítmény</string>
+    <string name="paywall_feature_demo_location_history">Több helyelőzmény</string>
+    <string name="paywall_feature_demo_notify_members">Értesítse a többieket, amikor megosztja a helyét</string>
+    <string name="paywall_feature_demo_multi_device">Több eszköz használata</string>
+    <string name="groups_sharing_setting_approximateLocation_title">Közelítő hely</string>
+    <string name="groups_sharing_setting_approximateLocation_description_off">Csak a közelítő helyterületet ossza meg, még akkor is, ha a helye pontos.</string>
+    <string name="groups_sharing_setting_approximateLocation_description_on">Válassza ki a közelítő terület sugarát. Az Ön pontos tartózkodási helye el lesz rejtve, és egy, a kiválasztott sugáron belüli pontra lesz cserélve.</string>
+    <string name="group_member_role_admin">Adminisztrátor</string>
+    <string name="group_details_add_member_admin_only_info">Csak a csoport adminisztrátora adhat hozzá új tagokat</string>
+    <string name="group_members_status_location_hidden">Csak közelítő helyszín</string>
 </resources>

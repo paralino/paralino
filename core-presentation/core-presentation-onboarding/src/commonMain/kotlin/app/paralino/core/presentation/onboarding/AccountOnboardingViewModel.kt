@@ -29,6 +29,7 @@ import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.DeeplinkType
 import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.extensions.errorString
+import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.channels.Channel
@@ -43,6 +44,7 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -99,6 +101,18 @@ class AccountOnboardingViewModel(
         }
             .catch {
                 showSnackbar(it.errorString())
+            }
+            .flowOn(Dispatchers.IO)
+            .launchIn(coroutineScope)
+
+        canDisplayMap
+            .distinctUntilChanged()
+            .onEach {
+                if (it.data == true) {
+                    if (appPrefs.detectedAppReadyTime == null) {
+                        appPrefs.detectedAppReadyTime = nowUTC()
+                    }
+                }
             }
             .flowOn(Dispatchers.IO)
             .launchIn(coroutineScope)
@@ -162,6 +176,7 @@ class AccountOnboardingViewModel(
             groupCount = groupCount,
             fullScreenLoading = previousState?.fullScreenLoading ?: false,
             isGroupModeChecked = previousState?.isGroupModeChecked ?: false,
+            didShareParalinoID = previousState?.didShareParalinoID ?: false,
             isPersonalSpaceModeChecked = previousState?.isPersonalSpaceModeChecked ?: false,
         )
     }
@@ -183,7 +198,8 @@ class AccountOnboardingViewModel(
                                         personalCode = it.personalCode,
                                         didShareCode = false
                                     ),
-                                    isGroupModeChecked = true
+                                    isGroupModeChecked = true,
+                                    didShareParalinoID = false
                                 )
                             }
                         }
@@ -246,8 +262,11 @@ class AccountOnboardingViewModel(
     private fun skipOnboarding() {
         when (val step = uiState.value.data?.onboardingStep) {
             AccountOnboardingContent.GroupCreate -> {
-                // go back
-                startAccountStartOnboarding()
+                if (uiState.value.data?.didShareParalinoID == true) {
+                    finishOnboarding()
+                } else {
+                    skipAccountStartOnboarding()
+                }
             }
 
             is AccountOnboardingContent.ParalinoID -> {
@@ -452,7 +471,9 @@ class AccountOnboardingViewModel(
                 ?.copy(didShareCode = true)
                 ?.let { newStep ->
                     _uiState.update {
-                        it.mapReady { it.copy(onboardingStep = newStep) }
+                        it.mapReady {
+                            it.copy(onboardingStep = newStep, didShareParalinoID = true)
+                        }
                     }
                 }
         }

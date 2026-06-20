@@ -954,4 +954,16 @@
     <string name="groups_sharing_setting_realtimeUpdates_title">Standortaktualisierungen in Echtzeit</string>
     <string name="groups_sharing_setting_realtimeUpdates_description_on">Erlauben Sie anderen, von diesem Gerät aus **kontinuierlich** Standortaktualisierungen in Echtzeit zu erhalten. Wenn jemand Sie über einen längeren Zeitraum auf der Karte verfolgt, kann dies mehr Akku verbrauchen.</string>
     <string name="groups_sharing_setting_realtimeUpdates_description_off">Andere können Ihren Standort weiterhin durch manuelles Aktualisieren abrufen, aber in allen anderen Fällen werden Standortaktualisierungen ohne Unterstützung in Echtzeit eingeschränkt.</string>
+    <string name="plans_banner_inline_realtime_location">Upgrade für unbegrenzte Live-Standortaktualisierungen!</string>
+    <string name="paywall_feature_demo_realtime_location">Echtzeitstandort</string>
+    <string name="paywall_feature_demo_performance">Beste Standortleistung</string>
+    <string name="paywall_feature_demo_location_history">Mehr Standortverlauf</string>
+    <string name="paywall_feature_demo_notify_members">Benachrichtigen Sie andere, wenn Sie Ihren Standort teilen</string>
+    <string name="paywall_feature_demo_multi_device">Verwenden Sie mehrere Geräte</string>
+    <string name="groups_sharing_setting_approximateLocation_title">Ungefährer Standort</string>
+    <string name="groups_sharing_setting_approximateLocation_description_off">Teilen Sie nur einen ungefähren Standortbereich, auch wenn Ihr Standort genau ist.</string>
+    <string name="groups_sharing_setting_approximateLocation_description_on">Wählen Sie den Radius eines ungefähren Bereichs aus. Ihr genauer Standort wird ausgeblendet und durch einen Punkt irgendwo innerhalb des gewählten Radius ersetzt.</string>
+    <string name="group_member_role_admin">Administrator</string>
+    <string name="group_details_add_member_admin_only_info">Nur die Gruppenadministratorin oder der Gruppenadministrator kann neue Mitglieder hinzufügen</string>
+    <string name="group_members_status_location_hidden">Nur ungefährer Standort</string>
 </resources>

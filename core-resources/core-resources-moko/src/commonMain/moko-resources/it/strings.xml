@@ -954,4 +954,16 @@
     <string name="groups_sharing_setting_realtimeUpdates_title">Aggiornamenti della posizione in tempo reale</string>
     <string name="groups_sharing_setting_realtimeUpdates_description_on">Consente ad altre persone di ricevere **continuamente** aggiornamenti della posizione in tempo reale da questo dispositivo. Se qualcuno la osserva sulla mappa per molto tempo, ciò potrebbe consumare più batteria.</string>
     <string name="groups_sharing_setting_realtimeUpdates_description_off">Altre persone possono ancora localizzarla aggiornando manualmente la sua posizione, ma in tutti gli altri casi gli aggiornamenti della posizione saranno limitati senza il supporto in tempo reale.</string>
+    <string name="plans_banner_inline_realtime_location">Aggiorni per aggiornamenti illimitati della posizione in tempo reale!</string>
+    <string name="paywall_feature_demo_realtime_location">Posizione in tempo reale</string>
+    <string name="paywall_feature_demo_performance">Migliori prestazioni della posizione</string>
+    <string name="paywall_feature_demo_location_history">Più cronologia delle posizioni</string>
+    <string name="paywall_feature_demo_notify_members">Notificare gli altri quando condivide la sua posizione</string>
+    <string name="paywall_feature_demo_multi_device">Usare più dispositivi</string>
+    <string name="groups_sharing_setting_approximateLocation_title">Posizione approssimativa</string>
+    <string name="groups_sharing_setting_approximateLocation_description_off">Condividere solo un’area di posizione approssimativa anche se la sua posizione è precisa.</string>
+    <string name="groups_sharing_setting_approximateLocation_description_on">Selezioni il raggio di un’area approssimativa. La sua posizione precisa verrà nascosta e sostituita da un punto da qualche parte all’interno del raggio scelto.</string>
+    <string name="group_member_role_admin">Amministratore</string>
+    <string name="group_details_add_member_admin_only_info">Solo l’amministratore del gruppo può aggiungere nuovi membri</string>
+    <string name="group_members_status_location_hidden">Solo posizione approssimativa</string>
 </resources>

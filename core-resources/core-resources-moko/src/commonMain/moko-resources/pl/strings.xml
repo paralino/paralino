@@ -954,4 +954,16 @@
     <string name="groups_sharing_setting_realtimeUpdates_title">Aktualizacje lokalizacji w czasie rzeczywistym</string>
     <string name="groups_sharing_setting_realtimeUpdates_description_on">Umożliwiaj innym **ciągłe** otrzymywanie aktualizacji lokalizacji w czasie rzeczywistym z tego urządzenia. Jeśli ktoś obserwuje Państwa na mapie przez dłuższy czas, może to zużywać więcej baterii.</string>
     <string name="groups_sharing_setting_realtimeUpdates_description_off">Inni nadal mogą odnaleźć Państwa, ręcznie odświeżając lokalizację, ale we wszystkich innych przypadkach aktualizacje lokalizacji będą ograniczone bez obsługi czasu rzeczywistego.</string>
+    <string name="plans_banner_inline_realtime_location">Ulepsz, aby uzyskać nielimitowane aktualizacje lokalizacji na żywo!</string>
+    <string name="paywall_feature_demo_realtime_location">Lokalizacja w czasie rzeczywistym</string>
+    <string name="paywall_feature_demo_performance">Najlepsza wydajność lokalizacji</string>
+    <string name="paywall_feature_demo_location_history">Więcej historii lokalizacji</string>
+    <string name="paywall_feature_demo_notify_members">Powiadamiaj inne osoby, gdy udostępniasz swoją lokalizację</string>
+    <string name="paywall_feature_demo_multi_device">Używaj wielu urządzeń</string>
+    <string name="groups_sharing_setting_approximateLocation_title">Przybliżona lokalizacja</string>
+    <string name="groups_sharing_setting_approximateLocation_description_off">Udostępniaj wyłącznie przybliżony obszar lokalizacji, nawet jeśli Twoja lokalizacja jest dokładna.</string>
+    <string name="groups_sharing_setting_approximateLocation_description_on">Wybierz promień przybliżonego obszaru. Twoja dokładna lokalizacja zostanie ukryta i zastąpiona punktem znajdującym się gdzieś w obrębie wybranego promienia.</string>
+    <string name="group_member_role_admin">Administrator</string>
+    <string name="group_details_add_member_admin_only_info">Tylko administrator grupy może dodawać nowych członków</string>
+    <string name="group_members_status_location_hidden">Tylko przybliżona lokalizacja</string>
 </resources>

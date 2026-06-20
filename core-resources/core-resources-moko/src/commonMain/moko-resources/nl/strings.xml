@@ -954,4 +954,16 @@
     <string name="groups_sharing_setting_realtimeUpdates_title">Locatie-updates in real time</string>
     <string name="groups_sharing_setting_realtimeUpdates_description_on">Sta anderen toe om **voortdurend** realtime locatie-updates van dit apparaat te ontvangen. Als iemand u gedurende langere tijd op de kaart volgt, kan dit meer batterij verbruiken.</string>
     <string name="groups_sharing_setting_realtimeUpdates_description_off">Anderen kunnen u nog steeds lokaliseren door uw locatie handmatig te vernieuwen, maar in alle andere gevallen worden locatie-updates beperkt zonder realtime-ondersteuning.</string>
+    <string name="plans_banner_inline_realtime_location">Upgrade voor onbeperkte live locatiewijzigingen!</string>
+    <string name="paywall_feature_demo_realtime_location">Realtime locatie</string>
+    <string name="paywall_feature_demo_performance">Beste locatieprestaties</string>
+    <string name="paywall_feature_demo_location_history">Meer locatiegeschiedenis</string>
+    <string name="paywall_feature_demo_notify_members">Breng anderen op de hoogte wanneer u uw locatie deelt</string>
+    <string name="paywall_feature_demo_multi_device">Gebruik meerdere apparaten</string>
+    <string name="groups_sharing_setting_approximateLocation_title">Geschatte locatie</string>
+    <string name="groups_sharing_setting_approximateLocation_description_off">Deel alleen het gebied van uw geschatte locatie, zelfs als uw locatie nauwkeurig is.</string>
+    <string name="groups_sharing_setting_approximateLocation_description_on">Selecteer de straal van een geschat gebied. Uw precieze locatie wordt verborgen en vervangen door een punt ergens binnen de gekozen straal.</string>
+    <string name="group_member_role_admin">Beheerder</string>
+    <string name="group_details_add_member_admin_only_info">Alleen de groepsbeheerder kan nieuwe leden toevoegen</string>
+    <string name="group_members_status_location_hidden">Alleen geschatte locatie</string>
 </resources>

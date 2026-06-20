@@ -954,4 +954,16 @@
     <string name="groups_sharing_setting_realtimeUpdates_title">Aktualizácie polohy v reálnom čase</string>
     <string name="groups_sharing_setting_realtimeUpdates_description_on">Povoľte ostatným, aby z tohto zariadenia **nepretržite** získavali aktualizácie polohy v reálnom čase. Ak vás niekto sleduje na mape dlhší čas, môže to spotrebovať viac batérie.</string>
     <string name="groups_sharing_setting_realtimeUpdates_description_off">Ostatní vás stále môžu nájsť manuálnym obnovením vašej polohy, no vo všetkých ostatných prípadoch budú aktualizácie polohy bez podpory v reálnom čase obmedzené.</string>
+    <string name="plans_banner_inline_realtime_location">Vylepšenie pre neobmedzené aktualizácie polohy naživo!</string>
+    <string name="paywall_feature_demo_realtime_location">Aktuálna poloha</string>
+    <string name="paywall_feature_demo_performance">Najlepší výkon polohy</string>
+    <string name="paywall_feature_demo_location_history">Viac histórie polohy</string>
+    <string name="paywall_feature_demo_notify_members">Upozorniť ostatných, keď zdieľate svoju polohu</string>
+    <string name="paywall_feature_demo_multi_device">Používať viacero zariadení</string>
+    <string name="groups_sharing_setting_approximateLocation_title">Približná poloha</string>
+    <string name="groups_sharing_setting_approximateLocation_description_off">Zdieľať iba približnú oblasť polohy, aj keď je vaša poloha presná.</string>
+    <string name="groups_sharing_setting_approximateLocation_description_on">Vyberte polomer približnej oblasti. Vaša presná poloha bude skrytá a nahradená bodom niekde v rámci zvoleného polomeru.</string>
+    <string name="group_member_role_admin">Administrátor</string>
+    <string name="group_details_add_member_admin_only_info">Nových členov môže pridávať iba administrátor skupiny</string>
+    <string name="group_members_status_location_hidden">Iba približná poloha</string>
 </resources>

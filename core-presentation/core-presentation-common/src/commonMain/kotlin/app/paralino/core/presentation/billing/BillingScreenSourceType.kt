@@ -5,7 +5,9 @@ enum class BillingScreenSourceType(val key: String) {
     PERSONAL_SPACE_ONBOARDING("personalSpace_onboarding"),
     SKIPPED_ONBOARDING("skipped_onboarding"),
     FREE_PLAN_NEW_GROUP_MEMBER("new_group_member_added"),
-    UPGRADE("notice"),
+    UPGRADE_MAP_SHEET("upgrade_map_sheet"),
+    UPGRADE_BILLING_PROMO("upgrade_billing_promo"),
+    UPGRADE_DEFAULT("upgrade_regular"),
     NORMAL("normal");
 
     val isOnboarding get() = when (this) {
@@ -14,7 +16,9 @@ enum class BillingScreenSourceType(val key: String) {
         SKIPPED_ONBOARDING,
         FREE_PLAN_NEW_GROUP_MEMBER -> true
 
-        UPGRADE,
+        UPGRADE_MAP_SHEET,
+        UPGRADE_BILLING_PROMO,
+        UPGRADE_DEFAULT,
         NORMAL -> false
     }
 

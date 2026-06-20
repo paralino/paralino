@@ -954,4 +954,16 @@
     <string name="groups_sharing_setting_realtimeUpdates_title">Оновлення місцезнаходження в реальному часі</string>
     <string name="groups_sharing_setting_realtimeUpdates_description_on">Дозвольте іншим **безперервно** отримувати оновлення місцезнаходження в реальному часі з цього пристрою. Якщо хтось довго спостерігає за вами на карті, це може використовувати більше заряду батареї.</string>
     <string name="groups_sharing_setting_realtimeUpdates_description_off">Інші все ще можуть знайти ваше місцезнаходження, оновивши його вручну, але в усіх інших випадках оновлення місцезнаходження будуть обмежені без підтримки в реальному часі.</string>
+    <string name="plans_banner_inline_realtime_location">Оновлення для необмежених оновлень місцеперебування в реальному часі!</string>
+    <string name="paywall_feature_demo_realtime_location">Місцеперебування в реальному часі</string>
+    <string name="paywall_feature_demo_performance">Найкраща продуктивність визначення місцеперебування</string>
+    <string name="paywall_feature_demo_location_history">Більше історії місцеперебування</string>
+    <string name="paywall_feature_demo_notify_members">Повідомляйте інших, коли ділитеся своїм місцеперебуванням</string>
+    <string name="paywall_feature_demo_multi_device">Використовуйте кілька пристроїв</string>
+    <string name="groups_sharing_setting_approximateLocation_title">Приблизне місцеперебування</string>
+    <string name="groups_sharing_setting_approximateLocation_description_off">Діліться лише приблизною областю місцеперебування, навіть якщо ваше місцеперебування є точним.</string>
+    <string name="groups_sharing_setting_approximateLocation_description_on">Виберіть радіус приблизної області. Ваше точне місцеперебування буде приховано й замінено точкою десь у межах вибраного радіуса.</string>
+    <string name="group_member_role_admin">Адміністратор</string>
+    <string name="group_details_add_member_admin_only_info">Лише адміністратор групи може додавати нових учасників</string>
+    <string name="group_members_status_location_hidden">Лише приблизне місцеперебування</string>
 </resources>

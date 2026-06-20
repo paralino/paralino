@@ -954,4 +954,16 @@
     <string name="groups_sharing_setting_realtimeUpdates_title">Reaaliaikaiset sijaintipäivitykset</string>
     <string name="groups_sharing_setting_realtimeUpdates_description_on">Salli muiden saada tästä laitteesta **jatkuvasti** reaaliaikaisia sijaintipäivityksiä. Jos joku seuraa sinua kartalla pitkään, tämä voi kuluttaa enemmän akkua.</string>
     <string name="groups_sharing_setting_realtimeUpdates_description_off">Muut voivat edelleen paikantaa sinut päivittämällä sijaintisi manuaalisesti, mutta kaikissa muissa tapauksissa sijaintipäivitykset ovat rajoitettuja ilman reaaliaikaista tukea.</string>
+    <string name="plans_banner_inline_realtime_location">Päivitä saadaksesi rajattomat live-sijaintipäivitykset!</string>
+    <string name="paywall_feature_demo_realtime_location">Reaaliaikainen sijainti</string>
+    <string name="paywall_feature_demo_performance">Paras sijainnin suorituskyky</string>
+    <string name="paywall_feature_demo_location_history">Enemmän sijaintihistoriaa</string>
+    <string name="paywall_feature_demo_notify_members">Ilmoita muille, kun jaat sijaintisi</string>
+    <string name="paywall_feature_demo_multi_device">Käytä useita laitteita</string>
+    <string name="groups_sharing_setting_approximateLocation_title">Likimääräinen sijainti</string>
+    <string name="groups_sharing_setting_approximateLocation_description_off">Jaa vain likimääräinen sijaintialue, vaikka sijaintisi olisi tarkka.</string>
+    <string name="groups_sharing_setting_approximateLocation_description_on">Valitse likimääräisen alueen säde. Tarkka sijaintisi piilotetaan ja korvataan pisteellä jossakin valitun säteen sisällä.</string>
+    <string name="group_member_role_admin">Ylläpitäjä</string>
+    <string name="group_details_add_member_admin_only_info">Vain ryhmän ylläpitäjä voi lisätä uusia jäseniä</string>
+    <string name="group_members_status_location_hidden">Vain likimääräinen sijainti</string>
 </resources>

@@ -954,4 +954,16 @@
     <string name="groups_sharing_setting_realtimeUpdates_title">Ažuriranja lokacije u stvarnom vremenu</string>
     <string name="groups_sharing_setting_realtimeUpdates_description_on">Dopustite drugima da **kontinuirano** primaju ažuriranja lokacije u stvarnom vremenu s ovog uređaja. Ako vas netko dugo promatra na karti, ovo može trošiti više baterije.</string>
     <string name="groups_sharing_setting_realtimeUpdates_description_off">Drugi vas i dalje mogu pronaći ručnim osvježavanjem vaše lokacije, ali u svim ostalim slučajevima ažuriranja lokacije bit će ograničena bez podrške za stvarno vrijeme.</string>
+    <string name="plans_banner_inline_realtime_location">Nadogradnja za neograničena ažuriranja lokacije uživo!</string>
+    <string name="paywall_feature_demo_realtime_location">Lokacija u stvarnom vremenu</string>
+    <string name="paywall_feature_demo_performance">Najbolje performanse lokacije</string>
+    <string name="paywall_feature_demo_location_history">Više historije lokacija</string>
+    <string name="paywall_feature_demo_notify_members">Obavijestite druge kada dijelite svoju lokaciju</string>
+    <string name="paywall_feature_demo_multi_device">Koristite više uređaja</string>
+    <string name="groups_sharing_setting_approximateLocation_title">Približna lokacija</string>
+    <string name="groups_sharing_setting_approximateLocation_description_off">Dijelite samo približno područje lokacije čak i ako je vaša lokacija tačna.</string>
+    <string name="groups_sharing_setting_approximateLocation_description_on">Odaberite radijus približnog područja. Vaša tačna lokacija bit će sakrivena i zamijenjena tačkom negdje unutar odabranog radijusa.</string>
+    <string name="group_member_role_admin">Administrator</string>
+    <string name="group_details_add_member_admin_only_info">Samo administrator grupe može dodavati nove članove</string>
+    <string name="group_members_status_location_hidden">Samo približna lokacija</string>
 </resources>

@@ -27,6 +27,7 @@ import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.presentation.SuggestionSectionChipData
 import app.paralino.core.presentation.common.GroupMemberItemLocationState
 import app.paralino.core.presentation.common.GroupMemberItemStateWithOneLocation
+import app.paralino.core.presentation.common.GroupMemberRole
 import app.paralino.core.presentation.common.GroupMemberState
 import app.paralino.core.presentation.common.MainAlertDialog
 import app.paralino.core.presentation.common.MemberActionsState
@@ -491,7 +492,8 @@ class CreatePrivacyZoneViewModel(
                 paralinoId = null,
                 isCurrentUser = true,
                 isVerified = true,
-                canHaveExpandButton = false
+                canHaveExpandButton = false,
+                role = GroupMemberRole.MEMBER
             ),
             singleLocation = GroupMemberItemLocationState(
                 locationId = "",

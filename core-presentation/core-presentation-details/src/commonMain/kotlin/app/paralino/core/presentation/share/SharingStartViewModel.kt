@@ -13,6 +13,7 @@ import app.paralino.core.models.base.GroupOrSpaceId
 import app.paralino.core.models.base.GroupOrUserSpace
 import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.models.data
+import app.paralino.core.models.location.LocationPerformanceType
 import app.paralino.core.models.location.LocationSharingContract
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.presentation.common.BottomSheetPickerType
@@ -30,6 +31,7 @@ import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.group.UserGroupLocalDataSource
+import app.paralino.core.repo.location.LocationPerformanceManager
 import app.paralino.core.repo.places.PlaceActivityDataSource
 import app.paralino.core.repo.user.UserPersonalSpaceLocalDataSource
 import app.paralino.core.repo.user.UserRepository
@@ -62,6 +64,7 @@ class SharingStartViewModel(
     private val remoteConfigRepo: RemoteConfigRepository,
     private val groupRepo: UserGroupLocalDataSource,
     private val sharingManager: LocationSharingManager,
+    private val locationPerformanceManager: LocationPerformanceManager,
     private val deviceStatusProcessor: MemberDeviceStatusProcessor,
     private val placeActivityRepo: PlaceActivityDataSource,
     val deviceApiProvider: IDeviceApiProvider,
@@ -573,6 +576,12 @@ class SharingStartViewModel(
             return
         }
 
+        locationPerformanceManager.locationBoostRequested(
+            performanceType = LocationPerformanceType.HIGH,
+            groupId = contract.groupOrSpaceId,
+            from = "sharing started"
+        )
+
         logg.tag("sharing_start").d("Device registered - register sharing contract")
         sharingManager.startSharing(contract)
 
@@ -606,14 +615,7 @@ class SharingStartViewModel(
         _uiState.update {
             it.copy(
                 shareApproximateLocation = state,
-                formattedApproximateLocation = valueFormatter.getDistanceSmall(
-                    meters = when (valueFormatter.measurementSystem) {
-                        MeasurementSystemType.METRIC -> it.approximateLocationValue.meters.toDouble()
-                        MeasurementSystemType.IMPERIAL -> it.approximateLocationValue.metersForImperial
-                    },
-                    distanceType = DistanceType.DISTANCE,
-                    fractionsMode = FormattingFractionsMode.MINIMAL
-                )
+                formattedApproximateLocation = getFormattedApproximateLocationRadius(it.approximateLocationValue)
             )
         }
     }
@@ -630,14 +632,7 @@ class SharingStartViewModel(
                 ?: it.approximateLocationValue
             it.copy(
                 approximateLocationValue = approximateLocationValue,
-                formattedApproximateLocation = valueFormatter.getDistanceSmall(
-                    meters = when (valueFormatter.measurementSystem) {
-                        MeasurementSystemType.METRIC -> approximateLocationValue.meters.toDouble()
-                        MeasurementSystemType.IMPERIAL -> approximateLocationValue.metersForImperial
-                    },
-                    distanceType = DistanceType.DISTANCE,
-                    fractionsMode = FormattingFractionsMode.MINIMAL
-                )
+                formattedApproximateLocation = getFormattedApproximateLocationRadius(approximateLocationValue)
             )
         }
     }
@@ -733,6 +728,21 @@ class SharingStartViewModel(
     fun onDeviceNameChange(name: String) {
         if (_uiState.value.loadingAction) return
         _uiState.update { it.copy(deviceName = name) }
+    }
+
+    private fun getFormattedApproximateLocationRadius(
+        approximateLocationValue: ApproximateLocationDistancePair
+    ): String {
+        val distance = valueFormatter.getDistanceSmall(
+            meters = when (valueFormatter.measurementSystem) {
+                MeasurementSystemType.METRIC -> approximateLocationValue.meters.toDouble()
+                MeasurementSystemType.IMPERIAL -> approximateLocationValue.metersForImperial
+            },
+            distanceType = DistanceType.DISTANCE,
+            fractionsMode = FormattingFractionsMode.MINIMAL
+        )
+
+        return "~ $distance"
     }
 
     private fun hasSharingStartErrors(isForLongTerm: Boolean): Boolean {

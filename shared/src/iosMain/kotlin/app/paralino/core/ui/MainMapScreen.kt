@@ -29,6 +29,7 @@ import app.paralino.core.presentation.map.MapHomeScreenUiEvent
 import app.paralino.core.presentation.map.MapHomeViewModel
 import app.paralino.core.presentation.map.asReady
 import app.paralino.core.models.settings.RawPresentationDataType
+import app.paralino.core.presentation.billing.BillingScreenSourceType
 import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.presentation.common.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.Show
@@ -63,7 +64,7 @@ object MainMapScreen {
         onPrivacyZoneClick: (MapHomeScreenEvent.OpenPrivacyZoneDetails) -> Unit,
         onDirectionsRequest: (MapHomeScreenEvent.OpenExternalNavigation) -> Unit,
         onCreateGroup: () -> Unit,
-        openPaywall: () -> Unit,
+        openPaywall: (type: BillingScreenSourceType) -> Unit,
         openPersonalSpace: () -> Unit,
         openPersonalCodes: () -> Unit,
         openRawDataScreen: (RawPresentationDataType) -> Unit,
@@ -131,7 +132,7 @@ object MainMapScreen {
                     vm.events.collectLatest { event ->
                         when (event) {
                             MapHomeScreenEvent.OpenGroupCreateScreen -> onCreateGroup()
-                            MapHomeScreenEvent.OpenPaywall -> openPaywall()
+                            is MapHomeScreenEvent.OpenPaywall -> openPaywall(event.type)
                             is MapHomeScreenEvent.OpenCreatePlace -> onOpenCreatePlaceScreen(event.groupId, event.location)
                             is MapHomeScreenEvent.OpenCreatePrivacyZone -> onOpenCreatePrivacyZone(event.groupId, event.location)
                             is MapHomeScreenEvent.OpenGroupDetails -> onGroupDetailsClick(event.groupId)
@@ -145,7 +146,7 @@ object MainMapScreen {
                             is MapHomeScreenEvent.OpenSharingStart -> onSharingStartClick(event.groupId)
                             is MapHomeScreenEvent.OpenExternalNavigation -> onDirectionsRequest(event)
                             MapHomeScreenEvent.OpenPersonalSpace -> openPersonalSpace()
-                            is MapHomeScreenEvent.ShowPlanLimitAlert -> openPaywall()
+                            is MapHomeScreenEvent.ShowPlanLimitAlert -> openPaywall(BillingScreenSourceType.UPGRADE_DEFAULT)
                             MapHomeScreenEvent.OpenMapProviderSettings -> {}
                             null -> {}
                             MapHomeScreenEvent.AskNotificationPermission -> askNotificationPermission()
@@ -165,7 +166,7 @@ object MainMapScreen {
                             LocationHistoryScreenEvent.NavigateBack -> vm.onEvent(MapHomeScreenUiEvent.CloseLocationHistory)
                             is LocationHistoryScreenEvent.OpenNavigation -> onDirectionsRequest(event.event)
                             LocationHistoryScreenEvent.OpenHistorySettings -> uiState.selectedGroupId?.let { onHistorySettingsClick(it) }
-                            LocationHistoryScreenEvent.OpenPaywall -> openPaywall()
+                            LocationHistoryScreenEvent.OpenPaywall -> openPaywall(BillingScreenSourceType.UPGRADE_DEFAULT)
                             is LocationHistoryScreenEvent.OpenRawDataScreen -> openRawDataScreen(event.type)
 
                             null -> {}

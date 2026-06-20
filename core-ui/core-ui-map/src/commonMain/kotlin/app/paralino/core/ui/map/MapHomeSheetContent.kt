@@ -8,6 +8,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -49,6 +50,8 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import app.paralino.core.MR
+import app.paralino.core.models.base.ImageModel
+import app.paralino.core.presentation.billing.BillingScreenSourceType
 import app.paralino.core.presentation.common.GroupMemberItemEvent
 import app.paralino.core.presentation.common.GroupMemberItemState
 import app.paralino.core.presentation.common.PlaceListItemData
@@ -60,13 +63,17 @@ import app.paralino.core.provider.localizedString
 import app.paralino.core.resources.CoreAppIcons
 import app.paralino.core.resources.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.ConditionErrorItem
+import app.paralino.core.ui.components.DataInfoChip
 import app.paralino.core.ui.components.DefaultEmptyState
 import app.paralino.core.ui.components.FilledButton
+import app.paralino.core.ui.components.ImageModelImage
 import app.paralino.core.ui.groups.components.GroupMember
 import app.paralino.core.ui.places.PlaceListItem
 import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.ui.theme.ButtonStyle
 import app.paralino.core.ui.theme.LocalScreenDimensionType
+import app.paralino.core.utils.Emojis
+import app.paralino.core.utils.extensions.dashedDotDashedBorder
 import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -301,12 +308,16 @@ fun MapHomeSheetContent(
                 MapSheetSelectedContentType.MEMBERS -> {
                     membersList(
                         canAddNewMember = !readyState.isPersonalSpace && readyState.isCurrentUserOwnerOfSelectedGroup,
+                        hasUpgradeBanner = !readyState.groupPlanConfig.planTypeEnum.isPremium && readyState.isCurrentUserOwnerOfSelectedGroup,
                         members = members,
-                        onEvent = {
+                        memberEvent = {
                             onEvent(MapHomeScreenUiEvent.OnMemberItemEvent(it))
                         },
                         onAddNewMember = {
                             onEvent(MapHomeScreenUiEvent.OnOpenMemberInviteScreen)
+                        },
+                        onBannerTap = {
+                            onEvent(MapHomeScreenUiEvent.OpenPaywall(type = BillingScreenSourceType.UPGRADE_MAP_SHEET))
                         }
                     )
                 }
@@ -381,9 +392,11 @@ private fun SheetTabs(
 
 private fun LazyListScope.membersList(
     canAddNewMember: Boolean,
+    hasUpgradeBanner: Boolean,
     members: List<GroupMemberItemState>,
-    onEvent: (GroupMemberItemEvent) -> Unit,
-    onAddNewMember: () -> Unit
+    memberEvent: (GroupMemberItemEvent) -> Unit,
+    onAddNewMember: () -> Unit,
+    onBannerTap: () -> Unit
 ) {
     this.itemsIndexed(
         items = members,
@@ -395,8 +408,66 @@ private fun LazyListScope.membersList(
             state = itemState,
             collapseOnActionClick = true,
             forceExpandAction = itemState.locations.size > 1,
-            onEvent = onEvent
+            onEvent = memberEvent
         )
+    }
+
+    if (hasUpgradeBanner) {
+        this.item("premium_info") {
+            DataInfoChip(
+                modifier = Modifier
+                    .padding(top = 20.dp)
+                    .fillMaxWidth()
+                    .dashedDotDashedBorder(
+                        width = 1.dp,
+                        color = if (isSystemInDarkTheme()) {
+                            AppColors.accentDark
+                        } else {
+                            AppColors.accentLight
+                        },
+                        shape = RoundedCornerShape(10.dp),
+                        dashLength = 6.dp
+                    ),
+                shape = RoundedCornerShape(10.dp),
+                imageOrIcon = {
+                    ImageModelImage(
+                        imageModel = ImageModel.emoji(Emojis.lightBulb),
+                        modifier = Modifier.size(16.dp),
+                        useBackgroundForEmoji = false,
+                        clipShape = CircleShape
+                    )
+                    Spacer(Modifier.size(4.dp))
+                },
+                text = {
+                    Text(
+                        modifier = Modifier.weight(1f),
+                        text = stringResource(MR.strings.plans_banner_inline_realtime_location),
+                        style = MaterialTheme.typography.caption,
+                        color = MaterialTheme.colors.onBackground.copy(alpha = 0.7f)
+                    )
+                },
+                endSection = {
+                    Icon(
+                        modifier = Modifier
+                            .size(24.dp)
+                            .background(
+                                color = if (isSystemInDarkTheme()) {
+                                    AppColors.accent.copy(alpha = 0.8f)
+                                } else {
+                                    AppColors.accentDark.copy(alpha = 0.2f)
+                                },
+                                shape = CircleShape
+                            )
+                            .padding(2.dp),
+                        painter = CoreAppIcons.ChevronRight.asPainterResource(),
+                        contentDescription = null,
+                        tint = MaterialTheme.colors.primary,
+                    )
+                },
+                backgroundColor = AppColors.accentLight.copy(0.1f),
+                onClick = onBannerTap
+            )
+        }
     }
 
     if (canAddNewMember) {

@@ -70,8 +70,8 @@ internal fun MapHomeScreenEventHandler(
                     appState.navController.navigate(AppScreen.MainHome.GroupCreate.route())
                 }
 
-                MapHomeScreenEvent.OpenPaywall -> {
-                    appState.navController.navigate(AppScreen.MainHome.BillingPaywall.route())
+                is MapHomeScreenEvent.OpenPaywall -> {
+                    appState.navController.navigate(AppScreen.MainHome.BillingPaywall.route(type = event.type))
                 }
 
                 is MapHomeScreenEvent.OpenCreatePlace -> {

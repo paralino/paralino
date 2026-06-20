@@ -13,6 +13,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import app.paralino.core.presentation.common.GroupMemberItemStateWithLocations
 import app.paralino.core.presentation.common.GroupMemberItemStateWithOneLocation
+import app.paralino.core.presentation.common.GroupMemberRole
 import app.paralino.core.presentation.common.MemberActionItemState
 import app.paralino.core.presentation.common.MemberActionType
 import app.paralino.core.presentation.common.MemberActionsState
@@ -64,6 +65,7 @@ fun GroupMemberPreview() {
                         memberState = dummyMemberState,
                         locations = dummyLocations,
                         allowShowingDevices = true,
+                        allowShowingRoles = false,
                         actions = MemberActionsState(
                             deleteMember = MemberActionItemState(
                                 MemberActionType.DELETE_MEMBER
@@ -75,11 +77,14 @@ fun GroupMemberPreview() {
                 ) { }
                 GroupMember(
                     state = GroupMemberItemStateWithLocations(
-                        memberState = dummyMemberState,
+                        memberState = dummyMemberState.copy(
+                            role = GroupMemberRole.ADMIN
+                        ),
                         locations = listOf(
                             dummyLocations.get(1)
                         ),
                         allowShowingDevices = false,
+                        allowShowingRoles = true,
                         actions = MemberActionsState(
                             deleteMember = MemberActionItemState(
                                 MemberActionType.DELETE_MEMBER

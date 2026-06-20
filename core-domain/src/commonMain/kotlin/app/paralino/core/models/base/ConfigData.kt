@@ -20,8 +20,9 @@ data class ConfigData(
     val newSoftVersionIOS: Long = 0,
     val androidAppUrl: String? = null,
     val emailEnabled: Boolean = false,
+    val freePlanPromoBillingId: String? = null,
     val defaultPremiumPlan: PlanType = PlanType.PRO,
-    val plans: List<PlanConfig> = emptyList()
+    val plans: List<PlanConfig> = emptyList(),
 ) {
 
     val isEmailEnabled: Boolean get() = AppBuildConfig.instance.isDevMode || emailEnabled
@@ -42,6 +43,7 @@ data class ConfigData(
                 newSoftVersionIOS = map.get("newSoftVersionIOS")?.toLongOrNull() ?: 0,
                 androidAppUrl = map.get("androidAppUrl")?.takeIf { it.isNotBlank() },
                 emailEnabled = map.get("emailEnabled")?.toBooleanStrictOrNull() ?: false,
+                freePlanPromoBillingId = map.get("freePlanPromoBillingId")?.takeIf { it.isNotBlank() },
                 defaultPremiumPlan = map.get("defaultPremiumPlan")
                     ?.let {
                         PlanType.fromKey(key = it).takeIf { it !is PlanType.UNKNOWN }
@@ -54,7 +56,7 @@ data class ConfigData(
                         logg.e("Error parsing plans from remote: ${e.message}")
                         emptyList()
                     }
-                } ?: emptyList()
+                } ?: emptyList(),
             )
         }
     }

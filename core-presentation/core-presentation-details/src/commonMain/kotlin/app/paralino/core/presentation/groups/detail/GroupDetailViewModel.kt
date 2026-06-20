@@ -24,6 +24,7 @@ import app.paralino.core.presentation.common.AppSnackbarData
 import app.paralino.core.presentation.common.GroupMemberItemEvent
 import app.paralino.core.presentation.common.GroupMemberItemLocationState
 import app.paralino.core.presentation.common.GroupMemberItemStateWithLocations
+import app.paralino.core.presentation.common.GroupMemberRole
 import app.paralino.core.presentation.common.GroupMemberState
 import app.paralino.core.presentation.common.MainAlertDialog
 import app.paralino.core.presentation.common.MemberActionItemState
@@ -148,7 +149,12 @@ class GroupDetailViewModel(
                     val memberState = GroupMemberState(
                         member = member.member,
                         isCurrentUser = member.member.userId == appPrefs.userId,
-                        canHaveExpandButton = true
+                        canHaveExpandButton = true,
+                        role = if (member.member.userId == group.ownerUserId) {
+                            GroupMemberRole.ADMIN
+                        } else {
+                            GroupMemberRole.MEMBER
+                        }
                     )
                     val locations = memberLocationContextMapper.enrichMemberLocationStates(
                         locations = member.locations.map {
@@ -185,6 +191,7 @@ class GroupDetailViewModel(
                             securityAction = appConfig.isInAppDevMode
                         ),
                         allowShowingDevices = true,
+                        allowShowingRoles = true,
                         lastLocationPing = valueFormatter.getLastLocationPing(member),
                         lastStatusPing = valueFormatter.getLastStatusPing(member)
                     )

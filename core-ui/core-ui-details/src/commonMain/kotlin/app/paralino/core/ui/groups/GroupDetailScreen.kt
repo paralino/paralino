@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.ContentAlpha
@@ -30,10 +31,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import app.paralino.core.MR
 import app.paralino.core.models.Payload
+import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.data
 import app.paralino.core.presentation.common.AlertDialogAction
 import app.paralino.core.presentation.groups.detail.GroupDetailScreenEvent
@@ -45,8 +48,10 @@ import app.paralino.core.resources.CoreAppIcons
 import app.paralino.core.resources.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.CoreUiState
 import app.paralino.core.ui.components.ConditionErrorItem
+import app.paralino.core.ui.components.DataInfoChip
 import app.paralino.core.ui.components.DefaultEmptyState
 import app.paralino.core.ui.components.FilledButton
+import app.paralino.core.ui.components.ImageModelImage
 import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.components.NoticeInfoChip
 import app.paralino.core.ui.components.PlanLimitCount
@@ -54,10 +59,11 @@ import app.paralino.core.ui.components.PremiumPlanBannerSmall
 import app.paralino.core.ui.components.SmallActionButton
 import app.paralino.core.ui.components.dialogs.LoadingDialog
 import app.paralino.core.ui.components.dialogs.Show
-import app.paralino.core.ui.groups.components.GroupSpaceDetailsHeader
 import app.paralino.core.ui.groups.components.GroupMember
+import app.paralino.core.ui.groups.components.GroupSpaceDetailsHeader
 import app.paralino.core.ui.theme.ButtonStyle
 import app.paralino.core.utils.ConditionErrorType
+import app.paralino.core.utils.Emojis
 import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.flow.collectLatest
 
@@ -337,6 +343,36 @@ fun GroupDetailScreenCore(
                                 vm.onEvent(GroupDetailScreenUiEvent.OnMemberItemEvent(event))
                             }
                         )
+                    }
+
+                    if (!state.data.canEdit && !state.data.isMemberFocused) {
+                        this.item(key = "add_member_admin_only_info") {
+                            DataInfoChip(
+                                modifier = Modifier
+                                    .animateItem()
+                                    .padding(top = 16.dp, bottom = 4.dp)
+                                    .fillMaxWidth(),
+                                imageOrIcon = {
+                                    ImageModelImage(
+                                        imageModel = ImageModel.emoji(Emojis.lightBulb),
+                                        modifier = Modifier.size(16.dp),
+                                        useBackgroundForEmoji = false,
+                                        clipShape = CircleShape
+                                    )
+                                    Spacer(Modifier.size(4.dp))
+                                },
+                                text = {
+                                    Text(
+                                        text = stringResource(MR.strings.group_details_add_member_admin_only_info),
+                                        style = MaterialTheme.typography.caption,
+                                        color = MaterialTheme.colors.onBackground.copy(alpha = 0.5f)
+                                    )
+                                },
+                                endSection = null,
+                                backgroundColor = Color.Transparent,
+                                onClick = null
+                            )
+                        }
                     }
                 }
             }
