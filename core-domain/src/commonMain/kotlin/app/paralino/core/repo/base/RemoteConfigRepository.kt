@@ -139,12 +139,14 @@ class RemoteConfigRepository(
             currentVersion < minVersion -> AppUpdateType.FORCE_AND_CANCEL(configData)
             currentVersion < minUiVersion -> AppUpdateType.FORCE(configData)
             currentVersion < minSoftVersion -> AppUpdateType.SOFT_CONSTANT(configData)
-            currentVersion < newVersion && newVersion > appPrefs.dismissedAppVersion -> {
-                AppUpdateType.SOFT(configData)
+            currentVersion < newVersion -> {
+                if (newVersion > appPrefs.dismissedAppVersion){
+                    AppUpdateType.SOFT(configData)
+                } else {
+                    AppUpdateType.PASSIVE(configData)
+                }
             }
-            currentVersion < newVersion -> AppUpdateType.PASSIVE(configData)
             currentVersion < newSoftVersion -> AppUpdateType.PASSIVE(configData)
-
             else -> AppUpdateType.NONE(configData)
         }
     }

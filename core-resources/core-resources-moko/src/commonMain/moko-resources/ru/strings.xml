@@ -954,4 +954,16 @@
     <string name="groups_sharing_setting_realtimeUpdates_title">Обновления местоположения в реальном времени</string>
     <string name="groups_sharing_setting_realtimeUpdates_description_on">Разрешите другим **непрерывно** получать обновления местоположения в реальном времени с этого устройства. Если кто-то долго наблюдает за вами на карте, это может увеличить расход заряда батареи.</string>
     <string name="groups_sharing_setting_realtimeUpdates_description_off">Другие по-прежнему смогут определить ваше местоположение, вручную обновив данные о вашем местоположении, но во всех остальных случаях обновления местоположения будут ограничены без поддержки в реальном времени.</string>
+    <string name="plans_banner_inline_realtime_location">Обновите до безлимитных обновлений местоположения в реальном времени!</string>
+    <string name="paywall_feature_demo_realtime_location">Местоположение в реальном времени</string>
+    <string name="paywall_feature_demo_performance">Наилучшая производительность определения местоположения</string>
+    <string name="paywall_feature_demo_location_history">Больше истории местоположений</string>
+    <string name="paywall_feature_demo_notify_members">Уведомлять других, когда вы делитесь своим местоположением</string>
+    <string name="paywall_feature_demo_multi_device">Использовать несколько устройств</string>
+    <string name="groups_sharing_setting_approximateLocation_title">Приблизительное местоположение</string>
+    <string name="groups_sharing_setting_approximateLocation_description_off">Делитесь только приблизительной областью местоположения, даже если ваше местоположение определено точно.</string>
+    <string name="groups_sharing_setting_approximateLocation_description_on">Выберите радиус приблизительной области. Ваше точное местоположение будет скрыто и заменено точкой где-то внутри выбранного радиуса.</string>
+    <string name="group_member_role_admin">Администратор</string>
+    <string name="group_details_add_member_admin_only_info">Только администратор группы может добавлять новых участников</string>
+    <string name="group_members_status_location_hidden">Только приблизительное местоположение</string>
 </resources>

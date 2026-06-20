@@ -19,8 +19,11 @@ import app.paralino.core.models.location.LocationHistoryPointModel
 import app.paralino.core.models.location.LocationHistoryPointStatusModel
 import app.paralino.core.models.location.LocationSharingContract
 import app.paralino.core.models.location.MemberGroupId
+import app.paralino.core.utils.extensions.isLocationInaccurate
 import app.paralino.core.utils.extensions.roundToPrecision
 import app.paralino.core.utils.extensions.safeLet
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 
 class LocationPayloadProvider(
     private val database: MainDatabaseHelper,
@@ -33,12 +36,28 @@ class LocationPayloadProvider(
     private val approximateLocationObfuscator: ApproximateLocationObfuscator,
 ) {
 
+    private val mutex = Mutex()
+
     suspend fun getLocationPayload(
         groupId: GroupOrSpaceId,
         data: LocationDataModel?,
         /**
          * if there is no contract, location data is ignored
          */
+        contract: LocationSharingContract?
+    ): LocationPayloadStatus {
+        return mutex.withLock {
+            tryGetLocationPayload(
+                groupId = groupId,
+                data = data,
+                contract = contract
+            )
+        }
+    }
+
+    private suspend fun tryGetLocationPayload(
+        groupId: GroupOrSpaceId,
+        data: LocationDataModel?,
         contract: LocationSharingContract?
     ): LocationPayloadStatus {
 
@@ -54,7 +73,14 @@ class LocationPayloadProvider(
                 val locationData = safeLet(data, contract) { data, contract ->
                     val approximateRadius = contract.approximateLocationInMeters
                     val isSharingApproximate = approximateRadius != null
-                    val adjustedCoordinates = if (approximateRadius != null) {
+                    val adjustedLocation = if (isSharingApproximate) {
+
+                        if (data.accuracy.isLocationInaccurate()) {
+                            // ignore inaccurate when sharing approximate location since it will cause jumps
+                            // and since location is already spoofed, this just pollutes obfuscator
+                            return@safeLet null
+                        }
+
                         approximateLocationObfuscator.obfuscate(
                             groupId = groupId,
                             trueLat = data.lat,
@@ -65,18 +91,22 @@ class LocationPayloadProvider(
                         null
                     }
 
+                    val isApproximate = isSharingApproximate && contract.shareDeviceStatus
+
                     LocationDataModel(
                         timeUTC = data.timeUTC,
                         endTimeUTC = contract.endTimeUTC?.takeIf { contract.shareDeviceStatus },
-                        lat = (adjustedCoordinates?.lat ?: data.lat).roundToPrecision(decimalPlaces = 6),
-                        lng = (adjustedCoordinates?.lng ?: data.lng).roundToPrecision(decimalPlaces = 6),
-                        accuracy = approximateRadius?.toFloat() ?: data.accuracy,
+                        lat = (adjustedLocation?.location?.lat ?: data.lat).roundToPrecision(decimalPlaces = 6),
+                        lng = (adjustedLocation?.location?.lng ?: data.lng).roundToPrecision(decimalPlaces = 6),
+                        accuracy = adjustedLocation?.radiusMeters?.toFloat() ?: data.accuracy,
                         speed = data.speed?.takeIf {
-                            contract.shareSpeed && it != 0f && !isSharingApproximate
+                            contract.shareSpeed && it != 0f && !isApproximate
                         },
-                        altitude = data.altitude?.takeIf { contract.shareElevation && it != 0f },
+                        altitude = data.altitude?.takeIf {
+                            contract.shareElevation && it != 0f && !isApproximate
+                        },
                         isMasked = false,
-                        isApproximate = isSharingApproximate && contract.shareDeviceStatus,
+                        isApproximate = isApproximate,
                     )
                 }
 

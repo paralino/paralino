@@ -351,12 +351,12 @@ class ChangeCredentialsUseCase(
 
                 // apply to remote
                 val newRemoteKey = try {
-                    userKeysRemoteSource.createPersonalKey(newKey, removeOldKeys = true)
+                    userKeysRemoteSource.createPersonalKey(backedUpKey, removeOldKeys = true)
                 } catch (e: Exception) {
                     delay(300)
                     try {
                         // try once again
-                        userKeysRemoteSource.createPersonalKey(newKey, removeOldKeys = true)
+                        userKeysRemoteSource.createPersonalKey(backedUpKey, removeOldKeys = true)
                     } catch (e: Exception) {
                         delay(300)
                         // get keys to see if already uploaded

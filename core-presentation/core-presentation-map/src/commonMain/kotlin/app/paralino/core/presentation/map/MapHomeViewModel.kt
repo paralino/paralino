@@ -22,6 +22,7 @@ import app.paralino.core.models.data
 import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.group.UserGroupWithMetadata
 import app.paralino.core.presentation.CoreViewModel
+import app.paralino.core.presentation.billing.BillingScreenSourceType
 import app.paralino.core.presentation.common.BottomSheetPickerType
 import app.paralino.core.presentation.history.LocationHistoryScreenEvent
 import app.paralino.core.presentation.history.LocationHistoryScreenUiState
@@ -40,6 +41,7 @@ import app.paralino.core.repo.places.PlacesRepository
 import app.paralino.core.repo.user.UserPersonalSpaceLocalDataSource
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.Emojis
+import app.paralino.core.utils.extensions.isOlderThan
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.Job
@@ -65,6 +67,8 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.days
+import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.Instant
 
@@ -225,6 +229,7 @@ class MapHomeViewModel constructor(
         setupLocationFocusManagement()
         setupStateBuilding()
         setupHistorySubscription()
+        setupFreePlanPromoPaywall()
     }
 
     private fun setupHistorySubscription() {
@@ -497,6 +502,39 @@ class MapHomeViewModel constructor(
                 }
             }
             .flowOn(Dispatchers.IO)
+    }
+
+    private fun setupFreePlanPromoPaywall() {
+        combine(
+            uiState.mapNotNull { it.asReady() },
+            uiFocusedStatus
+        ) { state, isUiFocused ->
+            state to isUiFocused
+        }
+            .distinctUntilChanged()
+            .onEach { (state, isUiFocused) ->
+                if (!isUiFocused) return@onEach
+                tryShowFreePlanPromoPaywall(state)
+            }
+            .launchIn(coroutineScope)
+    }
+
+    private fun tryShowFreePlanPromoPaywall(state: MapHomeScreenState.Ready) {
+        if (state.isPersonalSpace) return
+        if (!state.isCurrentUserOwnerOfSelectedGroup) return
+        if (state.groupPlanConfig.planTypeEnum.isPremium) return
+
+        val appReadyTime = appPrefs.detectedAppReadyTime
+        if (appReadyTime == null || !appReadyTime.isOlderThan(2.days)) return
+
+        val promoBillingId = remoteConfig.getCachedConfigOnce().freePlanPromoBillingId
+            ?.takeIf { it.isNotBlank() }
+            ?: return
+
+        if (promoBillingId == appPrefs.dismissedFreePlanPromoBillingId) return
+
+        appPrefs.dismissedFreePlanPromoBillingId = promoBillingId
+        _eventChannel.trySend(MapHomeScreenEvent.OpenPaywall(type = BillingScreenSourceType.UPGRADE_BILLING_PROMO))
     }
 
     fun onEvent(event: MapHomeScreenUiEvent) {

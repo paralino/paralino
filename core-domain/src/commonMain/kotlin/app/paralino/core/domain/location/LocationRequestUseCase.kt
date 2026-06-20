@@ -11,6 +11,7 @@ import app.paralino.core.models.raw.LocationFocusGroupPayload
 import app.paralino.core.models.raw.LocationFocusSpacePayload
 import app.paralino.core.models.raw.LocationRequestGroupPayload
 import app.paralino.core.models.raw.LocationRequestSpacePayload
+import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.api.IFunctionsApi
 import app.paralino.core.repo.api.ServerFunction
 import app.paralino.core.repo.api.runAndWait
@@ -32,6 +33,7 @@ class LocationRequestUseCase constructor(
     private val functionsApi: IFunctionsApi,
     private val locationPerformanceManager: LocationPerformanceManager,
     private val personalSpaceLocal: UserPersonalSpaceLocalDataSource,
+    private val locationSharingManager: LocationSharingManager
 ) : BaseRepository() {
 
     fun keepLocationBoost(
@@ -40,11 +42,15 @@ class LocationRequestUseCase constructor(
         return flow {
             do {
                 emit(Unit)
-                locationPerformanceManager.locationBoostRequested(
-                    performanceType = LocationPerformanceType.HIGH,
-                    groupId = groupId,
-                    from = "map focus ping"
-                )
+
+                if (locationSharingManager.isSharingActive()) {
+                    locationPerformanceManager.locationBoostRequested(
+                        performanceType = LocationPerformanceType.HIGH,
+                        groupId = groupId,
+                        from = "map focus ping"
+                    )
+                }
+
                 delay(20_000L)
             } while (currentCoroutineContext().isActive)
         }.catch { emit(Unit) }

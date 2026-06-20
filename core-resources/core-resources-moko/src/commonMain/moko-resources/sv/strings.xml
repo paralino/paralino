@@ -954,4 +954,16 @@
     <string name="groups_sharing_setting_realtimeUpdates_title">Platsuppdateringar i realtid</string>
     <string name="groups_sharing_setting_realtimeUpdates_description_on">Tillåt andra att **kontinuerligt** få platsuppdateringar i realtid från den här enheten. Om någon följer er på kartan under en längre tid kan detta använda mer batteri.</string>
     <string name="groups_sharing_setting_realtimeUpdates_description_off">Andra kan fortfarande hitta er genom att manuellt uppdatera er plats, men i alla andra fall kommer platsuppdateringar att vara begränsade utan stöd för realtid.</string>
+    <string name="plans_banner_inline_realtime_location">Uppgradera för obegränsade uppdateringar av liveplats!</string>
+    <string name="paywall_feature_demo_realtime_location">Plats i realtid</string>
+    <string name="paywall_feature_demo_performance">Bästa platsprestanda</string>
+    <string name="paywall_feature_demo_location_history">Mer platshistorik</string>
+    <string name="paywall_feature_demo_notify_members">Meddela andra när du delar din plats</string>
+    <string name="paywall_feature_demo_multi_device">Använd flera enheter</string>
+    <string name="groups_sharing_setting_approximateLocation_title">Ungefärlig plats</string>
+    <string name="groups_sharing_setting_approximateLocation_description_off">Dela endast ett ungefärligt område även om din plats är exakt.</string>
+    <string name="groups_sharing_setting_approximateLocation_description_on">Välj radien för ett ungefärligt område. Din exakta plats kommer att döljas och ersättas av en punkt någonstans inom den valda radien.</string>
+    <string name="group_member_role_admin">Administratör</string>
+    <string name="group_details_add_member_admin_only_info">Endast gruppadministratören kan lägga till nya medlemmar</string>
+    <string name="group_members_status_location_hidden">Endast ungefärlig plats</string>
 </resources>

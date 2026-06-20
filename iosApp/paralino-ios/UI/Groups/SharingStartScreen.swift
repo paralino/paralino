@@ -32,7 +32,7 @@ struct SharingStartScreen: View {
                         finishWithSharingScreen(isOnboarding: appState.isOnboarding)
                     },
                     openSubscriptions: {
-                        path.append(.settings(.paywall(groupId: appState.currentGroupId, type: .upgrade)))
+                        path.append(.settings(.paywall(groupId: appState.currentGroupId, type: .upgradeDefault)))
                     },
                     askNotificationPermission: {
                         appDelegate.notificationPermissionHandler.requestNotificationPermission(
@@ -99,7 +99,7 @@ struct SharingStartScreen: View {
                     .settings(
                         .paywall(
                             groupId: appState.currentGroupId,
-                            type: isOnboarding ? BillingScreenSourceType.personalSpaceOnboarding : BillingScreenSourceType.upgrade
+                            type: isOnboarding ? BillingScreenSourceType.personalSpaceOnboarding : BillingScreenSourceType.upgradeDefault
                         )
                     )
                 )
@@ -108,7 +108,7 @@ struct SharingStartScreen: View {
                     .settings(
                         .paywall(
                             groupId: appState.currentGroupId,
-                            type: isOnboarding ? BillingScreenSourceType.groupOnboarding : BillingScreenSourceType.upgrade
+                            type: isOnboarding ? BillingScreenSourceType.groupOnboarding : BillingScreenSourceType.upgradeDefault
                         )
                     )
                 )

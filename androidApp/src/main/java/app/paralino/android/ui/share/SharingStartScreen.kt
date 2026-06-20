@@ -64,7 +64,7 @@ fun SharingStartScreen(
                                 BillingScreenSourceType.GROUP_ONBOARDING
                             }
                         }
-                        false -> BillingScreenSourceType.UPGRADE
+                        false -> BillingScreenSourceType.UPGRADE_DEFAULT
                     }
                 )
             ) {

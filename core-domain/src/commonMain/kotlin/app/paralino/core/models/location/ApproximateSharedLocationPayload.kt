@@ -7,4 +7,5 @@ data class ApproximateSharedLocationPayload(
     val lat: Double,
     val lng: Double,
     val radiusMeters: Int,
+    val adjustedRadiusMeters: Int
 )

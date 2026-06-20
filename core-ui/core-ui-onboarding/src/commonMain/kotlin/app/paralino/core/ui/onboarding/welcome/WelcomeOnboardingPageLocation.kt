@@ -156,6 +156,7 @@ private fun MemberItem(modifier: Modifier = Modifier) {
             ),
             locations = listOf(dummyLocations.get(1)),
             allowShowingDevices = false,
+            allowShowingRoles = false,
             actions = MemberActionsState(
                 deleteMember = MemberActionItemState(
                     MemberActionType.DELETE_MEMBER
@@ -217,6 +218,7 @@ private fun EncryptedOverlay(
                     memberState = dummyMemberState,
                     locations = listOf(dummyLocations.get(1)),
                     allowShowingDevices = false,
+                    allowShowingRoles = false,
                     actions = MemberActionsState(
                         deleteMember = MemberActionItemState(
                             MemberActionType.DELETE_MEMBER

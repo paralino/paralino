@@ -13,6 +13,8 @@ import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.api.IDocumentsApi
 import app.paralino.core.utils.extensions.tryParseFromJson
 import kotlinx.coroutines.launch
+import kotlin.native.runtime.GC
+import kotlin.native.runtime.NativeRuntimeApi
 
 class LocationRepositoryWrapper(
     private val locationRepo: LocationUploadEngine,
@@ -72,7 +74,9 @@ class LocationRepositoryWrapper(
         }
     }
 
+    @OptIn(NativeRuntimeApi::class)
     fun registerNewLocation(data: LocationDataModel): Payload<Unit> {
+        GC.collect()
         return try {
             locationRepo.registerNewLocation(data)
             Payload.Success(Unit)

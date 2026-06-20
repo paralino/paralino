@@ -327,6 +327,7 @@
     <string name="plans_banner_settings_description">Get more of everything and take your experience to the next level!</string>
     <string name="plans_banner_settings_action">Upgrade now</string>
     <string name="plans_banner_settings_action_small">Upgrade</string>
+    <string name="plans_banner_inline_realtime_location">Upgrade for unlimited live location updates!</string>
     <string name="plans_banner_inline_group_detail">Get more location history for everyone!</string>
     <string name="plans_banner_inline_personal_space">Track more devices and get more location history!</string>
     <string name="plans_banner_inline_places">Add more places and enjoy unlimited alerts!</string>
@@ -420,6 +421,11 @@
     <string name="paywall_feature_places_personal">Places with **unlimited alerts**</string>
     <string name="paywall_feature_battery">Low battery alerts</string>
     <string name="paywall_feature_locate">Locate devices on demand</string>
+    <string name="paywall_feature_demo_realtime_location">Real-time location</string>
+    <string name="paywall_feature_demo_performance">Best location performance</string>
+    <string name="paywall_feature_demo_location_history">More location history</string>
+    <string name="paywall_feature_demo_notify_members">Notify others when you share your location</string>
+    <string name="paywall_feature_demo_multi_device">Use multiple devices</string>
     <string name="paywall_feature_performance">Best location performance and **fast location updates**</string>
     <string name="paywall_feature_multi_device">Share location from multiple devices</string>
     <string name="paywall_feature_notify">Location sharing alerts</string>
@@ -607,6 +613,7 @@
     <string name="group_members_marker_circle_info">%s is somewhere inside this circle</string>
     <string name="group_members_marker_circle_info_inaccurate">%s might be somewhere inside this circle</string>
     <string name="group_member_title">Member</string>
+    <string name="group_member_role_admin">Administrator</string>
     <string name="group_member_device_title">Device</string>
     <string name="group_members_block_user">Block user</string>
     <string name="group_members_block_user_alert_message">If you proceed, user will not be able to add you to a group and you will not receive users\' location notifications in any shared groups.</string>
@@ -628,6 +635,7 @@
     <string name="group_details_block_group_alert_title">Are you sure you want to block this group?\nThis is irreversible, will delete all data you shared to group and you will not be able to rejoin the group!</string>
     <string name="group_details_block_group_alert_button">Block</string>
     <string name="group_details_add_member_button">Add</string>
+    <string name="group_details_add_member_admin_only_info">Only group administrator can add new members</string>
     <string name="group_details_sharing_status_time">Sharing until: **%s**</string>
     <string name="group_details_sharing_status_infinite">**Always on** sharing is active</string>
     <string name="group_details_sharing_action">Location sharing</string>

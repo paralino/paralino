@@ -172,7 +172,7 @@ private fun MemberInviteScreen(
                 PlanLimitSmallUpgradeButton(
                     modifier = Modifier.padding(top = 8.dp),
                     text = stringResource(MR.strings.invite_plan_limit_chip_owner),
-                    onClick = { openPaywall(BillingScreenSourceType.UPGRADE) }
+                    onClick = { openPaywall(BillingScreenSourceType.UPGRADE_DEFAULT) }
                 )
             }
         } else {

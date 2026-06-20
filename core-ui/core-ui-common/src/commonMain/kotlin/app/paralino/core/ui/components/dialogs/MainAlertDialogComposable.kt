@@ -150,11 +150,18 @@ fun MainAlertDialogActionButton(
         val isPressed by interactionSource.collectIsPressedAsState()
         var wasPressed by remember(dialogId) { mutableStateOf(false) }
 
+        LaunchedEffect(interactionSource) {
+            interactionSource.interactions.collect {
+                shouldShowLongTapInfo = true
+            }
+        }
+
         LaunchedEffect(isPressed) {
             if (isPressed && !wasPressed) {
                 // start timer
                 wasPressed = true
                 clickAnimation = true
+                shouldShowLongTapInfo = true
                 delay(1050)
                 onAction(buttonData.id)
                 clickAnimation = false

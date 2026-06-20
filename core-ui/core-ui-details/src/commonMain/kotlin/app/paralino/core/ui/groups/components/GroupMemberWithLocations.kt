@@ -9,6 +9,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -52,6 +53,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.graphics.takeOrElse
 import androidx.compose.ui.text.Placeholder
 import androidx.compose.ui.text.PlaceholderVerticalAlign
 import androidx.compose.ui.text.SpanStyle
@@ -72,6 +74,7 @@ import app.paralino.core.models.location.MemberDeviceOnlineStatusType
 import app.paralino.core.presentation.common.GroupMemberItemEvent
 import app.paralino.core.presentation.common.GroupMemberItemLocationState
 import app.paralino.core.presentation.common.GroupMemberItemState
+import app.paralino.core.presentation.common.GroupMemberRole
 import app.paralino.core.presentation.common.LocationRequestItemState
 import app.paralino.core.presentation.common.MemberActionType
 import app.paralino.core.presentation.common.MemberLocationVisibilityType
@@ -95,7 +98,7 @@ import dev.icerock.moko.resources.compose.stringResource
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun GroupMemberWithLocations(
+fun BoxScope.GroupMemberWithLocations(
     state: GroupMemberItemState,
     forceExpandAction: Boolean = false,
     collapseOnActionClick: Boolean = true,
@@ -244,7 +247,6 @@ fun GroupMemberWithLocations(
                             )
                         ),
                         style = MaterialTheme.typography.subtitle1,
-                        modifier = Modifier
                     )
                 }
 
@@ -489,6 +491,17 @@ fun GroupMemberWithLocations(
                 )
             }
         }
+    }
+
+    if (
+        state.allowShowingRoles &&
+        state.memberState.role == GroupMemberRole.ADMIN
+    ) {
+        GroupMemberRoleTag(
+            modifier = Modifier.align(Alignment.TopEnd),
+            isExpanded = expanded && !state.isCollapsedOrMinimized,
+            text = stringResource(MR.strings.group_member_role_admin)
+        )
     }
 }
 
@@ -1167,6 +1180,43 @@ fun MemberLocationDistanceFromMeIndicator(
             style = MaterialTheme.typography.caption,
             color = tint,
         )
+    }
+}
+
+@Composable
+private fun GroupMemberRoleTag(
+    modifier: Modifier = Modifier,
+    text: String,
+    isExpanded: Boolean,
+) {
+    Row(
+        modifier = modifier
+            .padding(horizontal = 3.dp)
+            .padding(vertical = 3.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        val color = if (isSystemInDarkTheme()) {
+            AppColors.accentLight.copy(alpha = 0.4f)
+        } else {
+            AppColors.accentDark.copy(alpha = 0.6f)
+        }
+        Icon(
+            modifier = Modifier.size(16.dp),
+            painter = CoreAppIcons.AdminShieldPersonV2.asPainterResource(),
+            contentDescription = null,
+            tint = color
+        )
+        AnimatedVisibility(isExpanded) {
+            Text(
+                modifier = Modifier
+                    .padding(start = 2.dp, end = 4.dp),
+                text = text,
+                style = MaterialTheme.typography.overline.copy(
+                    letterSpacing = 0.1.sp,
+                    color = color,
+                )
+            )
+        }
     }
 }
 

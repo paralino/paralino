@@ -1,6 +1,5 @@
 package app.paralino.core.domain.location.engine
 
-import app.paralino.core.domain.location.BatteryAlertUploadEngine
 import app.paralino.core.domain.location.IReRegisterDeviceUseCase
 import app.paralino.core.domain.location.LocationPayloadProvider
 import app.paralino.core.domain.location.LocationPayloadStatus

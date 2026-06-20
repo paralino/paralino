@@ -34,6 +34,7 @@ class GeneralInfoViewModel(
             }
 
             GeneralInfoScreenStateUiEvent.ResetAccountWelcomeOnboarding -> {
+                appPrefs.dismissedFreePlanPromoBillingId = ""
                 appPrefs.lastShowedAppRatingDialogAppVersion = 0
                 appPrefs.didHaveAccountWelcomeOnboarding = false
                 appPrefs.didHaveLocationHistoryIntroOnboarding = false

@@ -48,7 +48,7 @@ struct PersonalSpaceScreen: View {
                         path.append(.home(.sharingStart(groupId: UserGroup.companion.groupPersonalDevicesId, isOnboarding: false)))
                     },
                     openPaywall: {
-                        path.append(.settings(.paywall(type: BillingScreenSourceType.upgrade)))
+                        path.append(.settings(.paywall(type: BillingScreenSourceType.upgradeDefault)))
                     },
                     askNotificationPermission: {
                         appDelegate.notificationPermissionHandler.requestNotificationPermission(

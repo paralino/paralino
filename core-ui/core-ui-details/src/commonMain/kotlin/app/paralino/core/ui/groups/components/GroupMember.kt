@@ -24,6 +24,7 @@ import app.paralino.core.models.location.MemberDeviceStatusType
 import app.paralino.core.presentation.common.GroupMemberItemEvent
 import app.paralino.core.presentation.common.GroupMemberItemLocationState
 import app.paralino.core.presentation.common.GroupMemberItemState
+import app.paralino.core.presentation.common.GroupMemberRole
 import app.paralino.core.presentation.common.GroupMemberState
 import app.paralino.core.presentation.common.MemberLocationVisibilityType
 import app.paralino.core.provider.NetworkSignalStrength
@@ -112,7 +113,8 @@ val dummyMemberState = GroupMemberState(
     paralinoId = null,
     isCurrentUser = true,
     isVerified = true,
-    canHaveExpandButton = false
+    canHaveExpandButton = false,
+    role = GroupMemberRole.MEMBER
 )
 
 val dummyLocations = listOf(

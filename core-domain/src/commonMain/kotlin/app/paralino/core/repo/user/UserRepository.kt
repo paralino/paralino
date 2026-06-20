@@ -28,6 +28,7 @@ import app.paralino.core.repo.base.RemotePreference
 import app.paralino.core.utils.exceptions.NotFoundException
 import app.paralino.core.utils.exceptions.UnauthorizedException
 import app.paralino.core.utils.extensions.isoWithOffsetToInstant
+import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
@@ -233,6 +234,10 @@ class UserRepository constructor(
         }
 
         appPrefs.emailConfirmed = data.emailVerification
+
+        if (appPrefs.detectedLoginTime == null) {
+            appPrefs.detectedLoginTime = nowUTC()
+        }
     }
 
     suspend fun initEmailVerification() {
