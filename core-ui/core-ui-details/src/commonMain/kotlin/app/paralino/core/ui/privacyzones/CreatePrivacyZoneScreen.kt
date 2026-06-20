@@ -225,17 +225,19 @@ private fun CreatePrivacyZoneScreenContent(
                 focusManager.clearFocus()
             }
     ) {
-        CreatePrivacyZoneMapStep(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 20.dp),
-            focusManager = focusManager,
-            focusRequester = focusRequester,
-            state = state,
-            onImageClick = onImageClick,
-            onEvent = onEvent,
-            mapContent = mapContent
-        )
+        if (state.screenStep == CreatePrivacyZoneScreenStep.ADDRESS || !state.editOnlyCurrentStep) {
+            CreatePrivacyZoneMapStep(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 20.dp),
+                focusManager = focusManager,
+                focusRequester = focusRequester,
+                state = state,
+                onImageClick = onImageClick,
+                onEvent = onEvent,
+                mapContent = mapContent
+            )
+        }
 
         AnimatedVisibility(
             visible = state.screenStep == CreatePrivacyZoneScreenStep.NAME_SUGGESTION,
