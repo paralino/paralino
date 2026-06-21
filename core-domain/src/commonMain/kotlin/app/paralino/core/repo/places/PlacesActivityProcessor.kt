@@ -2,6 +2,7 @@ package app.paralino.core.repo.places
 
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.location.MemberDeviceStatusProcessor
+import app.paralino.core.domain.location.PrivacyZoneObfuscator
 import app.paralino.core.logg
 import app.paralino.core.models.base.DeviceType
 import app.paralino.core.models.base.GroupOrSpaceId
@@ -53,7 +54,8 @@ class PlacesActivityProcessor(
     private val scopeProvider: ICoroutineScopeProvider,
     private val locationSharingManager: LocationSharingManager,
     private val oneTimeLocation: IOneTimeLocationProvider,
-    private val appPrefs: AppPrefs
+    private val appPrefs: AppPrefs,
+    private val privacyZoneObfuscator: PrivacyZoneObfuscator,
 ) : IPlacesActivityProcessor() {
 
     override suspend fun processLocation(mappedLocations: List<MemberGroupId>) {
@@ -65,19 +67,43 @@ class PlacesActivityProcessor(
             return
         }
 
-        val places = local.getAllPlacesOnce().filter { place ->
-            val contract = locationSharingManager.currentSharingContractForGroup(place.groupOrSpaceId)
-            val approximateLocationRadiusCheck = contract?.approximateLocationInMeters?.let {
-                (place.data.data?.radiusMeters ?: 0) > it
-            } ?: true
-            contract != null && approximateLocationRadiusCheck && place.canSendAlert
-        }
-        places.forEach { place ->
+        for (place in local.getAllPlacesOnce()) {
+            if (!shouldProcessPlaceForLocation(place)) continue
             processLocationForPlace(
                 place = place,
                 mappedLocations = mappedLocations
             )
         }
+    }
+
+    private suspend fun shouldProcessPlaceForLocation(place: GroupPlace): Boolean {
+
+        if (!place.canSendAlert) {
+            return false
+        }
+
+        val contract = locationSharingManager.currentSharingContractForGroup(place.groupOrSpaceId)
+            ?: return false
+
+        val approximateLocationRadiusCheck = contract.approximateLocationInMeters?.let {
+            (place.data.data?.radiusMeters ?: 0) > it
+        } ?: true
+
+        if (!approximateLocationRadiusCheck) {
+            return false
+        }
+
+        return !isPlaceInPrivacyZone(place)
+    }
+
+    private suspend fun isPlaceInPrivacyZone(place: GroupPlace): Boolean {
+        val placeData = place.data.data ?: return false
+        return privacyZoneObfuscator.isPlaceOverlappingPrivacyZone(
+            groupId = place.groupOrSpaceId,
+            lat = placeData.lat,
+            lng = placeData.lng,
+            radiusMeters = placeData.radiusMeters,
+        )
     }
 
     private suspend fun processLocationForPlace(
@@ -143,7 +169,13 @@ class PlacesActivityProcessor(
         scopeProvider.userSessionIOScope.launch {
             placesIds.forEach { placeId ->
                 try {
-                    val groupId = local.getGroupIdFromPlaceId(placeId = placeId)!!
+                    val place = local.getPlaceWithoutSettingsOnce(placeId = placeId) ?: return@forEach
+                    if (isPlaceInPrivacyZone(place)) {
+                        logg.i("place_activity_geofence", "Skip place enter from geofence - place in privacy zone")
+                        return@forEach
+                    }
+
+                    val groupId = place.groupOrSpaceId
                     val contract = locationSharingManager.currentSharingContractForGroup(id = groupId)
                     if (contract?.approximateLocationInMeters != null) {
                         logg.i("place_activity_geofence", "Skip place enter from geofence - approximate location on")
@@ -176,7 +208,13 @@ class PlacesActivityProcessor(
         scopeProvider.userSessionIOScope.launch {
             placesIds.forEach { placeId ->
                 try {
-                    val groupId = local.getGroupIdFromPlaceId(placeId = placeId)!!
+                    val place = local.getPlaceWithoutSettingsOnce(placeId = placeId) ?: return@forEach
+                    if (isPlaceInPrivacyZone(place)) {
+                        logg.i("place_activity_geofence", "Skip place exit from geofence - place in privacy zone")
+                        return@forEach
+                    }
+
+                    val groupId = place.groupOrSpaceId
                     val contract = locationSharingManager.currentSharingContractForGroup(id = groupId)
                     if (contract?.approximateLocationInMeters != null) {
                         logg.i("place_activity_geofence", "Skip place exit from geofence - approximate location on")

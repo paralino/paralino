@@ -157,6 +157,26 @@ class PrivacyZoneObfuscator(
         return zoneRadiusMeters + distanceFromCenter
     }
 
+    suspend fun isPlaceOverlappingPrivacyZone(
+        groupId: GroupOrSpaceId,
+        lat: Double,
+        lng: Double,
+        radiusMeters: Int,
+    ): Boolean {
+        if (groupId.isPersonalSpace) return false
+        return privacyZonesLocal.getNonExpiredPrivacyZonesForGroupOnce(groupId = groupId.id)
+            .any { zone ->
+                val zoneData = zone.data.data ?: return@any false
+                val distance = geofenceManager.distanceBetweenPoints(
+                    lat1 = lat,
+                    lng1 = lng,
+                    lat2 = zoneData.lat,
+                    lng2 = zoneData.lng,
+                )
+                distance <= radiusMeters + zoneData.radiusMeters
+            }
+    }
+
     private fun isInsideZone(trueLat: Double, trueLng: Double, data: PrivacyZoneData): Boolean {
         return geofenceManager.distanceBetweenPoints(
             lat1 = trueLat,
