@@ -10,7 +10,7 @@ plugins {
 kotlin {
     android {
         namespace = "app.paralino.core.resources.moko"
-        compileSdk = 36
+        compileSdk = libs.versions.compileSdk.get().toInt()
     }
 
     listOf(

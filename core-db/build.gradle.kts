@@ -14,8 +14,8 @@ plugins {
 kotlin {
     android {
         namespace = "app.paralino.core.db"
-        compileSdk = 36
-        minSdk = 29
+        compileSdk = libs.versions.compileSdk.get().toInt()
+        minSdk = libs.versions.minSdk.get().toInt()
         compilerOptions.jvmTarget = JvmTarget.JVM_17
         compilerOptions.optIn.add("kotlin.RequiresOptIn")
     }

@@ -56,7 +56,7 @@ tasks.whenTaskAdded {
 
 android {
     namespace = "app.paralino.android"
-    compileSdk = 36
+    compileSdk = libs.versions.compileSdk.get().toInt()
 
     // release config is dynamically injected in release pipeline
     androidComponents.beforeVariants { variant ->
@@ -79,8 +79,8 @@ android {
 
     defaultConfig {
         applicationId = "app.paralino.android"
-        minSdk = 29
-        targetSdk = 36
+        minSdk = libs.versions.minSdk.get().toInt()
+        targetSdk = libs.versions.targetSdk.get().toInt()
         versionCode = 1
         versionName = "1.0"
 

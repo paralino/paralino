@@ -1,4 +1,7 @@
 [versions]
+compileSdk = "37"
+minSdk = "29"
+targetSdk = "37"
 androidGradlePlugin = "9.2.1"
 kotlin = "2.3.20"
 composeBom = "2026.05.01"
