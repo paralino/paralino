@@ -13,7 +13,9 @@ import app.paralino.core.models.location.MemberModel
 import app.paralino.core.models.location.MemberModelWithLocations
 import app.paralino.core.models.location.MemberModelWithLocationsAndGroup
 import app.paralino.core.models.mappers.GroupPlaceMapperLocal
+import app.paralino.core.models.mappers.GroupPrivacyZoneMapperLocal
 import app.paralino.core.models.mappers.GroupsMapperLocal
+import app.paralino.core.models.raw.GroupPrivacyZoneRaw
 import app.paralino.core.models.mappers.MemberWithLocationsMapperLocal
 import app.paralino.core.models.raw.GroupDocumentRaw
 import app.paralino.core.models.raw.GroupPlaceWithSettingsRaw
@@ -22,6 +24,7 @@ import app.paralino.core.models.raw.MemberWithLocationsRaw
 import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.repo.location.LocationLocalDataSource
 import app.paralino.core.repo.places.PlaceActivityDataSource
+import app.paralino.core.utils.extensions.combine
 import app.paralino.core.utils.extensions.distinctFlowOfList
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
@@ -40,6 +43,7 @@ class UserGroupLocalDataSource constructor(
     private val mapper: GroupsMapperLocal,
     private val memberMapper: MemberWithLocationsMapperLocal,
     private val placeMapper: GroupPlaceMapperLocal,
+    private val privacyZoneMapper: GroupPrivacyZoneMapperLocal,
     private val memberLocal: LocationLocalDataSource,
     private val placeActivity: PlaceActivityDataSource,
     private val appPrefs: AppPrefs,
@@ -70,7 +74,8 @@ class UserGroupLocalDataSource constructor(
                 }
             },
             places = data.flatMap { it.places.map { placeMapper.remote2Local(it.place) } },
-            placeSettings = data.flatMap { it.places.mapNotNull { it.settings?.let { placeMapper.remote2Local(it) } } }
+            placeSettings = data.flatMap { it.places.mapNotNull { it.settings?.let { placeMapper.remote2Local(it) } } },
+            privacyZones = data.flatMap { it.privacyZones.map { privacyZoneMapper.remote2Local(it) } },
         )
         placeActivity.recreatePlaces(places = data.flatMap { it.places })
     }
@@ -83,7 +88,8 @@ class UserGroupLocalDataSource constructor(
                 member.locations.map { memberMapper.remote2Local(member.member, it) }
             },
             places = group.places.map { placeMapper.remote2Local(it.place) },
-            placeSettings = group.places.mapNotNull { it.settings?.let { placeMapper.remote2Local(it) } }
+            placeSettings = group.places.mapNotNull { it.settings?.let { placeMapper.remote2Local(it) } },
+            privacyZones = group.privacyZones.map { privacyZoneMapper.remote2Local(it) },
         )
         placeActivity.recreatePlacesForGroup(groupId = group.group.group.id.asGroupOrSpaceId(), places = group.places)
     }
@@ -125,6 +131,24 @@ class UserGroupLocalDataSource constructor(
         placeActivity.recreatePlacesForGroup(groupId = groupId.asGroupOrSpaceId(), places = places)
     }
 
+    suspend fun updateOrCreatePrivacyZone(zone: GroupPrivacyZoneRaw) {
+        database.groupRelatedDao.createPrivacyZone(privacyZoneMapper.remote2Local(zone))
+    }
+
+    suspend fun recreatePrivacyZonesForGroup(
+        groupId: String,
+        zones: List<GroupPrivacyZoneRaw>,
+    ) {
+        database.groupRelatedDao.recreatePrivacyZonesForGroup(
+            groupId = groupId,
+            zones = zones.map { privacyZoneMapper.remote2Local(it) },
+        )
+    }
+
+    suspend fun deletePrivacyZone(zoneId: String) {
+        database.groupRelatedDao.deletePrivacyZone(zoneId = zoneId)
+    }
+
     // TODO if group is deleted, changes are not propagated because of filterNotNull()
 
     fun getGroupRawPresentation(groupId: String): Flow<Pair<GroupDocumentRaw, UserGroup>> {
@@ -152,13 +176,17 @@ class UserGroupLocalDataSource constructor(
                 .distinctUntilChanged(),
             database.groupRelatedDao.getPlacesCountForGroup(groupId)
                 .filterNotNull()
-                .distinctUntilChanged()
-        ) { groupEntity, currentUserMember, memberCount, devicesPerMember, placesCount ->
+                .distinctUntilChanged(),
+            database.groupRelatedDao.getPrivacyZonesCountForGroup(groupId, appPrefs.userId)
+                .filterNotNull()
+                .distinctUntilChanged(),
+        ) { groupEntity, currentUserMember, memberCount, devicesPerMember, placesCount, privacyZonesCount ->
             val group = mapper.local2Core(groupEntity)
             UserGroupWithMetadata(
                 group = group,
                 memberCount = memberCount,
                 placesCount = placesCount,
+                privacyZonesCount = privacyZonesCount,
                 devicesPerMember = devicesPerMember,
                 verification = memberMapper.local2Core(
                     member = currentUserMember,
@@ -232,12 +260,16 @@ class UserGroupLocalDataSource constructor(
                                 .distinctUntilChanged(),
                             database.groupRelatedDao.getPlacesCountForGroup(group.id)
                                 .filterNotNull()
-                                .distinctUntilChanged()
-                        ) { currentUserMember, memberCount, devicesPerMember, placesCount ->
+                                .distinctUntilChanged(),
+                            database.groupRelatedDao.getPrivacyZonesCountForGroup(group.id, appPrefs.userId)
+                                .filterNotNull()
+                                .distinctUntilChanged(),
+                        ) { currentUserMember, memberCount, devicesPerMember, placesCount, privacyZonesCount ->
                             UserGroupWithMetadata(
                                 group = group,
                                 memberCount = memberCount,
                                 placesCount = placesCount,
+                                privacyZonesCount = privacyZonesCount,
                                 devicesPerMember = devicesPerMember,
                                 verification = memberMapper.local2Core(
                                     member = currentUserMember,

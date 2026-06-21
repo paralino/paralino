@@ -30,6 +30,10 @@ import app.paralino.core.domain.group.GroupPreRefreshUseCase
 import app.paralino.core.domain.group.GroupRefreshUseCase
 import app.paralino.core.domain.group.GroupRemoveUseCase
 import app.paralino.core.domain.group.PlaceAddressSearchUseCase
+import app.paralino.core.domain.privacyzone.CreatePrivacyZoneUseCase
+import app.paralino.core.domain.privacyzone.DeletePrivacyZoneUseCase
+import app.paralino.core.domain.privacyzone.GetPrivacyZonesUseCase
+import app.paralino.core.domain.privacyzone.UpdatePrivacyZoneUseCase
 import app.paralino.core.domain.group.PlaceAlertsSettingsUpdateUseCase
 import app.paralino.core.domain.location.ActiveSharingEngine
 import app.paralino.core.domain.location.ClearUserLocationUseCase
@@ -38,6 +42,10 @@ import app.paralino.core.domain.location.GetMemberWithLocationsUseCase
 import app.paralino.core.domain.location.LocationCacheRepository
 import app.paralino.core.domain.location.ApproximateLocationObfuscator
 import app.paralino.core.domain.location.ApproximateSharedLocationLocalSource
+import app.paralino.core.domain.location.PrivacyZoneObfuscator
+import app.paralino.core.domain.location.PrivacyZoneSharedLocationLocalSource
+import app.paralino.core.domain.notifications.processors.PrivacyZoneCreatedNotificationProcessor
+import app.paralino.core.domain.notifications.processors.PrivacyZoneSyncNotificationProcessor
 import app.paralino.core.domain.location.LocationPayloadProvider
 import app.paralino.core.domain.location.LocationRequestUseCase
 import app.paralino.core.domain.location.LocationUploadEngine
@@ -110,6 +118,8 @@ import app.paralino.core.models.mappers.PersonalCodeMapperCore
 import app.paralino.core.models.mappers.PersonalCodeMapperLocal
 import app.paralino.core.models.mappers.PlaceMapperCore
 import app.paralino.core.models.mappers.PlaceSettingsMapperCore
+import app.paralino.core.models.mappers.PrivacyZoneMapperCore
+import app.paralino.core.models.mappers.GroupPrivacyZoneMapperLocal
 import app.paralino.core.models.mappers.SharingContractsMapper
 import app.paralino.core.models.mappers.UserDeviceMapper
 import app.paralino.core.models.mappers.UserKeyMapperCore
@@ -142,6 +152,9 @@ import app.paralino.core.repo.places.PlacesGetRemoteSource
 import app.paralino.core.repo.places.PlacesLocalDataSource
 import app.paralino.core.repo.places.PlacesRemoteSource
 import app.paralino.core.repo.places.PlacesRepository
+import app.paralino.core.repo.privacyzones.PrivacyZonesGetRemoteSource
+import app.paralino.core.repo.privacyzones.PrivacyZonesLocalDataSource
+import app.paralino.core.repo.privacyzones.PrivacyZonesRemoteSource
 import app.paralino.core.repo.user.PersonalDevicesLocalDataSource
 import app.paralino.core.repo.user.UserConfigRepository
 import app.paralino.core.repo.user.UserDevicesRemoteSource
@@ -240,7 +253,7 @@ val mappersModule = module {
     single { SharingContractsMapper }
     single { GroupsMapperLocal(get()) }
     single { GroupMapperCore(get(), get(), get()) }
-    single { GroupWithPlacesMapperCore(get(), get()) }
+    single { GroupWithPlacesMapperCore(get(), get(), get()) }
     single { MemberMapperCore(get(), get(), get()) }
     single { MemberWithLocationsMapperLocal(get()) }
     single { GroupKeysMapper() }
@@ -250,6 +263,8 @@ val mappersModule = module {
     single { PlaceSettingsMapperCore() }
     single { PlaceMapperCore(get(), get(), get(), get()) }
     single { GroupPlaceMapperLocal(get(), get(), get()) }
+    single { PrivacyZoneMapperCore(get(), get()) }
+    single { GroupPrivacyZoneMapperLocal(get()) }
     single { PendingLocationHistoryMapper(get(), get()) }
     single { LocationHistoryMapper(get(), get(), get()) }
 }
@@ -259,22 +274,27 @@ val dataSourceModule = module {
     single(createdAtStart = true) { AppPrefs(get()) }
     single { ApproximateSharedLocationLocalSource(get(), get(), get()) }
     single { ApproximateLocationObfuscator(get(), get(), get()) }
+    single { PrivacyZoneSharedLocationLocalSource(get(), get(), get()) }
+    single { PrivacyZoneObfuscator(get(), get(), get(), get()) }
     single { LocationLocalDataSource(get(), get(), get()) }
     single { SharingContractsLocalDataSource(get(), get()) }
     single { UserLocalDataSource(get(), get()) }
     single { UserPersonalSpaceLocalDataSource(get(), get(), get(), get(), get(), get(), get()) }
     single { PersonalDevicesLocalDataSource(get(), get()) }
     single { CryptoKeyLocalDataSource(get(), get(), get(), get()) }
-    single { UserGroupLocalDataSource(get(), get(), get(), get(), get(), get(), get(), get()) }
+    single { UserGroupLocalDataSource(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { PersonalCodeLocalDataSource(get(), get()) }
     single { PlacesLocalDataSource(get(), get()) }
+    single { PrivacyZonesLocalDataSource(get(), get(), get()) }
 
     single { UserRemoteSource(get(), get(), get(), get(), get()) }
     single { UserDevicesRemoteSource(get(), get(), get(), get(), get(), get()) }
     single { LocationRemoteSource(get(), get(), get(), get(), get(), get(), get()) }
-    single { GroupsRemoteSource(get(), get(), get(), get(), get(), get(), get(), get()) }
+    single { GroupsRemoteSource(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { PlacesRemoteSource(get(), get(), get(), get(), get(), get(), get()) }
     single { PlacesGetRemoteSource(get(), get(), get()) }
+    single { PrivacyZonesGetRemoteSource(get(), get()) }
+    single { PrivacyZonesRemoteSource(get(), get(), get()) }
     single { PersonalCodesRemoteSource(get(), get(), get(), get(), get(), get()) }
     single { CryptoKeyRemoteDataSource(get(), get()) }
     single { CryptoUserKeysRemoteSource(get(), get(), get()) }
@@ -305,7 +325,7 @@ val coreModule = module {
     factory { RealtimeEventsMaker(get(), get()) }
     factory { UserMemberIdUseCase(get(), get(), get(), get()) }
     single { UpdateUserDataUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
-    factory { RawCryptoPresentation(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+    factory { RawCryptoPresentation(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { PlaceActivityUploadEngine(get(), get(), get(), get(), get(), get(), get()) }
     factory { GroupBatterySettingsUpdateUseCase(get(), get(), get()) }
     factory { PlaceAlertsSettingsUpdateUseCase(get(), get()) }
@@ -315,7 +335,7 @@ val coreModule = module {
     single { ExpiredSessionHandler(get(), get(), get()) }
     single { LogoutUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { RegisterDeviceForSharingUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
-    single { RealtimeEventsProcessor(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+    single { RealtimeEventsProcessor(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { GroupCryptoKeyRotation(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { GroupMemberRemoveUseCase(get(), get(), get(), get(), get(), get(), get(), get()) }
     single { GroupMemberAddUseCase(get(), get(), get(), get(), get(), get(), get()) }
@@ -335,6 +355,10 @@ val coreModule = module {
     single { DeletePersonalDeviceUseCase(get(), get()) }
     single { DeactivatePersonalDeviceUseCase(get(), get(), get(), get()) }
     single { PlaceAddressSearchUseCase(get(), get()) }
+    factory { CreatePrivacyZoneUseCase(get(), get()) }
+    factory { UpdatePrivacyZoneUseCase(get(), get(), get()) }
+    factory { DeletePrivacyZoneUseCase(get(), get(), get()) }
+    factory { GetPrivacyZonesUseCase(get(), get(), get()) }
 
     single { PersonalCodesRepository(get(), get(), get(), get(), get(), get(), get()) }
     single { UserRepository(get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
@@ -359,7 +383,7 @@ val coreModule = module {
     single { NetworkQualityMonitor() }
     single { AppAccountStateMonitor(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { MemberDeviceStatusProvider(get(), get(), get(), get()) }
-    single { LocationPayloadProvider(get(), get(), get(), get(), get(), get(), get(), get()) }
+    single { LocationPayloadProvider(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { MemberDeviceStatusProcessor(get(), get(), get(), get(), get(), get(), get()) }
     single { RevokeDeviceActiveStatusUseCase(get(), get(), get(), get(), get()) }
     single { UserCryptoKeyRefreshUseCase(get(), get(), get(), get()) }
@@ -379,12 +403,14 @@ val coreModule = module {
 
     factory { NotificationPreCheckProcessor(get(), get(), get()) }
     factory { PushNotificationDeleteUseCase(get(), get()) }
-    single { PushNotificationHandler(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+    single { PushNotificationHandler(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
 
     factory { PlaceActivityNotificationProcessor(get(), get(), get(), get(), get(), get(), get()) }
     factory { PlaceCreatedNotificationProcessor(get(), get(), get(), get()) }
     factory { PlaceDeletedNotificationProcessor(get()) }
     factory { PlaceUpdatedNotificationProcessor(get()) }
+    factory { PrivacyZoneCreatedNotificationProcessor(get(), get(), get(), get(), get()) }
+    factory { PrivacyZoneSyncNotificationProcessor(get(), get(), get()) }
     factory { GroupMemberAddedNotificationProcessor(get(), get(), get(), get()) }
     factory { GroupMemberDeletedNotificationProcessor(get()) }
     factory { LocationSharingStartedNotificationsProcessor(get(), get(), get(), get(), get()) }

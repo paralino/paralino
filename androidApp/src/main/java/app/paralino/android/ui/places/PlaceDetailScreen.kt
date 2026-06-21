@@ -25,6 +25,7 @@ import app.paralino.core.presentation.places.detail.PlaceDetailScreenState
 import app.paralino.core.presentation.places.detail.PlaceDetailViewModel
 import app.paralino.core.presentation.places.detail.PlaceSettingsState
 import app.paralino.core.models.settings.RawPresentationDataType
+import app.paralino.core.presentation.places.create.CreatePlaceScreenStep
 import app.paralino.core.presentation.places.detail.makeMapPin
 import app.paralino.core.ui.components.DefaultToolbar
 import app.paralino.core.ui.components.ToolbarButtons
@@ -92,11 +93,21 @@ fun PlaceDetailScreen(
                     )
                 )
             },
-            openPlaceEditScreen = {
+            openPlaceNameEditScreen = {
                 appState.navController.navigate(
                     AppScreen.MainHome.PlaceCreate.route(
                         groupId = groupId,
-                        placeId = placeId
+                        placeId = placeId,
+                        editStep = CreatePlaceScreenStep.NAME_AND_IMAGE
+                    )
+                )
+            },
+            openPlacePositionEditScreen = {
+                appState.navController.navigate(
+                    AppScreen.MainHome.PlaceCreate.route(
+                        groupId = groupId,
+                        placeId = placeId,
+                        editStep = CreatePlaceScreenStep.ADDRESS
                     )
                 )
             },

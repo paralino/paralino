@@ -9,6 +9,7 @@ import androidx.room.Update
 import app.paralino.core.db.main.places.PendingPlaceEventsEntity
 import app.paralino.core.db.main.places.PlaceEntity
 import app.paralino.core.db.main.places.PlaceSettingsEntity
+import app.paralino.core.db.main.privacyzones.PrivacyZoneEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -188,6 +189,66 @@ interface GroupRelatedEntitiesDao {
 
 
 
+    // Privacy Zone Entity operations
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun createPrivacyZone(zone: PrivacyZoneEntity)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun createPrivacyZones(zones: List<PrivacyZoneEntity>)
+
+    @Query("SELECT * FROM privacyZoneEntity WHERE groupId = :groupId AND ownerUserId = :ownerUserId")
+    fun getPrivacyZonesForGroup(groupId: String, ownerUserId: String): Flow<List<PrivacyZoneEntity>>
+
+    @Query("SELECT * FROM privacyZoneEntity WHERE groupId = :groupId AND ownerUserId = :ownerUserId")
+    suspend fun getPrivacyZonesForGroupOnce(groupId: String, ownerUserId: String): List<PrivacyZoneEntity>
+
+    @Query(
+        """
+        SELECT * FROM privacyZoneEntity
+        WHERE groupId = :groupId AND ownerUserId = :ownerUserId
+        """
+    )
+    suspend fun getNonExpiredPrivacyZonesForGroupOnce(
+        groupId: String,
+        ownerUserId: String
+    ): List<PrivacyZoneEntity>
+
+    @Query(
+        "SELECT COUNT(id) FROM privacyZoneEntity WHERE groupId = :groupId AND ownerUserId = :ownerUserId"
+    )
+    suspend fun getPrivacyZonesCountForGroupOnce(groupId: String, ownerUserId: String): Int?
+
+    @Query(
+        "SELECT COUNT(id) FROM privacyZoneEntity WHERE groupId = :groupId AND ownerUserId = :ownerUserId"
+    )
+    fun getPrivacyZonesCountForGroup(groupId: String, ownerUserId: String): Flow<Int?>
+
+    @Query("SELECT * FROM privacyZoneEntity WHERE id = :zoneId")
+    suspend fun getPrivacyZoneOnce(zoneId: String): PrivacyZoneEntity?
+
+    @Query("SELECT * FROM privacyZoneEntity WHERE id = :zoneId")
+    fun getPrivacyZone(zoneId: String): Flow<PrivacyZoneEntity?>
+
+    @Query("DELETE FROM privacyZoneEntity WHERE id = :zoneId")
+    suspend fun deletePrivacyZone(zoneId: String)
+
+    @Query("DELETE FROM privacyZoneEntity WHERE groupId = :groupId")
+    suspend fun deletePrivacyZonesForGroup(groupId: String)
+
+    @Query("DELETE FROM privacyZoneEntity")
+    suspend fun clearAllPrivacyZones()
+
+    @Transaction
+    suspend fun recreatePrivacyZonesForGroup(
+        groupId: String,
+        zones: List<PrivacyZoneEntity>,
+    ) {
+        deletePrivacyZonesForGroup(groupId = groupId)
+        createPrivacyZones(zones)
+    }
+
+
+
     // Place Settings Entity operations
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun createPlaceSettings(settings: PlaceSettingsEntity)
@@ -328,19 +389,22 @@ interface GroupRelatedEntitiesDao {
         members: List<MemberEntity>,
         locations: List<MemberLocationEntity>,
         places: List<PlaceEntity>,
-        placeSettings: List<PlaceSettingsEntity>
+        placeSettings: List<PlaceSettingsEntity>,
+        privacyZones: List<PrivacyZoneEntity>,
     ) {
         clearAllGroupsObject()
         clearAllMembers()
         clearAllMemberLocations()
         clearAllGroupPlaces()
         clearAllGroupPlaceSettings()
+        clearAllPrivacyZones()
 
         createGroups(groups)
         createMembers(members)
         createMemberLocations(locations)
         createPlaces(places)
         createPlaceSettings(placeSettings)
+        createPrivacyZones(privacyZones)
     }
 
     @Transaction
@@ -349,12 +413,14 @@ interface GroupRelatedEntitiesDao {
         members: List<MemberEntity>,
         locations: List<MemberLocationEntity>,
         places: List<PlaceEntity>,
-        placeSettings: List<PlaceSettingsEntity>
+        placeSettings: List<PlaceSettingsEntity>,
+        privacyZones: List<PrivacyZoneEntity>,
     ) {
         clearMembersForGroup(groupId = group.id)
         clearLocationsForGroup(groupId = group.id)
         deletePlacesForGroup(groupId = group.id)
         deleteSettingsForGroup(groupId = group.id)
+        recreatePrivacyZonesForGroup(groupId = group.id, zones = privacyZones)
 
         createGroup(group)
         createMembers(members)
@@ -369,6 +435,7 @@ interface GroupRelatedEntitiesDao {
         clearMembersForGroup(groupId = groupId)
         deletePlacesForGroup(groupId = groupId)
         deleteSettingsForGroup(groupId = groupId)
+        deletePrivacyZonesForGroup(groupId = groupId)
         clearLocationsForGroup(groupId = groupId)
         deletePendingEventsForGroup(groupId = groupId)
         deleteBatteryAlertEvent(groupId = groupId)
@@ -378,7 +445,11 @@ interface GroupRelatedEntitiesDao {
         clearAllLocalHistoryKeysForGroup(groupId = groupId)
         clearAllUnsyncedHistoryKeysForGroup(groupId = groupId)
         deleteApproximateSharedLocationForGroup(groupId = groupId)
+        deletePrivacyZoneSharedLocationsForGroup(groupId = groupId)
     }
+
+    @Query("DELETE FROM privacyZoneSharedLocationEntity WHERE groupId = :groupId")
+    suspend fun deletePrivacyZoneSharedLocationsForGroup(groupId: String)
 
     @Transaction
     suspend fun updatePendingEventsData(

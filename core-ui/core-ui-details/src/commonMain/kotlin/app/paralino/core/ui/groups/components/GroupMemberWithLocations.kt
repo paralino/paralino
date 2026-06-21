@@ -84,7 +84,6 @@ import app.paralino.core.resources.CoreAppIcons
 import app.paralino.core.resources.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.DataInfoChip
 import app.paralino.core.ui.components.ImageModelImage
-import app.paralino.core.ui.groups.GroupStatusTagContent
 import app.paralino.core.ui.groups.toStatusTagType
 import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.utils.Emojis
@@ -283,7 +282,10 @@ fun BoxScope.GroupMemberWithLocations(
                             modifier = Modifier.align(Alignment.CenterVertically),
                             horizontalArrangement = Arrangement.spacedBy(4.dp, Alignment.Start)
                         ) {
-                            GroupStatusTagContent(it)
+                            GroupStatusTagContent(
+                                status = it,
+                                extraMessage = singleVisibleLocation?.privacyZoneMessage
+                            )
                         }
                     }
 
@@ -745,7 +747,7 @@ private fun GroupMemberLocationChild(
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(4.dp, Alignment.Start)
                     ) {
-                        GroupStatusTagContent(it)
+                        GroupStatusTagContent(status = it, extraMessage = state.privacyZoneMessage)
                     }
                 }
 

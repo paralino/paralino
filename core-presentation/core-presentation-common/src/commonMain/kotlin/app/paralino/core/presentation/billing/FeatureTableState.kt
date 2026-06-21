@@ -145,6 +145,33 @@ data class FeatureTableState(
 
                 add(
                     FeatureTableItemState.Detail(
+                        content = MR.strings.paywall_feature_privacy_zones_group.localizedString(),
+                        visibilityMode = FeatureTableItemVisibilityMode.VISIBLE_EXPANDED,
+                        values = plans.map {
+                            val highlightMode = if (it.isSelected) {
+                                FeatureTableItemHighlightMode.FULL
+                            } else {
+                                FeatureTableItemHighlightMode.NONE
+                            }
+                            if (it.config.privacyZonesLimit >= 0) {
+                                FeatureTableItemValue.Count(
+                                    content = it.config.privacyZonesLimit.toString(),
+                                    planType = it.type,
+                                    highlightMode = highlightMode
+                                )
+                            } else {
+                                FeatureTableItemValue.Text(
+                                    content = MR.strings.paywall_feature_value_unlimited.localizedString(),
+                                    planType = it.type,
+                                    highlightMode = highlightMode
+                                )
+                            }
+                        }
+                    )
+                )
+
+                add(
+                    FeatureTableItemState.Detail(
                         content = MR.strings.paywall_feature_summary_history.localizedString(),
                         visibilityMode = FeatureTableItemVisibilityMode.VISIBLE_EXPANDED,
                         values = plans.map {
@@ -346,7 +373,9 @@ data class FeatureTableState(
                             FeatureTableItemValue.Emoji(
                                 content = if (it.type.isSilverOrMore) "✅" else "❌",
                                 planType = it.type,
-                                highlightMode = if (it.isSelected) {
+                                highlightMode = if (isGroupPlanOnly) {
+                                    FeatureTableItemHighlightMode.BOTTOM
+                                } else if (it.isSelected) {
                                     FeatureTableItemHighlightMode.FULL
                                 } else {
                                     FeatureTableItemHighlightMode.NONE
@@ -447,6 +476,17 @@ data class FeatureTableState(
                                             },
                                             content = MR.strings.paywall_feature_summary_places.localizedString(),
                                             isHighlighted = it.config.placesLimit < 0
+                                        )
+                                    )
+                                    add(
+                                        FeatureTableItemValueDataPoint(
+                                            amount = if (it.config.privacyZonesLimit >= 0) {
+                                                it.config.privacyZonesLimit.toString()
+                                            } else {
+                                                MR.strings.paywall_feature_value_unlimited.localizedString()
+                                            },
+                                            content = MR.strings.paywall_feature_summary_privacy_zones.localizedString(),
+                                            isHighlighted = it.config.privacyZonesLimit < 0
                                         )
                                     )
                                     add(

@@ -20,7 +20,6 @@ kotlin {
         compilerOptions.optIn.add("kotlin.RequiresOptIn")
     }
 
-    iosX64()
     iosArm64()
     iosSimulatorArm64()
 
@@ -44,7 +43,6 @@ kotlin {
 
         androidMain.dependencies {
             implementation(libs.appcompat)
-            implementation(libs.androidx.core.ktx)
             implementation(libs.kotlinx.coroutines.android)
             implementation(libs.androidx.preference.ktx)
             implementation(libs.androidx.security.crypto.ktx)
@@ -55,7 +53,6 @@ kotlin {
 dependencies {
     add("kspAndroid", libs.androidx.room.compiler)
     add("kspIosSimulatorArm64", libs.androidx.room.compiler)
-    add("kspIosX64", libs.androidx.room.compiler)
     add("kspIosArm64", libs.androidx.room.compiler)
 }
 

@@ -25,7 +25,9 @@ extension CLLocation {
             speed: speed,
             altitude: altitude,
             isMasked: false,
-            isApproximate: false
+            isApproximate: false,
+            isInPrivacyZone: false,
+            privacyZoneMessage: nil
         )
     }
 }

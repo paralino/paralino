@@ -1,17 +1,16 @@
 [versions]
-androidGradlePlugin = "9.1.0"
-kotlin = "2.3.10"
-coreKtx = "1.18.0"
-composeBom = "2026.03.00"
-composeMultiplatform = "1.10.2"
-koin-bom = "4.1.1"
+androidGradlePlugin = "9.2.1"
+kotlin = "2.3.20"
+composeBom = "2026.05.01"
+composeMultiplatform = "1.11.1"
+koin-bom = "4.2.1"
 junit = "4.+"
 androidxTestExt = "1.3.0"
 espressoCore = "3.7.0"
-kotlinxCoroutinesCore = "1.10.2"
-kotlinxDatetime = "0.7.1"
-kotlinxSerializationJson = "1.10.0"
-material = "1.13.0"
+kotlinxCoroutinesCore = "1.11.0"
+kotlinxDatetime = "0.8.0"
+kotlinxSerializationJson = "1.11.0"
+material = "1.14.0"
 appcompat = "1.7.1"
 constraintlayout = "2.2.1"
 legacySupport = "1.0.0"
@@ -25,27 +24,24 @@ activityCompose = "1.13.0"
 constraintlayoutCompose = "1.1.1"
 navigationCompose = "2.9.8"
 accompanist = "0.34.0"
-aboutLibraries = "14.2.0"
-sentry = "8.40.0"
+aboutLibraries = "14.2.1"
+sentry = "8.43.1"
 playServicesLocation = "21.3.0"
 mapsGoogleCompose = "8.3.0"
-mapsMapLibreCompose = "0.12.1"
+mapsMapLibreCompose = "0.13.0"
 firebaseMessaging = "24.1.2"
-jna = "5.17.0"
 nanoid = "1.0.1"
-mokoResources = "0.26.1"
+mokoResources = "0.26.4"
 okhttp = "4.12.0"
-appwrite = "5.1.1"
 ktor = "3.2.3"
-revenuecat-android = "10.5.0"
+revenuecat-android = "10.8.0"
 androidx-room = "2.8.4"
 sqlite = "2.6.2"
-ksp = "2.3.5"
+ksp = "2.3.9"
 googlePlayReview = "2.0.2"
-unifiedPushConnector = "3.3.2"
+unifiedPushConnector = "3.3.3"
 
 [libraries]
-androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "coreKtx" }
 androidx-preference-ktx = { module = "androidx.preference:preference-ktx", version.ref = "preferenceKtx" }
 androidx-security-crypto-ktx = { module = "androidx.security:security-crypto-ktx", version.ref = "securityCryptoKtx" }
 kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "kotlin" }
@@ -97,14 +93,12 @@ maps-google-compose = { group = "com.google.maps.android", name = "maps-compose"
 maps-google-compose-utils = { group = "com.google.maps.android", name = "maps-compose-utils", version.ref = "mapsGoogleCompose" }
 maps-maplibre-compose = { module = "org.maplibre.compose:maplibre-compose", version.ref = "mapsMapLibreCompose" }
 firebase-messaging-ktx = { group = "com.google.firebase", name = "firebase-messaging-ktx", version.ref = "firebaseMessaging" }
-jna = { group = "net.java.dev.jna", name = "jna", version.ref = "jna" }
 nanoid = { group = "io.viascom.nanoid", name = "nanoid", version.ref = "nanoid" }
 koin-bom = { module = "io.insert-koin:koin-bom", version.ref = "koin-bom" }
 koin-core = { module = "io.insert-koin:koin-core" }
 koin-android = { module = "io.insert-koin:koin-android" }
 koin-compose = { module = "io.insert-koin:koin-androidx-compose" }
 koin-navigation = { module = "io.insert-koin:koin-androidx-compose-navigation" }
-appwrite-android = { group = "io.appwrite", name = "skd-for-android", version.ref = "appwrite" }
 okhttp-bom = { group = "com.squareup.okhttp3", name = "okhttp-bom", version.ref = "okhttp" }
 okhttp = { group = "com.squareup.okhttp3", name = "okhttp" }
 logging-interceptor = { group = "com.squareup.okhttp3", name = "logging-interceptor" }

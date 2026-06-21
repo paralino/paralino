@@ -111,6 +111,7 @@ fun DataInfoChip(
     image: ImageModel?,
     text: String,
     backgroundColor: Color = MaterialTheme.colors.surface,
+    contentColor: Color = contentColorFor(backgroundColor),
     shape: CornerBasedShape = RoundedCornerShape(10.dp),
     imageShape: CornerBasedShape = RoundedCornerShape(6.dp),
     hasEndArrow: Boolean = false,
@@ -144,7 +145,7 @@ fun DataInfoChip(
             Text(
                 text = text,
                 style = MaterialTheme.typography.subtitle1.copy(lineHeight = 18.sp),
-                color = contentColorFor(backgroundColor)
+                color = contentColor
             )
         },
         endSection = if (isLoading) {
@@ -154,7 +155,7 @@ fun DataInfoChip(
                         .padding(start = 4.dp)
                         .size(20.dp),
                     strokeWidth = 2.dp,
-                    color = contentColorFor(backgroundColor)
+                    color = contentColor
                 )
             }
         } else if (hasEndArrow) {
@@ -164,7 +165,7 @@ fun DataInfoChip(
                         .padding(start = 4.dp)
                         .width(20.dp),
                     painter = CoreAppIcons.ChevronRight.asPainterResource(),
-                    tint = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.disabled),
+                    tint = contentColor.copy(alpha = ContentAlpha.disabled),
                     contentDescription = null
                 )
             }
@@ -236,6 +237,12 @@ fun SmallActionButton(
             .clip(shape)
             .conditional(onClick != null) {
                 clickable(onClick = { onClick?.invoke()} )
+            }
+            .conditional(backgroundColor.alpha > 0f) {
+                background(
+                    color = MaterialTheme.colors.background,
+                    shape = shape
+                )
             }
             .background(
                 color = backgroundColor,

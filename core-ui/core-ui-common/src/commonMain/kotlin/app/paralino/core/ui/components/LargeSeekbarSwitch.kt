@@ -79,6 +79,7 @@ fun LargeSeekbarSwitch(
     titleStyle: TextStyle = MaterialTheme.typography.body2,
     focusDescription: Boolean = false,
     enabled: Boolean = true,
+    isMinimumVerticalSpacing: Boolean = true,
     elevation: Dp = animateDpAsState(if (state.switchState?.checkState == true && enabled) 16.dp else 0.dp).value,
     size: LargeSwitchSize = LargeSwitchSize(),
     onLongClick: (() -> Unit)? = null,
@@ -115,8 +116,8 @@ fun LargeSeekbarSwitch(
             .background(backgroundColor)
     ) {
 
-        val isSwitchAndSeekOn =
-            state.seekbarState != null && state.switchState != null && state.switchState.checkState
+//        val isSwitchAndSeekOn =
+//            (state.seekbarState != null && state.switchState != null && state.switchState.checkState) || bigTag.isNullOrBlank()
 
         if (state.seekbarState != null && state.switchState?.checkState != false) {
             val seekState = state.seekbarState
@@ -176,14 +177,14 @@ fun LargeSeekbarSwitch(
                 ) {
                     Column(
                         modifier = Modifier.fillMaxHeight(),
-                        verticalArrangement = if (isSwitchAndSeekOn) {
-                            Arrangement.Top
-                        } else {
+                        verticalArrangement = if (isMinimumVerticalSpacing) {
                             Arrangement.Center
+                        } else {
+                            Arrangement.Top
                         }
                     ) {
                         AnimatedVisibility(
-                            visible = isSwitchAndSeekOn
+                            visible = !isMinimumVerticalSpacing
                         ) {
                             Spacer(modifier = Modifier.size(56.dp))
                         }
@@ -248,9 +249,9 @@ fun LargeSeekbarSwitch(
                                 .padding(start = 16.dp)
                                 .size(36.dp)
                                 .border(
-                                    0.5.dp,
-                                    MaterialTheme.colors.secondary.copy(alpha = ContentAlpha.disabled),
-                                    RoundedCornerShape(8.dp)
+                                    width = 0.5.dp,
+                                    color = MaterialTheme.colors.secondary.copy(alpha = ContentAlpha.disabled),
+                                    shape = RoundedCornerShape(8.dp)
                                 )
                                 .clip(RoundedCornerShape(8.dp))
                                 .background(backgroundColor)
@@ -338,7 +339,7 @@ fun LargeSeekbarSwitch(
             Column(
                 modifier = Modifier
                     .padding(
-                        top = animateDpAsState(if (isSwitchAndSeekOn) 24.dp else 8.dp).value
+                        top = animateDpAsState(if (!isMinimumVerticalSpacing) 24.dp else 8.dp).value
                     )
                     .padding(horizontal = if (hasTopContent) 12.dp else 6.dp)
                     .clip(RoundedCornerShape(6.dp))

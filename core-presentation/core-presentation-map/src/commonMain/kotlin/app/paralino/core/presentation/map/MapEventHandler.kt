@@ -86,15 +86,22 @@ class MapEventHandler(
 
             MapHomeScreenUiEvent.OnFocusOnMembersClick -> {
                 mapStateManager.setSelectedContentType(
-                    updateReadyState,
-                    MapSheetSelectedContentType.MEMBERS
+                    updateState = updateReadyState,
+                    selectedContentType = MapSheetSelectedContentType.MEMBERS
                 )
             }
 
             MapHomeScreenUiEvent.OnFocusOnPlacesClick -> {
                 mapStateManager.setSelectedContentType(
-                    updateReadyState,
-                    MapSheetSelectedContentType.PLACES
+                    updateState = updateReadyState,
+                    selectedContentType = MapSheetSelectedContentType.PLACES
+                )
+            }
+
+            MapHomeScreenUiEvent.OnFocusOnPrivacyZonesClick -> {
+                mapStateManager.setSelectedContentType(
+                    updateState = updateReadyState,
+                    selectedContentType = MapSheetSelectedContentType.PRIVACY_ZONES
                 )
             }
 
@@ -200,9 +207,26 @@ class MapEventHandler(
                 }
             }
 
+            is MapHomeScreenUiEvent.OnOpenCreatePrivacyZoneScreen -> {
+                uiState.value.asReady()?.let {
+                    eventChannel.trySend(
+                        MapHomeScreenEvent.OpenCreatePrivacyZone(
+                            groupId = it.groupOrSpaceId.id,
+                            location = event.location
+                        )
+                    )
+                }
+            }
+
             MapHomeScreenUiEvent.OnOpenPlacesScreen -> {
                 uiState.value.asReady()?.let {
                     eventChannel.trySend(MapHomeScreenEvent.OpenPlaces(groupId = it.groupOrSpaceId.id))
+                }
+            }
+
+            MapHomeScreenUiEvent.OnOpenPrivacyZonesScreen -> {
+                uiState.value.asReady()?.let {
+                    eventChannel.trySend(MapHomeScreenEvent.OpenPrivacyZones(groupId = it.groupOrSpaceId.id))
                 }
             }
 
@@ -214,6 +238,10 @@ class MapEventHandler(
 
             is MapHomeScreenUiEvent.OnPlaceClick -> {
                 handlePlaceClick(event)
+            }
+
+            is MapHomeScreenUiEvent.OnPrivacyZoneClick -> {
+                handlePrivacyZoneClick(event)
             }
 
             MapHomeScreenUiEvent.OnSettingsClick -> {
@@ -424,6 +452,25 @@ class MapEventHandler(
                     uiState,
                     updateReadyState,
                     event.place.asFocusedMarker()
+                )
+            }
+        }
+    }
+
+    private fun handlePrivacyZoneClick(event: MapHomeScreenUiEvent.OnPrivacyZoneClick) {
+        uiState.value.asReady()?.let { readyState ->
+            if (readyState.focusedPrivacyZone?.id == event.zone.id) {
+                eventChannel.trySend(
+                    MapHomeScreenEvent.OpenPrivacyZoneDetails(
+                        groupId = readyState.groupOrSpaceId.id,
+                        zoneId = event.zone.id
+                    )
+                )
+            } else {
+                mapStateManager.trackMarker(
+                    uiState = uiState,
+                    updateState = updateReadyState,
+                    markerData = event.zone.asFocusedMarker()
                 )
             }
         }

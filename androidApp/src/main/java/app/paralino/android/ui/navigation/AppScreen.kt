@@ -4,6 +4,8 @@ import app.paralino.core.presentation.login.LoginScreenUiType
 import app.paralino.core.models.settings.RawPresentationDataType
 import app.paralino.core.utils.DeeplinkType
 import app.paralino.core.presentation.billing.BillingScreenSourceType
+import app.paralino.core.presentation.places.create.CreatePlaceScreenStep
+import app.paralino.core.presentation.privacyzones.create.CreatePrivacyZoneScreenStep
 import app.paralino.core.utils.BaseRemoteModule
 
 sealed class AppScreen {
@@ -188,22 +190,81 @@ sealed class AppScreen {
             }
         }
 
-        object PlaceCreate : AppScreen() {
-            val argumentPlaceId: String = "placeId"
+        object PrivacyZonesList : AppScreen() {
+            val argumentOnboarding: String = "onboarding"
+            override val routeSignature: String =
+                "privacy-zones-list?$argumentGroupId={$argumentGroupId}&${argumentOnboarding}={$argumentOnboarding}"
+
+            fun route(groupId: String, isOnboarding: Boolean = false): String {
+                val args = arrayOf(
+                    "$argumentGroupId=$groupId",
+                    "${argumentOnboarding}=$isOnboarding",
+                ).joinToString(separator = "&")
+                return "privacy-zones-list?$args"
+            }
+        }
+
+        object PrivacyZoneCreate : AppScreen() {
+            val argumentZoneId: String = "zoneId"
+            val argumentEditStep: String = "editStep"
             val argumentLat: String = "lat"
             val argumentLng: String = "lng"
             override val routeSignature: String =
-                "places-create?$argumentGroupId={$argumentGroupId}&$argumentPlaceId={$argumentPlaceId}&$argumentLat={$argumentLat}&$argumentLng={$argumentLng}"
+                "privacy-zone-create?$argumentGroupId={$argumentGroupId}&$argumentZoneId={$argumentZoneId}&$argumentEditStep={$argumentEditStep}&$argumentLat={$argumentLat}&$argumentLng={$argumentLng}"
+
+            fun route(
+                groupId: String,
+                zoneId: String?,
+                editStep: CreatePrivacyZoneScreenStep? = null,
+                lat: Double? = null,
+                lng: Double? = null
+            ): String {
+                val args = arrayOf(
+                    "$argumentGroupId=$groupId",
+                    zoneId?.let { "$argumentZoneId=$it" },
+                    editStep?.let { "$argumentEditStep=${editStep.key}" },
+                    lat?.let { "${argumentLat}=$lat" },
+                    lng?.let { "${argumentLng}=$lng" }
+                )
+                    .filterNotNull()
+                    .joinToString(separator = "&")
+                return "privacy-zone-create?$args"
+            }
+        }
+
+        object PrivacyZoneDetail : AppScreen() {
+            val argumentZoneId: String = "zoneId"
+            override val routeSignature: String =
+                "privacy-zone-detail?$argumentGroupId={$argumentGroupId}&$argumentZoneId={$argumentZoneId}"
+
+            fun route(groupId: String, zoneId: String): String {
+                val args = arrayOf(
+                    "$argumentGroupId=$groupId",
+                    "$argumentZoneId=$zoneId",
+                ).joinToString(separator = "&")
+                return "privacy-zone-detail?$args"
+            }
+        }
+
+        object PlaceCreate : AppScreen() {
+            val argumentPlaceId: String = "placeId"
+            val argumentEditStep: String = "editStep"
+            val argumentLat: String = "lat"
+            val argumentLng: String = "lng"
+            override val routeSignature: String =
+                "places-create?$argumentGroupId={$argumentGroupId}&$argumentPlaceId={$argumentPlaceId}&$argumentEditStep={$argumentEditStep}&$argumentLat={$argumentLat}&$argumentLng={$argumentLng}"
 
             fun route(
                 groupId: String,
                 placeId: String?,
+                editStep: CreatePlaceScreenStep?,
                 lat: Double? = null,
                 lng: Double? = null
             ): String {
                 val args = arrayOf(
                     "$argumentGroupId=$groupId",
                     placeId?.let { "$argumentPlaceId=$placeId" },
+                    editStep?.let { "$argumentEditStep=${editStep.key}" },
                     lat?.let { "$argumentLat=$lat" },
                     lng?.let { "$argumentLng=$lng" }
                 )
@@ -356,6 +417,7 @@ sealed class AppScreen {
                     is RawPresentationDataType.GroupMemberPresentation -> type.memberId
                     is RawPresentationDataType.GroupPlacePresentation -> type.placeId
                     is RawPresentationDataType.GroupPresentation -> type.groupId
+                    is RawPresentationDataType.GroupPrivacyZonePresentation -> type.privacyZoneId
                     is RawPresentationDataType.LocationHistoryPointPresentation -> {
                         BaseRemoteModule.formatter.encodeToString(type)
                     }

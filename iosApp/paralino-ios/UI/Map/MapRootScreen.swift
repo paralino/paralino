@@ -86,8 +86,38 @@ struct MapRootScreen: View {
                                         vm: KoinIOS.ViewModels.shared.placeSensitivityVM(groupId: groupId, placeId: placeId)
                                     )
                                 )
-                            case .placeCreate(groupId: let groupId, placeId: let placeId, lat: let lat, lng: let lng):
-                                PlaceCreateScreen(path: $mainAppState.userReadyGraph, appState: PlaceCreateScreen.createState(groupId: groupId, placeId: placeId, lat: lat, lng: lng))
+                            case .placeCreate(groupId: let groupId, placeId: let placeId, editStep: let editStep, lat: let lat, lng: let lng):
+                                PlaceCreateScreen(
+                                    path: $mainAppState.userReadyGraph,
+                                    appState: PlaceCreateScreen.createState(
+                                        groupId: groupId,
+                                        placeId: placeId,
+                                        editStep: editStep,
+                                        lat: lat,
+                                        lng: lng
+                                    )
+                                )
+                            case .privacyZones(let groupId, let isOnboarding):
+                                PrivacyZonesScreen(
+                                    path: $mainAppState.userReadyGraph,
+                                    appState: PrivacyZonesScreen.createState(groupId: groupId, isOnboarding: isOnboarding)
+                                )
+                            case .privacyZoneDetail(groupId: let groupId, zoneId: let zoneId):
+                                PrivacyZoneDetailScreen(
+                                    path: $mainAppState.userReadyGraph,
+                                    appState: PrivacyZoneDetailScreen.createState(groupId: groupId, zoneId: zoneId)
+                                )
+                            case .privacyZoneCreate(groupId: let groupId, zoneId: let zoneId, editStep: let editStep, lat: let lat, lng: let lng):
+                                PrivacyZoneCreateScreen(
+                                    path: $mainAppState.userReadyGraph,
+                                    appState: PrivacyZoneCreateScreen.createState(
+                                        groupId: groupId,
+                                        zoneId: zoneId,
+                                        editStep: editStep,
+                                        lat: lat,
+                                        lng: lng
+                                    )
+                                )
                             case .freePlanInfo: FreePlanInfoScreen(path: $mainAppState.userReadyGraph)
                             case .locationHistorySettings(groupId: let groupId): LocationHistoryDeleteScreen(path: $mainAppState.userReadyGraph, appState: LocationHistoryDeleteScreen.createState(groupId: groupId))
                             case .personalSpace: PersonalSpaceScreen(path: $mainAppState.userReadyGraph, appState: PersonalSpaceScreen.createState())

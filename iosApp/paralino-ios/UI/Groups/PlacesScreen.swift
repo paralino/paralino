@@ -30,7 +30,7 @@ struct PlacesScreen: View {
                         bottom: safeAreaInsets.bottom
                     ),
                     addNewPlace: {
-                        path.append(.home(.placeCreate(groupId: appState.groupId, placeId: nil, lat: nil, lng: nil)))
+                        path.append(.home(.placeCreate(groupId: appState.groupId, placeId: nil, editStep: nil, lat: nil, lng: nil)))
                     },
                     openPaywall: {
                         path.append(.settings(.paywall(type: BillingScreenSourceType.upgradeDefault)))

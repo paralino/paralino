@@ -349,6 +349,37 @@ fun BoxScope.MapHomeElementMainCards(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(start = 8.dp, end = 8.dp),
+            visible = readyState != null && readyState.mapHomeScreenFocusType is MapHomeScreenFocusType.PRIVACY_ZONE,
+            enter = slideInVertically(initialOffsetY = { it / 2 }) + fadeIn(),
+            exit = shrinkVertically() + fadeOut()
+        ) {
+            readyState?.focusedPrivacyZone?.let { zoneState ->
+                Box(
+                    modifier = Modifier.padding(bottom = 8.dp)
+                ) {
+                    PlaceListItem(
+                        modifier = Modifier.padding(top = 38.dp),
+                        shadow = 12.dp,
+                        state = zoneState,
+                        hasEndArrow = true,
+                        onClick = { onEvent(MapHomeScreenUiEvent.OnPrivacyZoneClick(zoneState)) }
+                    )
+                    MapCardCloseIconButton(
+                        modifier = Modifier
+                            .align(Alignment.TopEnd)
+                            .padding(end = 8.dp),
+                        onClick = {
+                            onEvent(MapHomeScreenUiEvent.OnCloseFocusedItemClick)
+                        }
+                    )
+                }
+            }
+        }
+
+        AnimatedVisibility(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 8.dp, end = 8.dp),
             visible = readyState != null && readyState.mapHomeScreenFocusType is MapHomeScreenFocusType.MEMBER,
             enter = slideInVertically(initialOffsetY = { it / 2 }) + fadeIn(),
             exit = shrinkVertically() + fadeOut()

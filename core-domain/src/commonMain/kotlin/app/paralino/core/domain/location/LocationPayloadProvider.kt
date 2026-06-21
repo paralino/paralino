@@ -34,6 +34,7 @@ class LocationPayloadProvider(
     private val personalDeviceKeyRotation: IPersonalDeviceCryptoKeyRotation,
     private val cryptoCore: CryptoCore,
     private val approximateLocationObfuscator: ApproximateLocationObfuscator,
+    private val privacyZoneObfuscator: PrivacyZoneObfuscator,
 ) {
 
     private val mutex = Mutex()
@@ -71,34 +72,68 @@ class LocationPayloadProvider(
             is LocationPayloadStatus.Success -> {
                 val status = memberDeviceStatusProvider.getStatus(groupId = groupId, contract = contract)
                 val locationData = safeLet(data, contract) { data, contract ->
-                    val approximateRadius = contract.approximateLocationInMeters
-                    val isSharingApproximate = approximateRadius != null
-                    val adjustedLocation = if (isSharingApproximate) {
+                    var workingLat = data.lat
+                    var workingLng = data.lng
 
-                        if (data.accuracy.isLocationInaccurate()) {
-                            // ignore inaccurate when sharing approximate location since it will cause jumps
-                            // and since location is already spoofed, this just pollutes obfuscator
-                            return@safeLet null
-                        }
-
-                        approximateLocationObfuscator.obfuscate(
+                    val zoneResult = if (!groupId.isPersonalSpace) {
+                        privacyZoneObfuscator.obfuscateIfInsideZone(
                             groupId = groupId,
                             trueLat = data.lat,
                             trueLng = data.lng,
-                            radiusMeters = approximateRadius
-                        )
+                        )?.also { zoneResult ->
+                            workingLat = zoneResult.lat
+                            workingLng = zoneResult.lng
+                        }
                     } else {
                         null
                     }
 
-                    val isApproximate = isSharingApproximate && contract.shareDeviceStatus
+                    val approximateRadius = contract.approximateLocationInMeters
+
+                    if (zoneResult != null || approximateRadius != null) {
+                        if (data.accuracy.isLocationInaccurate()) {
+                            // ignore inaccurate locations since it will cause jumps
+                            // and since location is already spoofed, this just pollutes obfuscators
+                            return@safeLet null
+                        }
+                    }
+
+                    val isInsidePrivacyZone = zoneResult != null
+                    val adjustedCoordinates = if (approximateRadius != null) {
+                        // sharing approximate
+                        if (zoneResult != null && zoneResult.uploadAccuracyMeters < approximateRadius) {
+                            // adjust with approximate only if its radius is bigger than current privacy zone radius
+                            approximateLocationObfuscator.obfuscate(
+                                groupId = groupId,
+                                trueLat = workingLat,
+                                trueLng = workingLng,
+                                radiusMeters = approximateRadius
+                            )
+                        } else {
+                            null
+                        }
+                    } else {
+                        null
+                    }
+
+                    val adjustedAccuracy = if (approximateRadius != null && zoneResult != null) {
+                        maxOf(approximateRadius.toFloat(), zoneResult.uploadAccuracyMeters.toFloat())
+                    } else {
+                        approximateRadius?.toFloat()
+                            ?: zoneResult?.uploadAccuracyMeters?.toFloat()
+                            ?: data.accuracy
+                    }
+
+                    val isSharingInPrivacyZone = isInsidePrivacyZone && contract.shareDeviceStatus && zoneResult.shareStatus
+                    val isSharingApproximate = (approximateRadius != null || isInsidePrivacyZone) && contract.shareDeviceStatus
+                    val isApproximate = isSharingApproximate || isSharingInPrivacyZone
 
                     LocationDataModel(
                         timeUTC = data.timeUTC,
                         endTimeUTC = contract.endTimeUTC?.takeIf { contract.shareDeviceStatus },
-                        lat = (adjustedLocation?.location?.lat ?: data.lat).roundToPrecision(decimalPlaces = 6),
-                        lng = (adjustedLocation?.location?.lng ?: data.lng).roundToPrecision(decimalPlaces = 6),
-                        accuracy = adjustedLocation?.radiusMeters?.toFloat() ?: data.accuracy,
+                        lat = (adjustedCoordinates?.location?.lat ?: workingLat).roundToPrecision(decimalPlaces = 6),
+                        lng = (adjustedCoordinates?.location?.lng ?: workingLng).roundToPrecision(decimalPlaces = 6),
+                        accuracy = adjustedAccuracy,
                         speed = data.speed?.takeIf {
                             contract.shareSpeed && it != 0f && !isApproximate
                         },
@@ -107,6 +142,12 @@ class LocationPayloadProvider(
                         },
                         isMasked = false,
                         isApproximate = isApproximate,
+                        isInPrivacyZone = isSharingInPrivacyZone,
+                        privacyZoneMessage = if (isSharingInPrivacyZone) {
+                            zoneResult.message
+                        } else {
+                            null
+                        }
                     )
                 }
 

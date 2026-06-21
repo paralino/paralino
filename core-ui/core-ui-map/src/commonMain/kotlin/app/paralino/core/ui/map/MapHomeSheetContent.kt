@@ -95,6 +95,7 @@ fun MapHomeSheetContent(
     readyState: MapHomeScreenState.Ready,
     members: List<GroupMemberItemState>,
     places: List<PlaceListItemData>,
+    privacyZones: List<PlaceListItemData>,
     onMapGroupInfoHeightChange: (Float) -> Unit,
     onEvent: (MapHomeScreenUiEvent) -> Unit,
     onWholeContentClick: () -> Unit,
@@ -209,6 +210,7 @@ fun MapHomeSheetContent(
             SheetTabs(
                 modifier = Modifier
                     .padding(top = 6.dp)
+                    .horizontalScroll(rememberScrollState())
                     .padding(horizontal = 20.dp)
                     .align(Alignment.Start),
                 readyState = readyState,
@@ -252,6 +254,7 @@ fun MapHomeSheetContent(
                     SheetTabs(
                         modifier = Modifier
                             .padding(bottom = 10.dp)
+                            .horizontalScroll(rememberScrollState())
                             .align(Alignment.Start),
                         readyState = readyState,
                         contentAlpha = contentAlpha,
@@ -270,7 +273,7 @@ fun MapHomeSheetContent(
                 this.item { Spacer(modifier = Modifier.size(10.dp)) }
             }
 
-            when (readyState?.mapSheetSelectedContentType) {
+            when (readyState.mapSheetSelectedContentType) {
                 MapSheetSelectedContentType.PLACES -> {
                     placesList(
                         isPersonalSpace = readyState.isPersonalSpace,
@@ -283,6 +286,21 @@ fun MapHomeSheetContent(
                         },
                         onPlaceClick = {
                             onEvent(MapHomeScreenUiEvent.OnPlaceClick(it))
+                        }
+                    )
+                }
+
+                MapSheetSelectedContentType.PRIVACY_ZONES -> {
+                    privacyZonesList(
+                        zones = privacyZones,
+                        onCreateZone = {
+                            onEvent(MapHomeScreenUiEvent.OnOpenCreatePrivacyZoneScreen(location = null))
+                        },
+                        onOpenZones = {
+                            onEvent(MapHomeScreenUiEvent.OnOpenPrivacyZonesScreen)
+                        },
+                        onZoneClick = {
+                            onEvent(MapHomeScreenUiEvent.OnPrivacyZoneClick(it))
                         }
                     )
                 }
@@ -303,8 +321,6 @@ fun MapHomeSheetContent(
                         }
                     )
                 }
-
-                null -> {}
             }
         }
     }
@@ -319,15 +335,14 @@ private fun SheetTabs(
 ) {
     Row(
         modifier = modifier
-            .horizontalScroll(rememberScrollState())
             .alpha(contentAlpha),
         verticalAlignment = Alignment.CenterVertically
     ) {
         if (readyState.isPersonalSpace) {
             MapBottomSheetTab(
                 modifier = Modifier,
-                selected = readyState?.mapSheetSelectedContentType == MapSheetSelectedContentType.MEMBERS,
-                focused = readyState?.mapHomeScreenFocusType?.areMembersFocused == true,
+                selected = readyState.mapSheetSelectedContentType == MapSheetSelectedContentType.MEMBERS,
+                focused = readyState.mapHomeScreenFocusType.areMembersFocused,
                 text = MR.strings.group_member_devices_section_title.localizedString(),
                 icon = CoreAppIcons.PhoneAndroid.asPainterResource(),
                 onClick = {
@@ -337,8 +352,8 @@ private fun SheetTabs(
         } else {
             MapBottomSheetTab(
                 modifier = Modifier,
-                selected = readyState?.mapSheetSelectedContentType == MapSheetSelectedContentType.MEMBERS,
-                focused = readyState?.mapHomeScreenFocusType?.areMembersFocused == true,
+                selected = readyState.mapSheetSelectedContentType == MapSheetSelectedContentType.MEMBERS,
+                focused = readyState.mapHomeScreenFocusType.areMembersFocused,
                 text = MR.strings.group_details_section_members_title.localizedString(),
                 icon = CoreAppIcons.Group.asPainterResource(),
                 onClick = {
@@ -346,17 +361,32 @@ private fun SheetTabs(
                 }
             )
         }
+
         Spacer(modifier = Modifier.size(8.dp))
         MapBottomSheetTab(
             modifier = Modifier,
-            selected = readyState?.mapSheetSelectedContentType == MapSheetSelectedContentType.PLACES,
-            focused = readyState?.mapHomeScreenFocusType?.arePlacesFocused == true,
+            selected = readyState.mapSheetSelectedContentType == MapSheetSelectedContentType.PLACES,
+            focused = readyState.mapHomeScreenFocusType.arePlacesFocused,
             text = MR.strings.places_list_screen_title.localizedString(),
             icon = CoreAppIcons.MapsHomeWork.asPainterResource(),
             onClick = {
                 onEvent(MapHomeScreenUiEvent.OnFocusOnPlacesClick)
             }
         )
+
+        if (readyState.privacyZones.isNotEmpty()) {
+            Spacer(modifier = Modifier.size(8.dp))
+            MapBottomSheetTab(
+                modifier = Modifier,
+                selected = readyState.mapSheetSelectedContentType == MapSheetSelectedContentType.PRIVACY_ZONES,
+                focused = readyState.mapHomeScreenFocusType.arePrivacyZonesFocused,
+                text = MR.strings.privacy_zones_list_screen_title.localizedString(),
+                icon = CoreAppIcons.PrivacyZone.asPainterResource(),
+                onClick = {
+                    onEvent(MapHomeScreenUiEvent.OnFocusOnPrivacyZonesClick)
+                }
+            )
+        }
     }
 }
 
@@ -496,6 +526,48 @@ private fun LazyListScope.placesList(
         }
     }
 }
+
+private fun LazyListScope.privacyZonesList(
+    zones: List<PlaceListItemData>,
+    onCreateZone: () -> Unit,
+    onOpenZones: () -> Unit,
+    onZoneClick: (PlaceListItemData) -> Unit
+) {
+    if (zones.isEmpty()) {
+        this.item {
+            DefaultEmptyState(
+                content = stringResource(MR.strings.privacy_zones_empty_state_info),
+                icon = CoreAppIcons.PrivacyZone.asPainterResource(),
+                buttonText = stringResource(MR.strings.privacy_zones_create_button_create),
+                buttonIcon = CoreAppIcons.Add.asPainterResource()
+            ) {
+                onCreateZone()
+            }
+        }
+    } else {
+        this.itemsIndexed(
+            items = zones,
+            key = { index, item -> item.id }
+        ) { index, itemState ->
+            if (index > 0)
+                Spacer(modifier = Modifier.size(8.dp))
+            PlaceListItem(
+                state = itemState,
+                hasEndArrow = false,
+                backgroundColor = MaterialTheme.colors.surface,
+                onClick = { onZoneClick(itemState) }
+            )
+        }
+        this.item(key = "zones_list") {
+            AddNewActionButton(
+                modifier = Modifier,
+                text = stringResource(MR.strings.button_showAll),
+                action = onOpenZones
+            )
+        }
+    }
+}
+
 
 @Composable
 private fun AddNewActionButton(

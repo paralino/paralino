@@ -7,6 +7,7 @@ import app.paralino.core.models.location.MemberDeviceOnlineStatusType
 import app.paralino.core.models.location.MemberDeviceStatusType
 import app.paralino.core.models.location.MemberLocation
 import app.paralino.core.models.location.MemberModel
+import app.paralino.core.models.privacyzones.GroupPrivacyZone
 import app.paralino.core.presentation.map.FocusedMarkerData
 import app.paralino.core.presentation.map.MapPinType
 import app.paralino.core.provider.DistanceType
@@ -170,7 +171,9 @@ data class GroupMemberItemLocationState constructor(
     val lastLocationPing: String?,
     val lastStatusPing: String?,
     val accuracyMeters: Float?,
-    val isApproximate: Boolean = false,
+    val isApproximate: Boolean,
+    val isInPrivacyZone: Boolean,
+    val privacyZoneMessage: String?,
     val deviceStatus: MemberDeviceStatusType?,
     val onlineStatus: MemberDeviceOnlineStatusType?,
     val networkType: NetworkType?,
@@ -214,6 +217,8 @@ data class GroupMemberItemLocationState constructor(
         lastStatusPing = formatter.getLastStatusPing(memberLocation),
         accuracyMeters = memberLocation.locationData.data?.accuracy,
         isApproximate = memberLocation.locationData.data?.isApproximate == true,
+        isInPrivacyZone = memberLocation.locationData.data?.isInPrivacyZone == true,
+        privacyZoneMessage = memberLocation.locationData.data?.privacyZoneMessage,
         deviceStatus = memberLocation.locationAwareStatusType,
         onlineStatus = memberLocation.status.data?.onlineStatus,
         networkType = memberLocation.status.data?.networkType,

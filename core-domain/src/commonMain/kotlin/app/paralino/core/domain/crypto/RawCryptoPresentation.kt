@@ -18,6 +18,7 @@ import app.paralino.core.repo.base.AppConfigRepository
 import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.location.LocationLocalDataSource
 import app.paralino.core.repo.places.PlacesLocalDataSource
+import app.paralino.core.repo.privacyzones.PrivacyZonesLocalDataSource
 import app.paralino.core.repo.user.PersonalDevicesLocalDataSource
 import app.paralino.core.repo.user.UserConfigRepository
 import app.paralino.core.repo.user.UserLocalDataSource
@@ -30,6 +31,7 @@ import kotlinx.coroutines.flow.map
 
 class RawCryptoPresentation constructor(
     private val placeLocal: PlacesLocalDataSource,
+    private val privacyZoneLocal: PrivacyZonesLocalDataSource,
     private val groupLocal: UserGroupLocalDataSource,
     private val memberLocal: LocationLocalDataSource,
     private val userLocal: UserLocalDataSource,
@@ -98,6 +100,28 @@ class RawCryptoPresentation constructor(
                         BaseRemoteModule.prettyPrintFormatter.encodeToString(it)
                     },
                     type = RawPresentationDataType.GroupPlacePresentation(placeId)
+                )
+            }
+            .map { RawPresentationModel(subtitle = null, sections = listOf(it)) }
+    }
+
+    fun getGroupPrivacyZoneRawPresentation(privacyZoneId: String): Flow<RawPresentationModel> {
+        return privacyZoneLocal.getPrivacyZoneRawPresentation(privacyZoneId)
+            .map {
+                RawPresentationModelSection(
+                    title = it.second.nameOrNull?.let { name -> "**$name**" } ?: "---",
+                    subtitle = null,
+                    decryptedDataSubtitle = null,
+                    contentIdInfo = buildList {
+                        if (it.first.ownerUserId == appPrefs.userId) {
+                            add("Privacy zone ID: **$privacyZoneId**")
+                        }
+                    }.map { ContentIdItem(it) },
+                    rawData = it.first.data,
+                    decryptedData = it.second.data.mapSuccess { zoneData ->
+                        BaseRemoteModule.prettyPrintFormatter.encodeToString(zoneData)
+                    },
+                    type = RawPresentationDataType.GroupPrivacyZonePresentation(privacyZoneId)
                 )
             }
             .map { RawPresentationModel(subtitle = null, sections = listOf(it)) }

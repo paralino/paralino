@@ -257,7 +257,8 @@ class GroupSettingsViewModel(
         val currentPlan = planConfig.copy(
             membersLimit = group.membersLimit(config),
             devicesLimit = group.devicesLimit(config),
-            placesLimit = group.placesLimit(config) ?: -1
+            placesLimit = group.placesLimit(config) ?: -1,
+            privacyZonesLimit = group.privacyZonesLimit(config) ?: -1
         )
         return FeatureTableState.constructFeaturesTable(
             isGroupPlanOnly = true,

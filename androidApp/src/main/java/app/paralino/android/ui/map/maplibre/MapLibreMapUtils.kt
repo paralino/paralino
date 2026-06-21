@@ -159,6 +159,7 @@ fun CameraState.focusOnMap(
 ) {
     val focus = when (focusType) {
         is MapHomeScreenFocusType.PLACE,
+        is MapHomeScreenFocusType.PRIVACY_ZONE,
         is MapHomeScreenFocusType.MEMBER -> {
             listOfNotNull(
                 markers.firstOrNull { it.markerId == focusedMarker?.markerId }
@@ -167,6 +168,10 @@ fun CameraState.focusOnMap(
 
         MapHomeScreenFocusType.ALL_PLACES -> {
             markers.filter { it.pinType == MapPinType.PLACE }
+        }
+
+        MapHomeScreenFocusType.ALL_PRIVACY_ZONES -> {
+            markers.filter { it.pinType == MapPinType.PRIVACY_ZONE }
         }
 
         MapHomeScreenFocusType.ALL_MEMBERS -> {
@@ -184,6 +189,10 @@ fun CameraState.focusOnMap(
         }
 
         MapHomeScreenFocusType.ALL_PLACES -> {
+            if (markers.size == 1) 40 else 60
+        }
+
+        MapHomeScreenFocusType.ALL_PRIVACY_ZONES -> {
             if (markers.size == 1) 40 else 60
         }
 

@@ -10,6 +10,7 @@ sealed class RawPresentationDataType() {
             is GroupPresentation -> "group"
             is GroupMemberPresentation -> "group_member"
             is GroupPlacePresentation -> "place"
+            is GroupPrivacyZonePresentation -> "privacy_zone"
             is LocationHistoryPointPresentation -> "history"
             UserPresentation -> "user"
             PersonalSpacePresentation -> "space"
@@ -21,6 +22,7 @@ sealed class RawPresentationDataType() {
                 "group" -> GroupPresentation(payload)
                 "group_member" -> GroupMemberPresentation(payload)
                 "place" -> GroupPlacePresentation(payload)
+                "privacy_zone" -> GroupPrivacyZonePresentation(payload)
                 "history" -> {
                     try {
                         BaseRemoteModule.formatter.decodeFromString<LocationHistoryPointPresentation?>(payload)
@@ -40,6 +42,7 @@ sealed class RawPresentationDataType() {
     data class GroupPresentation(val groupId: String) : RawPresentationDataType()
     data class GroupMemberPresentation(val memberId: String) : RawPresentationDataType()
     data class GroupPlacePresentation(val placeId: String) : RawPresentationDataType()
+    data class GroupPrivacyZonePresentation(val privacyZoneId: String) : RawPresentationDataType()
 
     @Serializable
     data class LocationHistoryPointPresentation(

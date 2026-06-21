@@ -3,6 +3,7 @@ package app.paralino.core.ui.places
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,6 +15,7 @@ import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -22,12 +24,16 @@ import androidx.compose.ui.draw.dropShadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import app.paralino.core.models.PlaceZoneExpirationStatus
 import app.paralino.core.presentation.common.PlaceListItemData
 import app.paralino.core.resources.CoreAppIcons
 import app.paralino.core.resources.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.ImageModelImage
+import app.paralino.core.ui.theme.AppColors
+import app.paralino.core.utils.extensions.annotatedBoldCompose
 import app.paralino.core.utils.extensions.conditional
 
 @Composable
@@ -73,11 +79,48 @@ fun PlaceListItem(
         )
 
         Spacer(modifier = Modifier.size(16.dp))
-        Text(
-            text = state.name,
-            style = MaterialTheme.typography.h6.copy(fontWeight = FontWeight.Normal),
-            modifier = Modifier.weight(1f)
-        )
+        Column(
+            modifier = Modifier
+                .weight(1f)
+        ) {
+            Text(
+                text = state.name,
+                style = MaterialTheme.typography.h6.copy(
+                    fontWeight = FontWeight.Normal,
+                    textAlign = TextAlign.Start
+                ),
+                modifier = Modifier
+            )
+
+            when (val status = state.expirationStatus) {
+                is PlaceZoneExpirationStatus.ActiveAlways -> {
+                    if (status.status.isNotBlank() && status.showStatus) {
+                        Text(
+                            modifier = Modifier,
+                            text = status.status.annotatedBoldCompose(),
+                            style = MaterialTheme.typography.caption.copy(
+                                textAlign = TextAlign.Start,
+                                color = contentColorFor(backgroundColor).copy(alpha = 0.7f)
+                            )
+                        )
+                    }
+                }
+
+                is PlaceZoneExpirationStatus.WithExpiration -> {
+                    Text(
+                        modifier = Modifier,
+                        text = status.status.annotatedBoldCompose(),
+                        style = MaterialTheme.typography.caption.copy(
+                            textAlign = TextAlign.Start,
+                            color = when (status.isExpired) {
+                                true -> AppColors.redMain.copy(alpha = 0.7f)
+                                false -> contentColorFor(backgroundColor).copy(alpha = ContentAlpha.disabled)
+                            }
+                        )
+                    )
+                }
+            }
+        }
         if (hasEndArrow) {
             Icon(
                 modifier = Modifier

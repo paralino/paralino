@@ -14,6 +14,8 @@ import app.paralino.core.domain.notifications.processors.PlaceActivityNotificati
 import app.paralino.core.domain.notifications.processors.PlaceCreatedNotificationProcessor
 import app.paralino.core.domain.notifications.processors.PlaceDeletedNotificationProcessor
 import app.paralino.core.domain.notifications.processors.PlaceUpdatedNotificationProcessor
+import app.paralino.core.domain.notifications.processors.PrivacyZoneCreatedNotificationProcessor
+import app.paralino.core.domain.notifications.processors.PrivacyZoneSyncNotificationProcessor
 import app.paralino.core.domain.user.PersonalSpaceRefreshUseCase
 import app.paralino.core.logg
 import app.paralino.core.models.base.BackendDatabaseType
@@ -34,6 +36,8 @@ class PushNotificationHandler constructor(
     private val placeCreatedNotification: PlaceCreatedNotificationProcessor,
     private val placeDeletedNotification: PlaceDeletedNotificationProcessor,
     private val placeUpdatedNotification: PlaceUpdatedNotificationProcessor,
+    private val privacyZoneCreatedNotification: PrivacyZoneCreatedNotificationProcessor,
+    private val privacyZoneSyncNotification: PrivacyZoneSyncNotificationProcessor,
     private val placeActivityNotification: PlaceActivityNotificationProcessor,
     private val locationRequestNotification: LocationRequestNotificationProcessor,
     private val lowBatteryNotificationProcessor: LowBatteryNotificationProcessor,
@@ -227,6 +231,10 @@ class PushNotificationHandler constructor(
             PushNotificationType.GROUP_PLACE_UPDATED -> placeUpdatedNotification
             PushNotificationType.GROUP_PLACE_DELETED -> placeDeletedNotification
 
+            PushNotificationType.GROUP_PRIVACY_ZONE_CREATED -> privacyZoneCreatedNotification
+            PushNotificationType.GROUP_PRIVACY_ZONE_UPDATED -> privacyZoneSyncNotification
+            PushNotificationType.GROUP_PRIVACY_ZONE_DELETED -> privacyZoneSyncNotification
+
             PushNotificationType.PERSONAL_PLACE_ALERT -> placeActivityNotification
             PushNotificationType.PERSONAL_PLACE_CREATED -> placeCreatedNotification
             PushNotificationType.PERSONAL_PLACE_UPDATED -> placeUpdatedNotification
@@ -249,6 +257,10 @@ class PushNotificationHandler constructor(
             PushNotificationType.GROUP_PLACE_CREATED -> groupPresenter
             PushNotificationType.GROUP_PLACE_UPDATED -> null
             PushNotificationType.GROUP_PLACE_DELETED -> null
+
+            PushNotificationType.GROUP_PRIVACY_ZONE_CREATED -> groupPresenter
+            PushNotificationType.GROUP_PRIVACY_ZONE_UPDATED -> null
+            PushNotificationType.GROUP_PRIVACY_ZONE_DELETED -> null
 
             PushNotificationType.PERSONAL_PLACE_ALERT -> placePresenter
             PushNotificationType.PERSONAL_PLACE_CREATED -> groupPresenter

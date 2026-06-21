@@ -76,7 +76,7 @@ import app.paralino.core.ui.components.DataInfoChip
 import app.paralino.core.ui.components.EmbeddedSlider
 import app.paralino.core.ui.components.EmbeddedSliderSize
 import app.paralino.core.ui.components.ImageModelImage
-import app.paralino.core.ui.groups.GroupStatusTag
+import app.paralino.core.ui.groups.components.GroupStatusTag
 import app.paralino.core.presentation.common.GroupStatusTagType
 import app.paralino.core.ui.groups.components.GroupMemberActionButton
 import app.paralino.core.ui.groups.components.NetworkTypeIcon

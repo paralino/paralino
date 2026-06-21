@@ -10,6 +10,7 @@ import app.paralino.core.domain.location.LocationRequestUseCase
 import app.paralino.core.domain.location.history.DeleteLocationHistoryEntryUseCase
 import app.paralino.core.domain.location.history.GetLocationHistoryUseCase
 import app.paralino.core.domain.location.history.RefreshLocationHistoryUseCase
+import app.paralino.core.domain.privacyzone.GetPrivacyZonesUseCase
 import app.paralino.core.domain.user.PersonalSpaceRefreshUseCase
 import app.paralino.core.domain.user.PremiumStatusManager
 import app.paralino.core.logg
@@ -78,6 +79,7 @@ class MapHomeViewModel constructor(
     private val userRepository: UserRepository,
     private val personalCodeRepo: PersonalCodesRepository,
     private val placesRepo: PlacesRepository,
+    private val getPrivacyZones: GetPrivacyZonesUseCase,
     private val groupPreRefresh: GroupPreRefreshUseCase,
     private val personalSpaceRefresh: PersonalSpaceRefreshUseCase,
     private val locationRequestUseCase: LocationRequestUseCase,
@@ -438,6 +440,7 @@ class MapHomeViewModel constructor(
             mapStateMapper.buildReadyState(
                 groupOrSpace = GroupWithMembersOrUserSpace.PersonalSpace(space),
                 places = places,
+                privacyZones = emptyList(),
                 activeSharingContracts = sharingContracts,
                 userData = userData,
                 previousState = _uiState.value.asReady()
@@ -458,10 +461,11 @@ class MapHomeViewModel constructor(
             deviceApiProvider.locationStatusProvider.status,
             groupRepo.getGroupWithMembers(groupId = groupId),
             placesRepo.getPlacesForGroupLocally(groupId = groupId),
+            getPrivacyZones.getPrivacyZonesForGroupLocally(groupId = groupId),
             locationFocusManager.getSharingContracts(),
             userRepository.localUser.map { it.data?.data }.distinctUntilChanged(),
             locationCacheRepository.lastLocationFlow,
-        ) { _, locationStatus, group, places, sharingContracts, userData, myLocation ->
+        ) { _, locationStatus, group, places, privacyZones, sharingContracts, userData, myLocation ->
 
             if (group == null || userData == null) {
                 val mapProvider = premiumStatusManager.defaultMapProvider()
@@ -481,6 +485,7 @@ class MapHomeViewModel constructor(
             mapStateMapper.buildReadyState(
                 groupOrSpace = GroupWithMembersOrUserSpace.Group(group),
                 places = places,
+                privacyZones = privacyZones,
                 activeSharingContracts = sharingContracts,
                 userData = userData,
                 previousState = _uiState.value.asReady()

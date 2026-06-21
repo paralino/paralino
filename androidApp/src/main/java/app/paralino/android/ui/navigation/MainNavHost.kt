@@ -31,6 +31,10 @@ import app.paralino.android.ui.places.CreatePlaceScreen
 import app.paralino.android.ui.places.PlaceAlertsSettingsScreen
 import app.paralino.android.ui.places.PlaceDetailScreen
 import app.paralino.android.ui.places.PlacesScreen
+import app.paralino.android.ui.privacyzones.CreatePrivacyZoneScreen
+import app.paralino.android.ui.privacyzones.PrivacyZoneDetailScreen
+import app.paralino.android.ui.privacyzones.PrivacyZonesScreen
+import app.paralino.core.ui.components.DefaultEmptyState
 import app.paralino.android.ui.settings.AppSettingsScreen
 import app.paralino.android.ui.settings.AppStatusDebugScreen
 import app.paralino.android.ui.settings.BlocklistScreen
@@ -49,10 +53,12 @@ import app.paralino.android.ui.settings.profile.ChangePasswordScreen
 import app.paralino.android.ui.settings.profile.ConvertAccountScreen
 import app.paralino.android.ui.settings.profile.EditProfileScreen
 import app.paralino.android.ui.share.SharingStartScreen
+import app.paralino.core.MR
 import app.paralino.core.presentation.login.LoginScreenState
 import app.paralino.core.presentation.login.LoginScreenUiType
 import app.paralino.core.presentation.places.detail.PlaceSensitivityViewModel
 import app.paralino.core.models.settings.RawPresentationDataType
+import dev.icerock.moko.resources.compose.stringResource
 import app.paralino.core.presentation.settings.generic.maps.MapsProviderViewModel
 import app.paralino.core.presentation.settings.generic.maps.MapInteractionsViewModel
 import app.paralino.core.presentation.settings.generic.MeasurementSystemViewModel
@@ -60,6 +66,8 @@ import app.paralino.core.presentation.settings.generic.NotificationsGroupingView
 import app.paralino.core.presentation.settings.generic.PlaceSearchSettingsViewModel
 import app.paralino.android.presentation.settings.generic.NotificationSocketSettingsViewModel
 import app.paralino.core.presentation.billing.BillingScreenSourceType
+import app.paralino.core.presentation.places.create.CreatePlaceScreenStep
+import app.paralino.core.presentation.privacyzones.create.CreatePrivacyZoneScreenStep
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -138,6 +146,41 @@ fun NavGraphBuilder.homeGraph(
                 it.arguments?.getString(AppScreen.MainHome.PlacesList.argumentOnboarding)?.toBoolean() ?: false
             PlacesScreen(appState = appState, groupId = groupId, isOnboarding = onboarding)
         }
+        composable(AppScreen.MainHome.PrivacyZonesList.routeSignature) {
+            val groupId =
+                it.arguments?.getString(AppScreen.MainHome.PrivacyZonesList.argumentGroupId)!!
+            val onboarding =
+                it.arguments?.getString(AppScreen.MainHome.PrivacyZonesList.argumentOnboarding)?.toBoolean() ?: false
+            PrivacyZonesScreen(appState = appState, groupId = groupId, isOnboarding = onboarding)
+        }
+        composable(AppScreen.MainHome.PrivacyZoneCreate.routeSignature) {
+            val groupId = it.arguments?.getString(AppScreen.MainHome.PrivacyZoneCreate.argumentGroupId)!!
+            val zoneId = it.arguments?.getString(AppScreen.MainHome.PrivacyZoneCreate.argumentZoneId)
+            val editStep = it.arguments?.getString(AppScreen.MainHome.PrivacyZoneCreate.argumentEditStep)?.let {
+                CreatePrivacyZoneScreenStep.fromKey(it)
+            }
+            val lat = it.arguments?.takeIf { it.containsKey(AppScreen.MainHome.PrivacyZoneCreate.argumentLat) }
+                ?.getString(AppScreen.MainHome.PrivacyZoneCreate.argumentLat)?.toDoubleOrNull()
+            val lng = it.arguments?.takeIf { it.containsKey(AppScreen.MainHome.PrivacyZoneCreate.argumentLng) }
+                ?.getString(AppScreen.MainHome.PrivacyZoneCreate.argumentLng)?.toDoubleOrNull()
+            CreatePrivacyZoneScreen(
+                appState = appState,
+                groupId = groupId,
+                zoneId = zoneId,
+                editStep = editStep,
+                lat = lat,
+                lng = lng
+            )
+        }
+        composable(AppScreen.MainHome.PrivacyZoneDetail.routeSignature) {
+            val groupId = it.arguments?.getString(AppScreen.MainHome.PrivacyZoneDetail.argumentGroupId)!!
+            val zoneId = it.arguments?.getString(AppScreen.MainHome.PrivacyZoneDetail.argumentZoneId)!!
+            PrivacyZoneDetailScreen(
+                appState = appState,
+                groupId = groupId,
+                zoneId = zoneId
+            )
+        }
         composable(AppScreen.MainHome.PlaceDetail.routeSignature) {
             val groupId =
                 it.arguments?.getString(AppScreen.MainHome.PlaceDetail.argumentGroupId)!!
@@ -155,6 +198,9 @@ fun NavGraphBuilder.homeGraph(
         composable(AppScreen.MainHome.PlaceCreate.routeSignature) {
             val groupId = it.arguments?.getString(AppScreen.MainHome.PlaceCreate.argumentGroupId)!!
             val placeId = it.arguments?.getString(AppScreen.MainHome.PlaceCreate.argumentPlaceId)
+            val editStep = it.arguments?.getString(AppScreen.MainHome.PlaceCreate.argumentEditStep)?.let {
+                CreatePlaceScreenStep.fromKey(it)
+            }
             val lat = it.arguments?.takeIf { it.containsKey(AppScreen.MainHome.PlaceCreate.argumentLat) }
                 ?.getString(AppScreen.MainHome.PlaceCreate.argumentLat)?.toDoubleOrNull()
             val lng = it.arguments?.takeIf { it.containsKey(AppScreen.MainHome.PlaceCreate.argumentLng) }
@@ -163,6 +209,7 @@ fun NavGraphBuilder.homeGraph(
                 appState = appState,
                 groupId = groupId,
                 placeId = placeId,
+                editStep = editStep,
                 lat = lat.takeIf { lng != null },
                 lng = lng.takeIf { lat != null }
             )

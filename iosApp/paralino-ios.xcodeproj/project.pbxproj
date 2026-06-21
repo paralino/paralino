@@ -98,6 +98,9 @@
 		25EFDE2A2A5B0DCA00522293 /* GroupListItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25EFDE292A5B0DCA00522293 /* GroupListItem.swift */; };
 		25EFDE2C2A5B250600522293 /* GroupPickerSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25EFDE2B2A5B250600522293 /* GroupPickerSheet.swift */; };
 		25EFDE302A5B45C300522293 /* MapMarker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25EFDE2F2A5B45C300522293 /* MapMarker.swift */; };
+		25F0AA022F5D6E3F008E9FF0 /* PrivacyZonesScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25F0AA012F5D6E3F008E9FF0 /* PrivacyZonesScreen.swift */; };
+		25F0AA042F5D6E3F008E9FF0 /* PrivacyZoneDetailScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25F0AA032F5D6E3F008E9FF0 /* PrivacyZoneDetailScreen.swift */; };
+		25F0AA062F5D6E3F008E9FF0 /* PrivacyZoneCreateScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25F0AA052F5D6E3F008E9FF0 /* PrivacyZoneCreateScreen.swift */; };
 		25F234C92CE0E77A007208CD /* SmallActionButtonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25F234C82CE0E773007208CD /* SmallActionButtonView.swift */; };
 		25F234CB2CE12F16007208CD /* PlanLimitCount.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25F234CA2CE12F12007208CD /* PlanLimitCount.swift */; };
 		25F234CD2CE12FAA007208CD /* GroupPickerGroupCreateSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25F234CC2CE12F9D007208CD /* GroupPickerGroupCreateSection.swift */; };
@@ -284,6 +287,9 @@
 		25EFDE292A5B0DCA00522293 /* GroupListItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupListItem.swift; sourceTree = "<group>"; };
 		25EFDE2B2A5B250600522293 /* GroupPickerSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupPickerSheet.swift; sourceTree = "<group>"; };
 		25EFDE2F2A5B45C300522293 /* MapMarker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapMarker.swift; sourceTree = "<group>"; };
+		25F0AA012F5D6E3F008E9FF0 /* PrivacyZonesScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrivacyZonesScreen.swift; sourceTree = "<group>"; };
+		25F0AA032F5D6E3F008E9FF0 /* PrivacyZoneDetailScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrivacyZoneDetailScreen.swift; sourceTree = "<group>"; };
+		25F0AA052F5D6E3F008E9FF0 /* PrivacyZoneCreateScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrivacyZoneCreateScreen.swift; sourceTree = "<group>"; };
 		25F234C82CE0E773007208CD /* SmallActionButtonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmallActionButtonView.swift; sourceTree = "<group>"; };
 		25F234CA2CE12F12007208CD /* PlanLimitCount.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlanLimitCount.swift; sourceTree = "<group>"; };
 		25F234CC2CE12F9D007208CD /* GroupPickerGroupCreateSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupPickerGroupCreateSection.swift; sourceTree = "<group>"; };
@@ -673,6 +679,9 @@
 				2507A9712B5D704B008E9FF0 /* PlaceDetailScreen.swift */,
 				252035C72D311D8900926962 /* PlaceAlertsSettingsScreen.swift */,
 				25BB8A712B63A93B0000CBD5 /* PlaceCreateScreen.swift */,
+				25F0AA012F5D6E3F008E9FF0 /* PrivacyZonesScreen.swift */,
+				25F0AA032F5D6E3F008E9FF0 /* PrivacyZoneDetailScreen.swift */,
+				25F0AA052F5D6E3F008E9FF0 /* PrivacyZoneCreateScreen.swift */,
 				256FCA682BCD445300DCD2FE /* GroupSettingsScreen.swift */,
 				25AC7F462E5F887800A7C57E /* PersonalSpaceSettingsScreen.swift */,
 				25BFB32A2E0D6F9800298B20 /* LocationHistoryDeleteScreen.swift */,
@@ -1200,6 +1209,9 @@
 				25B2DB432A44D7F60007E89D /* SettingsScreen.swift in Sources */,
 				25BFB32B2E0D6F9800298B20 /* LocationHistoryDeleteScreen.swift in Sources */,
 				2507A9702B5D6E3F008E9FF0 /* PlacesScreen.swift in Sources */,
+				25F0AA022F5D6E3F008E9FF0 /* PrivacyZonesScreen.swift in Sources */,
+				25F0AA042F5D6E3F008E9FF0 /* PrivacyZoneDetailScreen.swift in Sources */,
+				25F0AA062F5D6E3F008E9FF0 /* PrivacyZoneCreateScreen.swift in Sources */,
 				25DA00932D307BEE00F705FB /* BatteryNotificationsSettingsScreen.swift in Sources */,
 				25EF802D2CAEABB800DFC890 /* PaywallScreen.swift in Sources */,
 				25395C1F2B630042000394DA /* BaseMapObservableObject.swift in Sources */,

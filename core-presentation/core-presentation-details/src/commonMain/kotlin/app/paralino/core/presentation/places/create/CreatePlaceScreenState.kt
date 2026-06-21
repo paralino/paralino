@@ -19,17 +19,17 @@ import app.paralino.core.provider.current
 import app.paralino.core.provider.localizedString
 import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.extensions.annotatedBold
-import kotlin.text.toFloat
 
 data class CreatePlaceScreenState constructor(
     val groupId: GroupOrSpaceId,
     val isNewPlace: Boolean,
     val screenStep: CreatePlaceScreenStep,
+    val editOnlyCurrentStep: Boolean,
     val name: String,
     val image: ImageModel,
     val nameSuggestions: List<SuggestionSectionChipData>,
     val address: TextFieldValue,
-    val addressUiMode: CreatePlaceAddressSearchUiMode,
+    val addressUiMode: PlaceAddressSearchUiMode,
     val addressSuggestions: List<PlaceAddressSuggestion>,
     val isAddressLoading: Boolean,
     val private: Boolean,
@@ -53,7 +53,7 @@ data class CreatePlaceScreenState constructor(
     val isSatelliteModeActive: Boolean = if (hasSatelliteMode) isSatelliteModeEnabled else false
 
     val hintText: AnnotatedString = when (addressUiMode) {
-        CreatePlaceAddressSearchUiMode.HIDDEN -> {
+        PlaceAddressSearchUiMode.HIDDEN -> {
             when (DeviceType.current) {
                 DeviceType.Android -> {
                     MR.strings.places_create_location_hint_longpress
@@ -69,13 +69,13 @@ data class CreatePlaceScreenState constructor(
             }
         }
 
-        CreatePlaceAddressSearchUiMode.SEARCH_EXPANDED -> {
+        PlaceAddressSearchUiMode.SEARCH_EXPANDED -> {
             MR.strings.places_create_location_hint_searchTap
                 .localizedString()
                 .annotatedBold()
         }
 
-        CreatePlaceAddressSearchUiMode.FULLY_EXPANDED -> {
+        PlaceAddressSearchUiMode.FULLY_EXPANDED -> {
             MR.strings.places_create_location_hint_searchOnly
                 .localizedString()
                 .annotatedBold()
@@ -110,15 +110,16 @@ data class CreatePlaceScreenState constructor(
             return CreatePlaceScreenState(
                 groupId = groupId,
                 isNewPlace = true,
-                screenStep = CreatePlaceScreenStep.NAME_SUGGESTION,
+                screenStep = CreatePlaceScreenStep.NAME_AND_IMAGE,
+                editOnlyCurrentStep = false,
                 name = "",
                 image = ImageModel.emoji(Emojis.circles.random()),
                 nameSuggestions = nameSuggestions,
                 address = TextFieldValue(text = ""),
                 addressUiMode = if (lat == null || lng == null) {
-                    CreatePlaceAddressSearchUiMode.SEARCH_EXPANDED
+                    PlaceAddressSearchUiMode.SEARCH_EXPANDED
                 } else {
-                    CreatePlaceAddressSearchUiMode.HIDDEN
+                    PlaceAddressSearchUiMode.HIDDEN
                 },
                 addressSuggestions = emptyList(),
                 isAddressLoading = false,
@@ -139,11 +140,18 @@ data class CreatePlaceScreenState constructor(
     }
 }
 
-enum class CreatePlaceScreenStep {
-    NAME_SUGGESTION, FULL
+enum class CreatePlaceScreenStep constructor(val key: String) {
+    NAME_AND_IMAGE("name_image"),
+    ADDRESS("address");
+
+    companion object {
+        fun fromKey(key: String?): CreatePlaceScreenStep? {
+            return entries.firstOrNull { it.key == key }
+        }
+    }
 }
 
-enum class CreatePlaceAddressSearchUiMode {
+enum class PlaceAddressSearchUiMode {
     HIDDEN, SEARCH_EXPANDED, FULLY_EXPANDED
 }
 

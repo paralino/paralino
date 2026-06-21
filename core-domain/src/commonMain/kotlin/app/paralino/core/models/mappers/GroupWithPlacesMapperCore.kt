@@ -6,7 +6,8 @@ import app.paralino.core.models.raw.GroupWithMembersAndPlacesRaw
 
 class GroupWithPlacesMapperCore(
     private val groupMapperCore: GroupMapperCore,
-    private val placesMapper: PlaceMapperCore
+    private val placesMapper: PlaceMapperCore,
+    private val privacyZoneMapper: PrivacyZoneMapperCore,
 ) {
     suspend fun remote2CoreWithMembersAndPlaces(model: GroupWithMembersAndPlacesRaw): UserGroupWithMembersAndPlaces {
         val places = model.places.map {
@@ -19,9 +20,14 @@ class GroupWithPlacesMapperCore(
             )
         }
 
+        val privacyZones = model.privacyZones.map {
+            privacyZoneMapper.remote2Core(it)
+        }
+
         return UserGroupWithMembersAndPlaces(
             groupWithMembers = groupMapperCore.remote2CoreWithMembers(model.group),
-            places = places
+            places = places,
+            privacyZones = privacyZones,
         )
     }
 }

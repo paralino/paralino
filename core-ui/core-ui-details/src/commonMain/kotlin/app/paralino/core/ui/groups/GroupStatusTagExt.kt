@@ -28,6 +28,25 @@ fun GroupMemberItemState.toStatusTagType(expanded: Boolean): GroupStatusTagType?
             val tagType = this.statusTag?.toStatusTagType()
             val singleVisibleLocation = this.singleVisibleLocation
             when {
+                singleVisibleLocation?.isInPrivacyZone == true -> {
+                    when (tagType) {
+                        GroupStatusTagType.SHARING_ACTIVE,
+                        GroupStatusTagType.SHARING_ACTIVE_NO_LOCATION,
+                        GroupStatusTagType.SHARING_ACTIVE_NOT_ACCURATE ->
+                            GroupStatusTagType.SHARING_ACTIVE_PRIVACY_ZONE
+
+                        GroupStatusTagType.IDLE,
+                        GroupStatusTagType.IDLE_NOT_ACCURATE ->
+                            GroupStatusTagType.IDLE_PRIVACY_ZONE
+
+                        GroupStatusTagType.INACTIVE,
+                        GroupStatusTagType.INACTIVE_NOT_ACCURATE ->
+                            GroupStatusTagType.INACTIVE_PRIVACY_ZONE
+
+                        else -> tagType
+                    }
+                }
+
                 singleVisibleLocation?.isApproximate == true -> {
                     when (tagType) {
                         GroupStatusTagType.SHARING_ACTIVE,

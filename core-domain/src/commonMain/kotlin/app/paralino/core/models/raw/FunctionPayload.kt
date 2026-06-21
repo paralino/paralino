@@ -163,6 +163,20 @@ data class UpdatePlacePayload constructor(
 )
 
 @Serializable
+data class CreatePrivacyZonePayload(
+    val groupId: String,
+    val userKeyVersion: Long,
+    val data: String,
+)
+
+@Serializable
+data class UpdatePrivacyZonePayload(
+    val privacyZoneId: String,
+    val zoneData: String,
+    val userKeyVersion: Long? = null,
+)
+
+@Serializable
 data class PlaceEventPayload constructor(
     val placeId: String,
     val locationId: String?,

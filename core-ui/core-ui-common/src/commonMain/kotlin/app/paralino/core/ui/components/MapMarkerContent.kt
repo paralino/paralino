@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -103,6 +104,31 @@ fun MapMarkerContent(
                     }
                 )
             }
+        }
+
+        when (state.pinType) {
+            MapPinType.PRIVACY_ZONE -> {
+                Icon(
+                    modifier = Modifier
+                        .size(pinSize / 2)
+                        .background(
+                            color = MaterialTheme.colors.background,
+                            shape = CircleShape
+                        )
+                        .background(
+                            color = AppColors.accentDark.copy(alpha = 0.2f),
+                            shape = CircleShape
+                        )
+                        .padding(1.dp)
+                        .align(Alignment.BottomEnd),
+                    painter = CoreAppIcons.PrivacyZone.asPainterResource(),
+                    tint = AppColors.accentDark,
+                    contentDescription = null
+                )
+            }
+
+            MapPinType.MEMBER,
+            MapPinType.PLACE -> {}
         }
     }
 }

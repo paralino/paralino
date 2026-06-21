@@ -86,6 +86,21 @@ private fun GroupDetailScreen(
                     AppScreen.MainHome.PlacesList.route(groupId)
                 )
             },
+            openPlace = {
+                appState.navController.navigate(
+                    AppScreen.MainHome.PlaceDetail.route(groupId = it.groupOrSpaceId.id, placeId = it.itemId)
+                )
+            },
+            openPrivacyZones = {
+                appState.navController.navigate(
+                    AppScreen.MainHome.PrivacyZonesList.route(groupId = groupId)
+                )
+            },
+            openPrivacyZone = {
+                appState.navController.navigate(
+                    AppScreen.MainHome.PrivacyZoneDetail.route(groupId = it.groupOrSpaceId.id, zoneId = it.itemId)
+                )
+            },
             openGroupSettings = {
                 appState.navController.navigate(
                     AppScreen.MainHome.GroupSettings.route(groupId)

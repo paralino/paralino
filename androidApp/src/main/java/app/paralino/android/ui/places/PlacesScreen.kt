@@ -20,6 +20,8 @@ import app.paralino.android.ui.main.MainAppState
 import app.paralino.android.ui.map.SimpleGenericMapComposable
 import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.core.MR
+import app.paralino.core.models.PlaceZoneExpirationStatus
+import app.paralino.core.models.PlaceZoneType
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.presentation.common.PlaceListItemData
@@ -78,7 +80,8 @@ fun PlacesScreen(
                 appState.navController.navigate(
                     AppScreen.MainHome.PlaceCreate.route(
                         groupId = groupId,
-                        placeId = null
+                        placeId = null,
+                        editStep = null
                     )
                 )
             },
@@ -131,8 +134,10 @@ private fun PlaceListItemPreview() {
             state = PlaceListItemData(
                 id = "",
                 groupOrSpaceId = "".asGroupOrSpaceId(),
+                type = PlaceZoneType.PlaceWithAlert,
                 name = "Home",
                 image = ImageModel.emoji(Emojis.lightBulb),
+                expirationStatus = PlaceZoneExpirationStatus.ActiveAlways(showStatus = false),
                 private = false,
                 lat = 0.0,
                 lng = 0.0,

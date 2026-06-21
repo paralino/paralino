@@ -51,6 +51,7 @@ import kotlin.coroutines.cancellation.CancellationException
 class CreatePlaceViewModel(
     val groupId: String,
     placeId: String?,
+    editStep: CreatePlaceScreenStep?,
     lat: Double? = null,
     lng: Double? = null,
     private val placesRepo: PlacesRepository,
@@ -117,28 +118,16 @@ class CreatePlaceViewModel(
                     )
 
                     else -> value.mapSuccess { place ->
-                        val screenStep = uiSizeState
-                            .filterNotNull()
-                            .distinctUntilChanged()
-                            .map { uiSize ->
-                                if (uiSize.isSmall) {
-                                    CreatePlaceScreenStep.NAME_SUGGESTION
-                                } else {
-                                    CreatePlaceScreenStep.FULL
-                                }
-                            }
-                            .firstOrNull()
-                            ?: CreatePlaceScreenStep.NAME_SUGGESTION
-
                         CreatePlaceScreenState(
                             groupId = groupId.asGroupOrSpaceId(),
                             isNewPlace = false,
-                            screenStep = screenStep,
+                            screenStep = editStep ?: CreatePlaceScreenStep.NAME_AND_IMAGE,
+                            editOnlyCurrentStep = editStep != null,
                             name = place.data.data?.name ?: "---",
                             image = place.data.data?.image ?: ImageModel.emoji(Emojis.lock),
                             nameSuggestions = emptyList(),
                             address = TextFieldValue(text = ""),
-                            addressUiMode = CreatePlaceAddressSearchUiMode.HIDDEN,
+                            addressUiMode = PlaceAddressSearchUiMode.HIDDEN,
                             addressSuggestions = emptyList(),
                             isAddressLoading = false,
                             hasNameError = false,
@@ -170,10 +159,15 @@ class CreatePlaceViewModel(
             }
 
             CreatePlaceScreenUiEvent.CreatePlace -> {
-                when (uiState.value.data?.screenStep) {
-                    CreatePlaceScreenStep.NAME_SUGGESTION -> goToFinalCreateStep()
-                    CreatePlaceScreenStep.FULL -> tryCreatePlace()
-                    null -> {}
+                if (placeFlow.value.data != null && uiState.value.data?.editOnlyCurrentStep == true) {
+                    // update current step
+                    tryCreatePlace()
+                } else {
+                    when (uiState.value.data?.screenStep) {
+                        CreatePlaceScreenStep.NAME_AND_IMAGE -> goToFinalCreateStep()
+                        CreatePlaceScreenStep.ADDRESS -> tryCreatePlace()
+                        null -> {}
+                    }
                 }
             }
 
@@ -219,12 +213,12 @@ class CreatePlaceViewModel(
                         it.copy(
                             addressUiMode = if (event.isFocused) {
                                 if (it.addressSuggestions.isEmpty()) {
-                                    CreatePlaceAddressSearchUiMode.SEARCH_EXPANDED
+                                    PlaceAddressSearchUiMode.SEARCH_EXPANDED
                                 } else {
-                                    CreatePlaceAddressSearchUiMode.FULLY_EXPANDED
+                                    PlaceAddressSearchUiMode.FULLY_EXPANDED
                                 }
                             } else {
-                                CreatePlaceAddressSearchUiMode.HIDDEN
+                                PlaceAddressSearchUiMode.HIDDEN
                             }
                         )
                     }
@@ -237,18 +231,18 @@ class CreatePlaceViewModel(
 
             CreatePlaceScreenUiEvent.ToggleSearchFieldFocus -> {
                 val shouldFocus =
-                    _uiState.value.data?.addressUiMode == CreatePlaceAddressSearchUiMode.HIDDEN
+                    _uiState.value.data?.addressUiMode == PlaceAddressSearchUiMode.HIDDEN
                 _uiState.update {
                     it.mapSuccess {
                         it.copy(
                             addressUiMode = if (shouldFocus) {
                                 if (it.addressSuggestions.isEmpty()) {
-                                    CreatePlaceAddressSearchUiMode.SEARCH_EXPANDED
+                                    PlaceAddressSearchUiMode.SEARCH_EXPANDED
                                 } else {
-                                    CreatePlaceAddressSearchUiMode.FULLY_EXPANDED
+                                    PlaceAddressSearchUiMode.FULLY_EXPANDED
                                 }
                             } else {
-                                CreatePlaceAddressSearchUiMode.HIDDEN
+                                PlaceAddressSearchUiMode.HIDDEN
                             },
                             isAddressLoading = false
                         )
@@ -425,7 +419,7 @@ class CreatePlaceViewModel(
 
         _uiState.update {
             it.mapSuccess {
-                it.copy(screenStep = CreatePlaceScreenStep.FULL)
+                it.copy(screenStep = CreatePlaceScreenStep.ADDRESS)
             }
         }
 
@@ -474,7 +468,7 @@ class CreatePlaceViewModel(
                     lng = lng,
                     addressUiMode = if (it.lat == null || it.lng == null) {
                         // if previous state didn't have location, hide search proceed
-                        CreatePlaceAddressSearchUiMode.HIDDEN
+                        PlaceAddressSearchUiMode.HIDDEN
                     } else {
                         it.addressUiMode
                     }
@@ -514,7 +508,7 @@ class CreatePlaceViewModel(
                         it.addressSuggestions
                     },
                     addressUiMode = if (address.text.isBlank()) {
-                        CreatePlaceAddressSearchUiMode.SEARCH_EXPANDED
+                        PlaceAddressSearchUiMode.SEARCH_EXPANDED
                     } else {
                         it.addressUiMode
                     }
@@ -553,7 +547,7 @@ class CreatePlaceViewModel(
                     it.mapSuccess {
                         it.copy(
                             isAddressLoading = false,
-                            addressUiMode = CreatePlaceAddressSearchUiMode.FULLY_EXPANDED,
+                            addressUiMode = PlaceAddressSearchUiMode.FULLY_EXPANDED,
                             addressSuggestions = suggestions
                         )
                     }
@@ -580,7 +574,7 @@ class CreatePlaceViewModel(
             it.mapSuccess {
                 it.copy(
                     isAddressLoading = false,
-                    addressUiMode = CreatePlaceAddressSearchUiMode.HIDDEN,
+                    addressUiMode = PlaceAddressSearchUiMode.HIDDEN,
                     lat = suggestion.latLng.lat,
                     lng = suggestion.latLng.lng,
                 )

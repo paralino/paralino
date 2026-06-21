@@ -9,14 +9,15 @@ import app.paralino.core.models.base.PlanConfig
 import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.models.data
 import app.paralino.core.models.group.UserGroup
-import app.paralino.core.models.location.LocationSharingContract
 import app.paralino.core.models.location.LocationDataModel
+import app.paralino.core.models.location.LocationSharingContract
 import app.paralino.core.models.location.MemberDeviceStatusType
 import app.paralino.core.models.location.MemberLocation
 import app.paralino.core.models.location.MemberModelWithLocations
 import app.paralino.core.models.location.UserPersonalSpaceModel
 import app.paralino.core.models.map.MapHomeScreenFocusType
 import app.paralino.core.models.places.GroupPlace
+import app.paralino.core.models.privacyzones.GroupPrivacyZone
 import app.paralino.core.models.user.UserMeData
 import app.paralino.core.presentation.common.GroupMemberItemLocationState
 import app.paralino.core.presentation.common.GroupMemberItemStateWithOneLocation
@@ -24,20 +25,20 @@ import app.paralino.core.presentation.common.GroupMemberRole
 import app.paralino.core.presentation.common.GroupMemberState
 import app.paralino.core.presentation.common.LocationHistoryActionItemState
 import app.paralino.core.presentation.common.LocationRequestItemState
-import app.paralino.core.provider.IValueFormatter
-import app.paralino.core.provider.localizedString
-import app.paralino.core.repo.base.RemoteConfigRepository
-import app.paralino.core.repo.group.UserGroupLocalDataSource
-import app.paralino.core.repo.location.IGeofenceManager
 import app.paralino.core.presentation.common.MainAlertDialog
 import app.paralino.core.presentation.common.MemberActionItemState
 import app.paralino.core.presentation.common.MemberActionType
 import app.paralino.core.presentation.common.MemberActionsState
-import app.paralino.core.presentation.common.MemberLocationVisibilityType
 import app.paralino.core.presentation.common.MemberLocationContextMapper
+import app.paralino.core.presentation.common.MemberLocationVisibilityType
 import app.paralino.core.presentation.common.MemberNavigateItemState
 import app.paralino.core.presentation.common.PlaceListItemData
+import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.provider.LocationConditionStatus
+import app.paralino.core.provider.localizedString
+import app.paralino.core.repo.base.RemoteConfigRepository
+import app.paralino.core.repo.group.UserGroupLocalDataSource
+import app.paralino.core.repo.location.IGeofenceManager
 import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.extensions.fromUTCtoInstant
 import app.paralino.core.utils.extensions.nowUTC
@@ -64,6 +65,7 @@ class MapStateMapper(
     suspend fun buildReadyState(
         groupOrSpace: GroupWithMembersOrUserSpace,
         places: List<GroupPlace>,
+        privacyZones: List<GroupPrivacyZone>,
         activeSharingContracts: List<LocationSharingContract>,
         userData: UserMeData,
         previousState: MapHomeScreenState.Ready?,
@@ -102,6 +104,7 @@ class MapStateMapper(
                     ?.isGroupOverLimits(remoteConfig.getConfigOnce())
                     ?: false
             }
+
             is GroupWithMembersOrUserSpace.PersonalSpace -> groupOrSpace.space.isSpaceOverLimits()
         }
 
@@ -139,6 +142,18 @@ class MapStateMapper(
             .filter { it.data.data?.lat != null && it.data.data?.lng != null }
             .map { PlaceListItemData(it) }
 
+        val privacyZonesData = privacyZones
+            .filter { it.data.data?.lat != null && it.data.data?.lng != null }
+            .map { zone ->
+                PlaceListItemData(
+                    zone = zone,
+                    expirationStatus = valueFormatter.formatExpirationDateTimeUTC(
+                        expiresAtTimeUTC = zone.data.data?.expiresAt,
+                        showActiveStatus = false
+                    )
+                )
+            }
+
         val membersData = memberLocationContextMapper.enrichOneLocationMemberItems(
             members = buildMembersData(
                 groupOrSpace = groupOrSpace,
@@ -153,6 +168,7 @@ class MapStateMapper(
             groupOrSpace = groupOrSpace,
             membersData = membersData,
             placesData = placesData,
+            privacyZones = privacyZonesData,
             previousFocusedMarker = previousState?.markers?.firstOrNull { it.focused }
         )
 
@@ -160,6 +176,7 @@ class MapStateMapper(
             previousFocusType = previousState?.mapHomeScreenFocusType,
             membersData = membersData,
             placesData = placesData,
+            privacyZones = privacyZonesData,
             markers = markers
         )
 
@@ -217,6 +234,7 @@ class MapStateMapper(
             currentUserImage = userData.userImage ?: ImageModel.emoji(Emojis.robot),
             allMembersOrDevices = membersData,
             places = placesData,
+            privacyZones = privacyZonesData,
             markers = markers,
             trackingMarker = trackingMarker,
             mapHomeScreenFocusType = focusType,
@@ -466,12 +484,12 @@ class MapStateMapper(
 
         val deleteLocation = takeIf {
             location != null &&
-            memberActionHandler.canDeleteLocation(
-                groupId = groupId.asGroupOrSpaceId(),
-                isCurrentUser = memberUserId == appPrefs.userId,
-                isCurrentDevice = location.deviceId == appPrefs.deviceId,
-                hasLocation = locationVisibility.isVisible()
-            )
+                    memberActionHandler.canDeleteLocation(
+                        groupId = groupId.asGroupOrSpaceId(),
+                        isCurrentUser = memberUserId == appPrefs.userId,
+                        isCurrentDevice = location.deviceId == appPrefs.deviceId,
+                        hasLocation = locationVisibility.isVisible()
+                    )
         }?.let {
             MemberActionItemState(
                 type = MemberActionType.DELETE_LOCATION,
@@ -552,6 +570,7 @@ class MapStateMapper(
         groupOrSpace: GroupWithMembersOrUserSpace,
         membersData: List<GroupMemberItemStateWithOneLocation>,
         placesData: List<PlaceListItemData>,
+        privacyZones: List<PlaceListItemData>,
         previousFocusedMarker: MapPinData?
     ): List<MapPinData> {
 
@@ -630,7 +649,17 @@ class MapStateMapper(
                 )
         }
 
-        return (placeMarkers + memberMarkers)
+        val privacyZoneMarkers = privacyZones
+            .filter { !it.expirationStatus.isExpired }
+            .map { zone ->
+                zone.makeMapPin(groupOrSpaceId = groupOrSpace.id)
+                    .copy(
+                        active = true,
+                        focused = previousFocusedMarker?.markerId == zone.id
+                    )
+            }
+
+        return (privacyZoneMarkers + placeMarkers + memberMarkers)
             .sortedBy { it.focused }
     }
 
@@ -638,6 +667,7 @@ class MapStateMapper(
         previousFocusType: MapHomeScreenFocusType?,
         membersData: List<GroupMemberItemStateWithOneLocation>,
         placesData: List<PlaceListItemData>,
+        privacyZones: List<PlaceListItemData>,
         markers: List<MapPinData>
     ): MapHomeScreenFocusType {
 
@@ -652,6 +682,10 @@ class MapStateMapper(
                     placesData.any { it.id == oldFocusType.placeId }
                 }
 
+                is MapHomeScreenFocusType.PRIVACY_ZONE -> {
+                    privacyZones.any { it.id == oldFocusType.privacyZoneId }
+                }
+
                 else -> true
             }
         }
@@ -659,6 +693,7 @@ class MapStateMapper(
         return validPreviousFocusType
             ?: MapHomeScreenFocusType.ALL_MEMBERS.takeIf { markers.any { it.pinType == MapPinType.MEMBER && !it.hidden } }
             ?: MapHomeScreenFocusType.ALL_PLACES.takeIf { markers.any { it.pinType == MapPinType.PLACE && !it.hidden } }
+            ?: MapHomeScreenFocusType.ALL_PRIVACY_ZONES.takeIf { markers.any { it.pinType == MapPinType.PRIVACY_ZONE && !it.hidden } }
             ?: MapHomeScreenFocusType.NONE
     }
 } 

@@ -3,8 +3,6 @@ package app.paralino.core.resources
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.painter.Painter
 import app.paralino.core.resources.icons.Res
-import org.jetbrains.compose.resources.DrawableResource
-import org.jetbrains.compose.resources.painterResource
 import app.paralino.core.resources.icons.ic_account_circle
 import app.paralino.core.resources.icons.ic_add
 import app.paralino.core.resources.icons.ic_add_link
@@ -83,6 +81,7 @@ import app.paralino.core.resources.icons.ic_phone_android
 import app.paralino.core.resources.icons.ic_phonelink_setup
 import app.paralino.core.resources.icons.ic_polyline
 import app.paralino.core.resources.icons.ic_privacy_tip
+import app.paralino.core.resources.icons.ic_privacy_zone
 import app.paralino.core.resources.icons.ic_question_mark_circle
 import app.paralino.core.resources.icons.ic_radio_button_unchecked
 import app.paralino.core.resources.icons.ic_refresh
@@ -96,6 +95,7 @@ import app.paralino.core.resources.icons.ic_security
 import app.paralino.core.resources.icons.ic_settings
 import app.paralino.core.resources.icons.ic_share
 import app.paralino.core.resources.icons.ic_share_location
+import app.paralino.core.resources.icons.ic_shield_lock
 import app.paralino.core.resources.icons.ic_signal_cell_1
 import app.paralino.core.resources.icons.ic_signal_cell_2
 import app.paralino.core.resources.icons.ic_signal_cell_3
@@ -126,6 +126,8 @@ import app.paralino.core.resources.icons.image_map_mockup_dark
 import app.paralino.core.resources.icons.image_map_mockup_light
 import app.paralino.core.resources.icons.image_map_satellite_lawn
 import app.paralino.core.resources.icons.paralino_start_background
+import org.jetbrains.compose.resources.DrawableResource
+import org.jetbrains.compose.resources.painterResource
 
 object CoreAppIcons {
     val LauncherLogo get() = Res.drawable.ic_launcher_foreground
@@ -203,6 +205,7 @@ object CoreAppIcons {
     val AdminShieldStar get() = Res.drawable.ic_admin_shield_star
     val AdminShieldPerson get() = Res.drawable.ic_admin_shield_person
     val AdminShieldPersonV2 get() = Res.drawable.ic_admin_shield_person_v2
+    val ShieldLock get() = Res.drawable.ic_shield_lock
 
     val Refresh get() = Res.drawable.ic_refresh
     val Replay get() = Res.drawable.ic_replay
@@ -218,6 +221,7 @@ object CoreAppIcons {
 
     val NotListedLocation get() = Res.drawable.ic_not_listed_location
     val NotListedLocationFilled get() = Res.drawable.ic_not_listed_location_filled
+    val PrivacyZone get() = Res.drawable.ic_privacy_zone
     val NotificationsOff get() = Res.drawable.ic_notifications_off
     val CircleWithDot get() = Res.drawable.ic_circle_with_dot
     val Groups get() = Res.drawable.ic_groups

@@ -56,6 +56,7 @@ class MapStateManager(
                     }
 
                     MapPinType.PLACE -> MapHomeScreenFocusType.PLACE(placeId = markerData.markerId)
+                    MapPinType.PRIVACY_ZONE -> MapHomeScreenFocusType.PRIVACY_ZONE(privacyZoneId = markerData.markerId)
                 }
             )
         }
@@ -126,6 +127,7 @@ class MapStateManager(
                     when (selectedContentType) {
                         MapSheetSelectedContentType.PLACES -> MapHomeScreenFocusType.ALL_PLACES
                         MapSheetSelectedContentType.MEMBERS -> MapHomeScreenFocusType.ALL_MEMBERS
+                        MapSheetSelectedContentType.PRIVACY_ZONES -> MapHomeScreenFocusType.ALL_PRIVACY_ZONES
                     }
                 } else {
                     currentState.mapHomeScreenFocusType

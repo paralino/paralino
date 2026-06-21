@@ -19,7 +19,6 @@ kotlin {
         androidResources.enable = true
     }
 
-    iosX64()
     iosArm64()
     iosSimulatorArm64()
 
@@ -49,7 +48,6 @@ kotlin {
 
         androidMain.dependencies {
             implementation(libs.appcompat)
-            implementation(libs.androidx.core.ktx)
             implementation(libs.lifecycle.viewmodel.ktx)
             implementation(libs.activity.compose)
         }

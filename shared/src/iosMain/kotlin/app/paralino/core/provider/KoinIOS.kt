@@ -45,6 +45,7 @@ import app.paralino.core.models.AppHost
 import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.models.settings.RawPresentationDataType
 import app.paralino.core.notifications.IOSNSEPlaceCreatedNotificationProcessor
+import app.paralino.core.notifications.IOSNSEPrivacyZoneCreatedNotificationProcessor
 import app.paralino.core.notifications.IOSNSEPushNotificationHandler
 import app.paralino.core.presentation.billing.BillingScreenSourceType
 import app.paralino.core.presentation.common.NetworkQualityMonitor
@@ -68,10 +69,15 @@ import app.paralino.core.presentation.onboarding.WelcomeOnboardingViewModel
 import app.paralino.core.presentation.paralinoid.PersonalCodeViewModel
 import app.paralino.core.presentation.personal_space.PersonalSpaceViewModel
 import app.paralino.core.presentation.personal_space.settings.PersonalSpaceSettingsViewModel
+import app.paralino.core.presentation.places.create.CreatePlaceScreenStep
+import app.paralino.core.presentation.privacyzones.create.CreatePrivacyZoneScreenStep
 import app.paralino.core.presentation.places.create.CreatePlaceViewModel
 import app.paralino.core.presentation.places.detail.PlaceDetailViewModel
 import app.paralino.core.presentation.places.detail.PlaceSensitivityViewModel
 import app.paralino.core.presentation.places.list.PlacesViewModel
+import app.paralino.core.presentation.privacyzones.create.CreatePrivacyZoneViewModel
+import app.paralino.core.presentation.privacyzones.detail.PrivacyZoneDetailViewModel
+import app.paralino.core.presentation.privacyzones.list.PrivacyZonesViewModel
 import app.paralino.core.presentation.rawdata.RawDataPresentationViewModel
 import app.paralino.core.presentation.settings.SettingsViewModel
 import app.paralino.core.presentation.settings.appstatus.AppStatusDebugViewModel
@@ -191,6 +197,7 @@ object KoinIOS {
                     single { oneTimeLocationProvider(get(), get()) }
                     single { LocationRepositoryWrapper(get(), get(), get(), get()) }
                     single { IOSNSEPlaceCreatedNotificationProcessor(get(), get(), get(), get()) }
+                    single { IOSNSEPrivacyZoneCreatedNotificationProcessor(get(), get(), get(), get()) }
                     single { IOSNSEPushNotificationHandler(get(), get(), get(), get()) }
                     single { PlatformUrlHandler() } bind IPlatformUrlHandler::class
 
@@ -201,7 +208,7 @@ object KoinIOS {
                             single { PersonalDeviceCryptoKeyRotation(get(), get(), get(), get(), get(), get(), get(), get()) } bind IPersonalDeviceCryptoKeyRotation::class
                             single { ReRegisterDeviceUseCase(get(), get()) } bind IReRegisterDeviceUseCase::class
                             single { LocationRequestAutoUpgradeUseCase(get(), get(), get(), get(), get()) } bind ILocationRequestAutoUpgradeUseCase::class
-                            single { PlacesActivityProcessor(get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) } bind IPlacesActivityProcessor::class
+                            single { PlacesActivityProcessor(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) } bind IPlacesActivityProcessor::class
                             single { LocationHistoryUploadEngine(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) } bind ILocationHistoryUploadEngine::class
                             single { BatteryAlertUploadEngine(get(), get(), get(), get(), get()) } bind IBatteryAlertUploadEngine::class
                         }
@@ -229,7 +236,7 @@ object KoinIOS {
         return module {
             factory { AccountOnboardingViewModel(get(), get(), get(), get(), get(), get(), get(), get()) }
             factory {
-                MapHomeViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get())
+                MapHomeViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get())
             }
             factory { SettingsViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
             factory { (startScreenType: LoginScreenUiType) ->
@@ -254,7 +261,7 @@ object KoinIOS {
                 )
             }
             factory { (groupID: String) ->
-                GroupDetailViewModel(groupID, get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get())
+                GroupDetailViewModel(groupID, get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get())
             }
             factory { (groupID: String) ->
                 GroupSettingsViewModel(groupID, get(), get(), get(), get(), get(), get())
@@ -288,10 +295,34 @@ object KoinIOS {
                     premiumStatusManager = get()
                 )
             }
-            factory { (groupID: String, placeId: String?, lat: Double?, lng: Double?) ->
+            factory { (groupID: String, isOnboarding: Boolean) ->
+                PrivacyZonesViewModel(
+                    groupId = groupID,
+                    isOnboarding = isOnboarding,
+                    remoteConfig = get(),
+                    getPrivacyZonesUseCase = get(),
+                    groupRepo = get(),
+                    premiumStatusManager = get(),
+                    valueFormatter = get()
+                )
+            }
+            factory { (groupID: String, zoneId: String) ->
+                PrivacyZoneDetailViewModel(
+                    groupId = groupID,
+                    zoneId = zoneId,
+                    getPrivacyZonesUseCase = get(),
+                    deletePrivacyZoneUseCase = get(),
+                    groupRepo = get(),
+                    premiumStatusManager = get(),
+                    appPrefs = get(),
+                    valueFormatter = get()
+                )
+            }
+            factory { (groupID: String, placeId: String?, editStep: CreatePlaceScreenStep?, lat: Double?, lng: Double?) ->
                 CreatePlaceViewModel(
                     groupId = groupID,
                     placeId = placeId,
+                    editStep = editStep,
                     lat = lat,
                     lng = lng,
                     placesRepo = get(),
@@ -301,6 +332,25 @@ object KoinIOS {
                     valueFormatter = get(),
                     placeAddressSearch = get(),
                     cachedLocation = get()
+                )
+            }
+            factory { (groupID: String, zoneId: String?, editStep: CreatePrivacyZoneScreenStep?, lat: Double?, lng: Double?) ->
+                CreatePrivacyZoneViewModel(
+                    groupId = groupID,
+                    zoneId = zoneId,
+                    editStep = editStep,
+                    lat = lat,
+                    lng = lng,
+                    createPrivacyZoneUseCase = get(),
+                    updatePrivacyZoneUseCase = get(),
+                    privacyZonesLocalDataSource = get(),
+                    premiumStatusManager = get(),
+                    refreshEverythingUseCase = get(),
+                    valueFormatter = get(),
+                    placeAddressSearch = get(),
+                    cachedLocation = get(),
+                    getMemberWithLocations = get(),
+                    userRepo = get()
                 )
             }
             factory { (rawDataType: RawPresentationDataType) ->
@@ -390,13 +440,26 @@ object KoinIOS {
         fun placesVM(groupId: String, isOnboarding: Boolean) = get<PlacesViewModel> { parametersOf(groupId, isOnboarding) }
         fun placeDetailVM(groupId: String, placeId: String) =
             get<PlaceDetailViewModel> { parametersOf(groupId, placeId) }
+        fun privacyZonesVM(groupId: String, isOnboarding: Boolean) =
+            get<PrivacyZonesViewModel> { parametersOf(groupId, isOnboarding) }
+        fun privacyZoneDetailVM(groupId: String, zoneId: String) =
+            get<PrivacyZoneDetailViewModel> { parametersOf(groupId, zoneId) }
 
         fun placeCreateVM(
             groupId: String,
             placeId: String?,
+            editStep: CreatePlaceScreenStep?,
             lat: Double? = null,
             lng: Double? = null
-        ) = get<CreatePlaceViewModel> { parametersOf(groupId, placeId, lat, lng) }
+        ) = get<CreatePlaceViewModel> { parametersOf(groupId, placeId, editStep, lat, lng) }
+
+        fun privacyZoneCreateVM(
+            groupId: String,
+            zoneId: String?,
+            editStep: CreatePrivacyZoneScreenStep?,
+            lat: Double? = null,
+            lng: Double? = null
+        ) = get<CreatePrivacyZoneViewModel> { parametersOf(groupId, zoneId, editStep, lat, lng) }
         val appStatusDebugVM get() = get<AppStatusDebugViewModel>()
         val subscriptionVM get() = get<SubscriptionViewModel>()
         fun paywallVM(type: BillingScreenSourceType) = get<PaywallViewModel> { parametersOf(type) }

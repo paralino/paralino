@@ -85,6 +85,10 @@ enum class PushNotificationType constructor(val key: String) {
     GROUP_PLACE_UPDATED("place_updated"),
     GROUP_PLACE_DELETED("place_deleted"),
 
+    GROUP_PRIVACY_ZONE_CREATED("privacy_zone_created"),
+    GROUP_PRIVACY_ZONE_UPDATED("privacy_zone_updated"),
+    GROUP_PRIVACY_ZONE_DELETED("privacy_zone_deleted"),
+
     PERSONAL_PLACE_ALERT("personal_place_activity"),
     PERSONAL_PLACE_CREATED("personal_place_created"),
     PERSONAL_PLACE_UPDATED("personal_place_updated"),

@@ -11,8 +11,10 @@ object Emojis {
     val robot = "emoji_u1f916"
     val star = "emoji_u2b50"
     val cow = "emoji_u1f42e"
+    val alien = "emoji_u1f47d"
     val goat = "emoji_u1f410"
     val home = "emoji_u1f3e0"
+    val scenery = "emoji_u1f3de"
     val schoolBooks = "emoji_u1f4da"
     val suitecase = "emoji_u1f9f3"
     val heart = "emoji_u2764"
@@ -25,7 +27,9 @@ object Emojis {
     val moneyBag = "emoji_u1f4b0"
     val croissant = "emoji_u1f950"
     val shoppingCart = "emoji_u1f6d2"
+    val shoppingBags = "emoji_u1f6cd"
     val personGym = "emoji_u1f3cb"
+    val blackDot = "emoji_u26ab"
 
     private val userSpecific = listOf(
 //        "emoji_u1f4a9",
@@ -48,7 +52,7 @@ object Emojis {
         "emoji_u1f43c",
         "emoji_u1f43f",
         "emoji_u1f47b",
-        "emoji_u1f47d",
+        alien,
         "emoji_u1f98a",
         "emoji_u1f98b",
         "emoji_u1f98f",
@@ -110,7 +114,7 @@ object Emojis {
         "emoji_u1f3d3",
         "emoji_u1f3d6",
         "emoji_u1f3db",
-        "emoji_u1f3de",
+        scenery,
         "emoji_u1f3df",
         home,
         "emoji_u1f3e2",
@@ -121,7 +125,7 @@ object Emojis {
         moneyBag,
         schoolBooks,
         "emoji_u1f6b2",
-        "emoji_u1f6cd",
+        shoppingBags,
         shoppingCart,
         "emoji_u1f6dd",
         suitecase,
@@ -162,7 +166,7 @@ object Emojis {
 
     val circles = listOf(
         "emoji_u26aa",
-        "emoji_u26ab",
+        blackDot,
         "emoji_u1f7e1",
         "emoji_u1f7e2",
         "emoji_u1f534",

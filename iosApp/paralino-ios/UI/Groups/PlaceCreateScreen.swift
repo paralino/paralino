@@ -56,8 +56,8 @@ struct PlaceCreateScreen: View {
         }
     }
     
-    static func createState(groupId: String, placeId: String?, lat: Double? = nil, lng: Double? = nil) -> PlaceCreateState {
-        PlaceCreateState(groupId: groupId, placeId: placeId, lat: lat, lng: lng)
+    static func createState(groupId: String, placeId: String?, editStep: CreatePlaceScreenStep?, lat: Double? = nil, lng: Double? = nil) -> PlaceCreateState {
+        PlaceCreateState(groupId: groupId, placeId: placeId, editStep: editStep, lat: lat, lng: lng)
     }
 }
 
@@ -67,7 +67,7 @@ class PlaceCreateState: BaseMapObservableObject {
     @Published var isNewPlace: Bool? = nil
     @Published var screenTitle: String = ""
     
-    init(groupId: String, placeId: String?, lat: Double? = nil, lng: Double? = nil) {
+    init(groupId: String, placeId: String?, editStep: CreatePlaceScreenStep?, lat: Double? = nil, lng: Double? = nil) {
         
         if placeId == nil {
             screenTitle = MR.shared.strings.places_create_screen_title.localizedString()
@@ -77,7 +77,7 @@ class PlaceCreateState: BaseMapObservableObject {
         
         let lat = lat != nil ? KotlinDouble(value: lat!) : nil
         let lng = lng != nil ? KotlinDouble(value: lng!) : nil
-        self.vm = KoinIOS.ViewModels.shared.placeCreateVM(groupId: groupId, placeId: placeId, lat: lat, lng: lng)
+        self.vm = KoinIOS.ViewModels.shared.placeCreateVM(groupId: groupId, placeId: placeId, editStep: editStep, lat: lat, lng: lng)
         
         super.init()
         

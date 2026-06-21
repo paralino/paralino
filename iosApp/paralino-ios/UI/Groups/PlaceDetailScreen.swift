@@ -37,8 +37,11 @@ struct PlaceDetailScreen: View {
                     openPlaceSensitivityScreen: {
                         path.append(.home(.placeSensitivitySettings(groupId: appState.groupId, placeId: appState.placeId)))
                     },
-                    openPlaceEditScreen: {
-                        path.append(.home(.placeCreate(groupId: appState.groupId, placeId: appState.placeId, lat: nil, lng: nil)))
+                    openPlaceNameEditScreen: {
+                        path.append(.home(.placeCreate(groupId: appState.groupId, placeId: appState.placeId, editStep: CreatePlaceScreenStep.nameAndImage, lat: nil, lng: nil)))
+                    },
+                    openPlacePositionEditScreen: {
+                        path.append(.home(.placeCreate(groupId: appState.groupId, placeId: appState.placeId, editStep: CreatePlaceScreenStep.address, lat: nil, lng: nil)))
                     },
                     onNavigateBack: {
                         path.removeLast()

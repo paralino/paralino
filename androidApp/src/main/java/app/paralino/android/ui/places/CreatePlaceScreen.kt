@@ -16,6 +16,7 @@ import app.paralino.core.MR
 import app.paralino.core.models.location.LatLng
 import app.paralino.core.presentation.map.MapPinData
 import app.paralino.core.presentation.places.create.CreatePlaceScreenState
+import app.paralino.core.presentation.places.create.CreatePlaceScreenStep
 import app.paralino.core.presentation.places.create.CreatePlaceScreenUiEvent
 import app.paralino.core.presentation.places.create.CreatePlaceViewModel
 import app.paralino.core.presentation.places.create.makeMapPin
@@ -35,9 +36,10 @@ fun CreatePlaceScreen(
     appState: MainAppState,
     groupId: String,
     placeId: String?,
+    editStep: CreatePlaceScreenStep?,
     lat: Double? = null,
     lng: Double? = null,
-    vm: CreatePlaceViewModel = koinViewModel { parametersOf(groupId, placeId, lat, lng) },
+    vm: CreatePlaceViewModel = koinViewModel { parametersOf(groupId, placeId, editStep, lat, lng) },
 ) {
     val pickerState = rememberEmojiBottomSheetPickerState()
 

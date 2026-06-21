@@ -5,6 +5,7 @@ import android.graphics.Canvas
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionContext
 import androidx.compose.runtime.getValue
@@ -26,6 +27,8 @@ import app.paralino.core.ui.theme.AppColors
 import org.maplibre.android.geometry.LatLng
 import org.maplibre.compose.expressions.dsl.const
 import org.maplibre.compose.expressions.dsl.image
+import org.maplibre.compose.expressions.dsl.nil
+import org.maplibre.compose.expressions.value.LineCap
 import org.maplibre.compose.expressions.value.SymbolAnchor
 import org.maplibre.compose.layers.FillLayer
 import org.maplibre.compose.layers.LineLayer
@@ -125,6 +128,7 @@ fun MapLibreMapCircle(
 
     val fillColor = when (pinType) {
         MapPinType.MEMBER -> AppColors.accentDark.copy(alpha = 0.5f)
+
         MapPinType.PLACE -> {
             if (isSatelliteMode) {
                 Color.Blue.copy(alpha = 0.2f)
@@ -136,16 +140,42 @@ fun MapLibreMapCircle(
                 }
             }
         }
+
+        MapPinType.PRIVACY_ZONE -> {
+            if (isSatelliteMode) {
+                Color.Black.copy(alpha = 0.4f)
+            } else {
+                if (isSystemInDarkTheme()) {
+                    AppColors.accentDark.copy(alpha = 0.25f)
+                } else {
+                    Color.Black.copy(alpha = 0.25f)
+                }
+            }
+        }
     }
 
     val strokeColor = when (pinType) {
         MapPinType.MEMBER -> Color.White
         MapPinType.PLACE -> Color.Blue
+        MapPinType.PRIVACY_ZONE -> {
+            if (isSystemInDarkTheme() || isSatelliteMode) {
+                AppColors.redMain
+            } else {
+                Color.Black
+            }
+        }
     }
 
     val strokeWidth = when (pinType) {
-        MapPinType.MEMBER -> 4.dp
+        MapPinType.MEMBER -> 2.dp
         MapPinType.PLACE -> 0.dp
+        MapPinType.PRIVACY_ZONE -> 4.dp
+    }
+
+    val strokeDash = when (pinType) {
+        MapPinType.MEMBER -> nil()
+        MapPinType.PLACE -> nil()
+        MapPinType.PRIVACY_ZONE -> const(listOf(2.5f, 1.5f))
     }
 
     val circleSortKey = const(if (isFocused) 11f else 10f)
@@ -169,6 +199,8 @@ fun MapLibreMapCircle(
                 source = circleSource,
                 color = const(strokeColor),
                 width = const(strokeWidth),
+                dasharray = strokeDash,
+                cap = const(LineCap.Round),
                 sortKey = circleSortKey,
                 onClick = {
                     onClick()

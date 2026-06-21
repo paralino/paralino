@@ -41,6 +41,8 @@ interface LogoutDao {
         clearAllLocalGroupDeviceSenderKeys()
         clearAllPlaceActivity()
         clearAllApproximateSharedLocations()
+        clearAllPrivacyZones()
+        clearAllPrivacyZoneSharedLocations()
     }
 
     @Query("DELETE FROM userEntity")
@@ -138,4 +140,10 @@ interface LogoutDao {
 
     @Query("DELETE FROM approximateSharedLocationEntity")
     suspend fun clearAllApproximateSharedLocations()
+
+    @Query("DELETE FROM privacyZoneEntity")
+    suspend fun clearAllPrivacyZones()
+
+    @Query("DELETE FROM privacyZoneSharedLocationEntity")
+    suspend fun clearAllPrivacyZoneSharedLocations()
 }

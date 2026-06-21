@@ -168,6 +168,34 @@ class PremiumStatusManager(
         }
     }
 
+    suspend fun checkPrivacyZoneCountLimits(groupId: GroupOrSpaceId): PremiumStatusLimitState? {
+        if (groupId.isPersonalSpace) return null
+
+        val group = groupLocalDataSource.allGroupsState.value.data
+            ?.firstOrNull { it.group.id == groupId.id } ?: return null
+
+        val config = remoteConfigRepo.getConfigOnce()
+        val payload = PremiumStatusLimitPayload(
+            plan = group.group.planConfig(config),
+            limit = group.group.privacyZonesLimit(config),
+            count = group.privacyZonesCount,
+            isOwner = true,
+        )
+
+        val maxPrivacyZoneLimit = config.plans
+            .maxByOrNull { it.planTypeEnum.order }
+            ?.privacyZonesLimit
+            ?.takeIf { it >= 0 }
+
+        if (maxPrivacyZoneLimit != null && payload.count >= maxPrivacyZoneLimit) {
+            return PremiumStatusLimitState.ServiceLimitReached(payload)
+        } else if (payload.limit != null && payload.limit in 0..payload.count) {
+            return PremiumStatusLimitState.PlanLimitReached(payload)
+        } else {
+            return PremiumStatusLimitState.WithinLimits(payload)
+        }
+    }
+
     suspend fun checkDeviceCountLimits(groupId: GroupOrSpaceId): PremiumStatusLimitState? {
         val payload = if (groupId.isPersonalSpace) {
             val space = personalSpaceRepo.personalSpaceState.value.data ?: return null

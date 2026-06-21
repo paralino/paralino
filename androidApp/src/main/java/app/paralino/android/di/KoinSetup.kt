@@ -90,6 +90,8 @@ import app.paralino.core.presentation.places.create.CreatePlaceViewModel
 import app.paralino.core.presentation.places.detail.PlaceDetailViewModel
 import app.paralino.core.presentation.places.detail.PlaceSensitivityViewModel
 import app.paralino.core.presentation.places.list.PlacesViewModel
+import app.paralino.core.presentation.privacyzones.detail.PrivacyZoneDetailViewModel
+import app.paralino.core.presentation.privacyzones.list.PrivacyZonesViewModel
 import app.paralino.core.presentation.rawdata.RawDataPresentationViewModel
 import app.paralino.core.models.settings.RawPresentationDataType
 import app.paralino.core.presentation.settings.SettingsViewModel
@@ -134,6 +136,9 @@ import app.paralino.core.repo.user.IExportPersonalLocationHistoryUseCase
 import app.paralino.core.repo.user.IImportPersonalLocationHistoryUseCase
 import app.paralino.core.repo.user.IPushProviderManager
 import app.paralino.core.presentation.billing.BillingScreenSourceType
+import app.paralino.core.presentation.places.create.CreatePlaceScreenStep
+import app.paralino.core.presentation.privacyzones.create.CreatePrivacyZoneScreenStep
+import app.paralino.core.presentation.privacyzones.create.CreatePrivacyZoneViewModel
 import org.koin.android.ext.koin.androidApplication
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.dsl.viewModel
@@ -197,7 +202,7 @@ object KoinSetup {
         single { PersonalDeviceCryptoKeyRotation(get(), get(), get(), get(), get(), get(), get(), get()) } bind IPersonalDeviceCryptoKeyRotation::class
         single { ReRegisterDeviceUseCase(get(), get()) } bind IReRegisterDeviceUseCase::class
         single { LocationRequestAutoUpgradeUseCase(get(), get(), get(), get(), get()) } bind ILocationRequestAutoUpgradeUseCase::class
-        single { PlacesActivityProcessor(get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) } bind IPlacesActivityProcessor::class
+        single { PlacesActivityProcessor(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) } bind IPlacesActivityProcessor::class
         single { LocationHistoryUploadEngine(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) } bind ILocationHistoryUploadEngine::class
         single { BatteryAlertUploadEngine(get(), get(), get(), get(), get()) } bind IBatteryAlertUploadEngine::class
 
@@ -238,7 +243,7 @@ object KoinSetup {
         }
 
         viewModel { AccountOnboardingViewModel(get(), get(), get(), get(), get(), get(), get(), get()) }
-        viewModel { MapHomeViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+        viewModel { MapHomeViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
         viewModel { SettingsViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
         viewModel { (startScreenType: LoginScreenUiType) -> LoginViewModel(get(), get(), get(), get(), startScreenType, get(), get()) }
         viewModel { (groupID: String?) -> CreateGroupViewModel(groupID, get(), get(), get(), get(), get()) }
@@ -259,7 +264,7 @@ object KoinSetup {
                 premiumStatusManager = get()
             )
         }
-        viewModel { (groupID: String) -> GroupDetailViewModel(groupID, get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+        viewModel { (groupID: String) -> GroupDetailViewModel(groupID, get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
         viewModel { (groupID: String) -> GroupSettingsViewModel(groupID, get(), get(), get(), get(), get(), get()) }
         viewModel { MainViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
         viewModel { VerifyEmailViewModel(get(), get(), get(), get()) }
@@ -272,7 +277,10 @@ object KoinSetup {
         viewModel { (userId: String, secret: String) -> ResetPasswordViewModel(userId = userId, secret = secret, get()) }
         viewModel { (groupID: String, isOnboarding: Boolean) -> PlacesViewModel(groupID, isOnboarding, get(), get(), get(), get(), get(), get(), get(), get()) }
         viewModel { (groupID: String, placeId: String) -> PlaceDetailViewModel(groupID, placeId, get(), get(), get(), get(), get(), get(), get()) }
-        viewModel { (groupID: String, placeId: String?, lat: Double?, lng: Double?) -> CreatePlaceViewModel(groupID, placeId, lat, lng, get(), get(), get(), get(), get(), get(), get()) }
+        viewModel { (groupID: String, isOnboarding: Boolean) -> PrivacyZonesViewModel(groupID, isOnboarding, get(), get(), get(), get(), get()) }
+        viewModel { (groupID: String, zoneId: String) -> PrivacyZoneDetailViewModel(groupID, zoneId, get(), get(), get(), get(), get(), get()) }
+        viewModel { (groupID: String, placeId: String?, editStep: CreatePlaceScreenStep?, lat: Double?, lng: Double?) -> CreatePlaceViewModel(groupId = groupID, placeId = placeId, editStep = editStep, lat = lat, lng = lng, get(), get(), get(), get(), get(), get(), get()) }
+        viewModel { (groupID: String, zoneId: String?, editStep: CreatePrivacyZoneScreenStep?, lat: Double?, lng: Double?) -> CreatePrivacyZoneViewModel(groupId = groupID, zoneId = zoneId, editStep = editStep, lat = lat, lng = lng, get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
         viewModel { (rawDataType: RawPresentationDataType) -> RawDataPresentationViewModel(rawDataType, get(), get()) }
         viewModel { BlocklistViewModel(get()) }
         viewModel { AppStatusDebugViewModel(get(), get(), get(), get(), get()) }

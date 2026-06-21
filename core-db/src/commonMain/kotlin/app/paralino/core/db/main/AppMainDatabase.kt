@@ -49,6 +49,9 @@ import app.paralino.core.db.main.places.PlaceActivityDao
 import app.paralino.core.db.main.places.PlaceActivityEntity
 import app.paralino.core.db.main.places.PlaceEntity
 import app.paralino.core.db.main.places.PlaceSettingsEntity
+import app.paralino.core.db.main.privacyzones.PrivacyZoneEntity
+import app.paralino.core.db.main.location.PrivacyZoneSharedLocationEntity
+import app.paralino.core.db.main.location.PrivacyZoneSharedLocationDao
 import app.paralino.core.db.main.user.PersonalCodeDao
 import app.paralino.core.db.main.user.PersonalCodeEntity
 import app.paralino.core.db.main.user.SubscriptionPlanEntity
@@ -96,8 +99,10 @@ import kotlinx.coroutines.IO
         UnconfirmedLocationHistoryEntity::class,
         UnsyncedGroupHistoryKeyEntity::class,
         ApproximateSharedLocationEntity::class,
+        PrivacyZoneEntity::class,
+        PrivacyZoneSharedLocationEntity::class,
     ],
-    version = 23,
+    version = 24,
     exportSchema = true
 )
 @ConstructedBy(AppMainDatabaseConstructor::class)
@@ -121,6 +126,7 @@ abstract class AppMainDatabase : RoomDatabase() {
     abstract fun unsyncedGroupHistoryKeysDao(): UnsyncedGroupHistoryKeyDao
     abstract fun logoutDao(): LogoutDao
     abstract fun approximateSharedLocationDao(): ApproximateSharedLocationDao
+    abstract fun privacyZoneSharedLocationDao(): PrivacyZoneSharedLocationDao
 
     companion object {
         fun create(builder: SqlDriverFactory): AppMainDatabase {

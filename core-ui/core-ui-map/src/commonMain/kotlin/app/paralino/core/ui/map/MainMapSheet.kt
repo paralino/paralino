@@ -119,6 +119,7 @@ private fun MainMapSheetActiveBody(
         readyState = readyState,
         members = readyState.membersWithDevices,
         places = readyState.places,
+        privacyZones = readyState.privacyZones,
         onEvent = onEvent,
         onMapGroupInfoHeightChange = onMapGroupInfoHeightChange,
         onWholeContentClick = {

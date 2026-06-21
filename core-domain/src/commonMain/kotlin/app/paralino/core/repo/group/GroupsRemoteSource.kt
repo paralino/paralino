@@ -34,6 +34,7 @@ import app.paralino.core.repo.api.ServerFunction
 import app.paralino.core.repo.api.runAndWait
 import app.paralino.core.repo.base.AppConfigRepository
 import app.paralino.core.repo.places.PlacesRemoteSource
+import app.paralino.core.repo.privacyzones.PrivacyZonesGetRemoteSource
 import app.paralino.core.utils.BaseRemoteModule
 import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.exceptions.NotFoundException
@@ -47,6 +48,7 @@ class GroupsRemoteSource constructor(
     private val api: IDocumentsApi,
     private val functionsApi: IFunctionsApi,
     private val placesRemote: PlacesRemoteSource,
+    private val privacyZonesGet: PrivacyZonesGetRemoteSource,
     private val appConfig: AppConfigRepository,
     private val mapper: GroupMapperCore,
     private val cryptoCore: CryptoCore,
@@ -204,6 +206,7 @@ class GroupsRemoteSource constructor(
                 }
 
             val places = placesRemote.getAllPlaces()
+            val privacyZones = privacyZonesGet.getAllPrivacyZones()
 
             val groupsData = if (groups.isEmpty()) {
                 // no need to fetch other resources if there are no groups
@@ -251,7 +254,10 @@ class GroupsRemoteSource constructor(
                         ),
                         places = places.filter {
                             it.place.isInPersonalSpace != true && it.place.groupId == group.id
-                        }
+                        },
+                        privacyZones = privacyZones.filter {
+                            it.groupId == group.id && it.ownerUserId == appPrefs.userId
+                        },
                     )
                 }
             }
@@ -354,10 +360,15 @@ class GroupsRemoteSource constructor(
                 placesRemote.getPlacesForGroup(groupId = groupId)
             }
 
+            val privacyZonesAsync = async {
+                privacyZonesGet.getPrivacyZonesForGroup(groupId = groupId)
+            }
+
             val members = membersAsync.await()
             val settings = settingsAsync.await()
             val locations = locationsAsync.await()
             val places = placesAsync.await()
+            val privacyZones = privacyZonesAsync.await()
 
             return@blocking GroupWithMembersAndPlacesRaw(
                 group = GroupWithMembersRaw(
@@ -371,7 +382,8 @@ class GroupsRemoteSource constructor(
                         )
                     }
                 ),
-                places = places
+                places = places,
+                privacyZones = privacyZones,
             )
         }
     }

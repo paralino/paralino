@@ -32,17 +32,10 @@ fun EditImageIcon(
                 )
             )
             .clip(CircleShape)
-            .background(MaterialTheme.colors.background)
-            .background(
-                if (isSystemInDarkTheme()) {
-                    AppColors.accentLight.copy(alpha = 0.2f)
-                } else {
-                    AppColors.accent.copy(alpha = 0.2f)
-                }
-            )
-            .padding(5.dp),
+            .background(MaterialTheme.colors.primary)
+            .padding(6.dp),
         painter = CoreAppIcons.Edit.asPainterResource(),
-        tint = MaterialTheme.colors.onBackground,
+        tint = MaterialTheme.colors.onPrimary,
         contentDescription = null
     )
 }

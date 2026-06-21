@@ -13,6 +13,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -69,7 +71,7 @@ import app.paralino.core.ui.components.SettingsSectionHeader
 import app.paralino.core.ui.components.dialogs.LoadingDialog
 import app.paralino.core.ui.components.dialogs.Show
 import app.paralino.core.ui.components.rememberSeekbarState
-import app.paralino.core.ui.groups.GroupListItem
+import app.paralino.core.ui.groups.components.GroupListItem
 import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.ui.theme.ButtonStyle
 import app.paralino.core.utils.ConditionErrorType
@@ -404,6 +406,7 @@ fun SharingStartScreenCore(
                             )
 
                             MainInputField(
+                                modifier = Modifier.heightIn(min = 70.dp),
                                 text = state.deviceName ?: "",
                                 hint = stringResource(MR.strings.groups_sharing_device_name_placeholder),
                                 hasError = false,
@@ -548,17 +551,20 @@ fun SharingStartScreenCore(
                             } else {
                                 stringResource(MR.strings.groups_sharing_setting_approximateLocation_description_off)
                             },
-                            bigTag = if (state.shareApproximateLocation)
+                            bigTag = if (state.shareApproximateLocation) {
                                 state.formattedApproximateLocation
-                            else null,
+                            } else {
+                                null
+                            },
+                            isMinimumVerticalSpacing = !state.shareApproximateLocation,
                             state = rememberSeekbarState(
                                 key = state,
                                 state = LargeSeekbarSwitchState.SeekbarSwitchState(
                                     seekbarState = LargeSeekbarSwitchState.Seekbar(
                                         seekbarProgress = state.approximateLocationIndex + 1,
                                         seekbarRange = IntRange(
-                                            1,
-                                            state.approximateLocationPresets.size
+                                            start = 1,
+                                            endInclusive = state.approximateLocationPresets.size
                                         )
                                     ),
                                     switchState = LargeSeekbarSwitchState.Switch(state.shareApproximateLocation)
