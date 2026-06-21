@@ -40,11 +40,6 @@
 		255B0CA52E20568C001426C3 /* SwiftUIHistoryClusterAnnotationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 255B0CA32E20568C001426C3 /* SwiftUIHistoryClusterAnnotationView.swift */; };
 		255B0CA82E203D97001426C3 /* HistoryStartStopMapMarker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 255B0CA72E203D97001426C3 /* HistoryStartStopMapMarker.swift */; };
 		2565B5A82CD8D2C8006DFB88 /* LicencesScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2565B5A72CD8D2C2006DFB88 /* LicencesScreen.swift */; };
-		2568AF5E2CB5342B007EE00F /* NIO in Frameworks */ = {isa = PBXBuildFile; productRef = 2568AF5D2CB5342B007EE00F /* NIO */; };
-		2568AF602CB5342B007EE00F /* NIOConcurrencyHelpers in Frameworks */ = {isa = PBXBuildFile; productRef = 2568AF5F2CB5342B007EE00F /* NIOConcurrencyHelpers */; };
-		2568AF622CB5342B007EE00F /* NIOCore in Frameworks */ = {isa = PBXBuildFile; productRef = 2568AF612CB5342B007EE00F /* NIOCore */; };
-		2568AF642CB5342B007EE00F /* NIOEmbedded in Frameworks */ = {isa = PBXBuildFile; productRef = 2568AF632CB5342B007EE00F /* NIOEmbedded */; };
-		2568AF662CB5342B007EE00F /* NIOFoundationCompat in Frameworks */ = {isa = PBXBuildFile; productRef = 2568AF652CB5342B007EE00F /* NIOFoundationCompat */; };
 		256C5A5B29E8938900FCF0B7 /* MainAppObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 256C5A5A29E8938900FCF0B7 /* MainAppObject.swift */; };
 		256FCA692BCD445300DCD2FE /* GroupSettingsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 256FCA682BCD445300DCD2FE /* GroupSettingsScreen.swift */; };
 		257B6E0B2CB5717B004F5438 /* Atomics in Frameworks */ = {isa = PBXBuildFile; productRef = 257B6E0A2CB5717B004F5438 /* Atomics */; };
@@ -421,12 +416,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				257DCAEC2CB441BB00402562 /* SwiftLocation in Frameworks */,
-				2568AF642CB5342B007EE00F /* NIOEmbedded in Frameworks */,
-				2568AF5E2CB5342B007EE00F /* NIO in Frameworks */,
-				2568AF602CB5342B007EE00F /* NIOConcurrencyHelpers in Frameworks */,
-				2568AF662CB5342B007EE00F /* NIOFoundationCompat in Frameworks */,
 				257DCAE42CB441BB00402562 /* Clibsodium in Frameworks */,
-				2568AF622CB5342B007EE00F /* NIOCore in Frameworks */,
 				250BB6AA2CB9391800CCAB64 /* Appwrite in Frameworks */,
 				257B6E0B2CB5717B004F5438 /* Atomics in Frameworks */,
 				2558D4B32F96A6EF0027A529 /* Appwrite in Frameworks */,
@@ -810,11 +800,6 @@
 				257DCAE32CB441BB00402562 /* Clibsodium */,
 				257DCAE52CB441BB00402562 /* Sodium */,
 				257DCAEB2CB441BB00402562 /* SwiftLocation */,
-				2568AF5D2CB5342B007EE00F /* NIO */,
-				2568AF5F2CB5342B007EE00F /* NIOConcurrencyHelpers */,
-				2568AF612CB5342B007EE00F /* NIOCore */,
-				2568AF632CB5342B007EE00F /* NIOEmbedded */,
-				2568AF652CB5342B007EE00F /* NIOFoundationCompat */,
 				257B6E0A2CB5717B004F5438 /* Atomics */,
 				254729E52CB5967000172F55 /* Sentry */,
 				250BB6A92CB9391800CCAB64 /* Appwrite */,
@@ -916,7 +901,6 @@
 				252EA01E29E03B4D00338956 /* XCRemoteSwiftPackageReference "swift-sodium" */,
 				25129FEB2BBDE6B800D1A5AE /* XCRemoteSwiftPackageReference "sentry-cocoa" */,
 				25008E4D2BDAE84600A3BCCA /* XCRemoteSwiftPackageReference "SwiftLocation" */,
-				2568AF5C2CB5342B007EE00F /* XCRemoteSwiftPackageReference "swift-nio" */,
 				257B6E092CB5717B004F5438 /* XCRemoteSwiftPackageReference "swift-atomics" */,
 				2508BC132CD50FEE007919B8 /* XCRemoteSwiftPackageReference "purchases-ios-spm" */,
 				2558D4B12F96A6EF0027A529 /* XCLocalSwiftPackageReference "appwrite-apple" */,
@@ -1963,7 +1947,7 @@
 			repositoryURL = "https://github.com/RevenueCat/purchases-ios-spm.git";
 			requirement = {
 				kind = exactVersion;
-				version = 5.72.0;
+				version = 5.79.0;
 			};
 		};
 		25129FEB2BBDE6B800D1A5AE /* XCRemoteSwiftPackageReference "sentry-cocoa" */ = {
@@ -1971,8 +1955,10 @@
 			repositoryURL = "https://github.com/getsentry/sentry-cocoa.git";
 			requirement = {
 				kind = exactVersion;
-				version = 9.11.0;
+				version = 9.18.0;
 			};
+			traits = (
+			);
 		};
 		252EA01E29E03B4D00338956 /* XCRemoteSwiftPackageReference "swift-sodium" */ = {
 			isa = XCRemoteSwiftPackageReference;
@@ -1980,14 +1966,6 @@
 			requirement = {
 				kind = revision;
 				revision = cfd195c76882aa9b997560ca7cb95d72fbf5db00;
-			};
-		};
-		2568AF5C2CB5342B007EE00F /* XCRemoteSwiftPackageReference "swift-nio" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/apple/swift-nio.git";
-			requirement = {
-				kind = exactVersion;
-				version = 2.90.0;
 			};
 		};
 		257B6E092CB5717B004F5438 /* XCRemoteSwiftPackageReference "swift-atomics" */ = {
@@ -2017,31 +1995,6 @@
 		2558D4B52F96AFCB0027A529 /* AsyncHTTPClient */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = AsyncHTTPClient;
-		};
-		2568AF5D2CB5342B007EE00F /* NIO */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 2568AF5C2CB5342B007EE00F /* XCRemoteSwiftPackageReference "swift-nio" */;
-			productName = NIO;
-		};
-		2568AF5F2CB5342B007EE00F /* NIOConcurrencyHelpers */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 2568AF5C2CB5342B007EE00F /* XCRemoteSwiftPackageReference "swift-nio" */;
-			productName = NIOConcurrencyHelpers;
-		};
-		2568AF612CB5342B007EE00F /* NIOCore */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 2568AF5C2CB5342B007EE00F /* XCRemoteSwiftPackageReference "swift-nio" */;
-			productName = NIOCore;
-		};
-		2568AF632CB5342B007EE00F /* NIOEmbedded */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 2568AF5C2CB5342B007EE00F /* XCRemoteSwiftPackageReference "swift-nio" */;
-			productName = NIOEmbedded;
-		};
-		2568AF652CB5342B007EE00F /* NIOFoundationCompat */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 2568AF5C2CB5342B007EE00F /* XCRemoteSwiftPackageReference "swift-nio" */;
-			productName = NIOFoundationCompat;
 		};
 		257B6E0A2CB5717B004F5438 /* Atomics */ = {
 			isa = XCSwiftPackageProductDependency;
