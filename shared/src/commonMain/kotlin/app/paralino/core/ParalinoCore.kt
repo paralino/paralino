@@ -364,7 +364,7 @@ val coreModule = module {
     single { UserRepository(get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { LocationUploadEngine(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { LocationSaveEventProcessingEngine(get(), get(), get(), get(), get(), get(), get()) }
-    single { LocationUploadEventProcessingEngine(get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+    single { LocationUploadEventProcessingEngine(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { LocationSharingContractFilter() }
     single { HandleGetLocationPayloadRequest(get(), get(), get(), get()) }
     single { LocationCacheRepository() }

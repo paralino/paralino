@@ -8,7 +8,9 @@ import app.paralino.core.models.AppHost
 import app.paralino.core.models.location.LocationDataModel
 import app.paralino.core.models.location.LocationPerformanceType
 import app.paralino.core.models.location.MemberGroupIdForUpload
+import app.paralino.core.provider.AppLifecycleType
 import app.paralino.core.provider.ICoroutineScopeProvider
+import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.base.AppConfigRepository
 import app.paralino.core.repo.location.LocationPerformanceManager
@@ -28,7 +30,8 @@ class LocationUploadEventProcessingEngine(
     private val savePendingLocationUseCase: SavePendingLocationUseCase,
     private val placesActivityProcessor: IPlacesActivityProcessor,
     private val batteryAlertUploadEngine: IBatteryAlertUploadEngine,
-    private val sharingContractFilter: LocationSharingContractFilter
+    private val sharingContractFilter: LocationSharingContractFilter,
+    private val deviceApiProvider: IDeviceApiProvider
 ) : ILocationEventProcessingEngine(scope = scopeProvider.userSessionIOScope) {
     override val tag: String = "upload"
     override val processingRate: Duration
@@ -37,10 +40,17 @@ class LocationUploadEventProcessingEngine(
                 AppHost.MAIN_APP,
                 AppHost.IOS_NOTIFICATION_EXTENSION -> {
                     when (locationPerformanceManager.locationPerformanceType.value.current) {
-                        LocationPerformanceType.HIGH_BATTERY_SAVER -> 60.seconds
-                        LocationPerformanceType.BATTERY_SAVER -> 60.seconds
-                        LocationPerformanceType.BALANCED -> 40.seconds
-                        LocationPerformanceType.MEDIUM_HIGH -> 10.seconds
+                        LocationPerformanceType.HIGH_BATTERY_SAVER -> 120.seconds
+                        LocationPerformanceType.BATTERY_SAVER -> 90.seconds
+                        LocationPerformanceType.BALANCED -> {
+                            when (deviceApiProvider.appLifecycleState.value.current) {
+                                AppLifecycleType.ACTIVE -> 40.seconds
+                                AppLifecycleType.INACTIVE,
+                                AppLifecycleType.BACKGROUND,
+                                AppLifecycleType.DESTROYED -> 90.seconds
+                            }
+                        }
+                        LocationPerformanceType.MEDIUM_HIGH -> 15.seconds
                         LocationPerformanceType.HIGH,
                         LocationPerformanceType.HIGHER_FOCUS,
                         LocationPerformanceType.VERY_HIGH,
