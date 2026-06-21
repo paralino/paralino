@@ -137,7 +137,11 @@ fun GroupSpaceDetailsHeader(
                     CoreAppIcons.LocationOff.asPainterResource()
                 },
                 items = null,
-                isActive = sharingStatus != null,
+                stateType = if (sharingStatus != null) {
+                    GroupSpaceFocusedFeatureElementStateType.ACTIVE
+                } else {
+                    GroupSpaceFocusedFeatureElementStateType.INACTIVE
+                },
                 bottomExtraContent = {
                     if (sharingStatus != null) {
                         GroupDetailSharingStatusElement(
@@ -155,7 +159,11 @@ fun GroupSpaceDetailsHeader(
                 title = stringResource(MR.strings.places_list_screen_title),
                 icon = CoreAppIcons.MapsHomeWork.asPainterResource(),
                 items = featurePlaces,
-                isActive = featurePlaces.isNotEmpty(),
+                stateType = if (featurePlaces.isNotEmpty()) {
+                    GroupSpaceFocusedFeatureElementStateType.ACTIVE
+                } else {
+                    GroupSpaceFocusedFeatureElementStateType.IDLE
+                },
                 bottomExtraContent = null,
                 onChildItemClick = onPlaceClick
             )
@@ -166,7 +174,11 @@ fun GroupSpaceDetailsHeader(
                     title = stringResource(MR.strings.privacy_zones_list_screen_title),
                     icon = CoreAppIcons.PrivacyZone.asPainterResource(),
                     items = featurePrivacyZones,
-                    isActive = featurePrivacyZones.isNotEmpty(),
+                    stateType = if (featurePrivacyZones.isNotEmpty()) {
+                        GroupSpaceFocusedFeatureElementStateType.ACTIVE
+                    } else {
+                        GroupSpaceFocusedFeatureElementStateType.IDLE
+                    },
                     bottomExtraContent = null,
                     onChildItemClick = onPrivacyZoneClick
                 )

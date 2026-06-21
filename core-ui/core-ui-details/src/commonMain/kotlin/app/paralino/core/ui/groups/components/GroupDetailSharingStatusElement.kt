@@ -29,7 +29,7 @@ fun GroupDetailSharingStatusElement(
     contract: LocationSharingState,
     isPersonalSpace: Boolean
 ) {
-    val backgroundColor = MaterialTheme.colors.surface
+    val backgroundColor = MaterialTheme.colors.background
     val contentColor = contentColorFor(backgroundColor = backgroundColor)
     Column(
         modifier = modifier,

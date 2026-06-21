@@ -45,64 +45,70 @@ fun GroupSpaceFocusedFeatureElement(
     modifier: Modifier,
     title: String,
     icon: Painter,
-    isActive: Boolean,
+    stateType: GroupSpaceFocusedFeatureElementStateType,
     items: List<GroupSpaceFocusedFeatureChildItem>?,
     bottomExtraContent: (@Composable () -> Unit)? = null,
     onChildItemClick: (GroupSpaceFocusedFeatureChildItem) -> Unit
 ) {
-    val backgroundColor = if (isActive) {
-        AppColors.accentDark.copy(alpha = 0.1f)
-    } else {
-        AppColors.redMain.copy(alpha = 0.1f)
+    val backgroundColor = when (stateType) {
+        GroupSpaceFocusedFeatureElementStateType.ACTIVE -> AppColors.accentDark.copy(alpha = 0.1f)
+        GroupSpaceFocusedFeatureElementStateType.INACTIVE -> AppColors.redMain.copy(alpha = 0.1f)
+        GroupSpaceFocusedFeatureElementStateType.IDLE -> MaterialTheme.colors.surface
     }
 
-    val iconBackgroundColor = if (isActive) {
-        if (isSystemInDarkTheme()) {
-            AppColors.accentDark.copy(alpha = 0.2f)
-        } else {
-            AppColors.accentDark.copy(alpha = 0.15f)
+    val iconBackgroundColor = when (stateType) {
+        GroupSpaceFocusedFeatureElementStateType.ACTIVE -> {
+            if (isSystemInDarkTheme()) {
+                AppColors.accentDark.copy(alpha = 0.2f)
+            } else {
+                AppColors.accentDark.copy(alpha = 0.15f)
+            }
         }
-    } else {
-        AppColors.redMain.copy(alpha = 0.2f)
+        GroupSpaceFocusedFeatureElementStateType.INACTIVE -> AppColors.redMain.copy(alpha = 0.2f)
+        GroupSpaceFocusedFeatureElementStateType.IDLE -> MaterialTheme.colors.surface
     }
 
-    val arrowTintColor = if (isActive) {
-        AppColors.accentDark.copy(alpha = 0.5f)
-    } else {
-        AppColors.redMain.copy(alpha = 0.5f)
+    val arrowTintColor = when (stateType) {
+        GroupSpaceFocusedFeatureElementStateType.ACTIVE -> AppColors.accentDark.copy(alpha = 0.5f)
+        GroupSpaceFocusedFeatureElementStateType.INACTIVE -> AppColors.redMain.copy(alpha = 0.5f)
+        GroupSpaceFocusedFeatureElementStateType.IDLE -> MaterialTheme.colors.onSurface.copy(alpha = 0.5f)
     }
 
-    val iconTintColor = if (isActive) {
-        if (isSystemInDarkTheme()) {
-            AppColors.accent
-        } else {
-            AppColors.accentDark
+    val iconTintColor = when (stateType) {
+        GroupSpaceFocusedFeatureElementStateType.ACTIVE -> {
+            if (isSystemInDarkTheme()) {
+                AppColors.accent
+            } else {
+                AppColors.accentDark
+            }
         }
-    } else {
-        AppColors.redMain
+        GroupSpaceFocusedFeatureElementStateType.INACTIVE -> AppColors.redMain
+        GroupSpaceFocusedFeatureElementStateType.IDLE -> MaterialTheme.colors.onSurface.copy(0.7f)
     }
 
-    val contentColor = if (isActive) {
-        if (isSystemInDarkTheme()) {
-            MaterialTheme.colors.onBackground
-        } else {
-            MaterialTheme.colors.primary
+    val contentColor = when (stateType) {
+        GroupSpaceFocusedFeatureElementStateType.ACTIVE -> {
+            if (isSystemInDarkTheme()) {
+                MaterialTheme.colors.onBackground
+            } else {
+                MaterialTheme.colors.primary
+            }
         }
-    } else {
-        AppColors.redMain
+        GroupSpaceFocusedFeatureElementStateType.INACTIVE -> AppColors.redMain
+        GroupSpaceFocusedFeatureElementStateType.IDLE -> MaterialTheme.colors.onSurface.copy(0.7f)
     }
 
     Column(
         modifier = modifier
-            .conditional(isActive) {
+            .conditional(stateType == GroupSpaceFocusedFeatureElementStateType.ACTIVE) {
                 shadow(
-                    elevation = if (isActive) 12.dp else 4.dp,
+                    elevation = 12.dp,
                     shape = RoundedCornerShape(16.dp),
                     spotColor = backgroundColor
                 )
                     .border(
-                        width = if (isActive) 2.dp else 1.dp,
-                        color = if (isActive) MaterialTheme.colors.background else MaterialTheme.colors.surface,
+                        width = 2.dp,
+                        color = MaterialTheme.colors.background,
                         shape = RoundedCornerShape(16.dp)
                     )
             }
@@ -123,8 +129,22 @@ fun GroupSpaceFocusedFeatureElement(
                 modifier = Modifier
                     .size(36.dp)
                     .border(
-                        width = 2.dp,
-                        color = MaterialTheme.colors.background,
+                        width = when (stateType) {
+                            GroupSpaceFocusedFeatureElementStateType.ACTIVE,
+                            GroupSpaceFocusedFeatureElementStateType.INACTIVE -> 2.dp
+                            GroupSpaceFocusedFeatureElementStateType.IDLE -> 1.dp
+                        },
+                        color = when (stateType) {
+                            GroupSpaceFocusedFeatureElementStateType.ACTIVE,
+                            GroupSpaceFocusedFeatureElementStateType.INACTIVE -> MaterialTheme.colors.background
+                            GroupSpaceFocusedFeatureElementStateType.IDLE -> {
+                                if (isSystemInDarkTheme()) {
+                                    MaterialTheme.colors.background
+                                } else {
+                                    MaterialTheme.colors.secondary.copy(alpha = ContentAlpha.medium)
+                                }
+                            }
+                        },
                         shape = RoundedCornerShape(8.dp)
                     )
                     .clip(RoundedCornerShape(8.dp))
@@ -225,4 +245,8 @@ fun GroupSpaceFocusedFeatureElement(
             bottomExtraContent?.invoke()
         }
     }
+}
+
+enum class GroupSpaceFocusedFeatureElementStateType {
+    ACTIVE, INACTIVE, IDLE,
 }
