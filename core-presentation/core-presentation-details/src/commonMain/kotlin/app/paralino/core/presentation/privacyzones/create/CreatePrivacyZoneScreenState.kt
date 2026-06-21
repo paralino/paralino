@@ -116,6 +116,7 @@ data class CreatePrivacyZoneScreenState constructor(
 
     companion object {
         const val maxMessageLength: Int = 40
+        const val maxNameLength: Int = 30
         fun empty(
             groupId: GroupOrSpaceId,
             lat: Double? = null,

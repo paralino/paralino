@@ -49,6 +49,7 @@ import app.paralino.core.models.data
 import app.paralino.core.presentation.common.AlertDialogAction
 import app.paralino.core.presentation.common.BottomSheetPickerType
 import app.paralino.core.presentation.share.SharingStartScreenEvent
+import app.paralino.core.presentation.share.SharingStartScreenState
 import app.paralino.core.presentation.share.SharingStartScreenUiEvent
 import app.paralino.core.presentation.share.SharingStartViewModel
 import app.paralino.core.provider.localizedString
@@ -409,6 +410,7 @@ fun SharingStartScreenCore(
                                 modifier = Modifier.heightIn(min = 70.dp),
                                 text = state.deviceName ?: "",
                                 hint = stringResource(MR.strings.groups_sharing_device_name_placeholder),
+                                maxTextLength = SharingStartScreenState.maxDeviceNameLength,
                                 hasError = false,
                                 keyboardType = KeyboardType.Text,
                                 imeAction = ImeAction.Done,

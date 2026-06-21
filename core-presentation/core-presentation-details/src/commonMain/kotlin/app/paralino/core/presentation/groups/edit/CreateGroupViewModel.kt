@@ -49,8 +49,6 @@ class CreateGroupViewModel(
     private val _eventChannel = Channel<CreateGroupScreenEvent?>()
     val events = _eventChannel.receiveAsFlow()
 
-    val groupNameLengthLimit = 35
-
     init {
         coroutineScope.launch {
             val value = when {
@@ -237,7 +235,7 @@ class CreateGroupViewModel(
     }
 
     private fun updateName(name: String) {
-        if (name.trim().length > groupNameLengthLimit)
+        if (name.trim().length > CreateGroupState.groupNameLengthLimit)
             return
         _uiState.update {
             it.mapSuccess { it.copy(name = name, hasNameError = false) }

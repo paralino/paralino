@@ -727,6 +727,7 @@ class SharingStartViewModel(
 
     fun onDeviceNameChange(name: String) {
         if (_uiState.value.loadingAction) return
+        if (name.trim().length > SharingStartScreenState.maxDeviceNameLength) return
         _uiState.update { it.copy(deviceName = name) }
     }
 

@@ -3,9 +3,9 @@ package app.paralino.core.presentation.settings.editprofile
 import app.paralino.core.domain.user.UpdateUserDataUseCase
 import app.paralino.core.models.Payload
 import app.paralino.core.models.base.ImageModel
+import app.paralino.core.models.settings.FormValidation
 import app.paralino.core.models.user.UserMeData
 import app.paralino.core.presentation.CoreViewModel
-import app.paralino.core.models.settings.FormValidation
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.extensions.errorString
 import app.paralino.core.utils.extensions.getFormValidationErrorText
@@ -78,6 +78,8 @@ class EditProfileViewModel constructor(
 
     fun onNameChange(name: String) {
         if (_uiState.value.actionLoading == true) return
+        if (name.trim().length > EditProfileScreenState.profileNameLengthLimit) return
+
         _uiState.update { it.copy(name = name, hasNameError = false) }
     }
 }

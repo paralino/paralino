@@ -100,8 +100,6 @@ class CreatePrivacyZoneViewModel(
     private var mapPosition: LatLng? = null
     val isNewZone: Boolean = zoneId.isNullOrBlank()
 
-    private val zoneNameLengthLimit = 30
-
     init {
         coroutineScope.launch {
             val value = when {
@@ -650,7 +648,7 @@ class CreatePrivacyZoneViewModel(
         name: String? = uiState.value.data?.name,
         image: ImageModel? = uiState.value.data?.image
     ) {
-        val name = if ((name?.trim()?.length ?: 0) > zoneNameLengthLimit) {
+        val name = if ((name?.trim()?.length ?: 0) > CreatePrivacyZoneScreenState.maxNameLength) {
             uiState.value.data?.name ?: ""
         } else {
             name ?: ""

@@ -136,6 +136,7 @@ private fun GroupCreateScreen(
                 shakeImage = state.isNewGroup,
                 image = state.image,
                 name = state.name,
+                maxTextLength = CreateGroupState.groupNameLengthLimit,
                 hint = stringResource(MR.strings.group_create_name_placeholder),
                 hasNameError = state.hasNameError,
                 suggestions = state.suggestions,
