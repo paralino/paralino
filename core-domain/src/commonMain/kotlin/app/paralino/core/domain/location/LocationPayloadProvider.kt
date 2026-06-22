@@ -101,7 +101,7 @@ class LocationPayloadProvider(
                     val isInsidePrivacyZone = zoneResult != null
                     val adjustedCoordinates = if (approximateRadius != null) {
                         // sharing approximate
-                        if (zoneResult != null && zoneResult.uploadAccuracyMeters < approximateRadius) {
+                        if (zoneResult == null || zoneResult.uploadAccuracyMeters < approximateRadius) {
                             // adjust with approximate only if its radius is bigger than current privacy zone radius
                             approximateLocationObfuscator.obfuscate(
                                 groupId = groupId,
