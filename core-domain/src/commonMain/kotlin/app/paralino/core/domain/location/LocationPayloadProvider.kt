@@ -72,18 +72,12 @@ class LocationPayloadProvider(
             is LocationPayloadStatus.Success -> {
                 val status = memberDeviceStatusProvider.getStatus(groupId = groupId, contract = contract)
                 val locationData = safeLet(data, contract) { data, contract ->
-                    var workingLat = data.lat
-                    var workingLng = data.lng
-
                     val zoneResult = if (!groupId.isPersonalSpace) {
                         privacyZoneObfuscator.obfuscateIfInsideZone(
                             groupId = groupId,
                             trueLat = data.lat,
                             trueLng = data.lng,
-                        )?.also { zoneResult ->
-                            workingLat = zoneResult.lat
-                            workingLng = zoneResult.lng
-                        }
+                        )
                     } else {
                         null
                     }
@@ -105,8 +99,8 @@ class LocationPayloadProvider(
                             // adjust with approximate only if its radius is bigger than current privacy zone radius
                             approximateLocationObfuscator.obfuscate(
                                 groupId = groupId,
-                                trueLat = workingLat,
-                                trueLng = workingLng,
+                                trueLat = data.lat,
+                                trueLng = data.lng,
                                 radiusMeters = approximateRadius
                             )
                         } else {
@@ -131,8 +125,8 @@ class LocationPayloadProvider(
                     LocationDataModel(
                         timeUTC = data.timeUTC,
                         endTimeUTC = contract.endTimeUTC?.takeIf { contract.shareDeviceStatus },
-                        lat = (adjustedCoordinates?.location?.lat ?: workingLat).roundToPrecision(decimalPlaces = 6),
-                        lng = (adjustedCoordinates?.location?.lng ?: workingLng).roundToPrecision(decimalPlaces = 6),
+                        lat = (adjustedCoordinates?.location?.lat ?: zoneResult?.lat ?: data.lat).roundToPrecision(decimalPlaces = 6),
+                        lng = (adjustedCoordinates?.location?.lng ?: zoneResult?.lng ?: data.lng).roundToPrecision(decimalPlaces = 6),
                         accuracy = adjustedAccuracy,
                         speed = data.speed?.takeIf {
                             contract.shareSpeed && it != 0f && !isApproximate
