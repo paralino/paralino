@@ -568,6 +568,7 @@
     <string name="groups_sharing_setting_approximateLocation_title">Approximate location</string>
     <string name="groups_sharing_setting_approximateLocation_description_off">Only share approximate location area even if your location is accurate.</string>
     <string name="groups_sharing_setting_approximateLocation_description_on">Select the radius of an approximate area. Your precise location will be hidden and replaced by a point somewhere inside the chosen radius.</string>
+    <string name="groups_sharing_setting_approximateLocation_speedElevation_unavailable">Speed and elevation are not available when **approximate location** sharing is enabled.</string>
     <string name="location_sharing_button_start_groups">Start sharing</string>
     <string name="location_sharing_button_start_personal">Start tracking</string>
     <string name="location_sharing_button_stop_groups">Stop sharing</string>

@@ -671,12 +671,24 @@ class SharingStartViewModel(
     }
 
     fun turnOnSpeedSharing(state: Boolean) {
+        if (!_uiState.value.isSpeedElevationAvailable) {
+            showSnackbar(
+                MR.strings.groups_sharing_setting_approximateLocation_speedElevation_unavailable.localizedString()
+            )
+            return
+        }
         _uiState.update {
             it.copy(shareSpeed = state)
         }
     }
 
     fun turnOnElevationSharing(state: Boolean) {
+        if (!_uiState.value.isSpeedElevationAvailable) {
+            showSnackbar(
+                MR.strings.groups_sharing_setting_approximateLocation_speedElevation_unavailable.localizedString()
+            )
+            return
+        }
         _uiState.update {
             it.copy(shareElevation = state)
         }
