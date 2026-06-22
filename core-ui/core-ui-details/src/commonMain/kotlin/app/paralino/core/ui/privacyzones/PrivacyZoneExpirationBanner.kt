@@ -38,7 +38,7 @@ fun PrivacyZoneExpirationBanner(
         Icon(
             painter = CoreAppIcons.Timer.asPainterResource(),
             contentDescription = null,
-            modifier = Modifier.size(16.dp),
+            modifier = Modifier.size(18.dp),
             tint = MaterialTheme.colors.onSurface
         )
         Spacer(modifier = Modifier.size(4.dp))
