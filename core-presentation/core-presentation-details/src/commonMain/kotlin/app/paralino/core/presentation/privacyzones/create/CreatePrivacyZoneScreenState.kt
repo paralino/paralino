@@ -20,7 +20,6 @@ import app.paralino.core.presentation.map.MapPinType
 import app.paralino.core.presentation.places.create.PlaceAddressSearchUiMode
 import app.paralino.core.presentation.places.create.PlaceAddressSuggestion
 import app.paralino.core.presentation.places.create.PlaceMapFallbackLatLng
-import app.paralino.core.presentation.share.ApproximateLocationDistancePair
 import app.paralino.core.provider.current
 import app.paralino.core.provider.localizedString
 import app.paralino.core.utils.Emojis
@@ -41,8 +40,8 @@ data class CreatePrivacyZoneScreenState constructor(
     val fallbackCenterLatLng: PlaceMapFallbackLatLng?,
     val lat: Double?,
     val lng: Double?,
-    val radiusPresets: List<ApproximateLocationDistancePair>,
-    val radiusValue: ApproximateLocationDistancePair,
+    val radiusPresets: List<PrivacyZoneLocationDistancePair>,
+    val radiusValue: PrivacyZoneLocationDistancePair,
     val radiusText: String,
     val hasNameError: Boolean,
     val notifyOthersInZone: Boolean,
@@ -121,7 +120,7 @@ data class CreatePrivacyZoneScreenState constructor(
             groupId: GroupOrSpaceId,
             lat: Double? = null,
             lng: Double? = null,
-            radiusValue: ApproximateLocationDistancePair,
+            radiusValue: PrivacyZoneLocationDistancePair,
             radiusText: String,
             memberPreviewState: GroupMemberItemStateWithOneLocation,
             androidMapSDKProvider: MapsSDKProvider?,
@@ -147,7 +146,7 @@ data class CreatePrivacyZoneScreenState constructor(
                 fallbackCenterLatLng = fallbackCenterLatLng,
                 lat = lat,
                 lng = lng,
-                radiusPresets = ApproximateLocationDistancePair.pairs,
+                radiusPresets = PrivacyZoneLocationDistancePair.pairs,
                 radiusValue = radiusValue,
                 radiusText = radiusText,
                 hasNameError = false,

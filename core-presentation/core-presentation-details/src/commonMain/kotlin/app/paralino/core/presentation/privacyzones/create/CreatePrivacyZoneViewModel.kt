@@ -36,7 +36,6 @@ import app.paralino.core.presentation.common.ScreenDimensionType
 import app.paralino.core.presentation.places.create.PlaceAddressSearchUiMode
 import app.paralino.core.presentation.places.create.PlaceAddressSuggestion
 import app.paralino.core.presentation.places.create.PlaceMapFallbackLatLng
-import app.paralino.core.presentation.share.ApproximateLocationDistancePair
 import app.paralino.core.provider.DistanceType
 import app.paralino.core.provider.FormattingFractionsMode
 import app.paralino.core.provider.IValueFormatter
@@ -136,8 +135,8 @@ class CreatePrivacyZoneViewModel(
                                     isRegion = true
                                 )
                             },
-                            radiusValue = ApproximateLocationDistancePair.default,
-                            radiusText = formatRadius(ApproximateLocationDistancePair.default),
+                            radiusValue = PrivacyZoneLocationDistancePair.default,
+                            radiusText = formatRadius(PrivacyZoneLocationDistancePair.default),
                             memberPreviewState = getMemberPreviewState(
                                 isInPrivacyZone = true,
                                 zoneMessage = null
@@ -149,9 +148,9 @@ class CreatePrivacyZoneViewModel(
 
                     else -> value.mapSuccess { zone ->
                         val zoneData = zone.data.data
-                        val radiusValue = ApproximateLocationDistancePair.pairForSelectedMeters(
-                            zoneData?.radiusMeters ?: ApproximateLocationDistancePair.default.meters
-                        ) ?: ApproximateLocationDistancePair.default
+                        val radiusValue = PrivacyZoneLocationDistancePair.pairForSelectedMeters(
+                            zoneData?.radiusMeters ?: PrivacyZoneLocationDistancePair.default.meters
+                        ) ?: PrivacyZoneLocationDistancePair.default
                         val existingExpiresAt = zoneData?.expiresAt
 
                         CreatePrivacyZoneScreenState(
@@ -186,7 +185,7 @@ class CreatePrivacyZoneViewModel(
                             fallbackCenterLatLng = null,
                             lat = zoneData?.lat,
                             lng = zoneData?.lng,
-                            radiusPresets = ApproximateLocationDistancePair.pairs,
+                            radiusPresets = PrivacyZoneLocationDistancePair.pairs,
                             radiusValue = radiusValue,
                             radiusText = formatRadius(radiusValue),
                             actionLoading = false,
@@ -695,7 +694,7 @@ class CreatePrivacyZoneViewModel(
         }
     }
 
-    private fun formatRadius(radiusValue: ApproximateLocationDistancePair): String {
+    private fun formatRadius(radiusValue: PrivacyZoneLocationDistancePair): String {
         return valueFormatter.getDistanceSmall(
             meters = when (valueFormatter.measurementSystem) {
                 MeasurementSystemType.METRIC -> radiusValue.meters.toDouble()
