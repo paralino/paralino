@@ -199,10 +199,10 @@ private fun PrivacyZonesEmptyScreenMapContent(
                         Text(
                             modifier = Modifier
                                 .align(Alignment.BottomEnd)
-                                .padding(8.dp),
+                                .padding(6.dp),
                             text = stringResource(MR.strings.privacy_zones_empty_state_map_label_your_location),
-                            fontSize = 10.sp,
-                            lineHeight = 10.sp,
+                            fontSize = 12.sp,
+                            lineHeight = 14.sp,
                             color = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.medium),
                         )
                     }
@@ -225,10 +225,10 @@ private fun PrivacyZonesEmptyScreenMapContent(
                         Text(
                             modifier = Modifier
                                 .align(Alignment.BottomStart)
-                                .padding(8.dp),
+                                .padding(6.dp),
                             text = stringResource(MR.strings.privacy_zones_empty_state_map_label_others_view),
-                            fontSize = 10.sp,
-                            lineHeight = 10.sp,
+                            fontSize = 12.sp,
+                            lineHeight = 14.sp,
                             color = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.medium),
                         )
                     }
