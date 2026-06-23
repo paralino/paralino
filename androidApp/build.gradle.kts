@@ -61,7 +61,8 @@ android {
     // release config is dynamically injected in release pipeline
     androidComponents.beforeVariants { variant ->
         val names = variant.productFlavors.map { flavor -> flavor.second }
-        val variantIgnore = (variant.buildType == "releaseTest" && names.contains("direct"))
+        val variantIgnore = variant.buildType == "releaseTest" && names.contains("direct")
+                || variant.buildType == "releaseLocal" && names.contains("playStore")
         variant.enable = !variantIgnore
     }
 
@@ -189,6 +190,16 @@ android {
                     this.signingConfig = config
                 }
         }
+        create("releaseLocal") {
+            initWith(getByName("release"))
+            matchingFallbacks.add("release")
+            isDefault = true
+            (signingConfigs.findByName("testConfig")?.takeIf { it.storeFile != null }
+                ?: signingConfigs.findByName("debug")?.takeIf { it.storeFile != null })
+                ?.let { config ->
+                    this.signingConfig = config
+                }
+        }
     }
 
     flavorDimensions += "version"
@@ -206,6 +217,7 @@ android {
             dimension = "version"
             versionCode = 91
             versionName = "2.4.0"
+            isDefault = true
 
             buildConfigField("String", "revenueCatApiKey", "null")
         }
