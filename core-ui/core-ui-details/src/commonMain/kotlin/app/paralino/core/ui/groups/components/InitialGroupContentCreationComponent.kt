@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -100,7 +99,6 @@ fun InitialGroupContentCreationComponent(
         Spacer(modifier = Modifier.size(if (isSmallScreen) 10.dp else 20.dp))
 
         MainInputField(
-            modifier = Modifier.height(70.dp),
             text = name,
             hint = hint,
             maxTextLength = maxTextLength,

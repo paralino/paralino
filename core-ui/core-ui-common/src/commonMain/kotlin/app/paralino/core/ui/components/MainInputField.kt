@@ -6,6 +6,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -59,7 +60,9 @@ fun MainInputField(
     onInputChange: (String) -> Unit,
 ) {
     Box(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier
+            .heightIn(min = 64.dp)
+            .fillMaxWidth(),
         contentAlignment = Alignment.BottomCenter
     ) {
         OutlinedTextField(
@@ -85,14 +88,12 @@ fun MainInputField(
                 Text(
                     modifier = Modifier
                         .background(MaterialTheme.colors.surface, RoundedCornerShape(4.dp))
-                        .padding(vertical = 2.dp, horizontal = 4.dp),
+                        .padding(vertical = 0.dp, horizontal = 4.dp),
                     text = hint,
                     textAlign = TextAlign.Start
                 )
             },
-            onValueChange = {
-                onInputChange(it)
-            },
+            onValueChange = onInputChange,
             shape = MaterialTheme.shapes.small,
             isError = hasError,
             colors = TextFieldDefaults.outlinedTextFieldColors(

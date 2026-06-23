@@ -407,7 +407,6 @@ fun SharingStartScreenCore(
                             )
 
                             MainInputField(
-                                modifier = Modifier.heightIn(min = 70.dp),
                                 text = state.deviceName ?: "",
                                 hint = stringResource(MR.strings.groups_sharing_device_name_placeholder),
                                 maxTextLength = SharingStartScreenState.maxDeviceNameLength,
