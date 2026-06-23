@@ -797,7 +797,8 @@
     <string name="privacy_zones_create_location_hint_tap">**TIP:** Tap on the map to add or adjust your privacy zone</string>
     <string name="privacy_zones_create_location_hint_searchTap">**TIP:** Search or tap on the map to adjust your privacy zone</string>
     <string name="privacy_zones_create_location_hint_searchOnly">**TIP:** Start typing the address to find your privacy zone</string>
-    <string name="privacy_zones_create_name_placeholder">Name*</string>
+    <string name="privacy_zones_create_name_hint">Name</string>
+    <string name="privacy_zones_create_name_default">Privacy zone</string>
     <string name="privacy_zones_create_notify_others_title">Privacy zone status</string>
     <string name="privacy_zones_create_expiration_description_expires">Privacy zone will automatically expire after the selected duration</string>
     <string name="privacy_zones_create_expiration_description_alwaysOn">Privacy zone will stay active until you remove it</string>

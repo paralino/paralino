@@ -4,6 +4,7 @@ import app.paralino.core.MR
 import app.paralino.core.domain.crypto.user.CryptoUserKeysLocalSource
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.location.history.GetLocationHistoryUseCase
+import app.paralino.core.domain.privacyzone.nameOrDefault
 import app.paralino.core.models.CryptoResource
 import app.paralino.core.models.base.PushProvider
 import app.paralino.core.models.base.asGroupOrSpaceId
@@ -107,18 +108,18 @@ class RawCryptoPresentation constructor(
 
     fun getGroupPrivacyZoneRawPresentation(privacyZoneId: String): Flow<RawPresentationModel> {
         return privacyZoneLocal.getPrivacyZoneRawPresentation(privacyZoneId)
-            .map {
+            .map { zone ->
                 RawPresentationModelSection(
-                    title = it.second.nameOrNull?.let { name -> "**$name**" } ?: "---",
+                    title = zone.second.nameOrNull?.let { "**${zone.second.nameOrDefault}**" } ?: "---",
                     subtitle = null,
                     decryptedDataSubtitle = null,
                     contentIdInfo = buildList {
-                        if (it.first.ownerUserId == appPrefs.userId) {
+                        if (zone.first.ownerUserId == appPrefs.userId) {
                             add("Privacy zone ID: **$privacyZoneId**")
                         }
                     }.map { ContentIdItem(it) },
-                    rawData = it.first.data,
-                    decryptedData = it.second.data.mapSuccess { zoneData ->
+                    rawData = zone.first.data,
+                    decryptedData = zone.second.data.mapSuccess { zoneData ->
                         BaseRemoteModule.prettyPrintFormatter.encodeToString(zoneData)
                     },
                     type = RawPresentationDataType.GroupPrivacyZonePresentation(privacyZoneId)

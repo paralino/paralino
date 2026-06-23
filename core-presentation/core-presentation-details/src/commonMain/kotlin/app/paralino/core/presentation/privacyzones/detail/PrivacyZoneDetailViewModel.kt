@@ -4,6 +4,7 @@ import app.paralino.core.MR
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.privacyzone.DeletePrivacyZoneUseCase
 import app.paralino.core.domain.privacyzone.GetPrivacyZonesUseCase
+import app.paralino.core.domain.privacyzone.nameOrDefault
 import app.paralino.core.domain.user.PremiumStatusManager
 import app.paralino.core.logg
 import app.paralino.core.models.Payload
@@ -81,7 +82,7 @@ class PrivacyZoneDetailViewModel(
                 groupOrSpaceId = groupId.asGroupOrSpaceId(),
                 zoneId = zoneId,
                 groupName = group.name,
-                name = zoneData.name,
+                name = zone.nameOrDefault,
                 image = zoneData.image,
                 lat = zoneData.lat,
                 lng = zoneData.lng,

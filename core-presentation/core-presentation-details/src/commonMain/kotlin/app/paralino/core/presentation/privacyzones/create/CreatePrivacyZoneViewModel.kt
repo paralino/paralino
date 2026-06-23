@@ -7,6 +7,7 @@ import app.paralino.core.domain.location.GetMemberWithLocationsUseCase
 import app.paralino.core.domain.location.LocationCacheRepository
 import app.paralino.core.domain.privacyzone.CreatePrivacyZoneUseCase
 import app.paralino.core.domain.privacyzone.UpdatePrivacyZoneUseCase
+import app.paralino.core.domain.privacyzone.nameOrDefault
 import app.paralino.core.domain.user.PremiumStatusLimitState
 import app.paralino.core.domain.user.PremiumStatusManager
 import app.paralino.core.domain.user.RefreshEverythingUseCase
@@ -158,7 +159,10 @@ class CreatePrivacyZoneViewModel(
                             isNewZone = false,
                             screenStep = editStep ?: CreatePrivacyZoneScreenStep.NAME_SUGGESTION,
                             editOnlyCurrentStep = editStep != null,
-                            name = zoneData?.name ?: "---",
+                            name = when (editStep) {
+                                CreatePrivacyZoneScreenStep.NAME_SUGGESTION -> zone.nameOrNull ?: ""
+                                else -> zone.nameOrDefault
+                            },
                             image = zoneData?.image ?: ImageModel.emoji(Emojis.lock),
                             nameSuggestions = emptyList(),
                             address = TextFieldValue(text = ""),
@@ -328,20 +332,11 @@ class CreatePrivacyZoneViewModel(
         }
 
         val filteredName = data.name.trim().replace("\n", " ")
-        if (filteredName.isBlank()) {
-            coroutineScope.launch {
-                _eventChannel.send(CreatePrivacyZoneScreenEvent.MissingInfo)
-            }
-            _uiState.update {
-                it.mapSuccess { it.copy(hasNameError = true) }
-            }
-            return
-        }
 
         val zone = zoneFlow.value.data
         val existingExpiresAt = zone?.data?.data?.expiresAt
         val zoneData = PrivacyZoneData(
-            name = data.name,
+            name = filteredName,
             image = data.image,
             lat = data.lat,
             lng = data.lng,

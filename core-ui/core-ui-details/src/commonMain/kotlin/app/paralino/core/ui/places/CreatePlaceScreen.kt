@@ -227,6 +227,7 @@ private fun CreatePlaceScreenCore(
                 shakeImage = state.isNewPlace,
                 image = state.image,
                 name = state.name,
+                namePlaceholder = null,
                 maxTextLength = CreatePlaceScreenState.placeNameLengthLimit,
                 hint = stringResource(MR.strings.places_create_name_placeholder),
                 hasNameError = state.hasNameError,

@@ -258,8 +258,13 @@ private fun CreatePrivacyZoneScreenContent(
                 shakeImage = state.isNewZone,
                 image = state.image,
                 name = state.name,
+                namePlaceholder = if (state.isNewZone) {
+                    null
+                } else {
+                    stringResource(MR.strings.privacy_zones_create_name_default)
+                },
                 maxTextLength = CreatePrivacyZoneScreenState.maxNameLength,
-                hint = stringResource(MR.strings.privacy_zones_create_name_placeholder),
+                hint = stringResource(MR.strings.privacy_zones_create_name_hint),
                 hasNameError = state.hasNameError,
                 suggestions = state.nameSuggestions,
                 bottomContent = {

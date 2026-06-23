@@ -99,6 +99,7 @@ fun EditProfileScreen(
                 shakeImage = canShakeImage,
                 image = state.image,
                 name = state.name,
+                namePlaceholder = null,
                 maxTextLength = EditProfileScreenState.profileNameLengthLimit,
                 hint = stringResource(MR.strings.settings_profile_name_placeholder),
                 hasNameError = state.hasNameError,

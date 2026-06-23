@@ -48,6 +48,7 @@ fun InitialGroupContentCreationComponent(
     image: ImageModel,
     name: String,
     hint: String,
+    namePlaceholder: String?,
     maxTextLength: Int,
     hasNameError: Boolean,
     suggestions: List<SuggestionSectionChipData>,
@@ -97,16 +98,24 @@ fun InitialGroupContentCreationComponent(
         }
 
         Spacer(modifier = Modifier.size(if (isSmallScreen) 10.dp else 20.dp))
+        var isNameFocused by remember { mutableStateOf(false) }
 
         MainInputField(
             text = name,
-            hint = hint,
+            hint = if (isNameFocused || namePlaceholder == null || name.isNotBlank()) {
+                hint
+            } else {
+                namePlaceholder
+            },
             maxTextLength = maxTextLength,
             hasError = hasNameError,
             keyboardType = KeyboardType.Text,
             imeAction = ImeAction.Done,
             focusManager = focusManager,
-            onInputChange = onNameChanged
+            onInputChange = onNameChanged,
+            onFocusChanged = {
+                isNameFocused = it
+            }
         )
 
         if (suggestions.isNotEmpty()) {

@@ -41,12 +41,13 @@ data class PlaceListItemData constructor(
 
     constructor(
         zone: GroupPrivacyZone,
-        expirationStatus: PlaceZoneExpirationStatus
+        expirationStatus: PlaceZoneExpirationStatus,
+        zoneName: String
     ) : this(
         id = zone.id,
         groupOrSpaceId = zone.groupId.asGroupOrSpaceId(),
         type = PlaceZoneType.PrivacyZone,
-        name = zone.data.data?.name ?: "---",
+        name = zoneName,
         image = zone.data.data?.image ?: ImageModel.emoji(Emojis.robot),
         expirationStatus = expirationStatus,
         private = true,

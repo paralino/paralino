@@ -2,6 +2,7 @@ package app.paralino.core.presentation.map
 
 import app.paralino.core.MR
 import app.paralino.core.db.AppPrefs
+import app.paralino.core.domain.privacyzone.nameOrDefault
 import app.paralino.core.domain.user.PremiumStatusManager
 import app.paralino.core.models.base.GroupWithMembersOrUserSpace
 import app.paralino.core.models.base.ImageModel
@@ -147,6 +148,7 @@ class MapStateMapper(
             .map { zone ->
                 PlaceListItemData(
                     zone = zone,
+                    zoneName = zone.nameOrDefault,
                     expirationStatus = valueFormatter.formatExpirationDateTimeUTC(
                         expiresAtTimeUTC = zone.data.data?.expiresAt,
                         showActiveStatus = false

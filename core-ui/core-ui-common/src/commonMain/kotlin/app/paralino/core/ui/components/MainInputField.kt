@@ -26,6 +26,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusManager
+import androidx.compose.ui.focus.FocusState
+import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalFocusManager
@@ -47,6 +50,7 @@ fun MainInputField(
     text: String,
     hint: String,
     hasError: Boolean,
+    placeholder: String? = null,
     maxTextLength: Int? = null,
     textStyle: TextStyle = LocalTextStyle.current,
     keyboardType: KeyboardType = KeyboardType.Text,
@@ -57,6 +61,7 @@ fun MainInputField(
         KeyboardCapitalization.Sentences
     },
     onKeyboardAction: () -> Unit = {},
+    onFocusChanged: (Boolean) -> Unit = {},
     onInputChange: (String) -> Unit,
 ) {
     Box(
@@ -68,7 +73,8 @@ fun MainInputField(
         OutlinedTextField(
             modifier = Modifier
                 .wrapContentHeight(unbounded = true)
-                .fillMaxWidth(),
+                .fillMaxWidth()
+                .onFocusChanged { onFocusChanged(it.isFocused) },
             textStyle = textStyle,
             value = text,
             singleLine = true,
@@ -92,6 +98,17 @@ fun MainInputField(
                     text = hint,
                     textAlign = TextAlign.Start
                 )
+            },
+            placeholder = if (placeholder != null) {
+                {
+                    Text(
+                        modifier = Modifier,
+                        text = placeholder,
+                        textAlign = TextAlign.Start
+                    )
+                }
+            } else {
+                null
             },
             onValueChange = onInputChange,
             shape = MaterialTheme.shapes.small,
