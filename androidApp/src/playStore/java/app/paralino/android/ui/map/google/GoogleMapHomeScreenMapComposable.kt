@@ -1,6 +1,8 @@
 package app.paralino.android.ui.map.google
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -9,6 +11,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import app.paralino.android.ui.map.google.history.GoogleMapLocationHistoryMapContent
 import app.paralino.android.ui.map.google.history.rememberGoogleMapLocationHistoryMapController
+import app.paralino.core.models.location.LatLng
 import app.paralino.core.presentation.history.LocationHistoryScreenUiState
 import app.paralino.core.presentation.history.LocationHistoryUiEvent
 import app.paralino.core.presentation.map.MapHomeScreenState
@@ -54,31 +57,83 @@ fun GoogleMapHomeScreenMapComposable(
         homeMapController
     }
 
-    GenericGoogleMapWrapper(
-        modifier = modifier,
-        mapData = mapController,
-        onMapClick = {
-            onMainEvent(MapHomeScreenUiEvent.OnMapClick(it))
-        },
-        onMapLongClick = {
-            onMainEvent(MapHomeScreenUiEvent.OnOpenCreatePlaceScreen(it))
-        },
-        onMapLoaded = {
-            isMapLoaded = true
-        },
-        content = {
-            if (historyUiState != null) {
-                GoogleMapLocationHistoryMapContent(
-                    uiState = historyUiState,
-                    isSatelliteMode = uiState.isSatelliteModeActive,
-                    onEvent = onHistoryEvent
+    Box(modifier = modifier) {
+        GenericGoogleMapWrapper(
+            modifier = Modifier.fillMaxSize(),
+            mapData = mapController,
+            onMapClick = {
+                onMainEvent(MapHomeScreenUiEvent.OnMapClick(it))
+            },
+            onMapLongClick = {
+                onMainEvent(MapHomeScreenUiEvent.OnMapLongPress(it))
+            },
+            onMapLoaded = {
+                isMapLoaded = true
+            },
+            content = {
+                if (historyUiState != null) {
+                    GoogleMapLocationHistoryMapContent(
+                        uiState = historyUiState,
+                        isSatelliteMode = uiState.isSatelliteModeActive,
+                        onEvent = onHistoryEvent
+                    )
+                } else {
+                    GoogleMapMainHomeMapContent(
+                        uiState = readyState,
+                        onEvent = onMainEvent
+                    )
+                }
+            }
+        )
+
+        when {
+            historyUiState?.tappedCoordinateState != null -> {
+                val tappedState = historyUiState.tappedCoordinateState!!
+                GoogleMapTapActionOverlay(
+                    modifier = Modifier.fillMaxSize(),
+                    tappedState = tappedState,
+                    cameraPositionState = cameraPositionState,
+                    showPrivacyZoneButton = !historyUiState.isPersonalHistory,
+                    onCreatePlace = {
+                        onHistoryEvent(
+                            LocationHistoryUiEvent.OnOpenCreatePlaceScreen(
+                                location = LatLng(lat = tappedState.lat, lng = tappedState.lng)
+                            )
+                        )
+                    },
+                    onCreatePrivacyZone = {
+                        onHistoryEvent(
+                            LocationHistoryUiEvent.OnOpenCreatePrivacyZoneScreen(
+                                location = LatLng(lat = tappedState.lat, lng = tappedState.lng)
+                            )
+                        )
+                    }
                 )
-            } else {
-                GoogleMapMainHomeMapContent(
-                    uiState = readyState,
-                    onEvent = onMainEvent
+            }
+
+            readyState?.tappedCoordinateState != null -> {
+                val tappedState = readyState.tappedCoordinateState!!
+                GoogleMapTapActionOverlay(
+                    modifier = Modifier.fillMaxSize(),
+                    tappedState = tappedState,
+                    cameraPositionState = cameraPositionState,
+                    showPrivacyZoneButton = !readyState.isPersonalSpace,
+                    onCreatePlace = {
+                        onMainEvent(
+                            MapHomeScreenUiEvent.OnOpenCreatePlaceScreen(
+                                location = LatLng(lat = tappedState.lat, lng = tappedState.lng)
+                            )
+                        )
+                    },
+                    onCreatePrivacyZone = {
+                        onMainEvent(
+                            MapHomeScreenUiEvent.OnOpenCreatePrivacyZoneScreen(
+                                location = LatLng(lat = tappedState.lat, lng = tappedState.lng)
+                            )
+                        )
+                    }
                 )
             }
         }
-    )
+    }
 }

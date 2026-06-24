@@ -239,6 +239,7 @@ class MapStateMapper(
             privacyZones = privacyZonesData,
             markers = markers,
             trackingMarker = trackingMarker,
+            tappedCoordinateState = previousState?.tappedCoordinateState,
             mapHomeScreenFocusType = focusType,
             mapSheetSelectedContentType = mapSheetSelectedContentType,
             selectedGroupSharingContract = selectedGroupContract,

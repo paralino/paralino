@@ -40,6 +40,7 @@ class MapComponentVC: UIViewController, UIGestureRecognizerDelegate {
         setupMapView()
         setupGestures()
         bindToViewModel()
+        updateTapActionMarker()
         
         // dark/light mode changes
         registerForTraitChanges([UITraitUserInterfaceStyle.self], handler: { (self: Self, previousTraitCollection: UITraitCollection) in
@@ -56,7 +57,7 @@ class MapComponentVC: UIViewController, UIGestureRecognizerDelegate {
             mapView.topAnchor.constraint(equalTo: view.topAnchor),
             mapView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             mapView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            mapView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -mapState!.bottomSafeArea)
+            mapView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -(mapState?.bottomSafeArea ?? 0))
         ])
         
         mapView.delegate = self
@@ -65,6 +66,36 @@ class MapComponentVC: UIViewController, UIGestureRecognizerDelegate {
         if let rect = mapState?.cameraPosition.cameraRect {
             mapView.setRegion(.init(rect), animated: false)
         }
+    }
+
+    private func updateTapActionMarker() {
+        let existingMarker = mapView.annotations.first { $0 is MapTapActionMarkerData } as? MapTapActionMarkerData
+
+        guard let tappedState = mapState?.tappedCoordinateState else {
+            if let existingMarker {
+                mapView.removeAnnotation(existingMarker)
+            }
+            return
+        }
+
+        let showPrivacyZoneButton = mapState?.showTapActionPrivacyZoneButton ?? true
+        let shouldReplace = existingMarker == nil
+            || existingMarker?.coordinate.latitude != tappedState.lat
+            || existingMarker?.coordinate.longitude != tappedState.lng
+            || existingMarker?.showPrivacyZoneButton != showPrivacyZoneButton
+
+        guard shouldReplace else { return }
+
+        if let existingMarker {
+            mapView.removeAnnotation(existingMarker)
+        }
+
+        let marker = MapTapActionMarkerData(
+            lat: tappedState.lat,
+            lng: tappedState.lng,
+            showPrivacyZoneButton: showPrivacyZoneButton
+        )
+        mapView.addAnnotation(marker)
     }
     
     func bindToViewModel() {
@@ -153,6 +184,20 @@ class MapComponentVC: UIViewController, UIGestureRecognizerDelegate {
                         self?.mapView.setRegion(.init(rect), animated: false)
                     }
                 }
+            }
+            .store(in: &cancellables)
+
+        mapState?.$tappedCoordinateState
+            .receive(on: RunLoop.main)
+            .sink { [weak self] _ in
+                self?.updateTapActionMarker()
+            }
+            .store(in: &cancellables)
+
+        mapState?.$showTapActionPrivacyZoneButton
+            .receive(on: RunLoop.main)
+            .sink { [weak self] _ in
+                self?.updateTapActionMarker()
             }
             .store(in: &cancellables)
     }
@@ -322,6 +367,28 @@ class MapComponentVC: UIViewController, UIGestureRecognizerDelegate {
 // MARK: - MKMapViewDelegate
 extension MapComponentVC: MKMapViewDelegate {
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
+        if let tapActionAnnotation = annotation as? MapTapActionMarkerData {
+            let identifier = MapTapActionMarkerData.reuseIdentifier
+            var annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: identifier) as? SwiftUIMapTapActionMarkerView
+
+            if annotationView == nil {
+                annotationView = SwiftUIMapTapActionMarkerView(annotation: tapActionAnnotation, reuseIdentifier: identifier)
+            }
+
+            annotationView?.annotation = tapActionAnnotation
+            annotationView?.setupSwiftUIView(
+                data: tapActionAnnotation,
+                onCreatePlace: { [weak self] in
+                    self?.mapState?.onTapActionCreatePlace?()
+                },
+                onCreatePrivacyZone: { [weak self] in
+                    self?.mapState?.onTapActionCreatePrivacyZone?()
+                }
+            )
+
+            return annotationView
+        }
+
         // Handle cluster annotations for history markers
         if let clusterAnnotation = annotation as? MKClusterAnnotation {
             let identifier = "HistoryClusterAnnotation"
@@ -395,6 +462,11 @@ extension MapComponentVC: MKMapViewDelegate {
     }
     
     func mapView(_ mapView: MKMapView, didSelect annotation: MKAnnotation) {
+        if annotation is MapTapActionMarkerData {
+            mapView.deselectAnnotation(annotation, animated: false)
+            return
+        }
+
         // Handle cluster selection for history markers
         if let clusterAnnotation = annotation as? MKClusterAnnotation {
             // Update visual state

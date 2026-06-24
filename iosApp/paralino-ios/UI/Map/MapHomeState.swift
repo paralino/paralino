@@ -49,6 +49,8 @@ class MapHomeState : BaseMapObservableObject {
                     self?.clusterHistoryPins = true
                     self?.pendingFocusedMarker = nil
                     self?.historyUiState = nil
+                    self?.tappedCoordinateState = readyState.tappedCoordinateState
+                    self?.showTapActionPrivacyZoneButton = !readyState.isPersonalSpace
                     
                     if readyState.mapHomeScreenFocusType is shared.MapHomeScreenFocusTypeALL_PLACES {
                         self?.focusToMarkers(markers.filter { $0.data.pinType == MapPinType.place }, animate: true)
@@ -76,6 +78,9 @@ class MapHomeState : BaseMapObservableObject {
             let previousState = self?.historyUiState
             self?.historyUiState = uiState
             if let state = uiState {
+                
+                self?.tappedCoordinateState = state.tappedCoordinateState
+                self?.showTapActionPrivacyZoneButton = !state.isPersonalHistory
 
                 if state.showPolyline {
                     self?.polylinePoints = state.selectedLocations
@@ -141,6 +146,8 @@ class MapHomeState : BaseMapObservableObject {
                 self?.historyPinMarkers = []
                 self?.historyStartStopPinMarkers = []
                 self?.polylinePoints = []
+                self?.tappedCoordinateState = nil
+                self?.showTapActionPrivacyZoneButton = false
             }
         }
     }
@@ -237,6 +244,44 @@ class MapHomeState : BaseMapObservableObject {
             onMainEvent(event: MapHomeScreenUiEventOnMapTouch())
         } else {
             onHistoryEvent(event: LocationHistoryUiEventOnMapTouch())
+        }
+    }
+
+    func onMapClick(coordinate: CLLocationCoordinate2D) {
+        let location = LatLng(lat: coordinate.latitude, lng: coordinate.longitude)
+        if uiState.asReady()?.locationHistoryMode == nil {
+            onMainEvent(event: MapHomeScreenUiEventOnMapClick(location: location))
+        } else {
+            onHistoryEvent(event: LocationHistoryUiEventOnMapClick(location: location))
+        }
+    }
+
+    func onMapLongPress(coordinate: CLLocationCoordinate2D) {
+        let location = LatLng(lat: coordinate.latitude, lng: coordinate.longitude)
+        if uiState.asReady()?.locationHistoryMode == nil {
+            onMainEvent(event: MapHomeScreenUiEventOnMapLongPress(location: location))
+        } else {
+            onHistoryEvent(event: LocationHistoryUiEventOnMapLongPress(lat: coordinate.latitude, lng: coordinate.longitude))
+        }
+    }
+
+    func onTapActionCreatePlaceSelected() {
+        guard let tappedCoordinateState else { return }
+        let location = LatLng(lat: tappedCoordinateState.lat, lng: tappedCoordinateState.lng)
+        if uiState.asReady()?.locationHistoryMode == nil {
+            onMainEvent(event: MapHomeScreenUiEventOnOpenCreatePlaceScreen(location: location))
+        } else {
+            onHistoryEvent(event: LocationHistoryUiEventOnOpenCreatePlaceScreen(location: location))
+        }
+    }
+
+    func onTapActionCreatePrivacyZoneSelected() {
+        guard let tappedCoordinateState else { return }
+        let location = LatLng(lat: tappedCoordinateState.lat, lng: tappedCoordinateState.lng)
+        if uiState.asReady()?.locationHistoryMode == nil {
+            onMainEvent(event: MapHomeScreenUiEventOnOpenCreatePrivacyZoneScreen(location: location))
+        } else {
+            onHistoryEvent(event: LocationHistoryUiEventOnOpenCreatePrivacyZoneScreen(location: location))
         }
     }
     

@@ -32,6 +32,7 @@ class MapStateManager(
 
         updateState { readyState ->
             readyState.copy(
+                tappedCoordinateState = null,
                 isMapFocusRequested = false,
                 trackingMarker = markerData.takeIf { marker?.hidden == false },
                 markers = readyState.markers.map {
@@ -71,10 +72,11 @@ class MapStateManager(
         updateState: ((MapHomeScreenState.Ready) -> MapHomeScreenState.Ready) -> Unit,
     ) {
         updateState { currentState ->
+            val clearedState = currentState.copy(tappedCoordinateState = null)
             if (currentState.mapHomeScreenFocusType.isMemberPlaceOrHistoryFocused) {
                 // de-init focused marker so it is not tracked
                 // and reset zoom enforcing for member focus
-                currentState.copy(
+                clearedState.copy(
                     isMapFocusRequested = true,
                     trackingMarker = null,
                     mapHomeScreenFocusType = when (currentState.mapHomeScreenFocusType) {
@@ -83,7 +85,7 @@ class MapStateManager(
                     }
                 )
             } else {
-                currentState.copy(
+                clearedState.copy(
                     isMapFocusRequested = true,
                     trackingMarker = null,
                     markers = currentState.markers.map { it.copy(focused = false, hidden = it.obsolete) },

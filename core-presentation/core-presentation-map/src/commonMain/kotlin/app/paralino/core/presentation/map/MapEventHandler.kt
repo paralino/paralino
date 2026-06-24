@@ -124,6 +124,21 @@ class MapEventHandler(
                 mapStateManager.onMapTouch(uiState, updateReadyState)
             }
 
+            is MapHomeScreenUiEvent.OnMapLongPress -> {
+                uiState.value.asReady()?.let { readyState ->
+                    if (readyState.locationHistoryMode == null) {
+                        updateReadyState {
+                            it.copy(
+                                tappedCoordinateState = MapTappedCoordinateState(
+                                    lat = event.location.lat,
+                                    lng = event.location.lng
+                                )
+                            )
+                        }
+                    }
+                }
+            }
+
             is MapHomeScreenUiEvent.OnMapClick -> {
                 val readyState = uiState.value.asReady()
                 if (readyState?.isMapFocusRequested == true) {
@@ -136,7 +151,10 @@ class MapEventHandler(
                         )
                     } else if (readyState.mapHomeScreenFocusType.isMemberPlaceOrHistoryFocused) {
                         updateReadyState { state ->
-                            state.copy(isMapFocusRequested = false)
+                            state.copy(
+                                isMapFocusRequested = false,
+                                tappedCoordinateState = null
+                            )
                         }
                     }
                 } else {
@@ -197,6 +215,7 @@ class MapEventHandler(
             }
 
             is MapHomeScreenUiEvent.OnOpenCreatePlaceScreen -> {
+                updateReadyState { it.copy(tappedCoordinateState = null) }
                 uiState.value.asReady()?.let {
                     eventChannel.trySend(
                         MapHomeScreenEvent.OpenCreatePlace(
@@ -208,6 +227,7 @@ class MapEventHandler(
             }
 
             is MapHomeScreenUiEvent.OnOpenCreatePrivacyZoneScreen -> {
+                updateReadyState { it.copy(tappedCoordinateState = null) }
                 uiState.value.asReady()?.let {
                     eventChannel.trySend(
                         MapHomeScreenEvent.OpenCreatePrivacyZone(

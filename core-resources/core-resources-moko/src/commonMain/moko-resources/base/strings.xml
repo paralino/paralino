@@ -702,6 +702,8 @@
     <string name="group_members_status_location_hidden">Approximate location only</string>
     <string name="group_members_status_privacy_zone">Privacy zone active</string>
     <string name="places_list_add_button">Add</string>
+    <string name="map_long_tap_action_new_place">New place</string>
+    <string name="map_long_tap_action_new_privacy_zone">New privacy zone</string>
     <string name="places_list_screen_title">Places</string>
     <string name="places_list_screen_empty_info_group">Create a place and **get notified** when someone enters or leaves predefined area like home, work or school.</string>
     <string name="places_list_screen_empty_info_personal">Create a place and **get notified** when one of your devices enters or leaves predefined area like home, work or school.</string>

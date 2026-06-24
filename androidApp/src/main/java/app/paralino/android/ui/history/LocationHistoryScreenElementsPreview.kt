@@ -7,84 +7,17 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import app.paralino.android.ui.main.MainAppState
-import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.core.presentation.history.LocationHistoryDateSelectorState
 import app.paralino.core.presentation.history.LocationHistoryDayState
-import app.paralino.core.presentation.history.LocationHistoryScreenEvent
-import app.paralino.core.presentation.history.LocationHistoryScreenUiState
 import app.paralino.core.presentation.history.LocationHistorySelectedDayPosition
 import app.paralino.core.presentation.history.LocationHistoryStats
-import app.paralino.core.presentation.history.LocationHistoryUiEvent
-import app.paralino.core.presentation.common.AlertDialogAction
-import app.paralino.core.ui.components.dialogs.Show
 import app.paralino.core.ui.history.LocationHistoryDateSelector
 import app.paralino.core.ui.history.LocationHistoryStatsTable
-import app.paralino.core.presentation.billing.BillingScreenSourceType
 import app.paralino.core.ui.theme.AppTheme
-import app.paralino.core.utils.extensions.openNavigation
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.datetime.LocalDate
-
-
-@Composable
-fun LocationHistoryScreenEventHandler(
-    appState: MainAppState,
-    uiState: LocationHistoryScreenUiState,
-    events: Flow<LocationHistoryScreenEvent?>?,
-    onDialogEvent: (LocationHistoryUiEvent.DialogAction) -> Unit,
-    onCloseHistory: () -> Unit,
-) {
-    val context = LocalContext.current
-    LaunchedEffect(key1 = Unit) {
-        events?.collectLatest { event ->
-            when (event) {
-                LocationHistoryScreenEvent.NavigateBack -> {
-                    onCloseHistory()
-                }
-
-                is LocationHistoryScreenEvent.OpenNavigation -> {
-                    context.openNavigation(event.event)
-                }
-
-                LocationHistoryScreenEvent.OpenHistorySettings -> {
-                    appState.navController.navigate(
-                        AppScreen.MainHome.LocationHistoryDelete.route(groupId = uiState.groupOrSpaceId.id)
-                    )
-                }
-
-                LocationHistoryScreenEvent.OpenPaywall -> {
-                    appState.navController.navigate(
-                        AppScreen.MainHome.BillingPaywall.route(
-                            type = BillingScreenSourceType.UPGRADE_DEFAULT
-                        )
-                    )
-                }
-
-                is LocationHistoryScreenEvent.OpenRawDataScreen -> {
-                    appState.navController.navigate(
-                        AppScreen.MainHome.RawDataScreen.route(
-                            type = event.type
-                        )
-                    )
-                }
-
-                null -> {}
-            }
-        }
-    }
-
-    val dialog = uiState.alertDialog
-    dialog?.Show {
-        onDialogEvent(LocationHistoryUiEvent.DialogAction(AlertDialogAction(dialog, it)))
-    }
-}
 
 
 @Preview(showBackground = true)

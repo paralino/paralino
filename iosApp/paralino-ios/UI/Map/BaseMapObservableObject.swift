@@ -27,6 +27,12 @@ class BaseMapObservableObject : ObservableObject {
     
     @Published var bottomSafeArea: CGFloat = 0
     @Published var previousBottomSafeArea: CGFloat = 0
+
+    @Published var tappedCoordinateState: MapTappedCoordinateState?
+    @Published var showTapActionPrivacyZoneButton: Bool = true
+
+    var onTapActionCreatePlace: (() -> Void)?
+    var onTapActionCreatePrivacyZone: (() -> Void)?
     
     func onMarkerTap(markerData: MapPinData) {}
     func onHistoryMarkerTap(markerData: HistoryMapMarkerData) {}
