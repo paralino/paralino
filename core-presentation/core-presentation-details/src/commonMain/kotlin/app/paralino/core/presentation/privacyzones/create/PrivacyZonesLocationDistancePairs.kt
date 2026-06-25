@@ -8,7 +8,7 @@ data class PrivacyZoneLocationDistancePair(
         private const val FEET_PER_METER = 3.28084
         private const val METERS_PER_MILE = 1_609.344
 
-        val default = pair(meters = 1_000, miles = 0.6)
+        val default = pair(meters = 500, miles = 0.3)
 
         val pairs = listOf(
             pair(meters = 100, feet = 325),
