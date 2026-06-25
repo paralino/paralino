@@ -1006,8 +1006,8 @@
     <string name="privacy_zone_create_suggestion_secret_shopping">Gizli alışveriş</string>
     <string name="privacy_zone_create_suggestion_hidden_place">Gizli yer</string>
     <string name="privacy_zone_create_suggestion_just_for_me">Sadece bana özel</string>
-    <string name="privacy_zones_empty_state_info">Gizlilik bölgesi, biraz gizliliğe ihtiyaç duyduğunuz yerlerde gerçek konumunuzu **korur**.</string>
-    <string name="privacy_zones_empty_state_encryption_info">Gizlilik bölgeniz **uçtan uca şifrelenmiştir** ve yalnızca sizin tarafınızdan görülebilir. Diğer grup üyeleri bunu göremez.</string>
+    <string name="privacy_zones_empty_state_info">Gizlilik bölgesi, biraz gizliliğe ihtiyaç duyduğunuz yerlerde gerçek konumunuzu **korur**.\n\nBölgenin içindeyken otomatik olarak etkinleşir, bu nedenle konum paylaşımını durdurmanıza gerek yoktur.</string>
+    <string name="privacy_zones_empty_state_encryption_info">Your privacy zone is **end-to-end encrypted** and only visible to you. Other group members cannot see where your zones are.</string>
     <string name="privacy_zones_empty_state_map_label_your_location">Konumunuz</string>
     <string name="privacy_zones_empty_state_map_label_others_view">Başkalarının gördüğü</string>
     <string name="plan_limit_privacy_zones_alert_info">gizlilik bölgeleri</string>
@@ -1015,4 +1015,17 @@
     <string name="plan_limit_overLimit_privacy_zones_banner_title">**Gizlilik bölgeleri sınırlıdır!**\nİzin verilen gizlilik bölgesi sayısı aşıldı.</string>
     <string name="button_edit">Düzenle</string>
     <string name="plans_banner_inline_privacy_zones">Konumunuz üzerindeki kontrolü elinizde tutmak için daha fazla gizlilik bölgesi oluşturun!</string>
+    <string name="onboarding_step_privacyZonesIntro_title">Gizlilik bölgeleri burada</string>
+    <string name="onboarding_step_privacyZonesIntro_title_tag">Gizlilik bölgeleri</string>
+    <string name="onboarding_step_privacyZonesIntro_info">Gizlilik bölgesi, biraz mahremiyete ihtiyaç duyduğunuz yerlerde gerçek konumunuzu **korur**.\nYalnızca sizin için görünür.</string>
+    <string name="privacy_zones_empty_state_map_label_zoneMessage_1">Merak etmeyin, burası güvenli.</string>
+    <string name="privacy_zones_empty_state_map_label_zoneMessage_2">Biraz kendime zaman ayırıyorum</string>
+    <string name="privacy_zones_empty_state_map_label_zoneMessage_3">Her şey yolunda, sadece hediye alıyorum 🎁</string>
+    <string name="privacy_zones_empty_state_map_label_zoneMessage_4">Birazdan döneceğim...</string>
+    <string name="privacy_zones_empty_state_map_label_zoneMessage_5">Erişilemez...</string>
+    <string name="privacy_zones_empty_state_map_label_zoneMessage_6">Her şey yolunda, şimdi biraz mahremiyete ihtiyacım var.</string>
+    <string name="licence_error_title_generic">Lisans hatası</string>
+    <string name="licence_error_title_accountConflict">Hesap çakışması</string>
+    <string name="licence_error_webBillingAccountConflict">Bu lisans farklı bir fatura hesabına aittir.\nLisansı çözümlemek ve aktarmak için lütfen **contact@paralino.com** adresindeki destek ekibiyle iletişime geçin.</string>
+    <string name="licence_loadingStep_webBillingAccountConflict">Lisans hesap çakışması</string>
 </resources>

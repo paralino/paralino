@@ -1008,11 +1008,24 @@
     <string name="privacy_zone_create_suggestion_secret_shopping">Hemmelighandel</string>
     <string name="privacy_zone_create_suggestion_hidden_place">Skjult sted</string>
     <string name="privacy_zone_create_suggestion_just_for_me">Bare for meg</string>
-    <string name="privacy_zones_empty_state_info">Personvernsone **beskytter** den faktiske posisjonen din på steder der du trenger litt personvern.</string>
-    <string name="privacy_zones_empty_state_encryption_info">Personvernsone din er **ende-til-ende-kryptert** og kun synlig for deg. Andre gruppemedlemmer kan ikke se den.</string>
+    <string name="privacy_zones_empty_state_info">Personvernsone **beskytter** din faktiske plassering på steder hvor du trenger litt privatliv.\n\nDen aktiveres automatisk når du er innenfor sonen, så det er ikke nødvendig å stoppe deling av posisjon.</string>
+    <string name="privacy_zones_empty_state_encryption_info">Personvernsområdet ditt er **ende-til-ende-kryptert** og bare synlig for deg. Andre gruppemedlemmer kan ikke se hvor områdene dine er.</string>
     <string name="privacy_zones_empty_state_map_label_your_location">Posisjonen din</string>
     <string name="privacy_zones_empty_state_map_label_others_view">Det andre ser</string>
     <string name="plan_limit_privacy_zones_alert_info">personvernsone</string>
     <string name="privacy_zones_create_plan_limit_info">For å opprette flere personvernsone, oppgrader abonnementet ditt.</string>
     <string name="plan_limit_overLimit_privacy_zones_banner_title">**Personvernsone er begrenset!**\nDet tillatte antallet personvernsone er overskredet.</string>
+    <string name="onboarding_step_privacyZonesIntro_title">Personvernsområder er her</string>
+    <string name="onboarding_step_privacyZonesIntro_title_tag">Personvernområder</string>
+    <string name="onboarding_step_privacyZonesIntro_info">Personvernsområde **beskytter** den faktiske posisjonen din på steder der du trenger litt privatliv.\nSynlig kun for deg.</string>
+    <string name="privacy_zones_empty_state_map_label_zoneMessage_1">Ingen grunn til bekymring, jeg er trygg her.</string>
+    <string name="privacy_zones_empty_state_map_label_zoneMessage_2">Tar litt egentid</string>
+    <string name="privacy_zones_empty_state_map_label_zoneMessage_3">Alt bra, bare kjøper gaver 🎁</string>
+    <string name="privacy_zones_empty_state_map_label_zoneMessage_4">Jeg er tilbake ... om litt.</string>
+    <string name="privacy_zones_empty_state_map_label_zoneMessage_5">Utenfor rekkevidde...</string>
+    <string name="privacy_zones_empty_state_map_label_zoneMessage_6">Alt er fint, trenger litt privatliv nå.</string>
+    <string name="licence_error_title_generic">Lisensfeil</string>
+    <string name="licence_error_title_accountConflict">Konto­konflikt</string>
+    <string name="licence_error_webBillingAccountConflict">Denne lisensen tilhører en annen faktureringskonto.\nVennligst ta kontakt med brukerstøtte på **contact@paralino.com** for å få løst dette og overføre lisensen.</string>
+    <string name="licence_loadingStep_webBillingAccountConflict">Lisenskonto­konflikt</string>
 </resources>

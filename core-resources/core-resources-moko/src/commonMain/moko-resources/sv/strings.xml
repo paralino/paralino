@@ -976,7 +976,7 @@
     <string name="map_long_tap_action_new_place">Ny plats</string>
     <string name="map_long_tap_action_new_privacy_zone">Ny integritetszon</string>
     <string name="place_detail_change_location">Ändra plats</string>
-    <string name="privacy_zones_empty_state_encryption_info">Din sekretesszon är **krypterad från ände till ände** och endast synlig för dig. Andra gruppmedlemmar kan inte se den.</string>
+    <string name="privacy_zones_empty_state_encryption_info">Din integritetszon är **änd-till-ände-krypterad** och endast synlig för dig. Andra gruppmedlemmar kan inte se var dina zoner är.</string>
     <string name="privacy_zone_created_notification">Ny integritetszon %1$s skapad i grupp %2$s</string>
     <string name="privacy_zone_created_notification_default">Ny integritetszon skapad</string>
     <string name="privacy_zone_menu_delete">Ta bort integritetszon</string>
@@ -1010,9 +1010,22 @@
     <string name="privacy_zone_create_suggestion_secret_shopping">Hemligt shoppingärende</string>
     <string name="privacy_zone_create_suggestion_hidden_place">Dold plats</string>
     <string name="privacy_zone_create_suggestion_just_for_me">Endast för mig</string>
-    <string name="privacy_zones_empty_state_info">Sekretesszonen **skyddar** din faktiska plats på platser där du behöver lite integritet.</string>
+    <string name="privacy_zones_empty_state_info">Sekretesszon **skyddar** din faktiska plats på platser där du behöver lite integritet.\n\nDen aktiveras automatiskt när du befinner dig inom zonen, så det finns inget behov av att sluta dela din plats.</string>
     <string name="privacy_zones_empty_state_map_label_your_location">Din plats</string>
     <string name="plan_limit_privacy_zones_alert_info">sekretesszoner</string>
     <string name="privacy_zones_create_plan_limit_info">För att skapa fler sekretesszoner behöver du uppgradera din plan.</string>
     <string name="plan_limit_overLimit_privacy_zones_banner_title">**Sekretesszonerna är begränsade!**\nDet tillåtna antalet sekretesszoner har överskridits.</string>
+    <string name="onboarding_step_privacyZonesIntro_title">Integritetszoner är här</string>
+    <string name="onboarding_step_privacyZonesIntro_title_tag">Integritetszoner</string>
+    <string name="onboarding_step_privacyZonesIntro_info">Integritetszonen **skyddar** din faktiska plats på platser där du behöver lite integritet.\nSynlig endast för dig.</string>
+    <string name="privacy_zones_empty_state_map_label_zoneMessage_1">Ingen fara, jag är trygg här.</string>
+    <string name="privacy_zones_empty_state_map_label_zoneMessage_2">Tar lite egentid</string>
+    <string name="privacy_zones_empty_state_map_label_zoneMessage_3">Allt bra, köper bara presenter 🎁</string>
+    <string name="privacy_zones_empty_state_map_label_zoneMessage_4">Jag kommer tillbaka... om en stund.</string>
+    <string name="privacy_zones_empty_state_map_label_zoneMessage_5">Inte inom räckhåll...</string>
+    <string name="privacy_zones_empty_state_map_label_zoneMessage_6">Allt är bra, behöver bara lite integritet nu.</string>
+    <string name="licence_error_title_generic">Licensfel</string>
+    <string name="licence_error_title_accountConflict">Kontokonflikt</string>
+    <string name="licence_error_webBillingAccountConflict">Denna licens tillhör ett annat faktureringskonto.\nKontakta support på **contact@paralino.com** för att lösa problemet och överföra licensen.</string>
+    <string name="licence_loadingStep_webBillingAccountConflict">Licenskontokonflikt</string>
 </resources>

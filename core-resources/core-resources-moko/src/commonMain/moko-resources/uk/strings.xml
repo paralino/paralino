@@ -1008,11 +1008,24 @@
     <string name="privacy_zone_create_suggestion_secret_shopping">Таємні покупки</string>
     <string name="privacy_zone_create_suggestion_hidden_place">Приховане місце</string>
     <string name="privacy_zone_create_suggestion_just_for_me">Лише для мене</string>
-    <string name="privacy_zones_empty_state_info">Зона конфіденційності **захищає** ваше фактичне місцезнаходження в місцях, де вам потрібна трохи приватності.</string>
-    <string name="privacy_zones_empty_state_encryption_info">Ваша зона конфіденційності **зашифрована наскрізним шифруванням** і видима лише вам. Інші учасники групи не можуть її бачити.</string>
+    <string name="privacy_zones_empty_state_info">Зона конфіденційності **захищає** ваше справжнє місцезнаходження в місцях, де вам потрібен трохи більший рівень конфіденційності.\n\nВона активується автоматично, коли ви перебуваєте всередині зони, тож немає потреби вимикати спільний доступ до місцезнаходження.</string>
+    <string name="privacy_zones_empty_state_encryption_info">Ваша зона конфіденційності **захищена наскрізним шифруванням** і видима лише вам. Інші учасники групи не можуть бачити, де розташовані ваші зони.</string>
     <string name="privacy_zones_empty_state_map_label_your_location">Ваше місцезнаходження</string>
     <string name="privacy_zones_empty_state_map_label_others_view">Що бачать інші</string>
     <string name="plan_limit_privacy_zones_alert_info">зони конфіденційності</string>
     <string name="privacy_zones_create_plan_limit_info">Щоб створити більше зон конфіденційності, оновіть свій тарифний план.</string>
     <string name="plan_limit_overLimit_privacy_zones_banner_title">**Кількість зон конфіденційності обмежена!**\nПеревищено дозволену кількість зон конфіденційності.</string>
+    <string name="onboarding_step_privacyZonesIntro_title">Зони приватності вже тут</string>
+    <string name="onboarding_step_privacyZonesIntro_title_tag">Зони конфіденційності</string>
+    <string name="onboarding_step_privacyZonesIntro_info">Зона приватності **захищає** ваше фактичне місцезнаходження в місцях, де вам потрібна трохи приватності.\nВидима лише вам.</string>
+    <string name="privacy_zones_empty_state_map_label_zoneMessage_1">Не хвилюйтеся, я тут у безпеці.</string>
+    <string name="privacy_zones_empty_state_map_label_zoneMessage_2">Проводжу трохи часу наодинці</string>
+    <string name="privacy_zones_empty_state_map_label_zoneMessage_3">Усе добре, просто купую подарунки 🎁</string>
+    <string name="privacy_zones_empty_state_map_label_zoneMessage_4">Я скоро повернуся...</string>
+    <string name="privacy_zones_empty_state_map_label_zoneMessage_5">Поза зоною доступу...</string>
+    <string name="privacy_zones_empty_state_map_label_zoneMessage_6">Усе гаразд, зараз мені потрібна трохи приватності.</string>
+    <string name="licence_error_title_generic">Помилка ліцензії</string>
+    <string name="licence_error_title_accountConflict">Конфлікт облікового запису</string>
+    <string name="licence_error_webBillingAccountConflict">Ця ліцензія належить іншому платіжному обліковому запису.\nБудь ласка, зверніться до служби підтримки за адресою **contact@paralino.com**, щоб вирішити це питання та перенести ліцензію.</string>
+    <string name="licence_loadingStep_webBillingAccountConflict">Конфлікт облікового запису ліцензії</string>
 </resources>

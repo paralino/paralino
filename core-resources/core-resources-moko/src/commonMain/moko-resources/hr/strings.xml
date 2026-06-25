@@ -1008,11 +1008,24 @@
     <string name="privacy_zone_create_suggestion_secret_shopping">Tajno kupovanje</string>
     <string name="privacy_zone_create_suggestion_hidden_place">Skriveno mjesto</string>
     <string name="privacy_zone_create_suggestion_just_for_me">Samo za mene</string>
-    <string name="privacy_zones_empty_state_info">Zona privatnosti **štiti** vašu stvarnu lokaciju na mjestima gdje vam je potrebna malo privatnosti.</string>
-    <string name="privacy_zones_empty_state_encryption_info">Vaša zona privatnosti je **end-to-end šifrirana** i vidljiva je samo vama. Ostali članovi grupe ne mogu je vidjeti.</string>
+    <string name="privacy_zones_empty_state_info">Zona privatnosti **štiti** vašu stvarnu lokaciju na mjestima gdje vam je potrebna malo veća privatnost.\n\nAutomatski će se aktivirati kada budete unutar zone, tako da nema potrebe za zaustavljanjem dijeljenja lokacije.</string>
+    <string name="privacy_zones_empty_state_encryption_info">Vaša zona privatnosti je **end-to-end šifrirana** i vidljiva samo vama. Ostali članovi grupe ne mogu vidjeti gdje se nalaze vaše zone.</string>
     <string name="privacy_zones_empty_state_map_label_your_location">Vaša lokacija</string>
     <string name="privacy_zones_empty_state_map_label_others_view">Što drugi vide</string>
     <string name="plan_limit_privacy_zones_alert_info">zone privatnosti</string>
     <string name="privacy_zones_create_plan_limit_info">Da biste stvorili više zona privatnosti, nadogradite svoj plan.</string>
     <string name="plan_limit_overLimit_privacy_zones_banner_title">**Zone privatnosti su ograničene!**\nPremašen je dopušteni broj zona privatnosti.</string>
+    <string name="onboarding_step_privacyZonesIntro_title">Zone privatnosti su ovdje</string>
+    <string name="onboarding_step_privacyZonesIntro_title_tag">Zone privatnosti</string>
+    <string name="onboarding_step_privacyZonesIntro_info">Zona privatnosti **štiti** vašu stvarnu lokaciju na mjestima gdje vam treba malo privatnosti.\nVidljivo samo vama.</string>
+    <string name="privacy_zones_empty_state_map_label_zoneMessage_1">Bez brige, ovdje sam sigurna/siguran.</string>
+    <string name="privacy_zones_empty_state_map_label_zoneMessage_2">Uzimam malo vremena za sebe</string>
+    <string name="privacy_zones_empty_state_map_label_zoneMessage_3">Sve je u redu, samo kupujem poklone 🎁</string>
+    <string name="privacy_zones_empty_state_map_label_zoneMessage_4">Vratit ću se... uskoro.</string>
+    <string name="privacy_zones_empty_state_map_label_zoneMessage_5">Izvan dosega...</string>
+    <string name="privacy_zones_empty_state_map_label_zoneMessage_6">Sve je u redu, sada mi treba malo privatnosti.</string>
+    <string name="licence_error_title_generic">Pogreška licence</string>
+    <string name="licence_error_title_accountConflict">Sukob računa</string>
+    <string name="licence_error_webBillingAccountConflict">Ova licenca pripada drugom računu za naplatu.\nObratite se podršci na **contact@paralino.com** kako biste riješili problem i prenijeli licencu.</string>
+    <string name="licence_loadingStep_webBillingAccountConflict">Sukob računa licence</string>
 </resources>

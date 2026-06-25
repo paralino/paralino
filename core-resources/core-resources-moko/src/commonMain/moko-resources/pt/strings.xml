@@ -1002,8 +1002,8 @@
     <string name="privacy_zone_create_suggestion_secret_shopping">Compras secretas</string>
     <string name="privacy_zone_create_suggestion_hidden_place">Lugar oculto</string>
     <string name="privacy_zone_create_suggestion_just_for_me">Só para mim</string>
-    <string name="privacy_zones_empty_state_info">A zona de privacidade **protege** a sua localização real em locais onde precisa de um pouco de privacidade.</string>
-    <string name="privacy_zones_empty_state_encryption_info">A sua zona de privacidade é **encriptada de ponta a ponta** e apenas visível para si. Os outros membros do grupo não a podem ver.</string>
+    <string name="privacy_zones_empty_state_info">A zona de privacidade **protege** a sua localização real em locais onde precisa de um pouco de privacidade.\n\nEla será ativada automaticamente quando estiver dentro da zona, por isso não há necessidade de interromper a partilha de localização.</string>
+    <string name="privacy_zones_empty_state_encryption_info">Sua zona de privacidade está **criptografada de ponta a ponta** e é visível apenas para você. Outros membros do grupo não podem ver onde estão as suas zonas.</string>
     <string name="privacy_zones_empty_state_map_label_your_location">A sua localização</string>
     <string name="privacy_zones_empty_state_map_label_others_view">O que os outros veem</string>
     <string name="plan_limit_privacy_zones_alert_info">zonas de privacidade</string>
@@ -1015,4 +1015,17 @@
     <string name="place_detail_change_location">Alterar localização</string>
     <string name="privacy_zone_created_notification">Nova zona de privacidade %1$s criada no grupo %2$s</string>
     <string name="privacy_zone_created_notification_default">Nova zona de privacidade criada</string>
+    <string name="onboarding_step_privacyZonesIntro_title">As zonas de privacidade chegaram</string>
+    <string name="onboarding_step_privacyZonesIntro_title_tag">Zonas de privacidade</string>
+    <string name="onboarding_step_privacyZonesIntro_info">A zona de privacidade **protege** a sua localização real em locais onde precisa de um pouco de privacidade.\nVisível apenas para si.</string>
+    <string name="privacy_zones_empty_state_map_label_zoneMessage_1">Sem preocupações, estou em segurança aqui.</string>
+    <string name="privacy_zones_empty_state_map_label_zoneMessage_2">A tirar um tempo para mim</string>
+    <string name="privacy_zones_empty_state_map_label_zoneMessage_3">Tudo bem, só a comprar presentes 🎁</string>
+    <string name="privacy_zones_empty_state_map_label_zoneMessage_4">Já volto... daqui a pouco.</string>
+    <string name="privacy_zones_empty_state_map_label_zoneMessage_5">Fora de alcance...</string>
+    <string name="privacy_zones_empty_state_map_label_zoneMessage_6">Está tudo bem, preciso de um pouco de privacidade agora.</string>
+    <string name="licence_error_title_generic">Erro de licença</string>
+    <string name="licence_error_title_accountConflict">Conflito de conta</string>
+    <string name="licence_error_webBillingAccountConflict">Esta licença pertence a uma conta de faturação diferente.\nEntre em contacto com o suporte em **contact@paralino.com** para resolver a situação e transferir a licença.</string>
+    <string name="licence_loadingStep_webBillingAccountConflict">Conflito entre conta e licença</string>
 </resources>

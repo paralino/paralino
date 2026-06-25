@@ -1008,11 +1008,24 @@
     <string name="privacy_zone_create_suggestion_secret_shopping">Tajný nákup</string>
     <string name="privacy_zone_create_suggestion_hidden_place">Skryté místo</string>
     <string name="privacy_zone_create_suggestion_just_for_me">Jen pro mě</string>
-    <string name="privacy_zones_empty_state_info">*Zóna soukromí* **chrání** vaši skutečnou polohu na místech, kde potřebujete trochu soukromí.</string>
-    <string name="privacy_zones_empty_state_encryption_info">Vaše zóna soukromí je **šifrovaná end-to-end** a viditelná pouze pro vás. Ostatní členové skupiny ji nevidí.</string>
+    <string name="privacy_zones_empty_state_info">Zóna soukromí **chrání** vaši skutečnou polohu na místech, kde potřebujete trochu soukromí.\n\nAktivuje se automaticky, když se nacházíte v této zóně, takže není třeba vypínat sdílení polohy.</string>
+    <string name="privacy_zones_empty_state_encryption_info">Vaše soukromí zóna je **šifrovaná end-to-end** a viditelná pouze pro vás. Ostatní členové skupiny nemohou vidět, kde se vaše zóny nacházejí.</string>
     <string name="privacy_zones_empty_state_map_label_your_location">Vaše poloha</string>
     <string name="privacy_zones_empty_state_map_label_others_view">Co vidí ostatní</string>
     <string name="plan_limit_privacy_zones_alert_info">zóny soukromí</string>
     <string name="privacy_zones_create_plan_limit_info">Chcete-li vytvořit více zón soukromí, upgradujte svůj plán.</string>
     <string name="plan_limit_overLimit_privacy_zones_banner_title">**Zóny soukromí jsou omezené!**\nPovolený počet zón soukromí byl překročen.</string>
+    <string name="onboarding_step_privacyZonesIntro_title">Zóny soukromí jsou tady</string>
+    <string name="onboarding_step_privacyZonesIntro_title_tag">Zóny soukromí</string>
+    <string name="onboarding_step_privacyZonesIntro_info">Zóna soukromí **chrání** vaši skutečnou polohu na místech, kde potřebujete trochu soukromí.\nViditelné pouze pro vás.</string>
+    <string name="privacy_zones_empty_state_map_label_zoneMessage_1">Nebojte se, jsem zde v bezpečí.</string>
+    <string name="privacy_zones_empty_state_map_label_zoneMessage_2">Věnuji si trochu času pro sebe</string>
+    <string name="privacy_zones_empty_state_map_label_zoneMessage_3">Vše v pořádku, jen nakupuji dárky 🎁</string>
+    <string name="privacy_zones_empty_state_map_label_zoneMessage_4">Brzy se vrátím...</string>
+    <string name="privacy_zones_empty_state_map_label_zoneMessage_5">Mimo dosah...</string>
+    <string name="privacy_zones_empty_state_map_label_zoneMessage_6">Vše je v pořádku, teď potřebuji trochu soukromí.</string>
+    <string name="licence_error_title_generic">Chyba licence</string>
+    <string name="licence_error_title_accountConflict">Konflikt účtu</string>
+    <string name="licence_error_webBillingAccountConflict">Tato licence patří k jinému fakturačnímu účtu.\nObraťte se prosím na podporu na adrese **contact@paralino.com**, aby bylo možné licenci vyřešit a převést.</string>
+    <string name="licence_loadingStep_webBillingAccountConflict">Konflikt účtu licence</string>
 </resources>

@@ -981,8 +981,8 @@
     <string name="privacy_zone_create_suggestion_secret_shopping">Секретный шопинг</string>
     <string name="privacy_zone_create_suggestion_hidden_place">Скрытое место</string>
     <string name="privacy_zone_create_suggestion_just_for_me">Только для меня</string>
-    <string name="privacy_zones_empty_state_info">Зона конфиденциальности **защищает** ваше фактическое местоположение в местах, где вам нужно немного уединения.</string>
-    <string name="privacy_zones_empty_state_encryption_info">Ваша зона конфиденциальности **сквозным шифрованием защищена** и видна только вам. Другие участники группы не могут её видеть.</string>
+    <string name="privacy_zones_empty_state_info">Зона конфиденциальности **защищает** ваше фактическое местоположение в местах, где вам требуется немного конфиденциальности.\n\nОна будет активироваться автоматически, когда вы находитесь внутри зоны, поэтому нет необходимости прекращать передачу местоположения.</string>
+    <string name="privacy_zones_empty_state_encryption_info">Ваша зона конфиденциальности **защищена сквозным шифрованием** и видна только вам. Другие участники группы не могут видеть, где находятся ваши зоны.</string>
     <string name="privacy_zones_empty_state_map_label_your_location">Ваше местоположение</string>
     <string name="privacy_zones_empty_state_map_label_others_view">Что видят другие</string>
     <string name="group_members_status_privacy_zone">Зона приватности активна</string>
@@ -1015,4 +1015,17 @@
     <string name="plan_limit_privacy_zones_alert_info">зоны конфиденциальности</string>
     <string name="privacy_zones_create_plan_limit_info">Чтобы создать больше зон конфиденциальности, перейдите на более высокий тариф.</string>
     <string name="plan_limit_overLimit_privacy_zones_banner_title">**Зоны конфиденциальности ограничены!**\nПревышено допустимое число зон конфиденциальности.</string>
+    <string name="onboarding_step_privacyZonesIntro_title">Зоны приватности здесь</string>
+    <string name="onboarding_step_privacyZonesIntro_title_tag">Зоны приватности</string>
+    <string name="onboarding_step_privacyZonesIntro_info">Зона приватности **защищает** ваше фактическое местоположение в местах, где вам нужно немного уединения.\nВидно только вам.</string>
+    <string name="privacy_zones_empty_state_map_label_zoneMessage_1">Не волнуйтесь, я в безопасности.</string>
+    <string name="privacy_zones_empty_state_map_label_zoneMessage_2">Немного времени для себя</string>
+    <string name="privacy_zones_empty_state_map_label_zoneMessage_3">Всё хорошо, просто покупаю подарки 🎁</string>
+    <string name="privacy_zones_empty_state_map_label_zoneMessage_4">Я скоро вернусь...</string>
+    <string name="privacy_zones_empty_state_map_label_zoneMessage_5">Недоступен(-на)...</string>
+    <string name="privacy_zones_empty_state_map_label_zoneMessage_6">Всё в порядке, сейчас мне нужна немного приватности.</string>
+    <string name="licence_error_title_generic">Ошибка лицензии</string>
+    <string name="licence_error_title_accountConflict">Конфликт учётной записи</string>
+    <string name="licence_error_webBillingAccountConflict">Эта лицензия принадлежит другой платёжной учётной записи.\nПожалуйста, обратитесь в службу поддержки по адресу **contact@paralino.com**, чтобы решить проблему и перенести лицензию.</string>
+    <string name="licence_loadingStep_webBillingAccountConflict">Конфликт учётной записи лицензии</string>
 </resources>

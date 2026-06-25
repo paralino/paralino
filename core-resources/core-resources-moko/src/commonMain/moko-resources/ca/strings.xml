@@ -1008,11 +1008,24 @@
     <string name="privacy_zone_create_suggestion_secret_shopping">Compres secretes</string>
     <string name="privacy_zone_create_suggestion_hidden_place">Lloc amagat</string>
     <string name="privacy_zone_create_suggestion_just_for_me">Només per a mi</string>
-    <string name="privacy_zones_empty_state_info">La zona de privacitat **protegeix** la vostra ubicació real en llocs on necessiteu una mica de privacitat.</string>
-    <string name="privacy_zones_empty_state_encryption_info">La vostra zona de privacitat està **xifrada d\'extrem a extrem** i només és visible per a vós. La resta de membres del grup no la poden veure.</string>
+    <string name="privacy_zones_empty_state_info">La zona de privacitat **protegeix** la vostra ubicació real en llocs on necessiteu una mica de privacitat.\n\nS’activarà automàticament quan sigueu dins la zona, així que no cal aturar el compartir la ubicació.</string>
+    <string name="privacy_zones_empty_state_encryption_info">La vostra zona de privadesa està **xifrada d\'extrem a extrem** i només és visible per a vós. Els altres membres del grup no poden veure on són les vostres zones.</string>
     <string name="privacy_zones_empty_state_map_label_your_location">La vostra ubicació</string>
     <string name="privacy_zones_empty_state_map_label_others_view">El que veuen els altres</string>
     <string name="plan_limit_privacy_zones_alert_info">zones de privacitat</string>
     <string name="privacy_zones_create_plan_limit_info">Per crear més zones de privacitat, actualitzeu el vostre pla.</string>
     <string name="plan_limit_overLimit_privacy_zones_banner_title">**Les zones de privacitat són limitades!**\nS\'ha superat el nombre permès de zones de privacitat.</string>
+    <string name="onboarding_step_privacyZonesIntro_title">Les zones de privacitat són aquí</string>
+    <string name="onboarding_step_privacyZonesIntro_title_tag">Zones de privadesa</string>
+    <string name="onboarding_step_privacyZonesIntro_info">La zona de privacitat **protegeix** la vostra ubicació real en llocs on necessiteu una mica de privacitat.\nVisible només per a vosaltres.</string>
+    <string name="privacy_zones_empty_state_map_label_zoneMessage_1">No us preocupeu, sóc segur/a aquí.</string>
+    <string name="privacy_zones_empty_state_map_label_zoneMessage_2">Prenent-me una estona per a mi</string>
+    <string name="privacy_zones_empty_state_map_label_zoneMessage_3">Tot bé, només comprant regals 🎁</string>
+    <string name="privacy_zones_empty_state_map_label_zoneMessage_4">Tornaré... d’aquí una estona.</string>
+    <string name="privacy_zones_empty_state_map_label_zoneMessage_5">Fora d’abast...</string>
+    <string name="privacy_zones_empty_state_map_label_zoneMessage_6">Tot està bé, ara necessito una mica de privacitat.</string>
+    <string name="licence_error_title_generic">Error de llicència</string>
+    <string name="licence_error_title_accountConflict">Conflicte de compte</string>
+    <string name="licence_error_webBillingAccountConflict">Aquesta llicència pertany a un compte de facturació diferent.\nSi us plau, poseu-vos en contacte amb el servei d’assistència a **contact@paralino.com** per resoldre-ho i transferir la llicència.</string>
+    <string name="licence_loadingStep_webBillingAccountConflict">Conflicte de compte de la llicència</string>
 </resources>

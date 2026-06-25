@@ -998,8 +998,8 @@
     <string name="privacy_zone_create_suggestion_secret_shopping">Тајна куповина</string>
     <string name="privacy_zone_create_suggestion_hidden_place">Скривено место</string>
     <string name="privacy_zone_create_suggestion_just_for_me">Само за мене</string>
-    <string name="privacy_zones_empty_state_info">Зона приватности **штити** вашу стварну локацију на местима где вам је потребно мало приватности.</string>
-    <string name="privacy_zones_empty_state_encryption_info">Ваша зона приватности је **шифрована од краја до краја** и видљива је само вама. Остали чланови групе не могу да је виде.</string>
+    <string name="privacy_zones_empty_state_info">Зона приватности **штити** вашу стварну локацију на местима где вам је потребно мало приватности.\n\nАктивираће се аутоматски када се налазите унутар зоне, тако да нема потребе да заустављате дељење локације.</string>
+    <string name="privacy_zones_empty_state_encryption_info">Vaša zona privatnosti je **end-to-end šifrovana** i vidljiva je samo vama. Ostali članovi grupe ne mogu da vide gde se nalaze vaše zone.</string>
     <string name="privacy_zones_empty_state_map_label_your_location">Ваша локација</string>
     <string name="privacy_zones_empty_state_map_label_others_view">Шта други виде</string>
     <string name="button_edit">Уреди</string>
@@ -1015,4 +1015,17 @@
     <string name="plan_limit_privacy_zones_alert_info">зоне приватности</string>
     <string name="privacy_zones_create_plan_limit_info">Да бисте креирали још зона приватности, надоградите свој пакет.</string>
     <string name="plan_limit_overLimit_privacy_zones_banner_title">**Зоне приватности су ограничене!**\nДозвољени број зона приватности је премашен.</string>
+    <string name="onboarding_step_privacyZonesIntro_title">Приватне зоне су овде</string>
+    <string name="onboarding_step_privacyZonesIntro_title_tag">Зоне приватности</string>
+    <string name="onboarding_step_privacyZonesIntro_info">Приватна зона **штити** вашу стварну локацију на местима где вам је потребно мало приватности.\nВидљиво само вама.</string>
+    <string name="privacy_zones_empty_state_map_label_zoneMessage_1">Нема бриге, овде сам безбедно.</string>
+    <string name="privacy_zones_empty_state_map_label_zoneMessage_2">Одвајам мало времена за себе</string>
+    <string name="privacy_zones_empty_state_map_label_zoneMessage_3">Све је у реду, само купујем поклоне 🎁</string>
+    <string name="privacy_zones_empty_state_map_label_zoneMessage_4">Вратићу се... ускоро.</string>
+    <string name="privacy_zones_empty_state_map_label_zoneMessage_5">Недоступно...</string>
+    <string name="privacy_zones_empty_state_map_label_zoneMessage_6">Све је у реду, сада ми је потребно мало приватности.</string>
+    <string name="licence_error_title_generic">Грешка у лиценци</string>
+    <string name="licence_error_title_accountConflict">Сукоб налога</string>
+    <string name="licence_error_webBillingAccountConflict">Ова лиценца припада другом налогу за наплату.\nМолимо вас да се обратите подршци на **contact@paralino.com** како бисте решили проблем и пренели лиценцу.</string>
+    <string name="licence_loadingStep_webBillingAccountConflict">Сукоб налога за лиценцу</string>
 </resources>

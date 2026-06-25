@@ -985,8 +985,8 @@
     <string name="privacy_zone_create_suggestion_secret_shopping">Tajne zakupy</string>
     <string name="privacy_zone_create_suggestion_hidden_place">Ukryte miejsce</string>
     <string name="privacy_zone_create_suggestion_just_for_me">Tylko dla mnie</string>
-    <string name="privacy_zones_empty_state_info">Strefa prywatności **chroni** Twoją rzeczywistą lokalizację w miejscach, w których potrzebujesz nieco prywatności.</string>
-    <string name="privacy_zones_empty_state_encryption_info">Twoja strefa prywatności jest **szyfrowana end-to-end** i widoczna tylko dla Ciebie. Inni członkowie grupy nie mogą jej zobaczyć.</string>
+    <string name="privacy_zones_empty_state_info">Strefa prywatności **chroni** Państwa rzeczywistą lokalizację w miejscach, w których potrzebują Państwo odrobiny prywatności.\n\nZostanie ona aktywowana automatycznie, gdy będą Państwo w obrębie strefy, więc nie ma potrzeby wyłączania udostępniania lokalizacji.</string>
+    <string name="privacy_zones_empty_state_encryption_info">Twoja strefa prywatności jest **szyfrowana end-to-end** i widoczna tylko dla Ciebie. Inni członkowie grupy nie mogą zobaczyć, gdzie znajdują się Twoje strefy.</string>
     <string name="privacy_zones_empty_state_map_label_your_location">Twoja lokalizacja</string>
     <string name="privacy_zones_empty_state_map_label_others_view">Co widzą inni</string>
     <string name="paywall_feature_summary_privacy_zones">Strefy prywatności</string>
@@ -1015,4 +1015,17 @@
     <string name="privacy_zones_create_location_hint_tap">**WSKAZÓWKA:** Stuknij na mapie, aby dodać lub dostosować strefę prywatności</string>
     <string name="privacy_zones_create_location_hint_searchTap">**WSKAZÓWKA:** Wyszukaj lub stuknij na mapie, aby dostosować strefę prywatności</string>
     <string name="groups_sharing_setting_approximateLocation_speedElevation_unavailable">Prędkość i wysokość nie są dostępne, gdy włączone jest udostępnianie *przybliżonej lokalizacji*.</string>
+    <string name="onboarding_step_privacyZonesIntro_title">Strefy prywatności już są tutaj</string>
+    <string name="onboarding_step_privacyZonesIntro_title_tag">Strefy prywatności</string>
+    <string name="onboarding_step_privacyZonesIntro_info">Strefa prywatności **chroni** Twoją rzeczywistą lokalizację w miejscach, w których potrzebujesz trochę prywatności.\nWidoczne tylko dla Ciebie.</string>
+    <string name="privacy_zones_empty_state_map_label_zoneMessage_1">Bez obaw, jestem tu bezpiecznie.</string>
+    <string name="privacy_zones_empty_state_map_label_zoneMessage_2">Chwila dla siebie</string>
+    <string name="privacy_zones_empty_state_map_label_zoneMessage_3">Wszystko w porządku, po prostu kupuję prezenty 🎁</string>
+    <string name="privacy_zones_empty_state_map_label_zoneMessage_4">Wrócę za chwilę...</string>
+    <string name="privacy_zones_empty_state_map_label_zoneMessage_5">Poza zasięgiem...</string>
+    <string name="privacy_zones_empty_state_map_label_zoneMessage_6">Wszystko w porządku, teraz potrzebuję trochę prywatności.</string>
+    <string name="licence_error_title_generic">Błąd licencji</string>
+    <string name="licence_error_title_accountConflict">Konflikt konta</string>
+    <string name="licence_error_webBillingAccountConflict">Ta licencja należy do innego konta rozliczeniowego.\nProsimy o kontakt z pomocą techniczną pod adresem **contact@paralino.com**, aby rozwiązać problem i przenieść licencję.</string>
+    <string name="licence_loadingStep_webBillingAccountConflict">Konflikt konta licencji</string>
 </resources>

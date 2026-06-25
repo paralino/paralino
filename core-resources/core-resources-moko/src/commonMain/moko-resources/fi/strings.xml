@@ -1008,11 +1008,24 @@
     <string name="privacy_zone_create_suggestion_secret_shopping">Salainen ostokset</string>
     <string name="privacy_zone_create_suggestion_hidden_place">Piilotettu paikka</string>
     <string name="privacy_zone_create_suggestion_just_for_me">Vain minulle</string>
-    <string name="privacy_zones_empty_state_info">Yksityisyysalue **suojaa** todellisen sijaintisi paikoissa, joissa tarvitset hieman yksityisyyttä.</string>
-    <string name="privacy_zones_empty_state_encryption_info">Yksityisyysalueesi on **päästä päähän -salattu** ja näkyy vain sinulle. Muut ryhmän jäsenet eivät voi nähdä sitä.</string>
+    <string name="privacy_zones_empty_state_info">Tietosuojavyöhyke **suojaa** todellisen sijaintisi paikoissa, joissa tarvitset hieman yksityisyyttä.\n\nSe aktivoituu automaattisesti, kun olet vyöhykkeen sisällä, joten sijainnin jakamista ei tarvitse lopettaa.</string>
+    <string name="privacy_zones_empty_state_encryption_info">Yksityisyysalueesi on **päästä päähän salattu** ja näkyy vain sinulle. Muut ryhmän jäsenet eivät näe, missä alueesi ovat.</string>
     <string name="privacy_zones_empty_state_map_label_your_location">Sijaintisi</string>
     <string name="privacy_zones_empty_state_map_label_others_view">Mitä muut näkevät</string>
     <string name="plan_limit_privacy_zones_alert_info">yksityisyysalueet</string>
     <string name="privacy_zones_create_plan_limit_info">Luo lisää yksityisyysalueita päivittämällä sopimuksesi.</string>
     <string name="plan_limit_overLimit_privacy_zones_banner_title">**Yksityisyysalueita on rajoitetusti!**\nSallittu yksityisyysalueiden määrä on ylitetty.</string>
+    <string name="onboarding_step_privacyZonesIntro_title">Tietosuojavyöhykkeet ovat täällä</string>
+    <string name="onboarding_step_privacyZonesIntro_title_tag">Yksityisyysalueet</string>
+    <string name="onboarding_step_privacyZonesIntro_info">Tietosuojavyöhyke **suojaa** todellisen sijaintisi paikoissa, joissa tarvitset hieman yksityisyyttä.\nNäkyy vain sinulle.</string>
+    <string name="privacy_zones_empty_state_map_label_zoneMessage_1">Ei huolta, olen turvassa täällä.</string>
+    <string name="privacy_zones_empty_state_map_label_zoneMessage_2">Varaan aikaa itselleni</string>
+    <string name="privacy_zones_empty_state_map_label_zoneMessage_3">Kaikki hyvin, ostan vain lahjoja 🎁</string>
+    <string name="privacy_zones_empty_state_map_label_zoneMessage_4">Palaan pian... hetken kuluttua.</string>
+    <string name="privacy_zones_empty_state_map_label_zoneMessage_5">Ei tavoitettavissa...</string>
+    <string name="privacy_zones_empty_state_map_label_zoneMessage_6">Kaikki on hyvin, tarvitsen nyt hieman yksityisyyttä.</string>
+    <string name="licence_error_title_generic">Lisenssivirhe</string>
+    <string name="licence_error_title_accountConflict">Tiliristiriita</string>
+    <string name="licence_error_webBillingAccountConflict">Tämä lisenssi kuuluu toiselle laskutustilille.\nOlethan yhteydessä tukeen osoitteessa **contact@paralino.com**, jotta lisenssi voidaan ratkaista ja siirtää.</string>
+    <string name="licence_loadingStep_webBillingAccountConflict">Lisenssitilin ristiriita</string>
 </resources>

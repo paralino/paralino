@@ -1008,11 +1008,24 @@
     <string name="privacy_zone_create_suggestion_secret_shopping">Geheimes Einkaufen</string>
     <string name="privacy_zone_create_suggestion_hidden_place">Versteckter Ort</string>
     <string name="privacy_zone_create_suggestion_just_for_me">Nur für mich</string>
-    <string name="privacy_zones_empty_state_info">Die Privatsphäre-Zone **schützt** Ihren tatsächlichen Standort an Orten, an denen Sie ein wenig Privatsphäre benötigen.</string>
-    <string name="privacy_zones_empty_state_encryption_info">Ihre Privatsphäre-Zone ist **Ende-zu-Ende-verschlüsselt** und nur für Sie sichtbar. Andere Gruppenmitglieder können sie nicht sehen.</string>
+    <string name="privacy_zones_empty_state_info">Die Privatsphäre-Zone **schützt** Ihren tatsächlichen Standort an Orten, an denen Sie ein wenig Privatsphäre benötigen.\n\nSie wird automatisch aktiviert, wenn Sie sich innerhalb der Zone befinden, sodass Sie die Standortfreigabe nicht beenden müssen.</string>
+    <string name="privacy_zones_empty_state_encryption_info">Ihre Privatsphäre-Zone ist **Ende-zu-Ende verschlüsselt** und nur für Sie sichtbar. Andere Gruppenmitglieder können nicht sehen, wo sich Ihre Zonen befinden.</string>
     <string name="privacy_zones_empty_state_map_label_your_location">Ihr Standort</string>
     <string name="privacy_zones_empty_state_map_label_others_view">Was andere sehen</string>
     <string name="plan_limit_privacy_zones_alert_info">Privatsphäre-Zonen</string>
     <string name="privacy_zones_create_plan_limit_info">Um weitere Privatsphäre-Zonen zu erstellen, aktualisieren Sie Ihren Tarif.</string>
     <string name="plan_limit_overLimit_privacy_zones_banner_title">**Privatsphäre-Zonen sind begrenzt!**\nDie zulässige Anzahl an Privatsphäre-Zonen wurde überschritten.</string>
+    <string name="onboarding_step_privacyZonesIntro_title">Privatzonen sind da</string>
+    <string name="onboarding_step_privacyZonesIntro_title_tag">Privatsphärenzonen</string>
+    <string name="onboarding_step_privacyZonesIntro_info">Die Privatzone **schützt** Ihren tatsächlichen Standort an Orten, an denen Sie etwas Privatsphäre benötigen.\nNur für Sie sichtbar.</string>
+    <string name="privacy_zones_empty_state_map_label_zoneMessage_1">Keine Sorge, ich bin hier sicher.</string>
+    <string name="privacy_zones_empty_state_map_label_zoneMessage_2">Etwas Zeit für mich</string>
+    <string name="privacy_zones_empty_state_map_label_zoneMessage_3">Alles gut, ich kaufe nur Geschenke 🎁</string>
+    <string name="privacy_zones_empty_state_map_label_zoneMessage_4">Ich bin gleich wieder zurück ...</string>
+    <string name="privacy_zones_empty_state_map_label_zoneMessage_5">Nicht erreichbar ...</string>
+    <string name="privacy_zones_empty_state_map_label_zoneMessage_6">Alles in Ordnung, ich brauche jetzt etwas Privatsphäre.</string>
+    <string name="licence_error_title_generic">Lizenzfehler</string>
+    <string name="licence_error_title_accountConflict">Kontokonflikt</string>
+    <string name="licence_error_webBillingAccountConflict">Diese Lizenz gehört zu einem anderen Abrechnungskonto.\nBitte wenden Sie sich an den Support unter **contact@paralino.com**, um die Lizenz zu übertragen und das Problem zu beheben.</string>
+    <string name="licence_loadingStep_webBillingAccountConflict">Lizenzkontokonflikt</string>
 </resources>

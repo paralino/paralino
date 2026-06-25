@@ -1008,11 +1008,24 @@
     <string name="privacy_zone_create_suggestion_secret_shopping">Titkos vásárlás</string>
     <string name="privacy_zone_create_suggestion_hidden_place">Rejtett hely</string>
     <string name="privacy_zone_create_suggestion_just_for_me">Csak nekem</string>
-    <string name="privacy_zones_empty_state_info">A privát zóna **védi** az Ön valós helyzetét azokon a helyeken, ahol egy kis magánéletre van szüksége.</string>
-    <string name="privacy_zones_empty_state_encryption_info">Az Ön privát zónája **végpontok közötti titkosítással** van védve, és csak Ön láthatja. A csoport többi tagja nem láthatja.</string>
+    <string name="privacy_zones_empty_state_info">A *Privacy zone* megvédi a tényleges tartózkodási helyét azokon a helyeken, ahol egy kis magánszférára van szüksége.\n\nAutomatikusan aktiválódik, amikor a zónán belül van, így nincs szükség a helymegosztás leállítására.</string>
+    <string name="privacy_zones_empty_state_encryption_info">Az Ön adatvédelmi zónája **végpontok közötti titkosítással** van védve, és csak Ön számára látható. A csoport többi tagja nem láthatja, hogy hol vannak az Ön zónái.</string>
     <string name="privacy_zones_empty_state_map_label_your_location">Az Ön helyzete</string>
     <string name="privacy_zones_empty_state_map_label_others_view">Amit mások látnak</string>
     <string name="plan_limit_privacy_zones_alert_info">privát zónák</string>
     <string name="privacy_zones_create_plan_limit_info">További privát zónák létrehozásához frissítse az előfizetését.</string>
     <string name="plan_limit_overLimit_privacy_zones_banner_title">A **privát zónák száma korlátozott!**\nA megengedett privát zónák száma túllépésre került.</string>
+    <string name="onboarding_step_privacyZonesIntro_title">Adatvédelmi zónák már elérhetők</string>
+    <string name="onboarding_step_privacyZonesIntro_title_tag">Adatvédelmi zónák</string>
+    <string name="onboarding_step_privacyZonesIntro_info">Az adatvédelmi zóna **védi** az Ön valós tartózkodási helyét azokon a helyeken, ahol egy kis adatvédelemre van szüksége.\nCsak Ön számára látható.</string>
+    <string name="privacy_zones_empty_state_map_label_zoneMessage_1">Semmi gond, biztonságban vagyok itt.</string>
+    <string name="privacy_zones_empty_state_map_label_zoneMessage_2">Kicsit énidőzöm</string>
+    <string name="privacy_zones_empty_state_map_label_zoneMessage_3">Minden rendben, csak ajándékokat veszek 🎁</string>
+    <string name="privacy_zones_empty_state_map_label_zoneMessage_4">Mindjárt visszajövök...</string>
+    <string name="privacy_zones_empty_state_map_label_zoneMessage_5">Elérhetetlen...</string>
+    <string name="privacy_zones_empty_state_map_label_zoneMessage_6">Minden rendben van, most egy kis adatvédelemre van szükségem.</string>
+    <string name="licence_error_title_generic">Licenchiba</string>
+    <string name="licence_error_title_accountConflict">Fiókösszeütközés</string>
+    <string name="licence_error_webBillingAccountConflict">Ez a licenc egy másik számlázási fiókhoz tartozik.\nKérjük, a **contact@paralino.com** címen vegye fel a kapcsolatot az ügyfélszolgálattal a licenc rendezése és átvitele érdekében.</string>
+    <string name="licence_loadingStep_webBillingAccountConflict">Licenc-fiókütközés</string>
 </resources>

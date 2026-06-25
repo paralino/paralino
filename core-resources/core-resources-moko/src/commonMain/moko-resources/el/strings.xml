@@ -1008,11 +1008,24 @@
     <string name="privacy_zone_create_suggestion_secret_shopping">Μυστικές αγορές</string>
     <string name="privacy_zone_create_suggestion_hidden_place">Κρυφή τοποθεσία</string>
     <string name="privacy_zone_create_suggestion_just_for_me">Μόνο για εμένα</string>
-    <string name="privacy_zones_empty_state_info">Η ζώνη απορρήτου **προστατεύει** την πραγματική σας τοποθεσία σε μέρη όπου χρειάζεστε λίγη ιδιωτικότητα.</string>
-    <string name="privacy_zones_empty_state_encryption_info">Η ζώνη απορρήτου σας είναι **κρυπτογραφημένη από άκρο σε άκρο** και είναι ορατή μόνο σε εσάς. Τα άλλα μέλη της ομάδας δεν μπορούν να τη δουν.</string>
+    <string name="privacy_zones_empty_state_info">Η ζώνη απορρήτου **προστατεύει** την πραγματική σας τοποθεσία σε μέρη όπου χρειάζεστε λίγη ιδιωτικότητα.\n\nΘα ενεργοποιείται αυτόματα όταν βρίσκεστε μέσα στη ζώνη, επομένως δεν υπάρχει ανάγκη να διακόψετε την κοινοποίηση τοποθεσίας.</string>
+    <string name="privacy_zones_empty_state_encryption_info">Η ζώνη απορρήτου σας είναι **κρυπτογραφημένη από άκρο σε άκρο** και είναι ορατή μόνο σε εσάς. Τα άλλα μέλη της ομάδας δεν μπορούν να δουν πού βρίσκονται οι ζώνες σας.</string>
     <string name="privacy_zones_empty_state_map_label_your_location">Η τοποθεσία σας</string>
     <string name="privacy_zones_empty_state_map_label_others_view">Τι βλέπουν οι άλλοι</string>
     <string name="plan_limit_privacy_zones_alert_info">ζώνες απορρήτου</string>
     <string name="privacy_zones_create_plan_limit_info">Για να δημιουργήσετε περισσότερες ζώνες απορρήτου, αναβαθμίστε το πρόγραμμά σας.</string>
     <string name="plan_limit_overLimit_privacy_zones_banner_title">**Οι ζώνες απορρήτου είναι περιορισμένες!**\nΟ επιτρεπόμενος αριθμός ζωνών απορρήτου έχει ξεπεραστεί.</string>
+    <string name="onboarding_step_privacyZonesIntro_title">Οι ζώνες απορρήτου είναι εδώ</string>
+    <string name="onboarding_step_privacyZonesIntro_title_tag">Ζώνες απορρήτου</string>
+    <string name="onboarding_step_privacyZonesIntro_info">Η ζώνη απορρήτου **προστατεύει** την πραγματική σας τοποθεσία σε μέρη όπου χρειάζεστε λίγη ιδιωτικότητα.\nΟρατή μόνο σε εσάς.</string>
+    <string name="privacy_zones_empty_state_map_label_zoneMessage_1">Μην ανησυχείτε, είμαι ασφαλής εδώ.</string>
+    <string name="privacy_zones_empty_state_map_label_zoneMessage_2">Αφιερώνοντας λίγο χρόνο για εμένα</string>
+    <string name="privacy_zones_empty_state_map_label_zoneMessage_3">Όλα καλά, απλώς αγοράζω δώρα 🎁</string>
+    <string name="privacy_zones_empty_state_map_label_zoneMessage_4">Θα επιστρέψω... σε λίγο.</string>
+    <string name="privacy_zones_empty_state_map_label_zoneMessage_5">Εκτός εμβέλειας...</string>
+    <string name="privacy_zones_empty_state_map_label_zoneMessage_6">Όλα είναι εντάξει, χρειάζομαι λίγη ιδιωτικότητα τώρα.</string>
+    <string name="licence_error_title_generic">Σφάλμα άδειας χρήσης</string>
+    <string name="licence_error_title_accountConflict">Σύγκρουση λογαριασμού</string>
+    <string name="licence_error_webBillingAccountConflict">Αυτή η άδεια χρήσης ανήκει σε διαφορετικό λογαριασμό χρέωσης.\nΠαρακαλούμε επικοινωνήστε με την υποστήριξη στη διεύθυνση **contact@paralino.com** για να επιλυθεί το ζήτημα και να μεταφερθεί η άδεια χρήσης.</string>
+    <string name="licence_loadingStep_webBillingAccountConflict">Σύγκρουση λογαριασμού άδειας χρήσης</string>
 </resources>

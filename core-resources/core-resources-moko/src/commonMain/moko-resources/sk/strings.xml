@@ -983,8 +983,8 @@
     <string name="privacy_zone_create_suggestion_secret_shopping">Tajný nákup</string>
     <string name="privacy_zone_create_suggestion_hidden_place">Skrito mesto</string>
     <string name="privacy_zone_create_suggestion_just_for_me">Samo zame</string>
-    <string name="privacy_zones_empty_state_info">Zasebno območje **zaščiti** vašo dejansko lokacijo na mestih, kjer potrebujete malo zasebnosti.</string>
-    <string name="privacy_zones_empty_state_encryption_info">Vaše zasebno območje je **od začetka do konca šifrirano** in vidno samo vam. Ostali člani skupine ga ne morejo videti.</string>
+    <string name="privacy_zones_empty_state_info">Zóna súkromia **chráni** vašu skutočnú polohu na miestach, kde potrebujete trochu súkromia.\n\nAktivuje sa automaticky, keď sa nachádzate v zóne, takže nie je potrebné vypínať zdieľanie polohy.</string>
+    <string name="privacy_zones_empty_state_encryption_info">Vaša zona privatnosti je **end-to-end šifrirana** i vidljiva je samo vama. Ostali članovi grupe ne mogu vidjeti gdje se nalaze vaše zone.</string>
     <string name="privacy_zones_empty_state_map_label_your_location">Vaša lokacija</string>
     <string name="privacy_zones_empty_state_map_label_others_view">Kaj vidijo drugi</string>
     <string name="plans_banner_inline_privacy_zones">Vytvorte viac zón súkromia a majte svoju polohu pod kontrolou!</string>
@@ -1015,4 +1015,17 @@
     <string name="plan_limit_privacy_zones_alert_info">zasebna območja</string>
     <string name="privacy_zones_create_plan_limit_info">Za ustvarjanje več zasebnih območij nadgradite svoj paket.</string>
     <string name="plan_limit_overLimit_privacy_zones_banner_title">**Zasebna območja so omejena!**\nDovoljeno število zasebnih območij je preseženo.</string>
+    <string name="onboarding_step_privacyZonesIntro_title">Súkromné zóny sú tu</string>
+    <string name="onboarding_step_privacyZonesIntro_title_tag">Zóny súkromia</string>
+    <string name="onboarding_step_privacyZonesIntro_info">Súkromná zóna **chráni** vašu skutočnú polohu na miestach, kde potrebujete trochu súkromia.\nViditeľná iba pre vás.</string>
+    <string name="privacy_zones_empty_state_map_label_zoneMessage_1">Bez obáv, som tu v bezpečí.</string>
+    <string name="privacy_zones_empty_state_map_label_zoneMessage_2">Doprajem si chvíľku pre seba</string>
+    <string name="privacy_zones_empty_state_map_label_zoneMessage_3">Všetko je v poriadku, len nakupujem darčeky 🎁</string>
+    <string name="privacy_zones_empty_state_map_label_zoneMessage_4">Vrátim sa... o chvíľu.</string>
+    <string name="privacy_zones_empty_state_map_label_zoneMessage_5">Mimo dosahu...</string>
+    <string name="privacy_zones_empty_state_map_label_zoneMessage_6">Všetko je v poriadku, teraz potrebujem trochu súkromia.</string>
+    <string name="licence_error_title_generic">Chyba licencie</string>
+    <string name="licence_error_title_accountConflict">Konflikt účtu</string>
+    <string name="licence_error_webBillingAccountConflict">Táto licencia patrí k inému fakturačnému účtu.\nObráťte sa na podporu na adrese **contact@paralino.com**, aby bolo možné licenciu vyriešiť a preniesť.</string>
+    <string name="licence_loadingStep_webBillingAccountConflict">Konflikt licenčného účtu</string>
 </resources>

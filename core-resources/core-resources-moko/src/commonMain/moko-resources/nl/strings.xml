@@ -1000,8 +1000,8 @@
     <string name="privacy_zone_create_suggestion_secret_shopping">Geheime winkeltocht</string>
     <string name="privacy_zone_create_suggestion_hidden_place">Verborgen plek</string>
     <string name="privacy_zone_create_suggestion_just_for_me">Alleen voor mij</string>
-    <string name="privacy_zones_empty_state_info">De privacyszone **beschermt** uw werkelijke locatie op plaatsen waar u wat privacy nodig hebt.</string>
-    <string name="privacy_zones_empty_state_encryption_info">Uw privacyszone is **eind-tot-eind versleuteld** en alleen voor u zichtbaar. Andere groepsleden kunnen die niet zien.</string>
+    <string name="privacy_zones_empty_state_info">Privacyzone **beschermt** uw werkelijke locatie op plaatsen waar u wat privacy nodig hebt.\n\nDeze wordt automatisch geactiveerd wanneer u zich binnen de zone bevindt, dus het is niet nodig om het delen van uw locatie te stoppen.</string>
+    <string name="privacy_zones_empty_state_encryption_info">Uw privacyzone is **end-to-end versleuteld** en alleen voor u zichtbaar. Andere groepsleden kunnen niet zien waar uw zones zijn.</string>
     <string name="privacy_zones_empty_state_map_label_your_location">Uw locatie</string>
     <string name="privacy_zones_empty_state_map_label_others_view">Wat anderen zien</string>
     <string name="plan_limit_privacy_zones_alert_info">privacyszones</string>
@@ -1015,4 +1015,17 @@
     <string name="group_members_status_privacy_zone">Privacymodus actief</string>
     <string name="map_long_tap_action_new_place">Nieuwe plaats</string>
     <string name="map_long_tap_action_new_privacy_zone">Nieuwe privacyleftzone</string>
+    <string name="onboarding_step_privacyZonesIntro_title">Privacy zones zijn er</string>
+    <string name="onboarding_step_privacyZonesIntro_title_tag">Privacyezones</string>
+    <string name="onboarding_step_privacyZonesIntro_info">De privacyzone **beschermt** uw werkelijke locatie op plaatsen waar u wat privacy nodig hebt.\nAlleen zichtbaar voor u.</string>
+    <string name="privacy_zones_empty_state_map_label_zoneMessage_1">Geen zorgen, ik ben hier veilig.</string>
+    <string name="privacy_zones_empty_state_map_label_zoneMessage_2">Even tijd voor mezelf</string>
+    <string name="privacy_zones_empty_state_map_label_zoneMessage_3">Alles goed, ik koop gewoon cadeaus 🎁</string>
+    <string name="privacy_zones_empty_state_map_label_zoneMessage_4">Ik ben zo terug... over een klein beetje.</string>
+    <string name="privacy_zones_empty_state_map_label_zoneMessage_5">Onbereikbaar...</string>
+    <string name="privacy_zones_empty_state_map_label_zoneMessage_6">Alles is in orde, ik heb nu wat privacy nodig.</string>
+    <string name="licence_error_title_generic">Licentiefout</string>
+    <string name="licence_error_title_accountConflict">Accountconflict</string>
+    <string name="licence_error_webBillingAccountConflict">Deze licentie behoort toe aan een andere factureringsaccount.\nNeem contact op met de ondersteuning via **contact@paralino.com** om de licentie op te lossen en over te dragen.</string>
+    <string name="licence_loadingStep_webBillingAccountConflict">Licentieaccountconflict</string>
 </resources>

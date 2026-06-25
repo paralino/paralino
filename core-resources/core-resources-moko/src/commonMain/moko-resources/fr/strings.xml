@@ -1008,11 +1008,24 @@
     <string name="privacy_zone_create_suggestion_secret_shopping">Achats secrets</string>
     <string name="privacy_zone_create_suggestion_hidden_place">Lieu caché</string>
     <string name="privacy_zone_create_suggestion_just_for_me">Rien que pour moi</string>
-    <string name="privacy_zones_empty_state_info">La zone de confidentialité **protège** votre position réelle dans les endroits où vous avez besoin d’un peu d’intimité.</string>
-    <string name="privacy_zones_empty_state_encryption_info">Votre zone de confidentialité est **chiffrée de bout en bout** et visible uniquement par vous. Les autres membres du groupe ne peuvent pas la voir.</string>
+    <string name="privacy_zones_empty_state_info">La zone de confidentialité **protège** votre emplacement réel dans les endroits où vous avez besoin d’un peu d’intimité.\n\nElle s’activera automatiquement lorsque vous serez dans la zone, il n’est donc pas nécessaire d’arrêter le partage de localisation.</string>
+    <string name="privacy_zones_empty_state_encryption_info">Votre zone de confidentialité est **chiffrée de bout en bout** et n\'est visible que par vous. Les autres membres du groupe ne peuvent pas voir où se trouvent vos zones.</string>
     <string name="privacy_zones_empty_state_map_label_your_location">Votre position</string>
     <string name="privacy_zones_empty_state_map_label_others_view">Ce que les autres voient</string>
     <string name="plan_limit_privacy_zones_alert_info">zones de confidentialité</string>
     <string name="privacy_zones_create_plan_limit_info">Pour créer davantage de zones de confidentialité, passez à une offre supérieure.</string>
     <string name="plan_limit_overLimit_privacy_zones_banner_title">**Les zones de confidentialité sont limitées !**\nLe nombre autorisé de zones de confidentialité a été dépassé.</string>
+    <string name="onboarding_step_privacyZonesIntro_title">Les zones de confidentialité sont là</string>
+    <string name="onboarding_step_privacyZonesIntro_title_tag">Zones de confidentialité</string>
+    <string name="onboarding_step_privacyZonesIntro_info">La zone de confidentialité **protège** votre position réelle dans les endroits où vous avez besoin d’un peu de confidentialité.\nVisible uniquement par vous.</string>
+    <string name="privacy_zones_empty_state_map_label_zoneMessage_1">Ne vous inquiétez pas, je suis en sécurité ici.</string>
+    <string name="privacy_zones_empty_state_map_label_zoneMessage_2">Je prends un moment pour moi</string>
+    <string name="privacy_zones_empty_state_map_label_zoneMessage_3">Tout va bien, j’achète simplement des cadeaux 🎁</string>
+    <string name="privacy_zones_empty_state_map_label_zoneMessage_4">Je reviens... dans un petit moment.</string>
+    <string name="privacy_zones_empty_state_map_label_zoneMessage_5">Hors de portée...</string>
+    <string name="privacy_zones_empty_state_map_label_zoneMessage_6">Tout va bien, j’ai besoin d’un peu de confidentialité maintenant.</string>
+    <string name="licence_error_title_generic">Erreur de licence</string>
+    <string name="licence_error_title_accountConflict">Conflit de compte</string>
+    <string name="licence_error_webBillingAccountConflict">Cette licence appartient à un autre compte de facturation.\nVeuillez contacter l’assistance à l’adresse **contact@paralino.com** afin de résoudre le problème et de transférer la licence.</string>
+    <string name="licence_loadingStep_webBillingAccountConflict">Conflit de compte de licence</string>
 </resources>
