@@ -169,7 +169,7 @@ fun GroupListItem(
                     GroupItemState.GroupUiType.ACTIVE -> GroupStatusTagType.SHARING_ACTIVE
                     GroupItemState.GroupUiType.INACTIVE -> null
                 }
-                GroupStatusTag(status)
+                GroupStatusTag(status = status)
             }
 
             if (data.canEdit) {
