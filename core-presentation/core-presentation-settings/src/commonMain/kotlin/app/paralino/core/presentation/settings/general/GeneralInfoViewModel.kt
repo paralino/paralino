@@ -38,8 +38,15 @@ class GeneralInfoViewModel(
                 appPrefs.lastShowedAppRatingDialogAppVersion = 0
                 appPrefs.didHaveAccountWelcomeOnboarding = false
                 appPrefs.didHaveLocationHistoryIntroOnboarding = false
+                appPrefs.didHavePrivacyZonesIntroOnboarding = false
                 appPrefs.didHavePersonalSpaceIntroOnboarding = false
                 appPrefs.wasAppReviewOpened = false
+            }
+
+            GeneralInfoScreenStateUiEvent.ResetNewFeaturesOnboarding -> {
+                appPrefs.didHavePersonalSpaceIntroOnboarding = false
+                appPrefs.didHaveLocationHistoryIntroOnboarding = false
+                appPrefs.didHavePrivacyZonesIntroOnboarding = false
             }
 
             GeneralInfoScreenStateUiEvent.OnVersionInfoTap -> {

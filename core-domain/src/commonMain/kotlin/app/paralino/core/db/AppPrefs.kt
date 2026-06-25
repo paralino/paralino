@@ -92,6 +92,7 @@ class AppPrefs(
         const val keyAccountWelcomeOnboarding = "prefs.device.onboarding.account"
         const val keyAccountWelcomeOnboardingNotifications = "prefs.device.onboarding.notifications"
         const val keyLocationHistoryFeatureOnboarding = "prefs.device.onboarding.locationHistory"
+        const val keyPrivacyZonesFeatureOnboarding = "prefs.device.onboarding.privacyZones"
         const val keyPersonalSpaceFeatureOnboarding = "prefs.device.onboarding.personalSpace"
         const val keyLoggedInAppLaunchCount = "prefs.device.appLaunchCount.account"
         const val keyShowedAppRatingTime = "prefs.user.appRating.shownTime"
@@ -464,6 +465,12 @@ class AppPrefs(
         get() = provider.userSettings.getBoolean(keyLocationHistoryFeatureOnboarding, false)
         set(value) {
             provider.userSettings.putBoolean(keyLocationHistoryFeatureOnboarding, value)
+        }
+
+    var didHavePrivacyZonesIntroOnboarding: Boolean
+        get() = provider.userSettings.getBoolean(keyPrivacyZonesFeatureOnboarding, false)
+        set(value) {
+            provider.userSettings.putBoolean(keyPrivacyZonesFeatureOnboarding, value)
         }
 
     var didHavePersonalSpaceIntroOnboarding: Boolean

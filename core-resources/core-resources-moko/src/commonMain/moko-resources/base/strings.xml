@@ -132,6 +132,9 @@
     <string name="onboarding_step_locationHistoryIntro_title_inactive">Location history is here</string>
     <string name="onboarding_step_locationHistoryIntro_info_active">To let other members explore your journey, enable location history sharing for all your groups.</string>
     <string name="onboarding_step_locationHistoryIntro_button_next">Enable for all</string>
+    <string name="onboarding_step_privacyZonesIntro_title">Privacy zones are here</string>
+    <string name="onboarding_step_privacyZonesIntro_title_tag">Privacy zones</string>
+    <string name="onboarding_step_privacyZonesIntro_info">Privacy zone **protects** your actual location in places where you need a little privacy.\nVisible only to you.</string>
     <string name="onboarding_step_personalSpace_title_currentUsers">Paralino + You</string>
     <string name="onboarding_step_personalSpace_title_newUsers">Connect your devices</string>
     <string name="onboarding_step_personalSpace_info_currentUsers">Now you have a special place to manage and keep track of your own devices.</string>

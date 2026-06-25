@@ -97,6 +97,10 @@ fun AccountOnboardingScreenContent(
                             is AccountOnboardingContent.LocationHistoryIntro -> {
                                 WelcomeOnboardingPageLocationHistory()
                             }
+
+                            AccountOnboardingContent.PrivacyZonesIntro -> {
+                                AccountOnboardingPrivacyZones()
+                            }
                         }
                     }
                 )
