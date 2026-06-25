@@ -17,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.RoundRect
 import androidx.compose.ui.graphics.Path
@@ -44,9 +45,11 @@ fun MapActionBubbleMarkerContent(
 ) {
     val density = LocalDensity.current
     val pointerHeight = 10.dp
-    val cornerRadiusPx = with(density) { 12.dp.toPx() }
+    val pointerDotRadius = 3.dp
+    val cornerRadiusPx = with(density) { 22.dp.toPx() }
     val pointerHeightPx = with(density) { pointerHeight.toPx() }
     val pointerHalfWidthPx = with(density) { 8.dp.toPx() }
+    val pointerDotRadiusPx = with(density) { pointerDotRadius.toPx() }
     val borderWidthPx = with(density) { 2.dp.toPx() }
     val bubbleBackground = MaterialTheme.colors.background
     val bubbleColor = AppColors.accentDark.copy(alpha = 0.2f)
@@ -97,6 +100,22 @@ fun MapActionBubbleMarkerContent(
                     color = bubbleBackground,
                     style = Stroke(width = borderWidthPx),
                 )
+
+                val pointerTip = Offset(
+                    x = boxSize!!.width / 2f,
+                    y = boxSize!!.height.toFloat(),
+                )
+                drawCircle(
+                    color = AppColors.redMain,
+                    radius = pointerDotRadiusPx,
+                    center = pointerTip,
+                )
+                drawCircle(
+                    color = bubbleBackground,
+                    radius = pointerDotRadiusPx,
+                    center = pointerTip,
+                    style = Stroke(width = borderWidthPx),
+                )
             }
         }
 
@@ -104,8 +123,8 @@ fun MapActionBubbleMarkerContent(
             modifier = Modifier
                 .padding(bottom = pointerHeight)
                 .padding(horizontal = 8.dp, vertical = 8.dp),
-            horizontalAlignment = Alignment.Start,
-            verticalArrangement = Arrangement.spacedBy(4.dp)
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             SmallActionButton(
                 modifier = Modifier,

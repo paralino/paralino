@@ -114,12 +114,13 @@ struct MapActionBubbleMarkerView: View {
     let onCreatePrivacyZone: () -> Void
 
     private let pointerHeight: CGFloat = 10
-    private let cornerRadius: CGFloat = 12
+    private let pointerDotRadius: CGFloat = 3
+    private let cornerRadius: CGFloat = 22
     private let pointerHalfWidth: CGFloat = 8
     private let borderWidth: CGFloat = 2
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
+        VStack(alignment: .center, spacing: 8) {
             MapActionBubbleButton(
                 text: MR.shared.strings.map_long_tap_action_new_place.localizedString(),
                 action: onCreatePlace
@@ -163,6 +164,16 @@ struct MapActionBubbleMarkerView: View {
                 )
                 .stroke(Color.themebackground, lineWidth: borderWidth)
             )
+            .overlay(alignment: .bottom) {
+                Circle()
+                    .fill(Color.redMain)
+                    .frame(width: pointerDotRadius * 2, height: pointerDotRadius * 2)
+                    .overlay(
+                        Circle()
+                            .stroke(Color.themebackground, lineWidth: borderWidth)
+                    )
+                    .offset(y: pointerDotRadius)
+            }
         }
     }
 }
