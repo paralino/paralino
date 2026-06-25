@@ -3,6 +3,8 @@ package app.paralino.core.presentation.settings.billing.licence
 import app.paralino.core.MR
 import app.paralino.core.domain.user.BillingRefreshMonitor
 import app.paralino.core.presentation.CoreViewModel
+import app.paralino.core.presentation.common.AppSnackbarData
+import app.paralino.core.presentation.common.AppSnackbarPayload
 import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.exceptions.asRemoteException
@@ -98,30 +100,53 @@ class LicenceCodeViewModel(
                 _eventChannel.send(LicenceCodeEvent.OnSuccess)
             } catch (e: Exception) {
 
-                val errorMessage = if (e.asRemoteException()?.type == "license_error") {
-                    when (e.asRemoteException()?.code) {
-                        400 -> MR.strings.licence_error_invalid.localizedString()
-                        402 -> MR.strings.licence_error_expired.localizedString()
-                        403 -> MR.strings.licence_error_inUse.localizedString()
-                        404 -> MR.strings.licence_error_notFound.localizedString()
-                        409 -> MR.strings.licence_error_planActive.localizedString()
-                        else -> e.errorString()
+                val errorType = e.asRemoteException()?.type
+                val errorMessage = when {
+                    errorType?.startsWith("license_error") == true -> {
+                        when (e.asRemoteException()?.code) {
+                            400 -> MR.strings.licence_error_invalid.localizedString()
+                            402 -> MR.strings.licence_error_expired.localizedString()
+                            403 -> {
+                                when (errorType) {
+                                    "license_error_web_conflict" -> MR.strings.licence_error_webBillingAccountConflict.localizedString()
+                                    else -> MR.strings.licence_error_inUse.localizedString()
+                                }
+                            }
+                            404 -> MR.strings.licence_error_notFound.localizedString()
+                            409 -> MR.strings.licence_error_planActive.localizedString()
+                            else -> e.errorString()
+                        }
                     }
-                } else {
-                    e.errorString()
+
+                    else -> {
+                        e.errorString()
+                    }
                 }
 
-                val stepText = if (e.asRemoteException()?.type == "license_error") {
-                    when (e.asRemoteException()?.code) {
-                        400 -> MR.strings.licence_loadingStep_invalid.localizedString()
-                        402 -> MR.strings.licence_loadingStep_expired.localizedString()
-                        403 -> MR.strings.licence_loadingStep_inUse.localizedString()
-                        404 -> MR.strings.licence_loadingStep_notFound.localizedString()
-                        409 -> MR.strings.licence_loadingStep_planActive.localizedString()
-                        else -> null
+                val errorTitle = when (errorType) {
+                    "license_error_web_conflict" -> MR.strings.licence_error_title_accountConflict.localizedString()
+                    else -> MR.strings.licence_error_title_generic.localizedString()
+                }
+
+                val stepText = when {
+                    errorType?.startsWith("license_error") == true -> {
+                        when (e.asRemoteException()?.code) {
+                            400 -> MR.strings.licence_loadingStep_invalid.localizedString()
+                            402 -> MR.strings.licence_loadingStep_expired.localizedString()
+                            403 -> {
+                                when (errorType) {
+                                    "license_error_web_conflict" -> MR.strings.licence_loadingStep_webBillingAccountConflict.localizedString()
+                                    else -> MR.strings.licence_loadingStep_inUse.localizedString()
+                                }
+                            }
+                            404 -> MR.strings.licence_loadingStep_notFound.localizedString()
+                            409 -> MR.strings.licence_loadingStep_planActive.localizedString()
+                            else -> null
+                        }
                     }
-                } else {
-                    null
+                    else -> {
+                        null
+                    }
                 }
 
                 _uiState.update {
@@ -131,7 +156,14 @@ class LicenceCodeViewModel(
                         isErrorStep = true
                     )
                 }
-                messageDispatcher.showSnackbar(errorMessage)
+                messageDispatcher.showSnackbar(
+                    data = AppSnackbarData(
+                        payload = AppSnackbarPayload(
+                            title = errorTitle,
+                            text = errorMessage
+                        )
+                    )
+                )
             }
         }
     }
