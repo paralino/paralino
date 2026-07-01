@@ -97,6 +97,7 @@ fun EditProfileScreen(
                 modifier = Modifier.fillMaxSize().padding(it),
                 focusManager = focusManager,
                 shakeImage = canShakeImage,
+                isImageInlineWithName = false,
                 image = state.image,
                 name = state.name,
                 namePlaceholder = null,

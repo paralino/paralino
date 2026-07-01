@@ -225,6 +225,7 @@ private fun CreatePlaceScreenCore(
                 modifier = Modifier.fillMaxSize(),
                 focusManager = focusManager,
                 shakeImage = state.isNewPlace,
+                isImageInlineWithName = false,
                 image = state.image,
                 name = state.name,
                 namePlaceholder = null,

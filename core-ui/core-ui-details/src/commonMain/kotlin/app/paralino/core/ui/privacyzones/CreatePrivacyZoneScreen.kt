@@ -260,6 +260,7 @@ private fun CreatePrivacyZoneScreenContent(
                 } else {
                     LocalScreenDimensionType.current.isSmall
                 },
+                isImageInlineWithName = state.isNewZone,
                 shakeImage = state.isNewZone,
                 image = state.image,
                 name = state.name,

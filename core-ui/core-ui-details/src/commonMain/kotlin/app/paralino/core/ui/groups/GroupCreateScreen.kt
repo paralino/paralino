@@ -134,6 +134,7 @@ private fun GroupCreateScreen(
                 modifier = Modifier.fillMaxSize().padding(it),
                 focusManager = focusManager,
                 shakeImage = state.isNewGroup,
+                isImageInlineWithName = false,
                 image = state.image,
                 name = state.name,
                 namePlaceholder = null,

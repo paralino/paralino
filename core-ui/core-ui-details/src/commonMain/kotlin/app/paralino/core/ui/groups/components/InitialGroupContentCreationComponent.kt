@@ -11,9 +11,12 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -46,6 +49,7 @@ fun InitialGroupContentCreationComponent(
     modifier: Modifier = Modifier,
     focusManager: FocusManager,
     shakeImage: Boolean,
+    isImageInlineWithName: Boolean,
     image: ImageModel,
     name: String,
     hint: String,
@@ -80,48 +84,81 @@ fun InitialGroupContentCreationComponent(
     ) {
         Spacer(modifier = Modifier.weight(1f))
 
-        Box(
-            modifier = Modifier.size(if (isSmallScreen) 80.dp else 120.dp),
-            contentAlignment = Alignment.Center
+        if (!isImageInlineWithName) {
+            Box(
+                modifier = Modifier.size(if (isSmallScreen) 80.dp else 120.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                ImageModelImage(
+                    imageModel = image,
+                    modifier = Modifier
+                        .size(if (isSmallScreen) 70.dp else 100.dp)
+                        .rotate(rotation)
+                        .clickable(onClick = onImageClick)
+                )
+                EditImageIcon(
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .clickable(onClick = onImageClick)
+                )
+            }
+            Spacer(modifier = Modifier.size(if (isSmallScreen) 10.dp else 20.dp))
+        }
+
+        var isNameFocused by remember { mutableStateOf(false) }
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(64.dp),
+            verticalAlignment = Alignment.Bottom
         ) {
-            ImageModelImage(
-                imageModel = image,
+            if (isImageInlineWithName) {
+                Box(
+                    modifier = Modifier.size(64.dp),
+                    contentAlignment = Alignment.BottomStart
+                ) {
+                    ImageModelImage(
+                        imageModel = image,
+                        modifier = Modifier
+                            .size(56.dp)
+                            .rotate(rotation)
+                            .clickable(onClick = onImageClick)
+                    )
+                    EditImageIcon(
+                        modifier = Modifier
+                            .align(Alignment.TopEnd)
+                            .clickable(onClick = onImageClick)
+                    )
+                }
+                Spacer(modifier = Modifier.size(8.dp))
+            }
+
+            MainInputField(
                 modifier = Modifier
-                    .size(if (isSmallScreen) 70.dp else 100.dp)
-                    .rotate(rotation)
-                    .clickable(onClick = onImageClick)
-            )
-            EditImageIcon(
-                modifier = Modifier
-                    .align(Alignment.TopEnd)
-                    .clickable(onClick = onImageClick)
+                    .fillMaxHeight()
+                    .weight(1f),
+                text = name,
+                hint = if (isNameFocused || namePlaceholder == null || name.isNotBlank()) {
+                    hint
+                } else {
+                    namePlaceholder
+                },
+                maxTextLength = maxTextLength,
+                hasError = hasNameError,
+                keyboardType = KeyboardType.Text,
+                imeAction = ImeAction.Done,
+                focusManager = focusManager,
+                onInputChange = onNameChanged,
+                onFocusChanged = {
+                    isNameFocused = it
+                }
             )
         }
 
-        Spacer(modifier = Modifier.size(if (isSmallScreen) 10.dp else 20.dp))
-        var isNameFocused by remember { mutableStateOf(false) }
-
-        MainInputField(
-            text = name,
-            hint = if (isNameFocused || namePlaceholder == null || name.isNotBlank()) {
-                hint
-            } else {
-                namePlaceholder
-            },
-            maxTextLength = maxTextLength,
-            hasError = hasNameError,
-            keyboardType = KeyboardType.Text,
-            imeAction = ImeAction.Done,
-            focusManager = focusManager,
-            onInputChange = onNameChanged,
-            onFocusChanged = {
-                isNameFocused = it
-            }
-        )
-
         if (suggestions.isNotEmpty()) {
             ChipsSuggestionsSection(
-                modifier = Modifier.fillMaxWidth().padding(top = 20.dp),
+                modifier = Modifier.fillMaxWidth().padding(top = 12.dp),
                 suggestions = suggestions,
                 onSuggestionClick = {
                     onSuggestionSelected(it)
