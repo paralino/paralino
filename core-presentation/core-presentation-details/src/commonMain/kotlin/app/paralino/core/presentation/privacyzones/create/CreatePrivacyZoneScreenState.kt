@@ -214,10 +214,15 @@ object PrivacyZoneDurationPreset {
     private const val day = 24 * hour
     const val infinite = -1L
 
+    val default: Long = 8 * hour
     val presets = listOf(
+        30 * minute,
         hour,
+        2 * hour,
         4 * hour,
+        6 * hour,
         8 * hour,
+        12 * hour,
         day,
         2 * day,
         3 * day,
@@ -229,8 +234,6 @@ object PrivacyZoneDurationPreset {
         30 * day,
         infinite,
     )
-
-    val default: Long = infinite
 }
 
 fun CreatePrivacyZoneScreenState.makeMapPin(): MapPinData {
