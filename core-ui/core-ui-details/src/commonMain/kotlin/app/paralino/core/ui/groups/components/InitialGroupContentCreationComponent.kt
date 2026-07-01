@@ -6,6 +6,7 @@ import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.repeatable
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -52,6 +53,7 @@ fun InitialGroupContentCreationComponent(
     maxTextLength: Int,
     hasNameError: Boolean,
     suggestions: List<SuggestionSectionChipData>,
+    scrollState: ScrollState = rememberScrollState(),
     isSmallScreen: Boolean = LocalScreenDimensionType.current.isSmall,
     bottomContent: @Composable () -> Unit,
     onImageClick: () -> Unit,
@@ -65,7 +67,6 @@ fun InitialGroupContentCreationComponent(
         }
     }
 
-    val scrollState = rememberScrollState()
     val scope = rememberCoroutineScope()
 
     Column(
