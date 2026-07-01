@@ -24,7 +24,6 @@ struct ProfileSetupScreen: View {
                 }
             }
             .toolbarTitleDisplayMode(.inline)
-            .ignoresSafeArea(.keyboard, edges: .bottom)
         }
         .photoPickerSheet($bottomSheet) { image in
             appState.vm.onImageChange(image: image)

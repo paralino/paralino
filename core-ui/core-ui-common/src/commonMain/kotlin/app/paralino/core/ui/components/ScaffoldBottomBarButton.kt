@@ -65,12 +65,7 @@ fun ActionScaffold(
 fun ScaffoldBottomBarButtons(
     modifier: Modifier = Modifier,
     buttonBackground: Color = MaterialTheme.colors.background,
-    paddingValues: PaddingValues = PaddingValues(
-        top = 8.dp,
-        bottom = 20.dp,
-        start = 20.dp,
-        end = 20.dp
-    ),
+    paddingValues: PaddingValues,
     content: @Composable ColumnScope.() -> Unit
 ) {
     Column(

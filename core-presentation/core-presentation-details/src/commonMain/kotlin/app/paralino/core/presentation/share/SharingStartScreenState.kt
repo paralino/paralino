@@ -91,6 +91,9 @@ data class SharingStartScreenState constructor(
 
     val isPersonalSpace = groupState.data?.isPersonalSpace == true
     val isOwner = groupState.data?.isCurrentUserOwner == true
+    val isSpeedElevationAvailable: Boolean = !shareApproximateLocation
+    val effectiveShareSpeed: Boolean = shareSpeed && isSpeedElevationAvailable
+    val effectiveShareElevation: Boolean = shareElevation && isSpeedElevationAvailable
 
     val isDifferentThanContract: Boolean = currentContract?.let { contract ->
         contract.shareSpeed != shareSpeed ||
@@ -111,6 +114,10 @@ data class SharingStartScreenState constructor(
         premiumStatus is PremiumStatusLimitState.PlanLimitReached && !isDeviceRegistered
     val shouldUpgradePlan = isOwner && needsPlanUpgrade
     val shouldRegisterDevice = isNameChanged || isTimelineReEnabled || isRealtimeUpdatesReEnabled || isNewContract
+
+    companion object {
+        const val maxDeviceNameLength = 30
+    }
 }
 
 sealed class SharingStartScreenEvent() {

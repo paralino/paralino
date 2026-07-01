@@ -16,6 +16,7 @@ data class CreateGroupState(
     val suggestions: List<SuggestionSectionChipData>
 ) {
     companion object {
+        const val groupNameLengthLimit = 35
         fun empty(
             suggestions: List<SuggestionSectionChipData>
         ): CreateGroupState {

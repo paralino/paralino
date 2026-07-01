@@ -11,6 +11,7 @@ data class EditProfileScreenState constructor(
     val actionLoading: Boolean? = false,
 ) {
     companion object {
+        const val profileNameLengthLimit = 100
         fun fromUser(userData: UserMeData?): EditProfileScreenState {
             return EditProfileScreenState(
                 image = userData?.userImage ?: ImageModel.emoji(Emojis.robot),

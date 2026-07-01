@@ -49,6 +49,7 @@ import app.paralino.core.models.data
 import app.paralino.core.presentation.common.AlertDialogAction
 import app.paralino.core.presentation.common.BottomSheetPickerType
 import app.paralino.core.presentation.share.SharingStartScreenEvent
+import app.paralino.core.presentation.share.SharingStartScreenState
 import app.paralino.core.presentation.share.SharingStartScreenUiEvent
 import app.paralino.core.presentation.share.SharingStartViewModel
 import app.paralino.core.provider.localizedString
@@ -128,7 +129,7 @@ fun SharingStartScreenCore(
         key = state,
         state = LargeSeekbarSwitchState.SeekbarSwitchState(
             seekbarState = null,
-            switchState = LargeSeekbarSwitchState.Switch(state.shareSpeed)
+            switchState = LargeSeekbarSwitchState.Switch(state.effectiveShareSpeed)
         )
     )
 
@@ -136,7 +137,7 @@ fun SharingStartScreenCore(
         key = state,
         state = LargeSeekbarSwitchState.SeekbarSwitchState(
             seekbarState = null,
-            switchState = LargeSeekbarSwitchState.Switch(state.shareElevation)
+            switchState = LargeSeekbarSwitchState.Switch(state.effectiveShareElevation)
         )
     )
 
@@ -406,9 +407,9 @@ fun SharingStartScreenCore(
                             )
 
                             MainInputField(
-                                modifier = Modifier.heightIn(min = 70.dp),
                                 text = state.deviceName ?: "",
                                 hint = stringResource(MR.strings.groups_sharing_device_name_placeholder),
+                                maxTextLength = SharingStartScreenState.maxDeviceNameLength,
                                 hasError = false,
                                 keyboardType = KeyboardType.Text,
                                 imeAction = ImeAction.Done,
@@ -475,20 +476,18 @@ fun SharingStartScreenCore(
                                 icon = CoreAppIcons.Speed.asPainterResource(),
                                 title = stringResource(MR.strings.groups_sharing_setting_speed_share),
                                 description = null,
+                                enabled = state.isSpeedElevationAvailable,
                                 state = shareSpeedState,
-                                onStateChange = {
-                                    vm.turnOnSpeedSharing(it)
-                                }
+                                onStateChange = { vm.turnOnSpeedSharing(it) }
                             )
                             LargeSeekbarSwitch(
                                 modifier = Modifier.fillMaxWidth(),
                                 icon = CoreAppIcons.Elevation.asPainterResource(),
                                 title = stringResource(MR.strings.groups_sharing_setting_elevation_share),
                                 description = null,
+                                enabled = state.isSpeedElevationAvailable,
                                 state = shareElevationState,
-                                onStateChange = {
-                                    vm.turnOnElevationSharing(it)
-                                }
+                                onStateChange = { vm.turnOnElevationSharing(it) }
                             )
                         }
 

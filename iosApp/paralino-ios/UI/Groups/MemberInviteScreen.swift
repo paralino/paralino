@@ -38,7 +38,6 @@ struct MemberInviteScreen: View {
                     }
                 )
             }
-            .ignoresSafeArea(.keyboard, edges: .bottom)
         }
         .toolbarTitleDisplayMode(.inline)
         .navigationTitle(MR.shared.strings.invite_connect_screen_title.localizedString())

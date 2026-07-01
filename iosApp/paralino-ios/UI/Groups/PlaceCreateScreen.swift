@@ -41,7 +41,6 @@ struct PlaceCreateScreen: View {
                     }
                 )
             }
-            .ignoresSafeArea(.keyboard, edges: .bottom)
             .navigationTitle(appState.screenTitle)
             .navigationBarTitleDisplayMode(.inline)
             .highPriorityGesture(

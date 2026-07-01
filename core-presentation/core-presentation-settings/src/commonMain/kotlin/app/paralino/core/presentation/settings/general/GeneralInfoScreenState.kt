@@ -9,6 +9,7 @@ data class GeneralInfoScreenState(
 sealed interface GeneralInfoScreenStateUiEvent {
     data object ToggleCrashReporting: GeneralInfoScreenStateUiEvent
     data object ResetAccountWelcomeOnboarding: GeneralInfoScreenStateUiEvent
+    data object ResetNewFeaturesOnboarding: GeneralInfoScreenStateUiEvent
     data object OnVersionInfoTap: GeneralInfoScreenStateUiEvent
     data class OnChangeDebugText(val content: String): GeneralInfoScreenStateUiEvent
     data object OnSubmitDebugText: GeneralInfoScreenStateUiEvent

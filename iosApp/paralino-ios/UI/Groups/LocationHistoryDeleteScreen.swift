@@ -32,7 +32,6 @@ struct LocationHistoryDeleteScreen: View {
                 )
             }
             .toolbarTitleDisplayMode(.inline)
-            .ignoresSafeArea(.keyboard, edges: .bottom)
             .navigationTitle(MR.shared.strings.history_delete_screen_title.localizedString())
             .highPriorityGesture(
                 DragGesture(minimumDistance: 30, coordinateSpace: .local)

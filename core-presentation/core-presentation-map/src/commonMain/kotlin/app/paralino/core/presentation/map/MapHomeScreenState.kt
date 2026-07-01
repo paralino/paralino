@@ -68,6 +68,7 @@ sealed class MapHomeScreenState {
         val privacyZones: List<PlaceListItemData>,
         val markers: List<MapPinData>,
         val trackingMarker: FocusedMarkerData?,
+        val tappedCoordinateState: MapTappedCoordinateState? = null,
         val mapHomeScreenFocusType: MapHomeScreenFocusType,
         val mapSheetSelectedContentType: MapSheetSelectedContentType,
 
@@ -269,6 +270,7 @@ sealed interface MapHomeScreenUiEvent {
     data object OnOpenMemberInviteScreen : MapHomeScreenUiEvent
     data class OnOpenCreatePlaceScreen(val location: LatLng?) : MapHomeScreenUiEvent
     data class OnOpenCreatePrivacyZoneScreen(val location: LatLng?) : MapHomeScreenUiEvent
+    data class OnMapLongPress(val location: LatLng) : MapHomeScreenUiEvent
     data object OnMapTouch : MapHomeScreenUiEvent
     data class OnMapClick(val location: LatLng) : MapHomeScreenUiEvent
     data object OnRefocusSelectedDeviceItem : MapHomeScreenUiEvent
@@ -308,4 +310,9 @@ data class MapScreenLifecycleData(
     val isAppFocused: Boolean,
     val isUiFocused: Boolean,
     val mapFocusType: MapHomeScreenFocusType,
+)
+
+data class MapTappedCoordinateState(
+    val lat: Double,
+    val lng: Double,
 )

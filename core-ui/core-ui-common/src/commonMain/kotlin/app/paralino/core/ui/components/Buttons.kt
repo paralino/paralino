@@ -110,7 +110,6 @@ fun FilledButton(
             }
             .clip(style.shape)
             .background(color = colors.backgroundColor(enabled = enabled).value)
-            .alpha(if (enabled) 1f else 0.4f)
             .padding(style.paddingValues),
         contentAlignment = Alignment.Center
     ) {
@@ -135,12 +134,19 @@ fun FilledButton(
                     .defaultMinSize(minHeight = style.minContentHeight)
             ) {
                 if (icon != null) {
-                    Icon(painter = icon, null, modifier = Modifier.size(style.iconSize))
+                    Icon(
+                        modifier = Modifier.size(style.iconSize),
+                        painter = icon,
+                        contentDescription = null,
+                        tint = LocalContentColor.current
+                    )
                     Spacer(Modifier.size(style.iconSpacing))
                 }
 
                 if (content != null) {
-                    CompositionLocalProvider(LocalTextStyle provides MaterialTheme.typography.button) {
+                    CompositionLocalProvider(
+                        LocalTextStyle provides MaterialTheme.typography.button.copy(color = LocalContentColor.current)
+                    ) {
                         content()
                     }
                 }

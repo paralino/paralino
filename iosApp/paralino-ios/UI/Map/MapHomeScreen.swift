@@ -114,16 +114,17 @@ struct MapHomeScreen: View {
                         controller.additionalSafeAreaInsets = .init(top: 65, left: 0, bottom: 0, right: 0)
                         controller.mapState = mapState
                         controller.onMapPan = { mapState.onMapTouch() }
-                        controller.onMapLongPress = { point in
-                            if let readyState = mapState.uiState.asReady() {
-                                path.append(.home(.placeCreate(
-                                    groupId: GroupOrSpaceIdHelper.shared.unwrap(id: readyState.groupOrSpaceId)!,
-                                    placeId: nil,
-                                    editStep: nil,
-                                    lat: point.latitude,
-                                    lng: point.longitude
-                                )))
-                            }
+                        controller.onMapTap = { coordinate in
+                            mapState.onMapClick(coordinate: coordinate)
+                        }
+                        controller.onMapLongPress = { coordinate in
+                            mapState.onMapLongPress(coordinate: coordinate)
+                        }
+                        mapState.onTapActionCreatePlace = {
+                            mapState.onTapActionCreatePlaceSelected()
+                        }
+                        mapState.onTapActionCreatePrivacyZone = {
+                            mapState.onTapActionCreatePrivacyZoneSelected()
                         }
                         return controller
                     }

@@ -154,7 +154,7 @@ class PrivacyZoneObfuscator(
             lat2 = pickedLat,
             lng2 = pickedLng,
         ).toInt()
-        return zoneRadiusMeters + distanceFromCenter
+        return (zoneRadiusMeters + distanceFromCenter).coerceAtLeast(500)
     }
 
     suspend fun isPlaceOverlappingPrivacyZone(

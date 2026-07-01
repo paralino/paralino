@@ -169,6 +169,9 @@ object MainMapScreen {
                             LocationHistoryScreenEvent.OpenPaywall -> openPaywall(BillingScreenSourceType.UPGRADE_DEFAULT)
                             is LocationHistoryScreenEvent.OpenRawDataScreen -> openRawDataScreen(event.type)
 
+                            is LocationHistoryScreenEvent.OpenCreatePlace -> onOpenCreatePlaceScreen(event.groupId, event.location)
+                            is LocationHistoryScreenEvent.OpenCreatePrivacyZone -> onOpenCreatePrivacyZone(event.groupId, event.location)
+
                             null -> {}
                         }
                     }

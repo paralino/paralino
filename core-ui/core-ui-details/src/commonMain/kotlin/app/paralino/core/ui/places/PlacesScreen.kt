@@ -354,7 +354,7 @@ private fun PlacesScreen(
                                 text = {
                                     Text(
                                         modifier = Modifier.padding(end = 2.dp),
-                                        text = stringResource(MR.strings.group_details_add_member_button)
+                                        text = stringResource(MR.strings.places_list_add_button)
                                     )
                                 },
                                 backgroundColor = MaterialTheme.colors.primary,

@@ -91,6 +91,7 @@ fun CreatePlaceMapStep(
                         .fillMaxHeight()
                         .weight(1f),
                     text = state.name,
+                    maxTextLength = CreatePlaceScreenState.placeNameLengthLimit,
                     hint = stringResource(MR.strings.places_create_name_placeholder),
                     focusManager = focusManager,
                     hasError = state.hasNameError,

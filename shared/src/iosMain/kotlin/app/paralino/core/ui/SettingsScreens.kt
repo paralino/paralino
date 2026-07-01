@@ -1,6 +1,7 @@
 package app.paralino.core.ui
 
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.ui.uikit.OnFocusBehavior
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.ComposeUIViewController
 import app.paralino.core.presentation.paralinoid.PersonalCodeViewModel
@@ -124,7 +125,11 @@ object SettingsScreens {
         vm: EditProfileViewModel,
         onBottomSheetAction: (BottomSheetPickerType.EmojiPickerBottomSheet) -> Unit,
         onExit: () -> Unit
-    ) = ComposeUIViewController {
+    ) = ComposeUIViewController(
+        configure = {
+            onFocusBehavior = OnFocusBehavior.DoNothing
+        }
+    ) {
         RootScreenIOS {
             EditProfileScreen(
                 appState = it,
@@ -150,7 +155,11 @@ object SettingsScreens {
     fun ConvertAccountScreenVC(
         vm: ConvertAccountViewModel,
         onNavigateBack: () -> Unit
-    ) = ComposeUIViewController {
+    ) = ComposeUIViewController(
+        configure = {
+            onFocusBehavior = OnFocusBehavior.DoNothing
+        }
+    ) {
         RootScreenIOS {
             ConvertAccountScreenCore(
                 appState = it,
@@ -164,7 +173,11 @@ object SettingsScreens {
     fun ChangeEmailScreenVC(
         vm: ChangeEmailViewModel,
         onNavigateBack: () -> Unit
-    ) = ComposeUIViewController {
+    ) = ComposeUIViewController(
+        configure = {
+            onFocusBehavior = OnFocusBehavior.DoNothing
+        }
+    ) {
         RootScreenIOS {
             ChangeEmailScreenCore(
                 appState = it,
@@ -177,7 +190,11 @@ object SettingsScreens {
     fun ChangePasswordScreenVC(
         vm: ChangePasswordViewModel,
         onNavigateBack: () -> Unit
-    ) = ComposeUIViewController {
+    ) = ComposeUIViewController(
+        configure = {
+            onFocusBehavior = OnFocusBehavior.DoNothing
+        }
+    ) {
         RootScreenIOS {
             ChangePasswordScreenCore(
                 appState = it,
@@ -245,7 +262,11 @@ object SettingsScreens {
     fun LicenceCodeScreenVC(
         vm: LicenceCodeViewModel,
         onNavigateBack: () -> Unit,
-    ) = ComposeUIViewController {
+    ) = ComposeUIViewController(
+        configure = {
+            onFocusBehavior = OnFocusBehavior.DoNothing
+        }
+    ) {
         RootScreenIOS {
             LicenceCodeScreenCore(
                 appState = it,

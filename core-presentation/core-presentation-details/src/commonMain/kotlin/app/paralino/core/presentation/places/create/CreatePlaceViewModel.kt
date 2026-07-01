@@ -75,8 +75,6 @@ class CreatePlaceViewModel(
     private var mapPosition: LatLng? = null
     val isNewPlace: Boolean = placeId.isNullOrBlank()
 
-    val placeNameLengthLimit = 30
-
     init {
         coroutineScope.launch {
             val value = when {
@@ -441,7 +439,7 @@ class CreatePlaceViewModel(
         name: String? = uiState.value.data?.name,
         image: ImageModel? = uiState.value.data?.image
     ) {
-        val name = if ((name?.trim()?.length ?: 0) > placeNameLengthLimit) {
+        val name = if ((name?.trim()?.length ?: 0) > CreatePlaceScreenState.placeNameLengthLimit) {
             uiState.value.data?.name ?: ""
         } else {
             name ?: ""

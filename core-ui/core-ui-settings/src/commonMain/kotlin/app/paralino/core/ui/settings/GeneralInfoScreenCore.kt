@@ -120,7 +120,10 @@ fun GeneralInfoScreenCore(
         }
         SettingsActionItem(
             name = stringResource(MR.strings.setting_title_libraries),
-            icon = CoreAppIcons.LibraryBooks.asPainterResource()
+            icon = CoreAppIcons.LibraryBooks.asPainterResource(),
+            onLongClick = {
+                vm.onEvent(GeneralInfoScreenStateUiEvent.ResetNewFeaturesOnboarding)
+            }
         ) {
             onLicencesClick()
         }

@@ -1,12 +1,15 @@
 package app.paralino.core.ui.privacyzones
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.LinearOutSlowInEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -244,6 +247,8 @@ private fun CreatePrivacyZoneScreenContent(
             enter = fadeIn() + slideInVertically(),
             exit = fadeOut() + slideOutVertically()
         ) {
+            val scrollState = rememberScrollState()
+            val scope = rememberCoroutineScope()
             InitialGroupContentCreationComponent(
                 modifier = Modifier
                     .fillMaxSize()
@@ -255,12 +260,20 @@ private fun CreatePrivacyZoneScreenContent(
                 } else {
                     LocalScreenDimensionType.current.isSmall
                 },
+                isImageInlineWithName = state.isNewZone,
                 shakeImage = state.isNewZone,
                 image = state.image,
                 name = state.name,
-                hint = stringResource(MR.strings.privacy_zones_create_name_placeholder),
+                namePlaceholder = if (state.isNewZone) {
+                    null
+                } else {
+                    stringResource(MR.strings.privacy_zones_create_name_default)
+                },
+                maxTextLength = CreatePrivacyZoneScreenState.maxNameLength,
+                hint = stringResource(MR.strings.privacy_zones_create_name_hint),
                 hasNameError = state.hasNameError,
                 suggestions = state.nameSuggestions,
+                scrollState = scrollState,
                 bottomContent = {
                     if (state.isNewZone) {
                         Spacer(modifier = Modifier.size(10.dp))
@@ -272,7 +285,17 @@ private fun CreatePrivacyZoneScreenContent(
                             modifier = Modifier.fillMaxWidth(),
                             focusManager = focusManager,
                             state = state,
-                            onEvent = onEvent,
+                            onEvent = {
+                                when (it) {
+                                    is CreatePrivacyZoneScreenUiEvent.OnInZoneMessageChanged -> {
+                                        scope.launch {
+                                            scrollState.animateScrollBy(value = 1000f, animationSpec = tween(durationMillis = 500, easing = LinearOutSlowInEasing))
+                                        }
+                                    }
+                                    else -> {}
+                                }
+                                onEvent(it)
+                            }
                         )
                     }
                 },
@@ -310,6 +333,7 @@ private fun PrivacyZoneSettingsStep(
     onEvent: (CreatePrivacyZoneScreenUiEvent) -> Unit,
 ) {
     val scrollState = rememberScrollState()
+    val scope = rememberCoroutineScope()
 
     Column(
         modifier = modifier
@@ -327,7 +351,17 @@ private fun PrivacyZoneSettingsStep(
             modifier = Modifier.fillMaxWidth(),
             focusManager = focusManager,
             state = state,
-            onEvent = onEvent,
+            onEvent = {
+                when (it) {
+                    is CreatePrivacyZoneScreenUiEvent.OnInZoneMessageChanged -> {
+                        scope.launch {
+                            scrollState.animateScrollBy(value = 1000f, animationSpec = tween(durationMillis = 500, easing = LinearOutSlowInEasing))
+                        }
+                    }
+                    else -> {}
+                }
+                onEvent(it)
+            }
         )
     }
 }

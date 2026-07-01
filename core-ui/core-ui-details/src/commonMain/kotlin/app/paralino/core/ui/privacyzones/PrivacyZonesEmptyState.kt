@@ -1,5 +1,6 @@
 package app.paralino.core.ui.privacyzones
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
@@ -17,7 +18,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -39,6 +39,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -62,10 +63,12 @@ import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.min
 import androidx.compose.ui.unit.sp
 import app.paralino.core.MR
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.base.asGroupOrSpaceId
+import app.paralino.core.presentation.common.GroupStatusTagType
 import app.paralino.core.presentation.map.MapMarkerStyle
 import app.paralino.core.presentation.map.MapPinData
 import app.paralino.core.presentation.map.MapPinType
@@ -73,6 +76,7 @@ import app.paralino.core.resources.CoreAppIcons
 import app.paralino.core.resources.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.MapMarkerContent
 import app.paralino.core.ui.components.NoticeInfoChip
+import app.paralino.core.ui.groups.components.GroupStatusTag
 import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.extensions.annotatedBoldCompose
@@ -82,6 +86,7 @@ import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.roundToInt
 import kotlin.math.sin
+import kotlin.time.Duration.Companion.milliseconds
 
 @Composable
 fun PrivacyZonesEmptyState(
@@ -92,8 +97,10 @@ fun PrivacyZonesEmptyState(
             .padding(bottom = 20.dp)
     ) {
 
-        PrivacyZonesEmptyScreenMapContent(
-            modifier = Modifier.padding(horizontal = 20.dp),
+        PrivacyZonesEmptyStateMapContent(
+            modifier = Modifier
+                .padding(top = 20.dp)
+                .padding(horizontal = 20.dp),
         )
 
         CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
@@ -115,7 +122,7 @@ fun PrivacyZonesEmptyState(
 }
 
 @Composable
-private fun PrivacyZonesEmptyScreenMapContent(
+fun PrivacyZonesEmptyStateMapContent(
     modifier: Modifier = Modifier
 ) {
     var comparisonProgress by rememberSaveable { mutableFloatStateOf(0f) }
@@ -134,7 +141,6 @@ private fun PrivacyZonesEmptyScreenMapContent(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .padding(top = 20.dp)
             .height(350.dp)
             .dropShadow(
                 shape = RoundedCornerShape(20.dp),
@@ -199,10 +205,11 @@ private fun PrivacyZonesEmptyScreenMapContent(
                         Text(
                             modifier = Modifier
                                 .align(Alignment.BottomEnd)
-                                .padding(8.dp),
+                                .padding(6.dp),
                             text = stringResource(MR.strings.privacy_zones_empty_state_map_label_your_location),
-                            fontSize = 10.sp,
-                            lineHeight = 10.sp,
+                            fontSize = 12.sp,
+                            lineHeight = 14.sp,
+                            fontWeight = FontWeight.Medium,
                             color = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.medium),
                         )
                     }
@@ -225,10 +232,11 @@ private fun PrivacyZonesEmptyScreenMapContent(
                         Text(
                             modifier = Modifier
                                 .align(Alignment.BottomStart)
-                                .padding(8.dp),
+                                .padding(6.dp),
                             text = stringResource(MR.strings.privacy_zones_empty_state_map_label_others_view),
-                            fontSize = 10.sp,
-                            lineHeight = 10.sp,
+                            fontSize = 12.sp,
+                            lineHeight = 14.sp,
+                            fontWeight = FontWeight.Medium,
                             color = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.medium),
                         )
                     }
@@ -365,15 +373,15 @@ private fun PrivacyZonesEmptyScreenProtectedContent(
     modifier: Modifier = Modifier,
     state: MapPinData
 ) {
-    Box(
+    BoxWithConstraints(
         modifier = modifier
             .padding(10.dp),
         contentAlignment = Alignment.Center
     ) {
+        val size = min(this.maxWidth, this.maxHeight)
         Box(
             modifier = Modifier
-                .matchParentSize()
-                .aspectRatio(1f, matchHeightConstraintsFirst = true)
+                .size(size)
                 .clip(CircleShape)
                 .background(
                     if (isSystemInDarkTheme()) {
@@ -384,6 +392,38 @@ private fun PrivacyZonesEmptyScreenProtectedContent(
                 )
         )
         MapMarkerContent(state = state)
+
+        val zoneMessages = remember {
+            listOf(
+                MR.strings.privacy_zones_empty_state_map_label_zoneMessage_1,
+                MR.strings.privacy_zones_empty_state_map_label_zoneMessage_2,
+                MR.strings.group_members_status_privacy_zone,
+                MR.strings.privacy_zones_empty_state_map_label_zoneMessage_3,
+                MR.strings.privacy_zones_empty_state_map_label_zoneMessage_4,
+                MR.strings.group_members_status_location_hidden,
+                MR.strings.privacy_zones_empty_state_map_label_zoneMessage_5,
+                MR.strings.privacy_zones_empty_state_map_label_zoneMessage_6,
+            )
+        }
+        var currentMessageIndex by remember { mutableIntStateOf(0) }
+        LaunchedEffect(zoneMessages) {
+            while (true) {
+                delay(1500.milliseconds)
+                currentMessageIndex = (currentMessageIndex + 1) % zoneMessages.size
+            }
+        }
+
+        AnimatedContent(
+            modifier = Modifier.offset(y = 30.dp),
+            targetState = currentMessageIndex,
+            label = "animated tag",
+        ) { messageIndex ->
+            GroupStatusTag(
+                modifier = Modifier,
+                status = GroupStatusTagType.SHARING_ACTIVE_PRIVACY_ZONE,
+                extraMessage = stringResource(zoneMessages[messageIndex])
+            )
+        }
     }
 }
 

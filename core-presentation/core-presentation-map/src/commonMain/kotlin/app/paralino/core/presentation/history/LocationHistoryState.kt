@@ -19,6 +19,7 @@ import app.paralino.core.presentation.common.MemberNavigateItemState
 import app.paralino.core.presentation.history.LocationHistoryShowPinsViewMode
 import app.paralino.core.presentation.map.MapHomeScreenEvent
 import app.paralino.core.presentation.map.MapPinData
+import app.paralino.core.presentation.map.MapTappedCoordinateState
 import app.paralino.core.provider.current
 import app.paralino.core.utils.extensions.isLocationInaccurate
 import app.paralino.core.utils.extensions.nowUTC
@@ -63,6 +64,7 @@ data class LocationHistoryScreenState(
     val daySelectorState: LocationHistoryDateSelectorState,
     val planConfig: PlanConfig?,
     val alertDialog: MainAlertDialog? = null,
+    val tappedCoordinateState: MapTappedCoordinateState? = null,
 ) {
     val startDate: LocalDate = selectedDate.minus(DatePeriod(days = daySelectorState.dateRangeDays?.minus(1) ?: 0))
         .let {
@@ -364,7 +366,8 @@ data class LocationHistoryScreenUiState(
     val selectedLocationId: String?,
     val daySelectorState: LocationHistoryDateSelectorState,
     val alertDialog: MainAlertDialog? = null,
-    
+    val tappedCoordinateState: MapTappedCoordinateState? = null,
+
     // Computed properties from LocationHistoryScreenState
     val mapInteractionType: MapInteractionsType,
     val deviceType: DeviceType,
@@ -423,7 +426,8 @@ data class LocationHistoryScreenUiState(
                 selectedLocationId = screenState.selectedLocationId,
                 daySelectorState = screenState.daySelectorState,
                 alertDialog = screenState.alertDialog,
-                
+                tappedCoordinateState = screenState.tappedCoordinateState,
+
                 // Computed properties
                 mapInteractionType = screenState.mapInteractionType,
                 deviceType = screenState.deviceType,
@@ -610,6 +614,8 @@ sealed interface LocationHistoryUiEvent {
     data object ToggleDayRange : LocationHistoryUiEvent
     data object OnCloseScreen : LocationHistoryUiEvent
     data object OpenLocationSettings : LocationHistoryUiEvent
+    data class OnOpenCreatePlaceScreen(val location: LatLng?) : LocationHistoryUiEvent
+    data class OnOpenCreatePrivacyZoneScreen(val location: LatLng?) : LocationHistoryUiEvent
 }
 
 sealed interface LocationHistoryScreenEvent {
@@ -624,4 +630,14 @@ sealed interface LocationHistoryScreenEvent {
     data object NavigateBack : LocationHistoryScreenEvent
     data object OpenHistorySettings : LocationHistoryScreenEvent
     data object OpenPaywall : LocationHistoryScreenEvent
+
+    data class OpenCreatePlace(
+        val groupId: String,
+        val location: LatLng?,
+    ) : LocationHistoryScreenEvent
+
+    data class OpenCreatePrivacyZone(
+        val groupId: String,
+        val location: LatLng?,
+    ) : LocationHistoryScreenEvent
 }

@@ -671,12 +671,24 @@ class SharingStartViewModel(
     }
 
     fun turnOnSpeedSharing(state: Boolean) {
+        if (!_uiState.value.isSpeedElevationAvailable) {
+            showSnackbar(
+                MR.strings.groups_sharing_setting_approximateLocation_speedElevation_unavailable.localizedString()
+            )
+            return
+        }
         _uiState.update {
             it.copy(shareSpeed = state)
         }
     }
 
     fun turnOnElevationSharing(state: Boolean) {
+        if (!_uiState.value.isSpeedElevationAvailable) {
+            showSnackbar(
+                MR.strings.groups_sharing_setting_approximateLocation_speedElevation_unavailable.localizedString()
+            )
+            return
+        }
         _uiState.update {
             it.copy(shareElevation = state)
         }
@@ -727,6 +739,7 @@ class SharingStartViewModel(
 
     fun onDeviceNameChange(name: String) {
         if (_uiState.value.loadingAction) return
+        if (name.trim().length > SharingStartScreenState.maxDeviceNameLength) return
         _uiState.update { it.copy(deviceName = name) }
     }
 

@@ -144,10 +144,16 @@ class AccountOnboardingViewModel(
         } else {
             when {
                 appPrefs.didHaveAccountWelcomeOnboarding -> {
-                    if (!appPrefs.didHaveLocationHistoryIntroOnboarding) {
-                        AccountOnboardingContent.PersonalSpaceCurrentUsersIntro
-                    } else {
-                        null
+                    when {
+                        !appPrefs.didHaveLocationHistoryIntroOnboarding -> {
+                            AccountOnboardingContent.PersonalSpaceCurrentUsersIntro
+                        }
+
+                        !appPrefs.didHavePrivacyZonesIntroOnboarding -> {
+                            AccountOnboardingContent.PrivacyZonesIntro
+                        }
+
+                        else -> null
                     }
                 }
 
@@ -246,6 +252,10 @@ class AccountOnboardingViewModel(
                 confirmLocationHistoryInit(step)
             }
 
+            AccountOnboardingContent.PrivacyZonesIntro -> {
+                finishOnboarding()
+            }
+
             AccountOnboardingContent.PersonalSpaceNewUsersIntro -> {
                 openPersonalSpaceSetup()
             }
@@ -286,6 +296,10 @@ class AccountOnboardingViewModel(
             }
 
             is AccountOnboardingContent.LocationHistoryIntro -> {
+                openPrivacyZonesIntro()
+            }
+
+            AccountOnboardingContent.PrivacyZonesIntro -> {
                 finishOnboarding()
             }
 
@@ -333,7 +347,7 @@ class AccountOnboardingViewModel(
         }
 
         if (!step.isSharingActive) {
-            finishOnboarding()
+            openPrivacyZonesIntro()
             return
         }
 
@@ -358,7 +372,15 @@ class AccountOnboardingViewModel(
                 }
             }
             _uiState.update { it.mapReady { it.copy(fullScreenLoading = false) } }
-            finishOnboarding()
+            openPrivacyZonesIntro()
+        }
+    }
+
+    private fun openPrivacyZonesIntro() {
+        _uiState.update {
+            it.mapReady {
+                it.copy(onboardingStep = AccountOnboardingContent.PrivacyZonesIntro)
+            }
         }
     }
 
@@ -393,6 +415,7 @@ class AccountOnboardingViewModel(
     private fun markOnboardingFinished() {
         appPrefs.didHaveAccountWelcomeOnboarding = true
         appPrefs.didHaveLocationHistoryIntroOnboarding = true
+        appPrefs.didHavePrivacyZonesIntroOnboarding = true
     }
 
     private fun finishOnboarding() {

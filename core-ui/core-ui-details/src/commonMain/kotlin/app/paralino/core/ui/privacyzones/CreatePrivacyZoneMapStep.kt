@@ -10,9 +10,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -32,21 +30,16 @@ import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.paralino.core.MR
 import app.paralino.core.presentation.places.create.PlaceAddressSearchUiMode
 import app.paralino.core.presentation.privacyzones.create.CreatePrivacyZoneScreenState
-import app.paralino.core.presentation.privacyzones.create.CreatePrivacyZoneScreenStep
 import app.paralino.core.presentation.privacyzones.create.CreatePrivacyZoneScreenUiEvent
 import app.paralino.core.resources.MokoResources.imageAsPainterResource
 import app.paralino.core.ui.components.EmbeddedSlider
 import app.paralino.core.ui.components.EmbeddedSliderSize
-import app.paralino.core.ui.components.ImageModelImage
-import app.paralino.core.ui.components.MainInputField
 import app.paralino.core.ui.places.PlaceAddressSearchComponent
 import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.ui.theme.LocalScreenDimensionType
@@ -67,46 +60,6 @@ fun CreatePrivacyZoneMapStep(
     Column(
         modifier = modifier.fillMaxSize()
     ) {
-//        AnimatedVisibility(
-//            visible = state.screenStep == CreatePrivacyZoneScreenStep.ADDRESS &&
-//                    state.addressUiMode == PlaceAddressSearchUiMode.HIDDEN &&
-//                    !isSmallScreen &&
-//                    !state.editOnlyCurrentStep
-//        ) {
-//            Row(
-//                modifier = Modifier
-//                    .fillMaxWidth()
-//                    .padding(top = 12.dp)
-//                    .height(64.dp),
-//                verticalAlignment = Alignment.Bottom
-//            ) {
-//                ImageModelImage(
-//                    imageModel = state.image,
-//                    modifier = Modifier
-//                        .size(56.dp)
-//                        .clickable { onImageClick() }
-//                        .align(Alignment.Bottom),
-//                )
-//
-//                Spacer(modifier = Modifier.size(8.dp))
-//
-//                MainInputField(
-//                    modifier = Modifier
-//                        .fillMaxHeight()
-//                        .weight(1f),
-//                    text = state.name,
-//                    hint = stringResource(MR.strings.privacy_zones_create_name_placeholder),
-//                    focusManager = focusManager,
-//                    hasError = state.hasNameError,
-//                    keyboardType = KeyboardType.Text,
-//                    imeAction = ImeAction.Done,
-//                    onInputChange = {
-//                        onEvent(CreatePrivacyZoneScreenUiEvent.OnNameChanged(it))
-//                    }
-//                )
-//            }
-//        }
-
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -139,8 +92,8 @@ fun CreatePrivacyZoneMapStep(
                 Surface(
                     modifier = Modifier
                         .weight(1f)
-                        .padding(6.dp),
-                    shape = RoundedCornerShape(15.dp),
+                        .padding(5.dp),
+                    shape = RoundedCornerShape(14.dp),
                     color = MaterialTheme.colors.background,
                 ) {
                     mapContent(state)

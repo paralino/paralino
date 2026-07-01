@@ -61,7 +61,6 @@ struct SharingStartScreen: View {
                     }
                 )
             }
-            .ignoresSafeArea(.keyboard, edges: .bottom)
             .highPriorityGesture(
                 DragGesture(minimumDistance: 30, coordinateSpace: .local)
                     .onChanged { _ in /* no-op, just to claim */ }

@@ -86,6 +86,7 @@ data class CreatePlaceScreenState constructor(
 
     companion object {
 
+        const val placeNameLengthLimit = 30
         const val defaultRadiusMeters = 200
         val radiusSteps = arrayOf(
             50, 80, 100, 150, 200, 300, 400, 500, 600, 700, 800, 900, 1000,

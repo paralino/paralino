@@ -543,11 +543,24 @@ class MapHomeViewModel constructor(
     }
 
     fun onEvent(event: MapHomeScreenUiEvent) {
-        if (event is MapHomeScreenUiEvent.OnMapClick) {
-            if (locationHistoryController.value != null) {
-                locationHistoryController.value?.onEvent(
-                    LocationHistoryUiEvent.OnMapClick(event.location)
-                )
+        if (locationHistoryController.value != null) {
+            when (event) {
+                is MapHomeScreenUiEvent.OnMapClick -> {
+                    locationHistoryController.value?.onEvent(
+                        LocationHistoryUiEvent.OnMapClick(event.location)
+                    )
+                }
+
+                is MapHomeScreenUiEvent.OnMapLongPress -> {
+                    locationHistoryController.value?.onEvent(
+                        LocationHistoryUiEvent.OnMapLongPress(
+                            lat = event.location.lat,
+                            lng = event.location.lng,
+                        )
+                    )
+                }
+
+                else -> {}
             }
         }
 

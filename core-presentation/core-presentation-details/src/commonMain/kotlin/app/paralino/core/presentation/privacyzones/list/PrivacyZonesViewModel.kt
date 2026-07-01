@@ -15,6 +15,7 @@ import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.presentation.common.SnackbarDuration
 import app.paralino.core.presentation.common.MainAlertDialog
 import app.paralino.core.presentation.common.PlaceListItemData
+import app.paralino.core.domain.privacyzone.nameOrDefault
 import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.utils.extensions.errorString
 import kotlinx.coroutines.Dispatchers
@@ -84,6 +85,7 @@ class PrivacyZonesViewModel(
                 zone.data.data?.let {
                     PlaceListItemData(
                         zone = zone,
+                        zoneName = zone.nameOrDefault,
                         expirationStatus = valueFormatter.formatExpirationDateTimeUTC(
                             expiresAtTimeUTC = it.expiresAt,
                             showActiveStatus = false

@@ -29,14 +29,17 @@ import dev.icerock.moko.resources.compose.stringResource
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun GroupStatusTag(
-    status: GroupStatusTagType?
+    modifier: Modifier = Modifier,
+    status: GroupStatusTagType?,
+    extraMessage: String? = null
 ) {
     if (status != null) {
         FlowRow(
+            modifier = modifier,
             horizontalArrangement = Arrangement.spacedBy(4.dp, Alignment.Start),
             verticalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterVertically)
         ) {
-            GroupStatusTagContent(status = status, extraMessage = null)
+            GroupStatusTagContent(status = status, extraMessage = extraMessage)
         }
     }
 }

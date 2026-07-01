@@ -9,6 +9,7 @@ import app.paralino.core.models.location.LocationHistoryPointState
 import app.paralino.core.presentation.common.ICoreMessageDispatcher
 import app.paralino.core.presentation.history.LocationHistoryScreenEvent.OpenNavigation
 import app.paralino.core.presentation.map.MapHomeScreenEvent.OpenExternalNavigation
+import app.paralino.core.presentation.map.MapTappedCoordinateState
 import app.paralino.core.models.settings.MapInteractionsType
 import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.provider.localizedString
@@ -168,6 +169,7 @@ class LocationHistoryViewModelController(
             LocationHistoryUiEvent.OnMapTouch -> {
                 _uiState.update {
                     it.copy(
+                        tappedCoordinateState = null,
                         isFilterOpened = false,
                         focusType = LocationHistoryScreenFocusType.NONE_COLLAPSED(
                             isForceCollapsedRequested = it.focusType.isForceCollapsedRequested
@@ -182,7 +184,9 @@ class LocationHistoryViewModelController(
             }
 
             is LocationHistoryUiEvent.OnMapClick -> {
-                // do nothing
+                _uiState.update {
+                    it.copy(tappedCoordinateState = null)
+                }
             }
 
             LocationHistoryUiEvent.ToggleMapFilter -> {
@@ -364,7 +368,17 @@ class LocationHistoryViewModelController(
                 )
             }
 
-            is LocationHistoryUiEvent.OnMapLongPress -> {}
+            is LocationHistoryUiEvent.OnMapLongPress -> {
+                _uiState.update {
+                    it.copy(
+                        tappedCoordinateState = MapTappedCoordinateState(
+                            lat = event.lat,
+                            lng = event.lng,
+                        ),
+                        isFilterOpened = false,
+                    )
+                }
+            }
 
             is LocationHistoryUiEvent.SelectDevice -> {
                 historyEventHandler.selectDevice(event.device)
@@ -526,6 +540,26 @@ class LocationHistoryViewModelController(
 
             LocationHistoryUiEvent.OpenLocationSettings -> {
                 _eventChannel.trySend(LocationHistoryScreenEvent.OpenHistorySettings)
+            }
+
+            is LocationHistoryUiEvent.OnOpenCreatePlaceScreen -> {
+                _uiState.update { it.copy(tappedCoordinateState = null) }
+                _eventChannel.trySend(
+                    LocationHistoryScreenEvent.OpenCreatePlace(
+                        groupId = _uiState.value.groupOrSpaceId.id,
+                        location = event.location,
+                    )
+                )
+            }
+
+            is LocationHistoryUiEvent.OnOpenCreatePrivacyZoneScreen -> {
+                _uiState.update { it.copy(tappedCoordinateState = null) }
+                _eventChannel.trySend(
+                    LocationHistoryScreenEvent.OpenCreatePrivacyZone(
+                        groupId = _uiState.value.groupOrSpaceId.id,
+                        location = event.location,
+                    )
+                )
             }
 
             LocationHistoryUiEvent.ToggleClusterLocations -> {

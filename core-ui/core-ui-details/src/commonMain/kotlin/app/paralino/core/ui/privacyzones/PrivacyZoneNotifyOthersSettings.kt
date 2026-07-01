@@ -4,7 +4,6 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -70,9 +69,7 @@ fun PrivacyZoneNotifyOthersSettings(
 
         AnimatedVisibility(visible = notifyOthersInZone) {
             MainInputField(
-                modifier = Modifier
-                    .padding(top = 8.dp)
-                    .height(70.dp),
+                modifier = Modifier.padding(top = 8.dp),
                 text = inZoneMessage.orEmpty(),
                 hint = stringResource(MR.strings.privacy_zones_create_status_message_placeholder),
                 hasError = false,

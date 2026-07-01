@@ -36,6 +36,7 @@ import app.paralino.core.presentation.common.PlaceListItemData
 import app.paralino.core.presentation.common.SnackbarDuration
 import app.paralino.core.presentation.common.onAction
 import app.paralino.core.presentation.groups.detail.GroupDetailScreenEvent.OpenRawMemberData
+import app.paralino.core.domain.privacyzone.nameOrDefault
 import app.paralino.core.presentation.share.ApproximateLocationDistancePair
 import app.paralino.core.provider.DistanceType
 import app.paralino.core.provider.IDeviceApiProvider
@@ -132,6 +133,7 @@ class GroupDetailViewModel(
                 .map { zone ->
                     PlaceListItemData(
                         zone = zone,
+                        zoneName = zone.nameOrDefault,
                         expirationStatus = valueFormatter.formatExpirationDateTimeUTC(
                             expiresAtTimeUTC = zone.data.data?.expiresAt,
                             showActiveStatus = false

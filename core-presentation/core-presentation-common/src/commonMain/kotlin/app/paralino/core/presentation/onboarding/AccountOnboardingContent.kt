@@ -169,4 +169,18 @@ sealed class AccountOnboardingContent(
             }
         }
     }
+
+    data object PrivacyZonesIntro : AccountOnboardingContent(
+        parentKey = 650,
+        titleKey = 650,
+        titleTag = MR.strings.onboarding_step_privacyZonesIntro_title_tag,
+        title = MR.strings.onboarding_step_privacyZonesIntro_title,
+        buttonText = MR.strings.button_ok,
+        skipButtonText = null
+    ) {
+        @Composable
+        override fun infoText(): String {
+            return stringResource(MR.strings.onboarding_step_privacyZonesIntro_info)
+        }
+    }
 }

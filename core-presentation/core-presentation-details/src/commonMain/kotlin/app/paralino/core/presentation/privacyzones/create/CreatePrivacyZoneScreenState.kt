@@ -20,7 +20,6 @@ import app.paralino.core.presentation.map.MapPinType
 import app.paralino.core.presentation.places.create.PlaceAddressSearchUiMode
 import app.paralino.core.presentation.places.create.PlaceAddressSuggestion
 import app.paralino.core.presentation.places.create.PlaceMapFallbackLatLng
-import app.paralino.core.presentation.share.ApproximateLocationDistancePair
 import app.paralino.core.provider.current
 import app.paralino.core.provider.localizedString
 import app.paralino.core.utils.Emojis
@@ -41,8 +40,8 @@ data class CreatePrivacyZoneScreenState constructor(
     val fallbackCenterLatLng: PlaceMapFallbackLatLng?,
     val lat: Double?,
     val lng: Double?,
-    val radiusPresets: List<ApproximateLocationDistancePair>,
-    val radiusValue: ApproximateLocationDistancePair,
+    val radiusPresets: List<PrivacyZoneLocationDistancePair>,
+    val radiusValue: PrivacyZoneLocationDistancePair,
     val radiusText: String,
     val hasNameError: Boolean,
     val notifyOthersInZone: Boolean,
@@ -116,11 +115,12 @@ data class CreatePrivacyZoneScreenState constructor(
 
     companion object {
         const val maxMessageLength: Int = 40
+        const val maxNameLength: Int = 30
         fun empty(
             groupId: GroupOrSpaceId,
             lat: Double? = null,
             lng: Double? = null,
-            radiusValue: ApproximateLocationDistancePair,
+            radiusValue: PrivacyZoneLocationDistancePair,
             radiusText: String,
             memberPreviewState: GroupMemberItemStateWithOneLocation,
             androidMapSDKProvider: MapsSDKProvider?,
@@ -146,7 +146,7 @@ data class CreatePrivacyZoneScreenState constructor(
                 fallbackCenterLatLng = fallbackCenterLatLng,
                 lat = lat,
                 lng = lng,
-                radiusPresets = ApproximateLocationDistancePair.pairs,
+                radiusPresets = PrivacyZoneLocationDistancePair.pairs,
                 radiusValue = radiusValue,
                 radiusText = radiusText,
                 hasNameError = false,
@@ -214,10 +214,15 @@ object PrivacyZoneDurationPreset {
     private const val day = 24 * hour
     const val infinite = -1L
 
+    val default: Long = 8 * hour
     val presets = listOf(
+        30 * minute,
         hour,
+        2 * hour,
         4 * hour,
+        6 * hour,
         8 * hour,
+        12 * hour,
         day,
         2 * day,
         3 * day,
@@ -229,8 +234,6 @@ object PrivacyZoneDurationPreset {
         30 * day,
         infinite,
     )
-
-    val default: Long = infinite
 }
 
 fun CreatePrivacyZoneScreenState.makeMapPin(): MapPinData {

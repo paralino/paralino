@@ -10,6 +10,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.uikit.OnFocusBehavior
 import androidx.compose.ui.viewinterop.UIKitInteropInteractionMode
 import androidx.compose.ui.viewinterop.UIKitInteropProperties
 import androidx.compose.ui.viewinterop.UIKitViewController
@@ -91,7 +92,11 @@ object HomeScreens {
         vm: CreateGroupViewModel,
         onBottomSheetAction: (BottomSheetPickerType.EmojiPickerBottomSheet) -> Unit,
         groupUpdated: (String) -> Unit
-    ) = ComposeUIViewController {
+    ) = ComposeUIViewController(
+        configure = {
+            onFocusBehavior = OnFocusBehavior.DoNothing
+        }
+    ) {
         RootScreenIOS {
             GroupCreateScreenCore(
                 appState = it,
@@ -190,7 +195,11 @@ object HomeScreens {
         openPaywall: (BillingScreenSourceType) -> Unit,
         onMemberAdded: () -> Unit,
         onSkipOnboarding: () -> Unit
-    ) = ComposeUIViewController {
+    ) = ComposeUIViewController(
+        configure = {
+            onFocusBehavior = OnFocusBehavior.DoNothing
+        }
+    ) {
         RootScreenIOS {
             MemberInviteScreenCore(
                 appState = it,
@@ -268,7 +277,11 @@ object HomeScreens {
         askLocationPermission: () -> Unit,
         askBackgroundLocationPermission: () -> Unit,
         askBackgroundAccessPermission: () -> Unit,
-    ) = ComposeUIViewController {
+    ) = ComposeUIViewController(
+        configure = {
+            onFocusBehavior = OnFocusBehavior.DoNothing
+        }
+    ) {
         RootScreenIOS {
             SharingStartScreenCore(
                 appState = it,
@@ -439,7 +452,11 @@ object HomeScreens {
         onNavigateBack: () -> Unit,
         onBottomSheetAction: (BottomSheetPickerType.EmojiPickerBottomSheet) -> Unit,
         mapUIView: () -> UIViewController,
-    ) = ComposeUIViewController {
+    ) = ComposeUIViewController(
+        configure = {
+            onFocusBehavior = OnFocusBehavior.DoNothing
+        }
+    ) {
         RootScreenIOS {
             CreatePlaceScreenCore(
                 appState = it,
@@ -514,7 +531,11 @@ object HomeScreens {
         onNavigateBack: () -> Unit,
         onBottomSheetAction: (BottomSheetPickerType.EmojiPickerBottomSheet) -> Unit,
         mapUIView: () -> UIViewController,
-    ) = ComposeUIViewController {
+    ) = ComposeUIViewController(
+        configure = {
+            onFocusBehavior = OnFocusBehavior.DoNothing
+        }
+    ) {
         RootScreenIOS {
             CreatePrivacyZoneScreenCore(
                 appState = it,

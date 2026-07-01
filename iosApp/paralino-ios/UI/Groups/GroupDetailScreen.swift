@@ -91,6 +91,11 @@ struct GroupDetailScreen: View {
             }
             .toolbarTitleDisplayMode(.inline)
             .ignoresSafeArea(.all, edges: .bottom)
+            .highPriorityGesture(
+                DragGesture(minimumDistance: 30, coordinateSpace: .local)
+                    .onChanged { _ in /* no-op, just to claim */ }
+                    .onEnded { _ in }
+            )
         }
     }
     

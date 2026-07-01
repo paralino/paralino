@@ -1,5 +1,7 @@
 package app.paralino.android.ui.map.maplibre
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
@@ -14,6 +16,7 @@ import app.paralino.core.presentation.history.LocationHistoryScreenUiState
 import app.paralino.core.presentation.history.LocationHistoryUiEvent
 import app.paralino.core.presentation.map.MapHomeScreenState
 import app.paralino.core.presentation.map.MapHomeScreenUiEvent
+import app.paralino.core.models.location.LatLng
 import org.maplibre.compose.camera.rememberCameraState
 
 
@@ -57,32 +60,84 @@ fun HomeScreenMapLibreMapComposable(
         homeMapController
     }
 
-    GenericMapLibreMapWrapper(
-        modifier = modifier,
-        mapData = mapController,
-        isSystemInDarkTheme = isSystemInDarkTheme(),
-        onMapClick = {
-            onMainEvent(MapHomeScreenUiEvent.OnMapClick(it))
-        },
-        onMapLongClick = {
-            onMainEvent(MapHomeScreenUiEvent.OnOpenCreatePlaceScreen(it))
-        },
-        onMapLoaded = {
-            isMapLoaded = true
-        },
-        content = {
-            if (historyUiState != null) {
-                MapLibreLocationHistoryMapContent(
-                    uiState = historyUiState,
-                    isSatelliteMode = uiState.isSatelliteModeActive,
-                    onEvent = onHistoryEvent
+    Box(modifier = modifier) {
+        GenericMapLibreMapWrapper(
+            modifier = Modifier.fillMaxSize(),
+            mapData = mapController,
+            isSystemInDarkTheme = isSystemInDarkTheme(),
+            onMapClick = {
+                onMainEvent(MapHomeScreenUiEvent.OnMapClick(it))
+            },
+            onMapLongClick = {
+                onMainEvent(MapHomeScreenUiEvent.OnMapLongPress(it))
+            },
+            onMapLoaded = {
+                isMapLoaded = true
+            },
+            content = {
+                if (historyUiState != null) {
+                    MapLibreLocationHistoryMapContent(
+                        uiState = historyUiState,
+                        isSatelliteMode = uiState.isSatelliteModeActive,
+                        onEvent = onHistoryEvent
+                    )
+                } else {
+                    MapLibreMainHomeMapContent(
+                        uiState = readyState,
+                        onEvent = onMainEvent
+                    )
+                }
+            }
+        )
+
+        when {
+            historyUiState?.tappedCoordinateState != null -> {
+                val tappedState = historyUiState.tappedCoordinateState!!
+                MapLibreTapActionOverlay(
+                    modifier = Modifier.fillMaxSize(),
+                    tappedState = tappedState,
+                    cameraState = cameraState,
+                    showPrivacyZoneButton = !historyUiState.isPersonalHistory,
+                    onCreatePlace = {
+                        onHistoryEvent(
+                            LocationHistoryUiEvent.OnOpenCreatePlaceScreen(
+                                location = LatLng(lat = tappedState.lat, lng = tappedState.lng)
+                            )
+                        )
+                    },
+                    onCreatePrivacyZone = {
+                        onHistoryEvent(
+                            LocationHistoryUiEvent.OnOpenCreatePrivacyZoneScreen(
+                                location = LatLng(lat = tappedState.lat, lng = tappedState.lng)
+                            )
+                        )
+                    }
                 )
-            } else {
-                MapLibreMainHomeMapContent(
-                    uiState = readyState,
-                    onEvent = onMainEvent
+            }
+
+            readyState?.tappedCoordinateState != null -> {
+                val tappedState = readyState.tappedCoordinateState!!
+                MapLibreTapActionOverlay(
+                    modifier = Modifier.fillMaxSize(),
+                    tappedState = tappedState,
+                    cameraState = cameraState,
+                    showPrivacyZoneButton = !readyState.isPersonalSpace,
+                    onCreatePlace = {
+                        onMainEvent(
+                            MapHomeScreenUiEvent.OnOpenCreatePlaceScreen(
+                                location = LatLng(lat = tappedState.lat, lng = tappedState.lng)
+                            )
+                        )
+                    },
+                    onCreatePrivacyZone = {
+                        onMainEvent(
+                            MapHomeScreenUiEvent.OnOpenCreatePrivacyZoneScreen(
+                                location = LatLng(lat = tappedState.lat, lng = tappedState.lng)
+                            )
+                        )
+                    }
                 )
             }
         }
-    )
+    }
 }

@@ -56,12 +56,13 @@ tasks.whenTaskAdded {
 
 android {
     namespace = "app.paralino.android"
-    compileSdk = 36
+    compileSdk = libs.versions.compileSdk.get().toInt()
 
     // release config is dynamically injected in release pipeline
     androidComponents.beforeVariants { variant ->
         val names = variant.productFlavors.map { flavor -> flavor.second }
-        val variantIgnore = (variant.buildType == "releaseTest" && names.contains("direct"))
+        val variantIgnore = variant.buildType == "releaseTest" && names.contains("direct")
+                || variant.buildType == "releaseLocal" && names.contains("playStore")
         variant.enable = !variantIgnore
     }
 
@@ -79,8 +80,8 @@ android {
 
     defaultConfig {
         applicationId = "app.paralino.android"
-        minSdk = 29
-        targetSdk = 36
+        minSdk = libs.versions.minSdk.get().toInt()
+        targetSdk = libs.versions.targetSdk.get().toInt()
         versionCode = 1
         versionName = "1.0"
 
@@ -189,14 +190,24 @@ android {
                     this.signingConfig = config
                 }
         }
+        create("releaseLocal") {
+            initWith(getByName("release"))
+            matchingFallbacks.add("release")
+            isDefault = true
+            (signingConfigs.findByName("testConfig")?.takeIf { it.storeFile != null }
+                ?: signingConfigs.findByName("debug")?.takeIf { it.storeFile != null })
+                ?.let { config ->
+                    this.signingConfig = config
+                }
+        }
     }
 
     flavorDimensions += "version"
     productFlavors {
         create("playStore") {
             dimension = "version"
-            versionCode = 89
-            versionName = "2.3.0"
+            versionCode = 95
+            versionName = "2.4.0"
 
             val userProps = loadUserProperties(rootProject.rootDir)
             buildConfigField("String", "revenueCatApiKey", userProps?.getProperty("revenueCatApiKey") ?: "null")
@@ -204,8 +215,9 @@ android {
         }
         create("direct") {
             dimension = "version"
-            versionCode = 89
-            versionName = "2.3.0"
+            versionCode = 95
+            versionName = "2.4.0"
+            isDefault = true
 
             buildConfigField("String", "revenueCatApiKey", "null")
         }
@@ -314,7 +326,11 @@ dependencies {
 
     playStoreImplementation(libs.maps.google.compose)
     playStoreImplementation(libs.maps.google.compose.utils)
-    implementation(libs.maps.maplibre.compose)
+    implementation(libs.maps.maplibre.compose) {
+        exclude(group = "org.maplibre.gl", module = "android-sdk")
+    }
+    implementation(libs.maps.maplibre.android.opengl)
+
     directImplementation(libs.unifiedPush.connector)
 
     implementation(libs.nanoid)
@@ -322,7 +338,6 @@ dependencies {
 
     implementation(project(path = ":parasodium"))
     implementation(project(path = ":appwrite-android"))
-//    releaseImplementation(libs.appwrite.android)
 
     implementation(platform(libs.okhttp.bom))
     implementation(libs.okhttp)
