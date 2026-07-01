@@ -326,7 +326,11 @@ dependencies {
 
     playStoreImplementation(libs.maps.google.compose)
     playStoreImplementation(libs.maps.google.compose.utils)
-    implementation(libs.maps.maplibre.compose)
+    implementation(libs.maps.maplibre.compose) {
+        exclude(group = "org.maplibre.gl", module = "android-sdk")
+    }
+    implementation(libs.maps.maplibre.android.opengl)
+
     directImplementation(libs.unifiedPush.connector)
 
     implementation(libs.nanoid)
@@ -334,7 +338,6 @@ dependencies {
 
     implementation(project(path = ":parasodium"))
     implementation(project(path = ":appwrite-android"))
-//    releaseImplementation(libs.appwrite.android)
 
     implementation(platform(libs.okhttp.bom))
     implementation(libs.okhttp)

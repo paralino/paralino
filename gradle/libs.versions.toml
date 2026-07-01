@@ -32,6 +32,7 @@ sentry = "8.43.1"
 playServicesLocation = "21.3.0"
 mapsGoogleCompose = "8.3.0"
 mapsMapLibreCompose = "0.13.0"
+mapsMapLibreAndroidOpenGl = "13.0.2"
 firebaseMessaging = "24.1.2"
 nanoid = "1.0.1"
 mokoResources = "0.26.4"
@@ -95,6 +96,7 @@ play-services-location = { group = "com.google.android.gms", name = "play-servic
 maps-google-compose = { group = "com.google.maps.android", name = "maps-compose", version.ref = "mapsGoogleCompose" }
 maps-google-compose-utils = { group = "com.google.maps.android", name = "maps-compose-utils", version.ref = "mapsGoogleCompose" }
 maps-maplibre-compose = { module = "org.maplibre.compose:maplibre-compose", version.ref = "mapsMapLibreCompose" }
+maps-maplibre-android-opengl = { module = "org.maplibre.gl:android-sdk-opengl", version.ref = "mapsMapLibreAndroidOpenGl" }
 firebase-messaging-ktx = { group = "com.google.firebase", name = "firebase-messaging-ktx", version.ref = "firebaseMessaging" }
 nanoid = { group = "io.viascom.nanoid", name = "nanoid", version.ref = "nanoid" }
 koin-bom = { module = "io.insert-koin:koin-bom", version.ref = "koin-bom" }
