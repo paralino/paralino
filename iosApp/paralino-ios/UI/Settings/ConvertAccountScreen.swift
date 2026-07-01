@@ -26,7 +26,6 @@ struct ConvertAccountScreen: View {
                     }
                 )
             }
-            .ignoresSafeArea(.keyboard, edges: .bottom)
             .navigationTitle(MR.shared.strings.settings_account_guest_convert.localizedString())
             .navigationBarTitleDisplayMode(.inline)
             .navigationBarBackButtonHidden(!appState.canNavigateBack)

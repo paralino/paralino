@@ -24,7 +24,6 @@ struct VerifyEmailScreen: View {
                         }
                     )
                 }
-                .ignoresSafeArea(.keyboard, edges: .bottom)
             }
             .navigationDestination(for: EmailVerificationGraph.self) { route in
                 switch route {

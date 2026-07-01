@@ -32,7 +32,6 @@ struct GroupCreateScreen: View {
                     }
                 )
             }
-            .ignoresSafeArea(.keyboard, edges: .bottom)
         }
         .photoPickerSheet($bottomSheet) { image in
             appState.vm.updateImage(image: image)

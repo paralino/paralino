@@ -2,6 +2,7 @@ package app.paralino.core.ui
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.uikit.OnFocusBehavior
 import androidx.compose.ui.window.ComposeUIViewController
 import app.paralino.core.presentation.login.LoggedOutViewModel
 import app.paralino.core.presentation.login.LoginViewModel
@@ -51,7 +52,11 @@ object LoginScreens {
     fun CompleteProfileVC(
         vm: EditProfileViewModel,
         onBottomSheetAction: (BottomSheetPickerType.EmojiPickerBottomSheet) -> Unit,
-    ) = ComposeUIViewController {
+    ) = ComposeUIViewController(
+        configure = {
+            onFocusBehavior = OnFocusBehavior.DoNothing
+        }
+    ) {
         RootScreenIOS {
             ProfileSetupScreenCore(
                 appState = it,
@@ -75,7 +80,11 @@ object LoginScreens {
     fun VerifyEmailVC(
         vm: VerifyEmailViewModel,
         openChangeEmail: () -> Unit
-    ) = ComposeUIViewController {
+    ) = ComposeUIViewController(
+        configure = {
+            onFocusBehavior = OnFocusBehavior.DoNothing
+        }
+    ) {
         RootScreenIOS {
             VerifyEmailScreenCore(
                 appState = it,
@@ -88,7 +97,11 @@ object LoginScreens {
     fun ResetPasswordVC(
         vm: ResetPasswordViewModel,
         openLoginScreen: () -> Unit
-    ) = ComposeUIViewController {
+    ) = ComposeUIViewController(
+        configure = {
+            onFocusBehavior = OnFocusBehavior.DoNothing
+        }
+    ) {
         RootScreenIOS {
             ResetPasswordScreenCore(
                 appState = it,
