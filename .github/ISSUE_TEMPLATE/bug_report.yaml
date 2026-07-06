@@ -1,0 +1,85 @@
+name: "🐛 Bug Report"
+description: Create a report to help us improve Paralino
+title: "[BUG] "
+labels:
+  - bug
+type: bug
+assignees:
+  - zlmr
+body:
+  - type: textarea
+    id: description
+    validations:
+      required: true
+    attributes:
+      label: Describe the Bug
+      description: A clear and concise description of what the bug is.
+      placeholder: What went wrong?
+
+  - type: textarea
+    id: steps-to-reproduce
+    validations:
+      required: false
+    attributes:
+      label: Steps to Reproduce
+      description: Steps to reproduce the behavior.
+      placeholder: |
+        1. Go to '...'
+        2. Click on '...'
+        3. Scroll down to '...'
+        4. See error
+
+  - type: textarea
+    id: expected-behavior
+    validations:
+      required: false
+    attributes:
+      label: Expected Behavior
+      description: A clear and concise description of what you expected to happen.
+
+  - type: textarea
+    id: screenshots
+    validations:
+      required: false
+    attributes:
+      label: Screenshots / Screen Recordings
+      description: |
+        If applicable, add screenshots or screen recordings to help explain your problem.
+
+        Please strip any personal data or visible locations.<br/>
+        If not possible, please reach out to support directly and send it over a private channel: **contact@paralino.com**
+
+  - type: input
+    id: device
+    validations:
+      required: false
+    attributes:
+      label: Device
+      description: e.g. iPhone 15 Pro, Samsung Galaxy S24
+      placeholder: e.g. iPhone 15 Pro
+
+  - type: input
+    id: os-version
+    validations:
+      required: false
+    attributes:
+      label: OS & Version
+      description: e.g. iOS 18.4, Android 15
+      placeholder: e.g. iOS 18.4
+
+  - type: input
+    id: paralino-version
+    validations:
+      required: false
+    attributes:
+      label: Paralino Version
+      description: e.g. v2.2.3
+      placeholder: e.g. v2.2.3
+
+  - type: textarea
+    id: additional-context
+    validations:
+      required: false
+    attributes:
+      label: Additional Context
+      description: Add any other context about the problem here.
