@@ -1,12 +1,12 @@
 [submodule "parasodium"]
 	path = parasodium
-	url = git@github.com:paralino/parasodium.git
+	url = ../parasodium.git
 [submodule "appwrite-android"]
 	path = appwrite-android
-	url = git@github.com:paralino/appwrite-android.git
+	url = ../appwrite-android.git
 [submodule "iosApp/appwrite-apple"]
 	path = iosApp/appwrite-apple
-	url = git@github.com:paralino/appwrite-apple.git
+	url = ../appwrite-apple.git
 [submodule "iosApp/async-http-client"]
 	path = iosApp/async-http-client
-	url = git@github.com:paralino/async-http-client.git
+	url = ../async-http-client.git
