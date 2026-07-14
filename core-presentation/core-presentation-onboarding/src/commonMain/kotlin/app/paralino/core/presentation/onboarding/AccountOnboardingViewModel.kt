@@ -14,10 +14,10 @@ import app.paralino.core.models.user.UserMe
 import app.paralino.core.models.user.UserPersonalCode
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.presentation.billing.BillingScreenSourceType
-import app.paralino.core.provider.ICoreMessageDispatcherEvent
 import app.paralino.core.presentation.onboarding.AccountOnboardingScreenEvent.OpenPaywall
 import app.paralino.core.presentation.paralinoid.PersonalCodeScreenCodeData
 import app.paralino.core.provider.DeviceStatusData
+import app.paralino.core.provider.ICoreMessageDispatcherEvent
 import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.provider.NotificationPermissionResultEvent
 import app.paralino.core.provider.NotificationSocketServiceManager

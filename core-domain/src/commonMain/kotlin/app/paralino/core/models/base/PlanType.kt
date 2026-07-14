@@ -2,15 +2,9 @@ package app.paralino.core.models.base
 
 import app.paralino.core.MR
 import app.paralino.core.provider.localizedString
-import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.descriptors.PrimitiveKind
-import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
-import kotlinx.serialization.descriptors.SerialDescriptor
-import kotlinx.serialization.encoding.Decoder
-import kotlinx.serialization.encoding.Encoder
+import kotlinx.serialization.Transient
 
-@Serializable(with = PlanType.Serializer::class)
 sealed class PlanType {
     abstract val key: String
     val name: String get() = key
@@ -18,34 +12,32 @@ sealed class PlanType {
 
     data object FREE : PlanType() {
         override val key: String = "free"
-        override val order: Int = 0
+        override val order: Int = 10
     }
 
     data object SILVER : PlanType() {
         override val key: String = "silver"
-        override val order: Int = 1
+        override val order: Int = 100
     }
 
     data object STANDARD : PlanType() {
         override val key: String = "standard"
-        override val order: Int = 100
+        override val order: Int = 1000
     }
 
     data object PRO : PlanType() {
         override val key: String = "pro"
-        override val order: Int = 200
+        override val order: Int = 2000
     }
 
     data object MAX : PlanType() {
         override val key: String = "max"
-        override val order: Int = 300
+        override val order: Int = 3000
     }
 
     data class UNKNOWN(override val key: String, override val order: Int = -1) : PlanType()
 
-    val isSilverOrMore: Boolean get() = order >= SILVER.order
     val isPremium: Boolean get() = order >= STANDARD.order
-    val isOtherThanSilver get() = this != SILVER
 
     override fun hashCode(): Int {
         var result = key.hashCode()
@@ -65,29 +57,18 @@ sealed class PlanType {
     }
 
     companion object {
-        fun fromKey(key: String): PlanType {
+        fun fromKey(
+            key: String,
+            order: Int = -1
+        ): PlanType {
             return when (key) {
                 FREE.key -> FREE
                 SILVER.key -> SILVER
                 STANDARD.key -> STANDARD
                 PRO.key -> PRO
                 MAX.key -> MAX
-                else -> UNKNOWN(key)
+                else -> UNKNOWN(key = key, order = order)
             }
-        }
-    }
-
-    object Serializer : KSerializer<PlanType> {
-        override val descriptor: SerialDescriptor =
-            PrimitiveSerialDescriptor("PlanType", PrimitiveKind.STRING)
-
-        override fun serialize(encoder: Encoder, value: PlanType) {
-            encoder.encodeString(value.key)
-        }
-
-        override fun deserialize(decoder: Decoder): PlanType {
-            val string = decoder.decodeString()
-            return PlanType.fromKey(string)
         }
     }
 }
@@ -123,6 +104,7 @@ enum class PlanProvider(val key: String) {
 @Serializable
 data class PlanConfig(
     val planType: String,
+    val planOrder: Int,
     val planName: String,
     val groupsLimit: Int,
     val membersLimit: Int,
@@ -134,12 +116,19 @@ data class PlanConfig(
     val historyDaysLimit: Int,
     val personalHistoryDaysLimit: Int,
     val paralinoIdsLimit: Int,
-    val isActive: Boolean = true,
+    val hasLocationRequests: Boolean,
+    val hasOngoingRealtime: Boolean,
+    val hasBestLocationPerformance: Boolean,
+    val hasPremiumMapStyles: Boolean,
+    val hasSharingAlerts: Boolean,
+    val hasLowBatteryAlerts: Boolean,
+    val isPaidPlan: Boolean,
+    val isActive: Boolean,
     val productIds: List<String> = emptyList(),
     val productPlanIds: List<String> = emptyList(),
 ) {
 
-    val planTypeEnum: PlanType = PlanType.fromKey(key = planType)
+    @Transient val planTypeEnum: PlanType = PlanType.fromKey(key = planType, order = planOrder)
     val hasUnlimitedPersonalHistory: Boolean = personalHistoryDaysLimit < 0
     val hasUnlimitedGroupHistory: Boolean = historyDaysLimit < 0
     val isPersonalHistoryEnabled: Boolean = personalHistoryDaysLimit != 0
@@ -154,6 +143,7 @@ data class PlanConfig(
     companion object {
         val default = PlanConfig(
             planType = PlanType.FREE.key,
+            planOrder = PlanType.FREE.order,
             planName = PlanType.FREE.name,
             groupsLimit = 1,
             membersLimit = 2,
@@ -165,6 +155,13 @@ data class PlanConfig(
             historyDaysLimit = 0,
             personalHistoryDaysLimit = 0,
             paralinoIdsLimit = 1,
+            hasLocationRequests = false,
+            hasOngoingRealtime = false,
+            hasBestLocationPerformance = false,
+            hasPremiumMapStyles = false,
+            hasSharingAlerts = false,
+            hasLowBatteryAlerts = true,
+            isPaidPlan = false,
             isActive = true,
             productIds = listOf("free"),
             productPlanIds = listOf("free")

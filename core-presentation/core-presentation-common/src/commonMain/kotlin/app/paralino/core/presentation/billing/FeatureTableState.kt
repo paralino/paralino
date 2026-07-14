@@ -317,7 +317,7 @@ data class FeatureTableState(
                         visibilityMode = FeatureTableItemVisibilityMode.VISIBLE_EXPANDED,
                         values = plans.map {
                             FeatureTableItemValue.Emoji(
-                                content = if (it.type.isPremium) "✅" else "❌",
+                                content = if (it.config.hasLocationRequests) "✅" else "❌",
                                 planType = it.type,
                                 highlightMode = if (it.isSelected) {
                                     FeatureTableItemHighlightMode.FULL
@@ -335,7 +335,7 @@ data class FeatureTableState(
                         visibilityMode = FeatureTableItemVisibilityMode.VISIBLE_EXPANDED,
                         values = plans.map {
                             FeatureTableItemValue.Emoji(
-                                content = if (it.type.isSilverOrMore) "✅" else "❌",
+                                content = if (it.config.hasBestLocationPerformance) "✅" else "❌",
                                 planType = it.type,
                                 highlightMode = if (it.isSelected) {
                                     FeatureTableItemHighlightMode.FULL
@@ -353,7 +353,7 @@ data class FeatureTableState(
                         visibilityMode = FeatureTableItemVisibilityMode.VISIBLE_EXPANDED,
                         values = plans.map {
                             FeatureTableItemValue.Emoji(
-                                content = "✅",
+                                content = if (it.config.hasLowBatteryAlerts) "✅" else "❌",
                                 planType = it.type,
                                 highlightMode = if (it.isSelected) {
                                     FeatureTableItemHighlightMode.FULL
@@ -371,7 +371,7 @@ data class FeatureTableState(
                         visibilityMode = FeatureTableItemVisibilityMode.VISIBLE_EXPANDED,
                         values = plans.map {
                             FeatureTableItemValue.Emoji(
-                                content = if (it.type.isSilverOrMore) "✅" else "❌",
+                                content = if (it.config.hasSharingAlerts) "✅" else "❌",
                                 planType = it.type,
                                 highlightMode = if (isGroupPlanOnly) {
                                     FeatureTableItemHighlightMode.BOTTOM

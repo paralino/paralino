@@ -648,7 +648,7 @@ class PaywallViewModel(
             ?.isSelected
         // after that check what user currently has as billing period
             ?: plans.highestValidPlan
-                ?.takeIf { it.plan.planTypeEnum.isPremium }
+                ?.takeIf { it.config.planTypeEnum.isPremium }
                 ?.takeIf { it.config.planTypeEnum == planType }
                 ?.plan?.billingPeriod
                 ?.let { it == period }
@@ -683,7 +683,7 @@ class PaywallViewModel(
                     }
 
                     else -> {
-                        premiumPlans.firstOrNull { it.planTypeEnum == config.defaultPremiumPlan }
+                        premiumPlans.firstOrNull { it.planType == config.defaultPremiumPlan }
                     }
                 }
 

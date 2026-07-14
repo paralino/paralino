@@ -553,14 +553,14 @@ class MapStateMapper(
                 isEnabled = canRequestLocationAgain,
                 lastLocationRequest = previousState?.actions?.locationRequest?.lastLocationRequest,
                 lastDeviceUpdate = location.status.data?.timeUTC?.fromUTCtoInstant(),
-                isPremiumFeatureEnabled = groupPlanConfig.planTypeEnum.isPremium
+                isPremiumFeatureEnabled = groupPlanConfig.hasLocationRequests
             )
         } else if (isRequestExpired && !isRequestInProgress) {
             LocationRequestItemState(
                 isEnabled = canRequestLocationAgain,
                 lastLocationRequest = previousState?.actions?.locationRequest?.lastLocationRequest,
                 lastDeviceUpdate = location.status.data?.timeUTC?.fromUTCtoInstant(),
-                isPremiumFeatureEnabled = groupPlanConfig.planTypeEnum.isPremium
+                isPremiumFeatureEnabled = groupPlanConfig.hasLocationRequests
             )
         } else {
             previousState.actions.locationRequest?.copy(

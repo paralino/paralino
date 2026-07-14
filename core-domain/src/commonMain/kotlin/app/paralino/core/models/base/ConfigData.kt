@@ -21,7 +21,7 @@ data class ConfigData(
     val androidAppUrl: String? = null,
     val emailEnabled: Boolean = false,
     val freePlanPromoBillingId: String? = null,
-    val defaultPremiumPlan: PlanType = PlanType.PRO,
+    val defaultPremiumPlan: String = PlanType.PRO.key,
     val plans: List<PlanConfig> = emptyList(),
 ) {
 
@@ -46,12 +46,12 @@ data class ConfigData(
                 freePlanPromoBillingId = map.get("freePlanPromoBillingId")?.takeIf { it.isNotBlank() },
                 defaultPremiumPlan = map.get("defaultPremiumPlan")
                     ?.let {
-                        PlanType.fromKey(key = it).takeIf { it !is PlanType.UNKNOWN }
+                        PlanType.fromKey(key = it).takeIf { it !is PlanType.UNKNOWN }?.key
                     }
-                    ?: PlanType.PRO,
+                    ?: PlanType.PRO.key,
                 plans = map.get("plans")?.let {
                     try {
-                        BaseRemoteModule.formatter.decodeFromString(it)
+                        BaseRemoteModule.formatter.decodeFromString<List<PlanConfig>?>(it)
                     } catch (e: Exception) {
                         logg.e("Error parsing plans from remote: ${e.message}")
                         emptyList()

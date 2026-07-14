@@ -43,10 +43,11 @@ class LocationHistoryDateMapper(
         } else {
             userGroupRepo.allGroupsState.value.data?.firstOrNull { it.id == groupId }
                 ?.group?.planConfig(remoteConfig.getConfigOnce())
-                ?: PlanConfig.default
+                ?: remoteConfig.getConfigOnce().defaultFreePlanConfig()
         }
 
-        val highestAppPlan = remoteConfig.getConfigOnce().plans.maxByOrNull { it.planTypeEnum.order } ?: PlanConfig.default
+        val highestAppPlan = remoteConfig.getConfigOnce().plans.maxByOrNull { it.planTypeEnum.order }
+            ?: remoteConfig.getConfigOnce().defaultFreePlanConfig()
         val upgradeAvailable = highestAppPlan.planTypeEnum.order > planConfig.planTypeEnum.order
         val isLimitedHistoryPlan = if (isPersonalHistory) {
             !planConfig.isPersonalHistoryEnabled

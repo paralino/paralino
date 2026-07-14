@@ -297,6 +297,6 @@ class MapsProviderViewModel(
     }
 
     private fun canUserHavePremiumMaps(): Boolean {
-        return userRepository.userPlans.value.highestValidPlanConfig.planTypeEnum.isPremium && !appPrefs.mapTilerToken.isNullOrBlank()
+        return userRepository.userPlans.value.highestValidPlanConfig.hasPremiumMapStyles && !appPrefs.mapTilerToken.isNullOrBlank()
     }
 }

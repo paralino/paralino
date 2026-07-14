@@ -341,7 +341,7 @@ class MapHomeViewModel constructor(
         ) { groupId, isAppFocused, isUiFocused, mapFocusType ->
             MapScreenLifecycleData(
                 groupId = groupId,
-                planConfig = uiState.value.asReady()?.groupPlanConfig ?: PlanConfig.default,
+                planConfig = uiState.value.asReady()?.groupPlanConfig ?: remoteConfig.getConfigOnce().defaultFreePlanConfig(),
                 isAppFocused = isAppFocused,
                 isUiFocused = isUiFocused,
                 mapFocusType = mapFocusType

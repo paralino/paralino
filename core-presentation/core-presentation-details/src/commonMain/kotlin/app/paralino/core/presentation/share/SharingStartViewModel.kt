@@ -236,6 +236,9 @@ class SharingStartViewModel(
             SharingStartScreenUiEvent.StartSharing -> {
                 startSharing()
             }
+
+            is SharingStartScreenUiEvent.ToggleNotifyOthers -> toggleNotifyOthers(state = event.state)
+            is SharingStartScreenUiEvent.ToggleRealtimeUpdates -> toggleRealtimeUpdates(state = event.state)
         }
     }
 
@@ -286,7 +289,8 @@ class SharingStartViewModel(
                     showNotifyOthers = false,
                     showDeviceStatus = false,
                     showRealtimeUpdatesStatus = false,
-                    isPremiumSectionHeaderVisible = false,
+                    isNotifyOtherEnabledInPlan = true,
+                    isRealtimeSharingEnabledInPlan = true,
                     showApproximateLocation = false,
                     notifyOthers = false,
                     realtimeUpdatesState = null,
@@ -321,8 +325,8 @@ class SharingStartViewModel(
 
         when (group) {
             is GroupOrUserSpace.Group -> {
-                val isGroupPremium = group.group.group
-                    .hasPremiumSharingFeatures(remoteConfigRepo.getConfigOnce())
+                val groupPlanConfig = group.group.group
+                    .planConfig(remoteConfigRepo.getConfigOnce())
                 val isGroupOverLimits = group.group.isGroupOverLimits(remoteConfigRepo.getConfigOnce())
                 val presets = SharingDurationPreset.presets(isWithLimits = isGroupOverLimits)
 
@@ -343,15 +347,15 @@ class SharingStartViewModel(
                                 devicesLimit = group.group.group.devicesLimit(remoteConfigRepo.getConfigOnce()),
                                 isDeviceRegistered = isDeviceRegistered,
 
-                                showNotifyOthers = !isSharingActive && (isGroupPremium || group.group.group.isCurrentUserOwner),
+                                showNotifyOthers = !isSharingActive && (groupPlanConfig.hasSharingAlerts || group.group.group.isCurrentUserOwner),
                                 showDeviceStatus = true,
-                                showRealtimeUpdatesStatus = true,
+                                showRealtimeUpdatesStatus = groupPlanConfig.hasOngoingRealtime || group.group.group.isCurrentUserOwner,
                                 showApproximateLocation = true,
                                 showDuration = !isSharingActive,
                                 showMetadata = true,
-
-                                isPremiumSectionHeaderVisible = !isGroupPremium,
-                                notifyOthers = if (isGroupPremium) state.notifyOthers else false,
+                                isNotifyOtherEnabledInPlan = groupPlanConfig.hasSharingAlerts,
+                                isRealtimeSharingEnabledInPlan = groupPlanConfig.hasOngoingRealtime,
+                                notifyOthers = if (groupPlanConfig.hasSharingAlerts) state.notifyOthers else false,
                                 realtimeUpdatesState = state.realtimeUpdatesState,
 
                                 formattedEndTime = endTime,
@@ -392,7 +396,8 @@ class SharingStartViewModel(
                                 showMetadata = false,
                                 formattedEndTime = endTime,
                                 // nothing premium for personal space
-                                isPremiumSectionHeaderVisible = false,
+                                isNotifyOtherEnabledInPlan = true,
+                                isRealtimeSharingEnabledInPlan = true,
                                 notifyOthers = false,
                                 realtimeUpdatesState = null,
                                 sharingPresetsMillis = presets,
@@ -712,10 +717,14 @@ class SharingStartViewModel(
         }
     }
 
-    fun toggleNotifyOthers(state: Boolean) {
+    private fun toggleNotifyOthers(state: Boolean) {
         if (_uiState.value.showNotifyOthers) {
-            if (_uiState.value.isPremiumSectionHeaderVisible) {
-                _eventChannel.trySend(SharingStartScreenEvent.OpenPaywall)
+            if (!_uiState.value.isNotifyOtherEnabledInPlan) {
+                if (_uiState.value.isOwner) {
+                    _eventChannel.trySend(SharingStartScreenEvent.OpenPaywall)
+                } else {
+                    // do nothing
+                }
             } else {
                 _uiState.update {
                     it.copy(notifyOthers = state)
@@ -726,9 +735,11 @@ class SharingStartViewModel(
         }
     }
 
-    fun toggleRealtimeUpdates(state: Boolean) {
-        if (_uiState.value.isPremiumSectionHeaderVisible) {
-            _eventChannel.trySend(SharingStartScreenEvent.OpenPaywall)
+    private fun toggleRealtimeUpdates(state: Boolean) {
+        if (!_uiState.value.isRealtimeSharingEnabledInPlan) {
+            if (_uiState.value.isOwner) {
+                _eventChannel.trySend(SharingStartScreenEvent.OpenPaywall)
+            }
             return
         }
 

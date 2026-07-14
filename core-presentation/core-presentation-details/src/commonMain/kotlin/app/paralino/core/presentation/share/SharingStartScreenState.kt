@@ -37,7 +37,8 @@ data class SharingStartScreenState constructor(
     val showApproximateLocation: Boolean = false,
     val showDuration: Boolean = false,
     val showMetadata: Boolean = false,
-    val isPremiumSectionHeaderVisible: Boolean = false,
+    val isNotifyOtherEnabledInPlan: Boolean = true,
+    val isRealtimeSharingEnabledInPlan: Boolean = true,
     val devicesLimit: Int = 0,
     val devicesCount: Int? = null,
     val premiumStatus: PremiumStatusLimitState? = null,
@@ -51,7 +52,7 @@ data class SharingStartScreenState constructor(
 ) {
     val isNewContract: Boolean = currentContract == null
     val isNameChanged: Boolean = deviceName != initialDeviceName
-    val isRealtimeOptionSelected: Boolean = if (isPremiumSectionHeaderVisible) {
+    val isRealtimeOptionSelected: Boolean = if (!isRealtimeSharingEnabledInPlan) {
         false
     } else {
         realtimeUpdatesState ?: realtimeUpdatesDefaultState ?: true
@@ -132,4 +133,6 @@ sealed interface SharingStartScreenUiEvent {
     data class DialogAction(val action: AlertDialogAction) : SharingStartScreenUiEvent
     data object StopSharing : SharingStartScreenUiEvent
     data object StartSharing : SharingStartScreenUiEvent
+    data class ToggleNotifyOthers(val state: Boolean): SharingStartScreenUiEvent
+    data class ToggleRealtimeUpdates(val state: Boolean): SharingStartScreenUiEvent
 }
