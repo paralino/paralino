@@ -7,20 +7,16 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
@@ -74,10 +70,10 @@ import app.paralino.core.ui.components.dialogs.LoadingDialog
 import app.paralino.core.ui.components.dialogs.Show
 import app.paralino.core.ui.components.rememberSeekbarState
 import app.paralino.core.ui.groups.components.GroupListItem
+import app.paralino.core.ui.groups.components.ComponentWithDurationExpirationBanner
 import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.ui.theme.ButtonStyle
 import app.paralino.core.utils.ConditionErrorType
-import app.paralino.core.utils.extensions.annotatedBoldCompose
 import dev.icerock.moko.resources.PluralsResource
 import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.delay
@@ -425,29 +421,14 @@ fun SharingStartScreenCore(
                     SettingsSectionHeader(name = stringResource(MR.strings.title_settings))
 
                     AnimatedVisibility(visible = state.formattedEndTime != null) {
-                        Row(
+                        ComponentWithDurationExpirationBanner(
                             modifier = Modifier
-                                .background(
-                                    MaterialTheme.colors.surface,
-                                    RoundedCornerShape(percent = 50)
-                                )
-                                .padding(horizontal = 8.dp, vertical = 6.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            val sharingTime = state.formattedEndTime ?: ""
-
-                            Icon(
-                                painter = CoreAppIcons.Timer.asPainterResource(),
-                                contentDescription = null,
-                                modifier = Modifier.size(14.dp),
-                                tint = MaterialTheme.colors.onSurface
-                            )
-                            Spacer(modifier = Modifier.size(4.dp))
-                            Text(
-                                text = sharingTime.annotatedBoldCompose(),
-                                style = MaterialTheme.typography.caption.copy(color = MaterialTheme.colors.onSurface)
-                            )
-                        }
+                                .fillMaxWidth()
+                                .clickable(onClick = { vm.onEvent(SharingStartScreenUiEvent.RequestSharingDurationEdit) }),
+                            expirationTime = state.formattedEndTime.orEmpty(),
+                            isExpired = false,
+                            canEdit = true
+                        )
                     }
 
                     if (state.showDuration) {

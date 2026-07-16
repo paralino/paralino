@@ -17,10 +17,10 @@ import app.paralino.core.models.location.LocationPerformanceType
 import app.paralino.core.models.location.LocationSharingContract
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.presentation.common.BottomSheetPickerType
+import app.paralino.core.presentation.common.GroupItemState
 import app.paralino.core.presentation.common.MainAlertDialog
 import app.paralino.core.presentation.common.SnackbarDuration
 import app.paralino.core.presentation.common.nameRes
-import app.paralino.core.presentation.common.GroupItemState
 import app.paralino.core.presentation.share.SharingStartScreenEvent.AskForPermission
 import app.paralino.core.provider.DistanceType
 import app.paralino.core.provider.FormattingFractionsMode
@@ -42,6 +42,8 @@ import app.paralino.core.utils.SharingDurationPreset
 import app.paralino.core.utils.exceptions.TimeoutException
 import app.paralino.core.utils.exceptions.asRemoteException
 import app.paralino.core.utils.extensions.errorString
+import app.paralino.core.utils.extensions.fromUTCtoInstant
+import app.paralino.core.utils.extensions.nowUTC
 import app.paralino.core.utils.poll
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -239,6 +241,7 @@ class SharingStartViewModel(
 
             is SharingStartScreenUiEvent.ToggleNotifyOthers -> toggleNotifyOthers(state = event.state)
             is SharingStartScreenUiEvent.ToggleRealtimeUpdates -> toggleRealtimeUpdates(state = event.state)
+            SharingStartScreenUiEvent.RequestSharingDurationEdit -> enableSharingDurationEdit()
         }
     }
 
@@ -432,6 +435,7 @@ class SharingStartViewModel(
                 val contract =
                     sharingManager.currentSharingContractForGroup(id = currentGroup.id.asGroupOrSpaceId())
                 val newContract = contract?.copy(
+                    endTimeUTCPreference = LocationSharingContract.forDuration(_uiState.value.sharingTimeMillis),
                     shareBattery = _uiState.value.shareBattery,
                     shareSpeed = _uiState.value.shareSpeed,
                     shareElevation = _uiState.value.shareElevation,
@@ -538,7 +542,7 @@ class SharingStartViewModel(
     private suspend fun registerDeviceAndStartSharing(group: GroupItemState) {
         val contract = LocationSharingContract(
             groupOrSpaceId = group.id,
-            endTimeUTCPreference = _uiState.value.currentContract?.endTimeUTC ?: LocationSharingContract.forDuration(_uiState.value.sharingTimeMillis),
+            endTimeUTCPreference = LocationSharingContract.forDuration(_uiState.value.sharingTimeMillis),
             endTimeUTCOverride = null,
             shareBattery = _uiState.value.shareBattery,
             shareSpeed = _uiState.value.shareSpeed,
@@ -643,6 +647,14 @@ class SharingStartViewModel(
     }
 
     fun sharingDurationChanged(index: Int) {
+        sharingDurationChangedMillis(
+            durationMillis = SharingDurationPreset.presets(isWithLimits = false)
+                .getOrNull(index)
+                ?: SharingDurationPreset.hour
+        )
+    }
+
+    private fun sharingDurationChangedMillis(durationMillis: Long) {
         _uiState.update {
             val isOverLimits = when (val item = currentGroup.value) {
                 is GroupOrUserSpace.Group -> {
@@ -655,19 +667,24 @@ class SharingStartViewModel(
 
                 null -> false
             }
-            val time =
-                SharingDurationPreset.presets(isWithLimits = isOverLimits).getOrNull(index)
-                    ?.let {
-                        if (!isOverLimits) {
-                            it
-                        } else {
-                            it.coerceIn(
-                                SharingDurationPreset.freePresets.first(),
-                                SharingDurationPreset.freePresets.last()
-                            )
-                        }
+
+            val presets = SharingDurationPreset.presets(isWithLimits = isOverLimits)
+            val defaultTime = presets.firstOrNull { it == durationMillis }
+                ?: presets.firstOrNull { it < durationMillis }
+
+            val time = defaultTime
+                ?.let {
+                    if (!isOverLimits) {
+                        it
+                    } else {
+                        it.coerceIn(
+                            SharingDurationPreset.freePresets.first(),
+                            SharingDurationPreset.freePresets.last()
+                        )
                     }
-                    ?: SharingDurationPreset.hour
+                }
+                ?: SharingDurationPreset.hour
+
             it.copy(
                 sharingTimeMillis = time,
                 errors = getAllErrors(isForLongTerm = LocationSharingContract.isLongTerm(time))
@@ -752,6 +769,28 @@ class SharingStartViewModel(
         if (_uiState.value.loadingAction) return
         if (name.trim().length > SharingStartScreenState.maxDeviceNameLength) return
         _uiState.update { it.copy(deviceName = name) }
+    }
+
+    private fun enableSharingDurationEdit() {
+        val existingExpiresAt = uiState.value.currentContract?.endTimeUTC.orEmpty()
+        sharingDurationChangedMillis(
+            durationMillis = durationMillisForExpiresAt(existingExpiresAt)
+        )
+        _uiState.update { state ->
+            state.copy(
+                formattedEndTime = null,
+                showDuration = true
+            )
+        }
+    }
+
+    private fun durationMillisForExpiresAt(expiresAt: String): Long {
+        if (expiresAt.isBlank()) return SharingDurationPreset.infinite
+        val end = expiresAt.fromUTCtoInstant() ?: return SharingDurationPreset.infinite
+        val remaining = (end - nowUTC()).inWholeMilliseconds
+        if (remaining <= 0L) return 8 * SharingDurationPreset.hour
+        val presets = SharingDurationPreset.premiumPresets
+        return presets.firstOrNull { it > 0L && it >= remaining } ?: SharingDurationPreset.hour
     }
 
     private fun getFormattedApproximateLocationRadius(

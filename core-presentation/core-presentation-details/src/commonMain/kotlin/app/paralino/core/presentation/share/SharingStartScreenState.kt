@@ -103,6 +103,7 @@ data class SharingStartScreenState constructor(
                 contract.shareNetwork != shareNetwork ||
                 contract.shareDeviceStatus != shareDeviceStatus ||
                 contract.saveToHistory != saveToHistory ||
+                contract.sharingDurationPreset != sharingTimeMillis ||
                 isRealtimeUpdatesReEnabled ||
                 isNameChanged ||
                 (contract.approximateLocationInMeters != null) != shareApproximateLocation ||
@@ -133,6 +134,7 @@ sealed interface SharingStartScreenUiEvent {
     data class DialogAction(val action: AlertDialogAction) : SharingStartScreenUiEvent
     data object StopSharing : SharingStartScreenUiEvent
     data object StartSharing : SharingStartScreenUiEvent
+    data object RequestSharingDurationEdit : SharingStartScreenUiEvent
     data class ToggleNotifyOthers(val state: Boolean): SharingStartScreenUiEvent
     data class ToggleRealtimeUpdates(val state: Boolean): SharingStartScreenUiEvent
 }
