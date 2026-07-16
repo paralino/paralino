@@ -38,6 +38,7 @@ sealed class MapHomeScreenState {
     abstract val defaultSheetPosition: BottomSheetPosition
     abstract val androidMapSDKProvider: MapsSDKProvider?
     abstract val canCollapseMapHeader: Boolean
+    abstract val isNewAppUpdateAvailable: Boolean
 
     val deviceType: DeviceType = DeviceType.current
     val hasSatelliteMode: Boolean get() = when (deviceType) {
@@ -84,6 +85,7 @@ sealed class MapHomeScreenState {
         val groupPlanConfig: PlanConfig,
         val isOverLimit: Boolean,
         val errors: List<ConditionErrorType>,
+        override val isNewAppUpdateAvailable: Boolean,
         override val androidMapSDKProvider: MapsSDKProvider,
         override val alertDialog: MainAlertDialog?,
         override val isSatelliteModeEnabled: Boolean = false
@@ -199,6 +201,7 @@ sealed class MapHomeScreenState {
         override val selectedGroupImage: ImageModel?,
         override val currentUserImage: ImageModel,
         override val isPersonalSpace: Boolean,
+        override val isNewAppUpdateAvailable: Boolean,
         override val androidMapSDKProvider: MapsSDKProvider?,
         override val isSatelliteModeEnabled: Boolean = false,
         override val alertDialog: MainAlertDialog? = null,

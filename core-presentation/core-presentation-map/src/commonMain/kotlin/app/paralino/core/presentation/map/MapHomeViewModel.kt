@@ -17,7 +17,6 @@ import app.paralino.core.logg
 import app.paralino.core.models.Resource
 import app.paralino.core.models.base.GroupWithMembersOrUserSpace
 import app.paralino.core.models.base.ImageModel
-import app.paralino.core.models.base.PlanConfig
 import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.models.data
 import app.paralino.core.models.group.UserGroup
@@ -69,7 +68,6 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.days
-import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.Instant
 
@@ -108,6 +106,7 @@ class MapHomeViewModel constructor(
             selectedGroupOwnerId = null,
             selectedGroupImage = null,
             isPersonalSpace = appPrefs.isPersonalSpaceSelected,
+            isNewAppUpdateAvailable = remoteConfig.getNewAppVersionUpdateType().isNewVersionAvailable,
             currentUserImage = userRepository.localUser.value.data?.data?.userImage
                 ?: ImageModel.emoji(Emojis.robot),
             androidMapSDKProvider = premiumStatusManager.defaultMapProvider()
@@ -395,6 +394,7 @@ class MapHomeViewModel constructor(
                             isCurrentUserOwnerOfSelectedGroup = false,
                             selectedGroupImage = null,
                             isPersonalSpace = appPrefs.isPersonalSpaceSelected,
+                            isNewAppUpdateAvailable = remoteConfig.getNewAppVersionUpdateType().isNewVersionAvailable,
                             currentUserImage = userData?.userImage ?: ImageModel.emoji(Emojis.robot),
                             androidMapSDKProvider = mapProvider,
                             isSatelliteModeEnabled = false
@@ -431,6 +431,7 @@ class MapHomeViewModel constructor(
                     selectedGroupOwnerId = _uiState.value.selectedGroupOwnerId,
                     isCurrentUserOwnerOfSelectedGroup = _uiState.value.isCurrentUserOwnerOfSelectedGroup,
                     isPersonalSpace = true,
+                    isNewAppUpdateAvailable = remoteConfig.getNewAppVersionUpdateType().isNewVersionAvailable,
                     currentUserImage = ImageModel.emoji(Emojis.robot),
                     androidMapSDKProvider = mapProvider,
                     isSatelliteModeEnabled = false
@@ -476,6 +477,7 @@ class MapHomeViewModel constructor(
                     selectedGroupOwnerId = null,
                     isCurrentUserOwnerOfSelectedGroup = false,
                     isPersonalSpace = false,
+                    isNewAppUpdateAvailable = remoteConfig.getNewAppVersionUpdateType().isNewVersionAvailable,
                     currentUserImage = ImageModel.emoji(Emojis.robot),
                     androidMapSDKProvider = mapProvider,
                     isSatelliteModeEnabled = false

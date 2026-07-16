@@ -178,32 +178,62 @@ fun MapHomeScreenElements(
                             }
                         )
 
-                        FilledButton(
-                            modifier = Modifier
-                                .padding(end = 8.dp)
-                                .size(42.dp),
-                            onClick = { onEvent(MapHomeScreenUiEvent.OnSettingsClick) },
-                            icon = null,
-                            style = ButtonStyle.ICON,
-                            elevation = 12.dp,
-                            colors = ButtonDefaults.buttonColors(
-                                backgroundColor = MaterialTheme.colors.surface
-                            ),
-                            content = {
+                        Box(
+                            modifier = Modifier.padding(end = 8.dp)
+                        ) {
+                            FilledButton(
+                                modifier = Modifier
+                                    .size(42.dp),
+                                onClick = { onEvent(MapHomeScreenUiEvent.OnSettingsClick) },
+                                icon = null,
+                                style = ButtonStyle.ICON,
+                                elevation = 12.dp,
+                                colors = ButtonDefaults.buttonColors(
+                                    backgroundColor = MaterialTheme.colors.surface
+                                ),
+                                content = {
+                                    Icon(
+                                        painter = CoreAppIcons.Settings.asPainterResource(),
+                                        contentDescription = null,
+                                        tint = MaterialTheme.colors.onSurface.copy(alpha = 0.7f),
+                                        modifier = Modifier
+                                            .size(42.dp)
+                                            .background(
+                                                color = MaterialTheme.colors.surface,
+                                                shape = CircleShape
+                                            )
+                                            .padding(8.dp)
+                                    )
+                                }
+                            )
+
+                            if (state.isNewAppUpdateAvailable) {
                                 Icon(
-                                    painter = CoreAppIcons.Settings.asPainterResource(),
-                                    contentDescription = null,
-                                    tint = MaterialTheme.colors.onSurface.copy(alpha = 0.7f),
                                     modifier = Modifier
-                                        .size(42.dp)
+                                        .align(Alignment.TopEnd)
+                                        .size(16.dp)
+                                        .dropShadow(
+                                            shape = CircleShape,
+                                            shadow = Shadow(
+                                                radius = 12.dp,
+                                                color = MaterialTheme.colors.onBackground.copy(alpha = 0.2f),
+                                            )
+                                        )
                                         .background(
-                                            color = MaterialTheme.colors.surface,
+                                            color = MaterialTheme.colors.background,
                                             shape = CircleShape
                                         )
-                                        .padding(8.dp)
+                                        .background(
+                                            color = AppColors.accentLight,
+                                            shape = CircleShape
+                                        )
+                                        .padding(2.dp),
+                                    painter = CoreAppIcons.DownloadArrow.asPainterResource(),
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colors.primary
                                 )
                             }
-                        )
+                        }
                     }
                 }
             }

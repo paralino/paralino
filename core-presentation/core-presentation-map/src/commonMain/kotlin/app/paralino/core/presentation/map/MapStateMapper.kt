@@ -263,7 +263,8 @@ class MapStateMapper(
                 if (activeSharingContract != null) {
                     addAll(locationStatus.getPossibleErrors())
                 }
-            }
+            },
+            isNewAppUpdateAvailable = remoteConfig.getNewAppVersionUpdateType().isNewVersionAvailable,
         )
     }
 
