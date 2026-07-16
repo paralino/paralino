@@ -91,6 +91,10 @@ fun PlacesScreenCore(
                     addNewPlace()
                 }
 
+                PlacesScreenEvent.SkipOnboarding -> {
+                    onSkipOnboarding()
+                }
+
                 is PlacesScreenEvent.OpenPaywall -> {
                     openPaywall()
                 }
@@ -134,8 +138,11 @@ fun PlacesScreenCore(
                 onPlaceClick = {
                     openPlaceDetails(it)
                 },
-                onCreatePlace = {
+                onCreatePlaceClick = {
                     vm.onEvent(PlacesScreenUiEvent.CreatePlace)
+                },
+                onNextClick = {
+                    vm.onEvent(PlacesScreenUiEvent.OnNextClick)
                 },
                 onSkipOnboarding = onSkipOnboarding,
                 onPlanBannerClick = openPaywall,
@@ -160,7 +167,8 @@ private fun PlacesScreen(
     contentPadding: PaddingValues,
     onPlaceClick: (PlaceListItemData) -> Unit,
     onErrorItemClick: (ConditionErrorType) -> Unit,
-    onCreatePlace: () -> Unit,
+    onCreatePlaceClick: () -> Unit,
+    onNextClick: () -> Unit,
     onSkipOnboarding: () -> Unit,
     onPlanBannerClick: () -> Unit,
     onPostSampleNotification: (String) -> Unit,
@@ -181,13 +189,7 @@ private fun PlacesScreen(
                     } else {
                         CoreAppIcons.MapsHomeWork.asPainterResource()
                     },
-                    onClick = {
-                        if (state.placesLimitReached) {
-                            onSkipOnboarding()
-                        } else {
-                            onCreatePlace()
-                        }
-                    }
+                    onClick = onNextClick
                 ) {
                     Text(
                         text = if (state.placesLimitReached) {
@@ -359,7 +361,7 @@ private fun PlacesScreen(
                                 },
                                 backgroundColor = MaterialTheme.colors.primary,
                                 contentColor = MaterialTheme.colors.onPrimary,
-                                onClick = onCreatePlace
+                                onClick = onCreatePlaceClick
                             )
                         }
                         Spacer(modifier = Modifier.size(4.dp))

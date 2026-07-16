@@ -33,11 +33,13 @@ data class PlacesListScreenState constructor(
 sealed class PlacesScreenEvent() {
     object AddPlace : PlacesScreenEvent()
     data object OpenPaywall : PlacesScreenEvent()
+    data object SkipOnboarding : PlacesScreenEvent()
     data object MissingNotificationPermission : PlacesScreenEvent()
 }
 
 sealed interface PlacesScreenUiEvent {
     data object CreatePlace : PlacesScreenUiEvent
+    data object OnNextClick : PlacesScreenUiEvent
     data class PostSampleNotification(val content: String) : PlacesScreenUiEvent
     data class DialogAction(val action: AlertDialogAction) : PlacesScreenUiEvent
 }

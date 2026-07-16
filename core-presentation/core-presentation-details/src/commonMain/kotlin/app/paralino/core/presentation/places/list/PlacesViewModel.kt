@@ -192,7 +192,14 @@ class PlacesViewModel(
 
     fun onEvent(event: PlacesScreenUiEvent) {
         when (event) {
-            PlacesScreenUiEvent.CreatePlace -> tryCreatePlace()
+            PlacesScreenUiEvent.CreatePlace -> {
+                tryCreatePlace(isExplicitCreate = true)
+            }
+
+            PlacesScreenUiEvent.OnNextClick -> {
+                tryCreatePlace(isExplicitCreate = false)
+            }
+
             is PlacesScreenUiEvent.DialogAction -> {
                 when (event.action.dialog) {
                     is MainAlertDialog.ServiceMaxLimit,
@@ -234,8 +241,18 @@ class PlacesViewModel(
         }
     }
 
-    private fun tryCreatePlace() {
+    private fun tryCreatePlace(isExplicitCreate: Boolean) {
         val state = _uiState.value.data ?: return
+
+        if (!isExplicitCreate) {
+            if (state.placesLimitReached) {
+                if (isOnboarding) {
+                    _eventChannel.trySend(PlacesScreenEvent.SkipOnboarding)
+                    return
+                }
+            }
+        }
+
         coroutineScope.launch {
             val premiumStatus = premiumStatusManager.checkPlaceCountLimits(groupId = state.groupId)
 
