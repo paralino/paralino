@@ -194,8 +194,10 @@ private fun PlacesScreen(
                     Text(
                         text = if (state.placesLimitReached) {
                             stringResource(MR.strings.button_next)
-                        } else {
+                        } else if (state.places.isEmpty()) {
                             stringResource(MR.strings.places_create_button_create)
+                        } else {
+                            stringResource(MR.strings.places_create_screen_title)
                         }
                     )
                 }
@@ -350,19 +352,21 @@ private fun PlacesScreen(
                                 }
                             )
                             Spacer(modifier = Modifier.weight(1f))
-                            SmallActionButton(
-                                modifier = Modifier,
-                                icon = CoreAppIcons.Add.asPainterResource(),
-                                text = {
-                                    Text(
-                                        modifier = Modifier.padding(end = 2.dp),
-                                        text = stringResource(MR.strings.places_list_add_button)
-                                    )
-                                },
-                                backgroundColor = MaterialTheme.colors.primary,
-                                contentColor = MaterialTheme.colors.onPrimary,
-                                onClick = onCreatePlaceClick
-                            )
+                            if (state.canShowPlaceAddButton) {
+                                SmallActionButton(
+                                    modifier = Modifier,
+                                    icon = CoreAppIcons.Add.asPainterResource(),
+                                    text = {
+                                        Text(
+                                            modifier = Modifier.padding(end = 2.dp),
+                                            text = stringResource(MR.strings.places_list_add_button)
+                                        )
+                                    },
+                                    backgroundColor = MaterialTheme.colors.primary,
+                                    contentColor = MaterialTheme.colors.onPrimary,
+                                    onClick = onCreatePlaceClick
+                                )
+                            }
                         }
                         Spacer(modifier = Modifier.size(4.dp))
                     }

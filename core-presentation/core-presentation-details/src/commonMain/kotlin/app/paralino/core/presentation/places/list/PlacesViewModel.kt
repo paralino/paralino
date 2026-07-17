@@ -125,13 +125,9 @@ class PlacesViewModel(
                 placesLimit = placesLimit,
                 isGroupOwner = true,
                 places = placesState,
-                canShowPlacesLimit = placesLimit != null,
-                shouldShowPlanBanner = if (isOnboarding && placesLimit != null) {
-                    // in onboarding only show upgrade banner if places limit is reached
-                    canShowPlanBanner && placesState.size >= placesLimit
-                } else {
-                    canShowPlanBanner
-                },
+                canShowPlacesLimit = placesLimit != null && !isOnboarding,
+                canShowPlaceAddButton = !isOnboarding || placesLimit == null || placesLimit > places.size,
+                shouldShowPlanBanner = canShowPlanBanner && !isOnboarding,
                 error = error,
                 androidMapSDKProvider = premiumStatusManager.defaultMapProvider(),
                 alertDialog = _uiState.value.data?.alertDialog
@@ -171,17 +167,13 @@ class PlacesViewModel(
                 canShowPlacesLimit = if (placesLimit == null) {
                     false
                 } else if (group.isCurrentUserOwner) {
-                    true
+                    !isOnboarding
                 } else {
                     // only show places limit to other members if close to limit
-                    placesState.size >= placesLimit.minus(2)
+                    placesState.size >= placesLimit.minus(2) && !isOnboarding
                 },
-                shouldShowPlanBanner = if (isOnboarding && placesLimit != null) {
-                    // in onboarding only show upgrade banner if places limit is reached
-                    canShowPlanBanner && placesState.size >= placesLimit
-                } else {
-                    canShowPlanBanner
-                },
+                canShowPlaceAddButton = !isOnboarding || placesLimit == null || placesLimit > places.size,
+                shouldShowPlanBanner = canShowPlanBanner && !isOnboarding,
                 error = error,
                 androidMapSDKProvider = premiumStatusManager.defaultMapProvider(),
                 alertDialog = _uiState.value.data?.alertDialog

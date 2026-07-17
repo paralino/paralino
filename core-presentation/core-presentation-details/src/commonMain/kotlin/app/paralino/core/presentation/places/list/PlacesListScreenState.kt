@@ -16,6 +16,7 @@ data class PlacesListScreenState constructor(
     val placesLimit: Int?,
     val isGroupOwner: Boolean,
     val canShowPlacesLimit: Boolean,
+    val canShowPlaceAddButton: Boolean,
     val shouldShowPlanBanner: Boolean,
     val places: List<PlaceListItemData>,
     val error: ConditionErrorType.PermissionNotifications?,
