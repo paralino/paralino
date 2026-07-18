@@ -111,19 +111,9 @@ class LocationUploadEventProcessingEngine(
                     message = "Upload (${payloads.size}) new ${if (data != null) "location ${data.timeUTC}" else "status"} (${data.hashCode()}) with performance ${locationPerformanceManager.locationPerformanceType.value.current}"
                 )
 
-                payloads.forEach {
-                    try {
-                        saveLocationUseCase.uploadAndSaveCurrentLocation(
-                            MemberGroupIdForUpload(it)
-                        )
-                    } catch (e: Exception) {
-                        logg.w(
-                            tag = "location_service",
-                            message = "Error saving location for group ${it.groupId}",
-                            t = e
-                        )
-                    }
-                }
+                saveLocationUseCase.uploadAndSaveCurrentLocations(
+                    items = payloads.map { MemberGroupIdForUpload(it) }
+                )
 
                 logg.v(
                     tag = "location_service",

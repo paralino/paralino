@@ -44,6 +44,20 @@ interface UserDeviceDao {
     @Update(entity = UserDeviceEntity::class)
     suspend fun updateUserDeviceLocationData(dataUpdate: UserDeviceEntityLocationDataUpdate)
 
+    @Query("""
+        UPDATE userDeviceEntity SET
+            locationData = CASE WHEN :locationData IS NULL THEN locationData ELSE :locationData END,
+            status = CASE WHEN :status IS NULL THEN status ELSE :status END,
+            locationHistory = CASE WHEN :locationHistory IS NULL THEN locationHistory ELSE :locationHistory END
+        WHERE id = :id
+    """)
+    suspend fun updateUserDeviceLocationDataPartial(
+        id: String,
+        locationData: String?,
+        status: String?,
+        locationHistory: String?
+    )
+
     @Update(entity = UserDeviceEntity::class)
     suspend fun updateUserDeviceData(dataUpdate: UserDeviceEntityDeviceUpdate)
 

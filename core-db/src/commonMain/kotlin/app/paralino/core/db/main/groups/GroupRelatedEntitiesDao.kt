@@ -301,6 +301,22 @@ interface GroupRelatedEntitiesDao {
     @Update(entity = MemberLocationEntity::class)
     suspend fun updateMemberLocation(dataUpdate: MemberLocationEntityDataUpdate)
 
+    @Query("""
+        UPDATE memberLocationEntity SET
+            locationData = CASE WHEN :locationData IS NULL THEN locationData ELSE :locationData END,
+            status = CASE WHEN :status IS NULL THEN status ELSE :status END,
+            locationHistory = CASE WHEN :locationHistory IS NULL THEN locationHistory ELSE :locationHistory END,
+            deviceKeyVersion = CASE WHEN :deviceKeyVersion IS NULL THEN deviceKeyVersion ELSE :deviceKeyVersion END
+        WHERE id = :id
+    """)
+    suspend fun updateMemberLocationPartial(
+        id: String,
+        locationData: String?,
+        status: String?,
+        locationHistory: String?,
+        deviceKeyVersion: Long?
+    )
+
     @Update(entity = MemberEntity::class)
     suspend fun updateMemberBatterySettings(dataUpdate: MemberEntityBatterySettingsUpdate)
 

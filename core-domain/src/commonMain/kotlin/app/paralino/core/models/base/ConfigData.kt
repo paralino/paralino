@@ -24,6 +24,17 @@ data class ConfigData(
     val freePlanPromoBillingId: String? = null,
     val defaultPremiumPlan: String,
     val plans: List<PlanConfig> = emptyList(),
+    /**
+     * _Inclusive_
+     * Declares from how many active locations, clients should use bulk api
+     *
+     * 0 or less -> disabled,
+     * 1 -> enabled always,
+     * 2 or more -> only for 2 or more (inclusive)
+     *
+     * i.e. if value is 2, clients should use bulk api if actively updating 2 or more locations
+     */
+    val bulkLocationApiThreshold: Int = 0,
 ) {
 
     val isEmailEnabled: Boolean get() = AppBuildConfig.instance.isDevMode || emailEnabled
@@ -61,6 +72,7 @@ data class ConfigData(
                         emptyList()
                     }
                 } ?: emptyList(),
+                bulkLocationApiThreshold = map.get("bulkLocationApiThreshold")?.toIntOrNull() ?: 0,
             )
         }
     }
