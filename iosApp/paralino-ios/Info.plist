@@ -52,5 +52,7 @@
 	<string>$(serverUrl)</string>
 	<key>revenueCatApiKey</key>
 	<string>$(revenueCatApiKey)</string>
+	<key>glitchTipDSNiOS</key>
+	<string>$(glitchTipDSNiOS)</string>
 </dict>
 </plist>
