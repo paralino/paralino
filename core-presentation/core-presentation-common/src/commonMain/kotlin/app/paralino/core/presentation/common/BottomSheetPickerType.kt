@@ -15,7 +15,7 @@ sealed interface BottomSheetPickerType {
     ) : BottomSheetPickerType {
 
         // only show plan banner if user has own groups and no premium plan
-        val shouldShowPlanBanner: Boolean = !onlyShowGroups && createdGroups.isNotEmpty() && userPlan?.planTypeEnum?.isPremium == false
+        val shouldShowPlanBanner: Boolean = !onlyShowGroups && createdGroups.isNotEmpty() && userPlan?.isPremium == false
         val canCreateGroup: Boolean = !onlyShowGroups && createdGroups.size < (groupsLimit ?: 0 )
     }
 }

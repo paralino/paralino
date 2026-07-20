@@ -134,7 +134,7 @@ class GroupStateManager(
         coroutineScope.launch {
             val limit = userRepository.userPlans.value.groupsLimit
             val groupCount = getAllGroupsItemState().filter { it.isCurrentUserOwner }.size
-            val maxGroupLimit = remoteConfig.getConfigOnce().plans.maxByOrNull { it.planTypeEnum.order }?.groupsLimit
+            val maxGroupLimit = remoteConfig.getConfigOnce().plans.maxByOrNull { it.planOrder }?.groupsLimit
 
             if (maxGroupLimit != null && groupCount >= maxGroupLimit) {
                 // This would need to be handled by the main ViewModel to update alertDialog

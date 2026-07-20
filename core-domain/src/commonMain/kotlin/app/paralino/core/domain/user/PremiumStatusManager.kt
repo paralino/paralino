@@ -152,7 +152,7 @@ class PremiumStatusManager(
 
         val maxPlaceLimit = remoteConfigRepo.getConfigOnce()
             .plans
-            .maxByOrNull { it.planTypeEnum.order }
+            .maxByOrNull { it.planOrder }
             ?.let {
                 if (groupId.isPersonalSpace) it.personalPlacesLimit
                 else it.placesLimit
@@ -182,7 +182,7 @@ class PremiumStatusManager(
         )
 
         val maxPrivacyZoneLimit = config.plans
-            .maxByOrNull { it.planTypeEnum.order }
+            .maxByOrNull { it.planOrder }
             ?.privacyZonesLimit
             ?.takeIf { it >= 0 }
 
@@ -218,7 +218,7 @@ class PremiumStatusManager(
 
         val maxDeviceLimit = remoteConfigRepo.getConfigOnce()
             .plans
-            .maxByOrNull { it.planTypeEnum.order }
+            .maxByOrNull { it.planOrder }
             ?.let {
                 if (groupId.isPersonalSpace) {
                     it.personalDevicesLimit
@@ -249,7 +249,7 @@ class PremiumStatusManager(
 
         val maxMemberLimit = remoteConfigRepo.getConfigOnce()
             .plans
-            .maxByOrNull { it.planTypeEnum.order }
+            .maxByOrNull { it.planOrder }
             ?.membersLimit
 
         if (maxMemberLimit != null && payload.isOwner && payload.count >= maxMemberLimit) {

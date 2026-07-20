@@ -102,8 +102,8 @@ class SubscriptionViewModel(
         previousState: SubscriptionScreenState?
     ): List<SubscriptionDetailsState> {
         return plans.nonExpiredPlans
-            .filter { it.config.planTypeEnum.isPremium }
-            .sortedByDescending { it.config.planTypeEnum.order }
+            .filter { it.config.isPremium }
+            .sortedByDescending { it.config.planOrder }
             .map { plan ->
                 getPlanState(
                     plan = plan,
@@ -125,7 +125,7 @@ class SubscriptionViewModel(
         return SubscriptionDetailsState(
             planId = plan?.plan?.id ?: "free",
             isCurrentPlan = isCurrentPlan,
-            isPremiumPlan = config.planTypeEnum.isPremium,
+            isPremiumPlan = config.isPremium,
             isManageLoading = isManageLoading,
             canManagePlanOnThisDevice = when (plan?.plan?.provider) {
                 PlanProvider.APPLE_APP_STORE -> deviceApi.deviceType == DeviceType.iOS

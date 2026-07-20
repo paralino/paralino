@@ -78,7 +78,7 @@ class AccountOnboardingViewModel(
 
     private val shouldProceedToPaywall: Boolean
         get() {
-            return !userRepo.userPlans.value.highestValidPlanConfig.planTypeEnum.isPremium
+            return !userRepo.userPlans.value.highestValidPlanConfig.isPremium
         }
 
     private val personalSpaceOnboardingMode: PersonalSpaceOnboardingMode

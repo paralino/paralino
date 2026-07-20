@@ -109,7 +109,7 @@ class SharingStartViewModel(
             }
             return isOnboarding
                     && isOwner
-                    && !userRepo.userPlans.value.highestValidPlanConfig.planTypeEnum.isPremium
+                    && !userRepo.userPlans.value.highestValidPlanConfig.isPremium
         }
 
     init {

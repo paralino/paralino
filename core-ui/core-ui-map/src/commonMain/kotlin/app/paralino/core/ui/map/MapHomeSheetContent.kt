@@ -308,7 +308,7 @@ fun MapHomeSheetContent(
                 MapSheetSelectedContentType.MEMBERS -> {
                     membersList(
                         canAddNewMember = !readyState.isPersonalSpace && readyState.isCurrentUserOwnerOfSelectedGroup,
-                        hasUpgradeBanner = !readyState.groupPlanConfig.planTypeEnum.isPremium && readyState.isCurrentUserOwnerOfSelectedGroup,
+                        hasUpgradeBanner = !readyState.groupPlanConfig.hasOngoingRealtime && (readyState.isPersonalSpace || readyState.isCurrentUserOwnerOfSelectedGroup),
                         members = members,
                         memberEvent = {
                             onEvent(MapHomeScreenUiEvent.OnMemberItemEvent(it))

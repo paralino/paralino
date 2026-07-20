@@ -529,7 +529,7 @@ class MapHomeViewModel constructor(
     private fun tryShowFreePlanPromoPaywall(state: MapHomeScreenState.Ready) {
         if (state.isPersonalSpace) return
         if (!state.isCurrentUserOwnerOfSelectedGroup) return
-        if (state.groupPlanConfig.planTypeEnum.isPremium) return
+        if (state.groupPlanConfig.isPremium) return
 
         val appReadyTime = appPrefs.detectedAppReadyTime
         if (appReadyTime == null || !appReadyTime.isOlderThan(2.days)) return

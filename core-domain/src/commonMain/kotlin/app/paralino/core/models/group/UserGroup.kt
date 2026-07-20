@@ -55,7 +55,7 @@ data class UserGroup constructor(
         ?: false
 
     fun isGroupPremium(config: ConfigData): Boolean {
-        return planConfig(config).planTypeEnum.isPremium
+        return planConfig(config).isPremium
     }
 
     fun membersLimit(config: ConfigData): Int {

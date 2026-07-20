@@ -17,7 +17,7 @@ sealed class PlanType {
 
     data object SILVER : PlanType() {
         override val key: String = "silver"
-        override val order: Int = 100
+        override val order: Int = 50
     }
 
     data object STANDARD : PlanType() {
@@ -36,8 +36,6 @@ sealed class PlanType {
     }
 
     data class UNKNOWN(override val key: String, override val order: Int = -1) : PlanType()
-
-    val isPremium: Boolean get() = order >= STANDARD.order
 
     override fun hashCode(): Int {
         var result = key.hashCode()
@@ -112,7 +110,7 @@ data class PlanConfig(
     val personalDevicesLimit: Int,
     val placesLimit: Int,
     val personalPlacesLimit: Int,
-    val privacyZonesLimit: Int = 2,
+    val privacyZonesLimit: Int,
     val historyDaysLimit: Int,
     val personalHistoryDaysLimit: Int,
     val paralinoIdsLimit: Int,
@@ -122,7 +120,8 @@ data class PlanConfig(
     val hasPremiumMapStyles: Boolean,
     val hasSharingAlerts: Boolean,
     val hasLowBatteryAlerts: Boolean,
-    val isPaidPlan: Boolean,
+    val isPaid: Boolean,
+    val isPremium: Boolean,
     val isActive: Boolean,
     val productIds: List<String> = emptyList(),
     val productPlanIds: List<String> = emptyList(),
@@ -151,7 +150,7 @@ data class PlanConfig(
             personalDevicesLimit = 1,
             placesLimit = 2,
             personalPlacesLimit = 1,
-            privacyZonesLimit = 2,
+            privacyZonesLimit = 1,
             historyDaysLimit = 0,
             personalHistoryDaysLimit = 0,
             paralinoIdsLimit = 1,
@@ -161,7 +160,8 @@ data class PlanConfig(
             hasPremiumMapStyles = false,
             hasSharingAlerts = false,
             hasLowBatteryAlerts = true,
-            isPaidPlan = false,
+            isPaid = false,
+            isPremium = false,
             isActive = true,
             productIds = listOf("free"),
             productPlanIds = listOf("free")

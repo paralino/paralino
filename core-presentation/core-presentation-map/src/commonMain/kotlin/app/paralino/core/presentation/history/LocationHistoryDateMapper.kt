@@ -46,9 +46,9 @@ class LocationHistoryDateMapper(
                 ?: remoteConfig.getConfigOnce().defaultFreePlanConfig()
         }
 
-        val highestAppPlan = remoteConfig.getConfigOnce().plans.maxByOrNull { it.planTypeEnum.order }
+        val highestAppPlan = remoteConfig.getConfigOnce().plans.maxByOrNull { it.planOrder }
             ?: remoteConfig.getConfigOnce().defaultFreePlanConfig()
-        val upgradeAvailable = highestAppPlan.planTypeEnum.order > planConfig.planTypeEnum.order
+        val upgradeAvailable = highestAppPlan.planOrder > planConfig.planOrder
         val isLimitedHistoryPlan = if (isPersonalHistory) {
             !planConfig.isPersonalHistoryEnabled
         } else {

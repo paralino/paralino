@@ -23,7 +23,7 @@ data class UserPlans(
         .mapValues { it.value.sortedByDescending { it.plan.expiresAt?.toString() }.firstOrNull() }
         .values
         .filterNotNull()
-        .maxByOrNull { it.config.planTypeEnum.order }
+        .maxByOrNull { it.config.planOrder }
 
     val highestValidPlanConfig: PlanConfig get() = highestValidPlan?.config ?: config.defaultFreePlanConfig()
     val hasActiveWebPlan: Boolean get() = nonExpiredPlans.any {

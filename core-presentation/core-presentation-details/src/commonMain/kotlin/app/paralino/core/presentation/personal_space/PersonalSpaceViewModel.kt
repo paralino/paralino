@@ -238,7 +238,7 @@ class PersonalSpaceViewModel(
                     sharingStatus = sharingState,
                     devicesLimit = devicesLimit,
                     placesFeatureItems = featureItemsPlaces,
-                    shouldShowPlanBanner = !userPlans.highestValidPlanConfig.planTypeEnum.isPremium,
+                    shouldShowPlanBanner = !userPlans.highestValidPlanConfig.isPremium,
                     arePlacesOverLimit = personalSpaceData.arePlacesOverLimits(),
                     isSpaceOverLimit = personalSpaceData.isSpaceOverLimits(),
                     errors = errors,

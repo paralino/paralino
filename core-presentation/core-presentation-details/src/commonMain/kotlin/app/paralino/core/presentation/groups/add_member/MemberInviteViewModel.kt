@@ -256,7 +256,7 @@ class MemberInviteViewModel(
                                 if (isOnboarding) {
                                     _eventChannel.send(MemberInviteScreenEvent.MemberAdded)
                                 } else {
-                                    if (userRepo.userPlans.value.highestValidPlanConfig.planTypeEnum.isPremium) {
+                                    if (userRepo.userPlans.value.highestValidPlanConfig.isPremium) {
                                         _eventChannel.send(MemberInviteScreenEvent.MemberAdded)
                                     } else {
                                         _eventChannel.send(
