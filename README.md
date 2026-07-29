@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="public/paralino_logo_rounded_1024.png" alt="Paralino logo" width="96" height="96" />
+  <img src="public/paralino-icon-1024-rounded.png" alt="Paralino logo" width="96" height="96" />
 </p>
 
 <h1 align="center">Paralino - More than Location Sharing</h1>
