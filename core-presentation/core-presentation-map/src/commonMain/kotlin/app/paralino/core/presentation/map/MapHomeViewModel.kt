@@ -200,6 +200,7 @@ class MapHomeViewModel constructor(
         memberActionHandler = memberActionHandler,
         locationFocusManager = locationFocusManager,
         groupEmptyStateManager = groupsEmptyStateManager,
+        deviceApiProvider = deviceApiProvider,
         uiState = uiState,
         eventChannel = _eventChannel,
         appPrefs = appPrefs,
@@ -260,6 +261,7 @@ class MapHomeViewModel constructor(
                             appPrefs = appPrefs,
                             remoteConfig = remoteConfig,
                             geofenceManager = geofenceManager,
+                            deviceApiProvider = deviceApiProvider,
                             coroutineScope = coroutineScope,
                             messageDispatcher = messageDispatcher
                         )

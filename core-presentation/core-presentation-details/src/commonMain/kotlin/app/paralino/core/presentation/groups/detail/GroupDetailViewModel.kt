@@ -502,6 +502,7 @@ class GroupDetailViewModel(
                     }
 
                     is GroupMemberItemEvent.onDirectionsRequest,
+                    is GroupMemberItemEvent.onCoordinateCopy,
                     is GroupMemberItemEvent.onLocationRequest,
                     is GroupMemberItemEvent.onDeviceClick,
                     is GroupMemberItemEvent.onOpenLocationHistory,

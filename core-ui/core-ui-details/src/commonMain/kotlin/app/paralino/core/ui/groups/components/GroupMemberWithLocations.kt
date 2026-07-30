@@ -41,6 +41,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -93,6 +94,8 @@ import app.paralino.core.utils.extensions.conditional
 import app.paralino.core.utils.extensions.pulsate
 import dev.icerock.moko.resources.StringResource
 import dev.icerock.moko.resources.compose.stringResource
+import kotlinx.coroutines.delay
+import kotlin.time.Duration.Companion.milliseconds
 
 
 @OptIn(ExperimentalLayoutApi::class)
@@ -626,14 +629,37 @@ private fun ColumnScope.GroupMemberActions(
         }
 
         if (navigateAction != null) {
+            var checkIconChange by remember { mutableStateOf(false) }
+            var isCheckIcon by remember { mutableStateOf(false) }
+            LaunchedEffect(checkIconChange) {
+                if (checkIconChange) {
+                    isCheckIcon = true
+                    delay(800.milliseconds)
+                    isCheckIcon = false
+                    checkIconChange = false
+                }
+            }
             GroupMemberActionButton(
                 modifier = Modifier.align(Alignment.CenterVertically),
-                startIcon = CoreAppIcons.Directions.asPainterResource(),
+                startIcon = if (isCheckIcon) {
+                    CoreAppIcons.Check.asPainterResource()
+                } else {
+                    CoreAppIcons.Directions.asPainterResource()
+                },
                 endIcon = CoreAppIcons.ChevronRight.asPainterResource(),
                 text = stringResource(MR.strings.group_members_item_directions_button),
                 onClick = {
                     onEvent(
                         GroupMemberItemEvent.onDirectionsRequest(
+                            action = navigateAction,
+                            item = state
+                        )
+                    )
+                },
+                onLongClick = {
+                    checkIconChange = true
+                    onEvent(
+                        GroupMemberItemEvent.onCoordinateCopy(
                             action = navigateAction,
                             item = state
                         )
@@ -1024,7 +1050,8 @@ fun GroupMemberActionButton(
         end = if (endIcon == null) 10.dp else 6.dp,
         bottom = 6.dp
     ),
-    onClick: () -> Unit
+    onLongClick: (() -> Unit)? = null,
+    onClick: () -> Unit,
 ) {
     DataInfoChip(
         modifier = modifier,
@@ -1072,7 +1099,8 @@ fun GroupMemberActionButton(
             }
         },
         endSection = null,
-        onClick = if (isEnabled) onClick else null
+        onClick = if (isEnabled) onClick else null,
+        onLongClick = if (isEnabled) onLongClick else null
     )
 }
 

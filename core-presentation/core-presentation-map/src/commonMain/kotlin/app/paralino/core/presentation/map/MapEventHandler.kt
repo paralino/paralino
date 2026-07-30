@@ -22,6 +22,7 @@ import app.paralino.core.presentation.common.SnackbarDuration
 import app.paralino.core.presentation.common.onAction
 import app.paralino.core.presentation.map.MapHomeScreenEvent.*
 import app.paralino.core.presentation.map.MapScreenViewSourceType.DefaultGroup
+import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.utils.ConditionErrorType
@@ -38,6 +39,7 @@ class MapEventHandler(
     private val memberActionHandler: MemberActionHandler,
     private val locationFocusManager: LocationFocusManager,
     private val groupEmptyStateManager: GroupsInitEmptyStateManager,
+    private val deviceApiProvider: IDeviceApiProvider,
     private val uiState: StateFlow<MapHomeScreenState>,
     private val eventChannel: Channel<MapHomeScreenEvent?>,
     private val appPrefs: AppPrefs,
@@ -462,6 +464,14 @@ class MapEventHandler(
                             name = event.action.title,
                             navigationApp = appPrefs.iosNavigationApp
                         )
+                    )
+                }
+            }
+
+            is GroupMemberItemEvent.onCoordinateCopy -> {
+                uiState.value.asReady()?.let {
+                    deviceApiProvider.copyToClipboard(
+                        data = "${event.action.lat},${event.action.lng}"
                     )
                 }
             }

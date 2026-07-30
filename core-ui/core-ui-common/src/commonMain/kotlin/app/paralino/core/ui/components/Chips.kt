@@ -3,6 +3,7 @@ package app.paralino.core.ui.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -185,14 +186,20 @@ fun DataInfoChip(
     imageOrIcon: (@Composable RowScope.() -> Unit)?,
     text: @Composable RowScope.() -> Unit,
     endSection: (@Composable RowScope.() -> Unit)?,
+    onLongClick: (() -> Unit)? = null,
     onClick: (() -> Unit)? = null
 ) {
     Row(
         modifier = modifier
             .let {
-                if (onClick != null)
-                    it.clickable { onClick() }
-                else it
+                if (onClick != null) {
+                    it.combinedClickable(
+                        onLongClick = onLongClick,
+                        onClick = onClick
+                    )
+                } else {
+                    it
+                }
             }
             .clip(shape)
             .background(MaterialTheme.colors.background)

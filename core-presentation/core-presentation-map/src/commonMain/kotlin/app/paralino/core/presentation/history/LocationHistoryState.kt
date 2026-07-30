@@ -592,6 +592,7 @@ sealed interface LocationHistoryUiEvent {
     data class SetHistoryProgress(val progress: Int) : LocationHistoryUiEvent
     data class ChangeMapDataViewType(val type: LocationHistoryDataViewType) : LocationHistoryUiEvent
     data class OnDirectionsRequest(val action: MemberNavigateItemState) : LocationHistoryUiEvent
+    data class OnCoordinateCopy(val action: MemberNavigateItemState) : LocationHistoryUiEvent
     data class OnRawDataPointClicked(val action: RawPresentationDataType.LocationHistoryPointPresentation) : LocationHistoryUiEvent
     data class OnScreenDensityChange(val maxWidthDp: Dp, val maxHeightDp: Dp) : LocationHistoryUiEvent
     data object NavigateHistoryNext : LocationHistoryUiEvent
