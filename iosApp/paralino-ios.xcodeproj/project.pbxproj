@@ -1778,7 +1778,7 @@
 				);
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "paralino-ios/Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = ParalinoTEST;
+				INFOPLIST_KEY_CFBundleDisplayName = ParalinoDEV;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.lifestyle";
 				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "Always on and when in use location permission is required to post updates";
 				INFOPLIST_KEY_NSLocationAlwaysUsageDescription = "Always on location permission is required to post updates";
