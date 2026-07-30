@@ -51,7 +51,6 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.zIndex
 import app.paralino.core.MR
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.presentation.billing.BillingScreenSourceType
@@ -69,9 +68,7 @@ import app.paralino.core.ui.components.ConditionErrorItem
 import app.paralino.core.ui.components.DataInfoChip
 import app.paralino.core.ui.components.DefaultEmptyState
 import app.paralino.core.ui.components.FilledButton
-import app.paralino.core.ui.components.FullWidthActionButton
 import app.paralino.core.ui.components.ImageModelImage
-import app.paralino.core.ui.components.SettingsActionItem
 import app.paralino.core.ui.groups.components.GroupMember
 import app.paralino.core.ui.groups.components.GroupMemberActionButton
 import app.paralino.core.ui.places.PlaceListItem
@@ -488,27 +485,27 @@ private fun LazyListScope.membersList(
         }
     }
 
+    this.item(key = "settings_divider") {
+        Divider(
+            modifier = Modifier
+                .padding(top = 20.dp)
+                .padding(horizontal = 20.dp),
+            color = Color.Gray.copy(alpha = 0.2f),
+            thickness = 0.5.dp
+        )
+    }
+
     this.item(key = "settings_row") {
         FlowRow(
             modifier = Modifier.fillMaxWidth().padding(top = 20.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.Start),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            if (canAddNewMember) {
-                GroupMemberActionButton(
-                    modifier = Modifier,
-                    startIcon = CoreAppIcons.PersonAdd.asPainterResource(),
-                    endIcon = CoreAppIcons.ChevronRight.asPainterResource(),
-                    text = stringResource(MR.strings.invite_connect_screen_title),
-                    onClick = onAddNewMember
-                )
-            }
-
             GroupMemberActionButton(
                 modifier = Modifier,
                 startIcon = CoreAppIcons.Settings.asPainterResource(),
                 endIcon = CoreAppIcons.ChevronRight.asPainterResource(),
-                text = stringResource(MR.strings.button_open),
+                text = stringResource(MR.strings.button_manage),
                 onClick = onOpenSettings
             )
 
@@ -533,6 +530,16 @@ private fun LazyListScope.membersList(
                     backgroundColor = AppColors.errorBackground,
                     contentColor = AppColors.redMain,
                     onClick = stopLocationSharing
+                )
+            }
+
+            if (canAddNewMember) {
+                GroupMemberActionButton(
+                    modifier = Modifier,
+                    startIcon = CoreAppIcons.PersonAdd.asPainterResource(),
+                    endIcon = CoreAppIcons.ChevronRight.asPainterResource(),
+                    text = stringResource(MR.strings.invite_connect_screen_title),
+                    onClick = onAddNewMember
                 )
             }
         }
