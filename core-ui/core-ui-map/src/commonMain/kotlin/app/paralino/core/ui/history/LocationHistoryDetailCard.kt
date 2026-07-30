@@ -88,7 +88,9 @@ import app.paralino.core.utils.extensions.conditional
 import app.paralino.core.utils.extensions.isLocationInaccurate
 import app.paralino.core.utils.extensions.pulsate
 import dev.icerock.moko.resources.compose.stringResource
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.milliseconds
 
 private val cornerShape = 20.dp
 private val innerCornerShape = 15.dp
@@ -443,9 +445,23 @@ fun LocationHistoryDetailCard(
                                 }
 
                                 if (uiState.navigateAction != null) {
+                                    var checkIconChange by remember { mutableStateOf(false) }
+                                    var isCheckIcon by remember { mutableStateOf(false) }
+                                    LaunchedEffect(checkIconChange) {
+                                        if (checkIconChange) {
+                                            isCheckIcon = true
+                                            delay(800.milliseconds)
+                                            isCheckIcon = false
+                                            checkIconChange = false
+                                        }
+                                    }
                                     GroupMemberActionButton(
                                         modifier = Modifier,
-                                        startIcon = CoreAppIcons.Directions.asPainterResource(),
+                                        startIcon = if (isCheckIcon) {
+                                            CoreAppIcons.Check.asPainterResource()
+                                        } else {
+                                            CoreAppIcons.Directions.asPainterResource()
+                                        },
                                         endIcon = CoreAppIcons.ChevronRight.asPainterResource(),
                                         text = stringResource(MR.strings.group_members_item_directions_button),
                                         backgroundColor = if (isSystemInDarkTheme()) {
@@ -456,6 +472,12 @@ fun LocationHistoryDetailCard(
                                         onClick = {
                                             handleEvent(
                                                 LocationHistoryUiEvent.OnDirectionsRequest(action = uiState.navigateAction!!)
+                                            )
+                                        },
+                                        onLongClick = {
+                                            checkIconChange = true
+                                            handleEvent(
+                                                LocationHistoryUiEvent.OnCoordinateCopy(action = uiState.navigateAction!!)
                                             )
                                         }
                                     )

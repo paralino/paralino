@@ -288,6 +288,7 @@ sealed interface MapHomeScreenUiEvent {
     data object ConfirmPersonalSpaceIntro : MapHomeScreenUiEvent
     data object CloseLocationHistory : MapHomeScreenUiEvent
     data object OnOverLimitsBannerTap : MapHomeScreenUiEvent
+    data class StopLocationSharing(val groupOrSpaceId: GroupOrSpaceId) : MapHomeScreenUiEvent
     data class OnConditionErrorItemClick(val item: ConditionErrorType) : MapHomeScreenUiEvent
     data class OpenPaywall(val type: BillingScreenSourceType) : MapHomeScreenUiEvent
 }

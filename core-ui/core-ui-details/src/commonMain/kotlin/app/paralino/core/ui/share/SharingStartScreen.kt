@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
@@ -69,8 +70,8 @@ import app.paralino.core.ui.components.SettingsSectionHeader
 import app.paralino.core.ui.components.dialogs.LoadingDialog
 import app.paralino.core.ui.components.dialogs.Show
 import app.paralino.core.ui.components.rememberSeekbarState
-import app.paralino.core.ui.groups.components.GroupListItem
 import app.paralino.core.ui.groups.components.ComponentWithDurationExpirationBanner
+import app.paralino.core.ui.groups.components.GroupListItem
 import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.ui.theme.ButtonStyle
 import app.paralino.core.utils.ConditionErrorType
@@ -240,14 +241,26 @@ fun SharingStartScreenCore(
             }
         } else if (!state.isNewContract) {
             @Composable {
-                OnboardingSkipButton(
-                    skipButtonText = if (state.isPersonalSpace) {
-                        stringResource(MR.strings.location_sharing_button_stop_personal)
-                    } else {
-                        stringResource(MR.strings.location_sharing_button_stop_groups)
-                    },
-                    onSkip = { vm.onEvent(SharingStartScreenUiEvent.StopSharing) }
-                )
+                FilledButton(
+                    modifier = Modifier.padding(vertical = 8.dp),
+                    style = ButtonStyle.BIG,
+                    state = AppButtonState.CONTENT,
+                    enabled = true,
+                    icon = null,
+                    colors = ButtonDefaults.buttonColors(
+                        backgroundColor = AppColors.redMain,
+                        contentColor = AppColors.lightBackground
+                    ),
+                    onClick = { vm.onEvent(SharingStartScreenUiEvent.StopSharing) }
+                ) {
+                    Text(
+                        text = if (state.isPersonalSpace) {
+                            stringResource(MR.strings.location_sharing_button_stop_personal)
+                        } else {
+                            stringResource(MR.strings.location_sharing_button_stop_groups)
+                        }
+                    )
+                }
             }
         } else if (state.shouldUpgradePlan) {
             @Composable {

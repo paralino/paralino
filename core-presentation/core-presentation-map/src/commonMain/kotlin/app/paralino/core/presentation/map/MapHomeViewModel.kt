@@ -7,6 +7,7 @@ import app.paralino.core.domain.group.GroupPreRefreshUseCase
 import app.paralino.core.domain.location.ClearUserLocationUseCase
 import app.paralino.core.domain.location.LocationCacheRepository
 import app.paralino.core.domain.location.LocationRequestUseCase
+import app.paralino.core.domain.location.StopSharingLocationUseCase
 import app.paralino.core.domain.location.history.DeleteLocationHistoryEntryUseCase
 import app.paralino.core.domain.location.history.GetLocationHistoryUseCase
 import app.paralino.core.domain.location.history.RefreshLocationHistoryUseCase
@@ -32,7 +33,6 @@ import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.provider.RealtimeSubscriptionManager
 import app.paralino.core.repo.LocationSharingManager
-import app.paralino.core.repo.base.AppConfigRepository
 import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.location.IGeofenceManager
@@ -93,7 +93,7 @@ class MapHomeViewModel constructor(
     val deviceApiProvider: IDeviceApiProvider,
     private val valueFormatter: IValueFormatter,
     private val remoteConfig: RemoteConfigRepository,
-    private val appConfigRepo: AppConfigRepository,
+    private val stopSharingLocationUseCase: StopSharingLocationUseCase,
     private val appRatingManager: AppRatingManager,
     private val premiumStatusManager: PremiumStatusManager
 ) : CoreViewModel() {
@@ -200,10 +200,12 @@ class MapHomeViewModel constructor(
         memberActionHandler = memberActionHandler,
         locationFocusManager = locationFocusManager,
         groupEmptyStateManager = groupsEmptyStateManager,
+        deviceApiProvider = deviceApiProvider,
         uiState = uiState,
         eventChannel = _eventChannel,
         appPrefs = appPrefs,
         groupLocal = groupRepo,
+        stopSharingLocationUseCase = stopSharingLocationUseCase,
         messageDispatcher = messageDispatcher,
         uiFocusedStatus = uiFocusedStatus,
         updateUiState = { state -> _uiState.value = state },
@@ -259,6 +261,7 @@ class MapHomeViewModel constructor(
                             appPrefs = appPrefs,
                             remoteConfig = remoteConfig,
                             geofenceManager = geofenceManager,
+                            deviceApiProvider = deviceApiProvider,
                             coroutineScope = coroutineScope,
                             messageDispatcher = messageDispatcher
                         )

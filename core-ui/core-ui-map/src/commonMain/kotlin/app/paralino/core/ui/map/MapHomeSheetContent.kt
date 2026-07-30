@@ -9,8 +9,10 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -49,6 +51,7 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import app.paralino.core.MR
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.presentation.billing.BillingScreenSourceType
@@ -66,8 +69,11 @@ import app.paralino.core.ui.components.ConditionErrorItem
 import app.paralino.core.ui.components.DataInfoChip
 import app.paralino.core.ui.components.DefaultEmptyState
 import app.paralino.core.ui.components.FilledButton
+import app.paralino.core.ui.components.FullWidthActionButton
 import app.paralino.core.ui.components.ImageModelImage
+import app.paralino.core.ui.components.SettingsActionItem
 import app.paralino.core.ui.groups.components.GroupMember
+import app.paralino.core.ui.groups.components.GroupMemberActionButton
 import app.paralino.core.ui.places.PlaceListItem
 import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.ui.theme.ButtonStyle
@@ -307,6 +313,8 @@ fun MapHomeSheetContent(
 
                 MapSheetSelectedContentType.MEMBERS -> {
                     membersList(
+                        canStopTracking = readyState.personalSpaceSharingContract != null && readyState.isPersonalSpace,
+                        canStopSharing = readyState.selectedGroupSharingContract != null && !readyState.isPersonalSpace,
                         canAddNewMember = !readyState.isPersonalSpace && readyState.isCurrentUserOwnerOfSelectedGroup,
                         hasUpgradeBanner = !readyState.groupPlanConfig.hasOngoingRealtime && (readyState.isPersonalSpace || readyState.isCurrentUserOwnerOfSelectedGroup),
                         members = members,
@@ -316,8 +324,14 @@ fun MapHomeSheetContent(
                         onAddNewMember = {
                             onEvent(MapHomeScreenUiEvent.OnOpenMemberInviteScreen)
                         },
+                        onOpenSettings = {
+                            onEvent(MapHomeScreenUiEvent.OpenGroupDetails(readyState.groupOrSpaceId))
+                        },
                         onBannerTap = {
                             onEvent(MapHomeScreenUiEvent.OpenPaywall(type = BillingScreenSourceType.UPGRADE_MAP_SHEET))
+                        },
+                        stopLocationSharing = {
+                            onEvent(MapHomeScreenUiEvent.StopLocationSharing(groupOrSpaceId = readyState.groupOrSpaceId))
                         }
                     )
                 }
@@ -391,12 +405,16 @@ private fun SheetTabs(
 }
 
 private fun LazyListScope.membersList(
+    canStopSharing: Boolean,
+    canStopTracking: Boolean,
     canAddNewMember: Boolean,
     hasUpgradeBanner: Boolean,
     members: List<GroupMemberItemState>,
     memberEvent: (GroupMemberItemEvent) -> Unit,
     onAddNewMember: () -> Unit,
-    onBannerTap: () -> Unit
+    onBannerTap: () -> Unit,
+    onOpenSettings: () -> Unit,
+    stopLocationSharing: () -> Unit,
 ) {
     this.itemsIndexed(
         items = members,
@@ -470,13 +488,53 @@ private fun LazyListScope.membersList(
         }
     }
 
-    if (canAddNewMember) {
-        this.item(key = "add_new_member") {
-            AddNewActionButton(
+    this.item(key = "settings_row") {
+        FlowRow(
+            modifier = Modifier.fillMaxWidth().padding(top = 20.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.Start),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            if (canAddNewMember) {
+                GroupMemberActionButton(
+                    modifier = Modifier,
+                    startIcon = CoreAppIcons.PersonAdd.asPainterResource(),
+                    endIcon = CoreAppIcons.ChevronRight.asPainterResource(),
+                    text = stringResource(MR.strings.invite_connect_screen_title),
+                    onClick = onAddNewMember
+                )
+            }
+
+            GroupMemberActionButton(
                 modifier = Modifier,
-                text = stringResource(MR.strings.invite_connect_screen_title),
-                action = onAddNewMember
+                startIcon = CoreAppIcons.Settings.asPainterResource(),
+                endIcon = CoreAppIcons.ChevronRight.asPainterResource(),
+                text = stringResource(MR.strings.button_open),
+                onClick = onOpenSettings
             )
+
+            if (canStopSharing) {
+                GroupMemberActionButton(
+                    modifier = Modifier,
+                    startIcon = CoreAppIcons.StopCircle.asPainterResource(),
+                    endIcon = null,
+                    text = stringResource(MR.strings.location_sharing_button_stop_groups),
+                    backgroundColor = AppColors.errorBackground,
+                    contentColor = AppColors.redMain,
+                    onClick = stopLocationSharing
+                )
+            }
+
+            if (canStopTracking) {
+                GroupMemberActionButton(
+                    modifier = Modifier,
+                    startIcon = CoreAppIcons.StopCircle.asPainterResource(),
+                    endIcon = null,
+                    text = stringResource(MR.strings.location_sharing_button_stop_personal),
+                    backgroundColor = AppColors.errorBackground,
+                    contentColor = AppColors.redMain,
+                    onClick = stopLocationSharing
+                )
+            }
         }
     }
 }

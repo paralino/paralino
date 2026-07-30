@@ -25,6 +25,7 @@ import app.paralino.core.presentation.common.MainAlertDialog.Buttons
 import app.paralino.core.presentation.common.MainAlertDialog.DeleteLocationHistoryEntry
 import app.paralino.core.presentation.common.MainAlertDialog.DeleteLocationHistoryRange
 import app.paralino.core.presentation.common.onAction
+import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.utils.extensions.isoToLocalDateTime
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
@@ -51,6 +52,7 @@ class LocationHistoryViewModelController(
     private val appPrefs: AppPrefs,
     private val remoteConfig: RemoteConfigRepository,
     private val geofenceManager: IGeofenceManager,
+    private val deviceApiProvider: IDeviceApiProvider,
     private val coroutineScope: CoroutineScope,
     private val messageDispatcher: ICoreMessageDispatcher
 ) {
@@ -461,6 +463,14 @@ class LocationHistoryViewModelController(
                                 navigationApp = appPrefs.iosNavigationApp
                             )
                         )
+                    )
+                }
+            }
+
+            is LocationHistoryUiEvent.OnCoordinateCopy -> {
+                _uiState.value.navigateAction?.let {
+                    deviceApiProvider.copyToClipboard(
+                        data = "${event.action.lat},${event.action.lng}"
                     )
                 }
             }
