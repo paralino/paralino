@@ -9,15 +9,22 @@ import androidx.compose.ui.unit.sp
 import app.paralino.core.MR
 import dev.icerock.moko.resources.compose.asFont
 
-private val Montserrat @Composable get() = FontFamily(
-	MR.fonts.font_montserrat_light.asFont(weight = FontWeight.Light)!!,
-	MR.fonts.font_montserrat_regular.asFont(weight = FontWeight.Normal)!!,
-	MR.fonts.font_montserrat_medium.asFont(weight = FontWeight.Medium)!!,
-	MR.fonts.font_montserrat_semibold.asFont(weight = FontWeight.SemiBold)!!,
-	MR.fonts.font_montserrat_bold.asFont(weight = FontWeight.Bold)!!,
-	MR.fonts.font_montserrat_extrabold.asFont(weight = FontWeight.ExtraBold)!!,
-)
+object AppTypography {
+	private val FontMontserrat @Composable get() = FontFamily(
+		MR.fonts.font_montserrat_light.asFont(weight = FontWeight.Light)!!,
+		MR.fonts.font_montserrat_regular.asFont(weight = FontWeight.Normal)!!,
+		MR.fonts.font_montserrat_medium.asFont(weight = FontWeight.Medium)!!,
+		MR.fonts.font_montserrat_semibold.asFont(weight = FontWeight.SemiBold)!!,
+		MR.fonts.font_montserrat_bold.asFont(weight = FontWeight.Bold)!!,
+		MR.fonts.font_montserrat_extrabold.asFont(weight = FontWeight.ExtraBold)!!,
+	)
 
-val AppTypography @Composable get() = Typography(defaultFontFamily = Montserrat)
+	private val FontCatamaran @Composable get() = FontFamily(
+		MR.fonts.font_catamaran_semibold.asFont(weight = FontWeight.SemiBold)!!,
+	)
+
+	val Montserrat @Composable get() = Typography(defaultFontFamily = FontMontserrat)
+	val Catamaran @Composable get() = Typography(defaultFontFamily = FontCatamaran)
+}
 
 val Typography.featureItemTitle @Composable get() = MaterialTheme.typography.subtitle2.copy(fontSize = 18.sp, fontWeight = FontWeight.SemiBold)

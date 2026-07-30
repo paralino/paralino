@@ -132,7 +132,7 @@ fun AppTheme(
 	CompositionLocalProvider(LocalRippleConfiguration provides AppRippleTheme.RippleConfig()) {
 		MaterialTheme(
 			colors = colors,
-			typography = AppTypography,
+			typography = AppTypography.Montserrat,
 			shapes = shapes
 		){
 			BoxWithConstraints {
