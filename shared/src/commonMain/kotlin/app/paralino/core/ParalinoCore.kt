@@ -57,6 +57,7 @@ import app.paralino.core.domain.location.RegisterDeviceForSharingUseCase
 import app.paralino.core.domain.location.RevokeDeviceActiveStatusUseCase
 import app.paralino.core.domain.location.LocationUploadPayloadFactory
 import app.paralino.core.domain.location.SaveLocationUseCase
+import app.paralino.core.domain.location.StopSharingLocationUseCase
 import app.paralino.core.domain.location.UserMemberIdUseCase
 import app.paralino.core.domain.location.engine.HandleGetLocationPayloadRequest
 import app.paralino.core.domain.location.engine.LocationSaveEventProcessingEngine
@@ -420,6 +421,7 @@ val coreModule = module {
     factory { LowBatteryNotificationProcessor(get(), get(), get(), get()) }
 
     single { LocationPerformanceManager(get(), get(), get()) }
+    single { StopSharingLocationUseCase(get(), get(), get()) }
 
     single { InAppLogger(get(), get(), get()) }
     single { LimitedExecutionParentManager() }

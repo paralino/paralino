@@ -7,11 +7,11 @@ import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.group.GroupMemberRemoveUseCase
 import app.paralino.core.domain.group.GroupPreRefreshUseCase
 import app.paralino.core.domain.location.LocationCacheRepository
-import app.paralino.core.domain.location.MemberDeviceStatusProcessor
+import app.paralino.core.domain.location.StopSharingLocationUseCase
 import app.paralino.core.domain.privacyzone.GetPrivacyZonesUseCase
+import app.paralino.core.domain.privacyzone.nameOrDefault
 import app.paralino.core.domain.user.PremiumStatusLimitState
 import app.paralino.core.domain.user.PremiumStatusManager
-import app.paralino.core.logg
 import app.paralino.core.models.Payload
 import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.models.data
@@ -36,7 +36,6 @@ import app.paralino.core.presentation.common.PlaceListItemData
 import app.paralino.core.presentation.common.SnackbarDuration
 import app.paralino.core.presentation.common.onAction
 import app.paralino.core.presentation.groups.detail.GroupDetailScreenEvent.OpenRawMemberData
-import app.paralino.core.domain.privacyzone.nameOrDefault
 import app.paralino.core.presentation.share.ApproximateLocationDistancePair
 import app.paralino.core.provider.DistanceType
 import app.paralino.core.provider.IDeviceApiProvider
@@ -48,7 +47,6 @@ import app.paralino.core.repo.base.AppConfigRepository
 import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.location.IGeofenceManager
-import app.paralino.core.repo.places.PlaceActivityDataSource
 import app.paralino.core.repo.places.PlacesRepository
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.ConditionErrorType
@@ -79,9 +77,7 @@ class GroupDetailViewModel(
     val groupId: String,
     private val userRepo: UserRepository,
     private val remoteConfigRepo: RemoteConfigRepository,
-    private val deviceStatusProcessor: MemberDeviceStatusProcessor,
     private val sharingManager: LocationSharingManager,
-    private val placeActivityRepo: PlaceActivityDataSource,
     private val getPrivacyZonesUseCase: GetPrivacyZonesUseCase,
     private val groupMemberRemove: GroupMemberRemoveUseCase,
     private val groupRefresh: GroupPreRefreshUseCase,
@@ -95,6 +91,7 @@ class GroupDetailViewModel(
     private val geofenceManager: IGeofenceManager,
     private val placesRepo: PlacesRepository,
     private val locationCacheRepository: LocationCacheRepository,
+    private val stopSharingUseCase: StopSharingLocationUseCase,
 ) : CoreViewModel() {
 
     private val memberLocationContextMapper = MemberLocationContextMapper(
@@ -637,13 +634,7 @@ class GroupDetailViewModel(
 
     private fun stopSharing() {
         coroutineScope.launch {
-            sharingManager.stopSharing(groupId = groupId.asGroupOrSpaceId(), deleteContract = false)
-            placeActivityRepo.clearForGroup(groupId = groupId.asGroupOrSpaceId())
-            try {
-                deviceStatusProcessor.pushDeviceStatus(groupId = groupId.asGroupOrSpaceId())
-            } catch (e: Exception) {
-                logg.w("Error while updating user status", e)
-            }
+            stopSharingUseCase.stopSharing(groupOrSpaceId = groupId.asGroupOrSpaceId())
         }
     }
 

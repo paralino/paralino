@@ -1,8 +1,8 @@
 package app.paralino.core.presentation.share
 
 import app.paralino.core.MR
-import app.paralino.core.domain.location.MemberDeviceStatusProcessor
 import app.paralino.core.domain.location.RegisterDeviceForSharingUseCase
+import app.paralino.core.domain.location.StopSharingLocationUseCase
 import app.paralino.core.domain.location.UserMemberIdUseCase
 import app.paralino.core.domain.user.PremiumStatusLimitState
 import app.paralino.core.domain.user.PremiumStatusManager
@@ -32,7 +32,6 @@ import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.location.LocationPerformanceManager
-import app.paralino.core.repo.places.PlaceActivityDataSource
 import app.paralino.core.repo.user.UserPersonalSpaceLocalDataSource
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.ConditionErrorType
@@ -67,8 +66,6 @@ class SharingStartViewModel(
     private val groupRepo: UserGroupLocalDataSource,
     private val sharingManager: LocationSharingManager,
     private val locationPerformanceManager: LocationPerformanceManager,
-    private val deviceStatusProcessor: MemberDeviceStatusProcessor,
-    private val placeActivityRepo: PlaceActivityDataSource,
     val deviceApiProvider: IDeviceApiProvider,
     private val registerDevice: RegisterDeviceForSharingUseCase,
     private val userMemberIdUseCase: UserMemberIdUseCase,
@@ -76,6 +73,7 @@ class SharingStartViewModel(
     private val personalSpaceRepo: UserPersonalSpaceLocalDataSource,
     private val premiumStatusManager: PremiumStatusManager,
     private val refreshEverythingUseCase: RefreshEverythingUseCase,
+    private val stopSharingUseCase: StopSharingLocationUseCase,
     private val valueFormatter: IValueFormatter
 ) : CoreViewModel() {
 
@@ -840,13 +838,7 @@ class SharingStartViewModel(
     private fun stopSharing() {
         val groupId = currentGroupId ?: return
         coroutineScope.launch {
-            sharingManager.stopSharing(groupId = groupId.asGroupOrSpaceId(), deleteContract = false)
-            placeActivityRepo.clearForGroup(groupId = groupId.asGroupOrSpaceId())
-            try {
-                deviceStatusProcessor.pushDeviceStatus(groupId = groupId.asGroupOrSpaceId())
-            } catch (e: Exception) {
-                logg.w("Error while updating user status", e)
-            }
+            stopSharingUseCase.stopSharing(groupOrSpaceId = groupId.asGroupOrSpaceId())
             setSelectedGroup(currentGroup.value)
         }
     }
