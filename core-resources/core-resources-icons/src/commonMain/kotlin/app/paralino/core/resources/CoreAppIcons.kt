@@ -55,6 +55,7 @@ import app.paralino.core.resources.icons.ic_incognito
 import app.paralino.core.resources.icons.ic_info_circle
 import app.paralino.core.resources.icons.ic_key
 import app.paralino.core.resources.icons.ic_launcher_foreground
+import app.paralino.core.resources.icons.ic_launcher_background
 import app.paralino.core.resources.icons.ic_library_books
 import app.paralino.core.resources.icons.ic_license_tag
 import app.paralino.core.resources.icons.ic_license_ticket
@@ -131,6 +132,7 @@ import org.jetbrains.compose.resources.painterResource
 
 object CoreAppIcons {
     val LauncherLogo get() = Res.drawable.ic_launcher_foreground
+    val LauncherBackground get() = Res.drawable.ic_launcher_background
     val Check get() = Res.drawable.ic_check
     val PhonelinkSetup get() = Res.drawable.ic_phonelink_setup
     val NotificationsActive get() = Res.drawable.ic_notifications_active

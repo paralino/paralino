@@ -764,7 +764,7 @@
     <string name="placeholder_unit_feet">%s фути</string>
     <string name="placeholder_unit_speed_kmph">%s км/год</string>
     <string name="placeholder_unit_speed_mph">%s миль/год</string>
-    <string name="welcome_screen_info_1">ЗАХИЩЕНО - ПРИВАТНО - ЗАШИФРОВАНО</string>
+    <string name="welcome_screen_info_1">Обмін геолокацією з повагою до вашої конфіденційності</string>
     <string name="welcome_screen_button_join">Приєднатися</string>
     <string name="welcome_account_edit_profile">Завершіть свій профіль</string>
     <string name="recover_account_screen_error">Не вдалося завантажити відновлення облікового запису</string>

@@ -764,7 +764,7 @@
     <string name="placeholder_unit_feet">%s ft</string>
     <string name="placeholder_unit_speed_kmph">%s km/h</string>
     <string name="placeholder_unit_speed_mph">%s mph</string>
-    <string name="welcome_screen_info_1">SÄKER - PRIVAT - KRYPTERAD</string>
+    <string name="welcome_screen_info_1">Plattdelning som respekterar din integritet</string>
     <string name="welcome_screen_button_join">Gå med</string>
     <string name="welcome_account_edit_profile">Slutför din profil</string>
     <string name="recover_account_screen_error">Kunde inte ladda kontogenvinning</string>
