@@ -967,6 +967,7 @@
     <string name="group_details_add_member_admin_only_info">Només l\'administrador del grup pot afegir nous membres</string>
     <string name="group_members_status_location_hidden">Només ubicació aproximada</string>
     <string name="button_edit">Edita</string>
+    <string name="button_manage">Gestiona</string>
     <string name="plans_banner_inline_privacy_zones">Crea més zones de privadesa i manteniu el control de la vostra ubicació!</string>
     <string name="paywall_feature_privacy_zones_group">Zones de privadesa</string>
     <string name="paywall_feature_summary_privacy_zones">Zones de privadesa</string>

@@ -967,6 +967,7 @@
     <string name="group_details_add_member_admin_only_info">Лише адміністратор групи може додавати нових учасників</string>
     <string name="group_members_status_location_hidden">Лише приблизне місцеперебування</string>
     <string name="button_edit">Редагувати</string>
+    <string name="button_manage">Керувати</string>
     <string name="plans_banner_inline_privacy_zones">Створюйте більше зон конфіденційності та зберігайте контроль над своїм місцезнаходженням!</string>
     <string name="paywall_feature_privacy_zones_group">Зони конфіденційності</string>
     <string name="paywall_feature_summary_privacy_zones">Зони конфіденційності</string>

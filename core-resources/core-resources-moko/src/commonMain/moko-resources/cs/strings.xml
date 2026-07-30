@@ -967,6 +967,7 @@
     <string name="group_details_add_member_admin_only_info">Nové členy může přidávat pouze správce skupiny</string>
     <string name="group_members_status_location_hidden">Pouze přibližná poloha</string>
     <string name="button_edit">Upravit</string>
+    <string name="button_manage">Spravovat</string>
     <string name="plans_banner_inline_privacy_zones">Vytvořte více zón soukromí a mějte svou polohu pod kontrolou!</string>
     <string name="paywall_feature_privacy_zones_group">Zóny soukromí</string>
     <string name="paywall_feature_summary_privacy_zones">Zóny soukromí</string>

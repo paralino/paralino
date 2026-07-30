@@ -969,6 +969,7 @@
     <string name="groups_sharing_setting_approximateLocation_speedElevation_unavailable">Hastighet och höjd är inte tillgängliga när delning av **ungefärlig plats** är aktiverad.</string>
     <string name="privacy_zones_empty_state_map_label_others_view">Vad andra ser</string>
     <string name="button_edit">Redigera</string>
+    <string name="button_manage">Hantera</string>
     <string name="plans_banner_inline_privacy_zones">Skapa fler integritetszoner och behåll kontrollen över din plats!</string>
     <string name="paywall_feature_privacy_zones_group">Integritetszoner</string>
     <string name="paywall_feature_summary_privacy_zones">Integritetszoner</string>

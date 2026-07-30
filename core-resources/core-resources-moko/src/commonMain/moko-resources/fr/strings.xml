@@ -967,6 +967,7 @@
     <string name="group_details_add_member_admin_only_info">Seul l’administrateur du groupe peut ajouter de nouveaux membres</string>
     <string name="group_members_status_location_hidden">Localisation approximative uniquement</string>
     <string name="button_edit">Modifier</string>
+    <string name="button_manage">Gérer</string>
     <string name="plans_banner_inline_privacy_zones">Créez davantage de zones de confidentialité et gardez le contrôle de votre position !</string>
     <string name="paywall_feature_privacy_zones_group">Zones de confidentialité</string>
     <string name="paywall_feature_summary_privacy_zones">Zones de confidentialité</string>

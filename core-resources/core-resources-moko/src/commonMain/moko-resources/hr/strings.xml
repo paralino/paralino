@@ -967,6 +967,7 @@
     <string name="group_details_add_member_admin_only_info">Samo administrator grupe može dodavati nove članove</string>
     <string name="group_members_status_location_hidden">Samo približna lokacija</string>
     <string name="button_edit">Uredi</string>
+    <string name="button_manage">Upravljaj</string>
     <string name="plans_banner_inline_privacy_zones">Stvorite više zona privatnosti i zadržite kontrolu nad svojom lokacijom!</string>
     <string name="paywall_feature_privacy_zones_group">Zone privatnosti</string>
     <string name="paywall_feature_summary_privacy_zones">Zone privatnosti</string>

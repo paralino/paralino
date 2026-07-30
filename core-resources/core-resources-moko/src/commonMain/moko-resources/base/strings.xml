@@ -28,6 +28,7 @@
     <string name="button_yes">Yes</string>
     <string name="button_no">No</string>
     <string name="button_edit">Edit</string>
+    <string name="button_manage">Manage</string>
     <string name="button_hold_hint">Tap and hold</string>
     <string name="button_open_settings">Open settings</string>
     <string name="alert_title_confirm">Please confirm</string>

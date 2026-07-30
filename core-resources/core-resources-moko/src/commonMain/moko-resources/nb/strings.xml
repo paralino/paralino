@@ -967,6 +967,7 @@
     <string name="group_details_add_member_admin_only_info">Bare gruppeadministrator kan legge til nye medlemmer</string>
     <string name="group_members_status_location_hidden">Kun omtrentlig posisjon</string>
     <string name="button_edit">Rediger</string>
+    <string name="button_manage">Administrer</string>
     <string name="plans_banner_inline_privacy_zones">Opprett flere personvernområder og behold kontrollen over posisjonen din!</string>
     <string name="paywall_feature_privacy_zones_group">Personvernområder</string>
     <string name="paywall_feature_summary_privacy_zones">Personvernområder</string>
