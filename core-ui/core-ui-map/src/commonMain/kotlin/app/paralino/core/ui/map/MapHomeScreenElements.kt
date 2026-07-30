@@ -538,7 +538,7 @@ private fun MapHomeElementSharingRow(
                             )
                         ),
                     isEnabled = isActionRowControlVisible,
-                    startIcon = if (readyState.isPersonalSpace) {
+                    startIcon = if (readyState.isPersonalSpace || readyState.selectedSharingContract?.isAlwaysOn != false) {
                         CoreAppIcons.ShareLocation.asPainterResource()
                     } else {
                         CoreAppIcons.Timer.asPainterResource()
@@ -547,7 +547,7 @@ private fun MapHomeElementSharingRow(
                         stringResource(MR.strings.group_members_item_tracking_button)
                     } else {
                         readyState.sharingEndTime
-                            ?: stringResource(MR.strings.groups_sharing_duration_type_infinite)
+                            ?: stringResource(MR.strings.notifications_sharing_active_title)
                     },
                     backgroundColor = MaterialTheme.colors.background,
                     startIconColor = AppColors.accent,
