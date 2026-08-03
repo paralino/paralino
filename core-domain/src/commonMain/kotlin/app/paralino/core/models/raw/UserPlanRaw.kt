@@ -3,14 +3,12 @@ package app.paralino.core.models.raw
 import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.base.PlanBillingPeriod
 import app.paralino.core.models.base.PlanProvider
-import app.paralino.core.models.base.PlanType
 import app.paralino.core.utils.extensions.isoWithOffsetToInstant
 import app.paralino.core.utils.extensions.nowUTC
-import kotlin.time.Instant
 import kotlinx.serialization.SerialName
-import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
+import kotlin.time.Instant
 
 class UserPlanRaw constructor(
     @SerialName("\$id")
@@ -34,8 +32,6 @@ class UserPlanRaw constructor(
         ?.plus(if (AppBuildConfig.instance.isDevMode) 30.seconds else 2.minutes)
         ?.let { it < nowUTC() }
         ?: false
-
-    val planTypeEnum: PlanType = PlanType.fromKey(key = planType)
 
     companion object {
         fun from(map: Map<String, Any>): UserPlanRaw {

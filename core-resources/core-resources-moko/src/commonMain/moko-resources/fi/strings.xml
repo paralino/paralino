@@ -764,7 +764,7 @@
     <string name="placeholder_unit_feet">%s ft</string>
     <string name="placeholder_unit_speed_kmph">%s km/h</string>
     <string name="placeholder_unit_speed_mph">%s mph</string>
-    <string name="welcome_screen_info_1">TURVALLINEN - YKSITYINEN - SALATTU</string>
+    <string name="welcome_screen_info_1">Sijainnin jakaminen, joka kunnioittaa yksityisyyttäsi</string>
     <string name="welcome_screen_button_join">Liity</string>
     <string name="welcome_account_edit_profile">Täydennä profiilisi</string>
     <string name="recover_account_screen_error">Tilin palautusta ei voitu ladata</string>
@@ -967,6 +967,7 @@
     <string name="group_details_add_member_admin_only_info">Vain ryhmän ylläpitäjä voi lisätä uusia jäseniä</string>
     <string name="group_members_status_location_hidden">Vain likimääräinen sijainti</string>
     <string name="button_edit">Muokkaa</string>
+    <string name="button_manage">Hallitse</string>
     <string name="plans_banner_inline_privacy_zones">Luo lisää yksityisyysalueita ja pidä sijaintisi hallinnassa!</string>
     <string name="paywall_feature_privacy_zones_group">Yksityisyysalueet</string>
     <string name="paywall_feature_summary_privacy_zones">Yksityisyysalueet</string>

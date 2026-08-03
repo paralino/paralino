@@ -5,7 +5,7 @@ import app.paralino.core.app_rating.AppRatingManager
 import app.paralino.core.app_rating.AppRatingSource
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.location.LocationCacheRepository
-import app.paralino.core.domain.location.MemberDeviceStatusProcessor
+import app.paralino.core.domain.location.StopSharingLocationUseCase
 import app.paralino.core.domain.user.DeactivatePersonalDeviceUseCase
 import app.paralino.core.domain.user.DeletePersonalDeviceUseCase
 import app.paralino.core.domain.user.PersonalSpaceRefreshUseCase
@@ -35,9 +35,7 @@ import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.provider.MeasurementSystemType
 import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.LocationSharingManager
-import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.location.IGeofenceManager
-import app.paralino.core.repo.places.PlaceActivityDataSource
 import app.paralino.core.repo.places.PlacesRepository
 import app.paralino.core.repo.user.UserPersonalSpaceLocalDataSource
 import app.paralino.core.repo.user.UserRepository
@@ -72,13 +70,10 @@ import kotlin.time.Duration.Companion.seconds
 class PersonalSpaceViewModel(
     private val userRepo: UserRepository,
     private val personalSpaceLocal: UserPersonalSpaceLocalDataSource,
-    private val remoteConfigRepo: RemoteConfigRepository,
     private val deletePersonalDevice: DeletePersonalDeviceUseCase,
     private val deactivatePersonalDevice: DeactivatePersonalDeviceUseCase,
     private val personalSpaceRefreshUseCase: PersonalSpaceRefreshUseCase,
-    private val deviceStatusProcessor: MemberDeviceStatusProcessor,
     private val sharingManager: LocationSharingManager,
-    private val placeActivityRepo: PlaceActivityDataSource,
     private val placesRepo: PlacesRepository,
     private val valueFormatter: IValueFormatter,
     val deviceApiProvider: IDeviceApiProvider,
@@ -86,6 +81,7 @@ class PersonalSpaceViewModel(
     private val appRatingManager: AppRatingManager,
     private val geofenceManager: IGeofenceManager,
     private val locationCacheRepository: LocationCacheRepository,
+    private val stopSharingUseCase: StopSharingLocationUseCase,
 ) : CoreViewModel() {
 
     private val memberLocationContextMapper = MemberLocationContextMapper(
@@ -238,7 +234,7 @@ class PersonalSpaceViewModel(
                     sharingStatus = sharingState,
                     devicesLimit = devicesLimit,
                     placesFeatureItems = featureItemsPlaces,
-                    shouldShowPlanBanner = !userPlans.highestValidPlanConfig.planTypeEnum.isPremium,
+                    shouldShowPlanBanner = !userPlans.highestValidPlanConfig.isPremium,
                     arePlacesOverLimit = personalSpaceData.arePlacesOverLimits(),
                     isSpaceOverLimit = personalSpaceData.isSpaceOverLimits(),
                     errors = errors,
@@ -619,16 +615,7 @@ class PersonalSpaceViewModel(
 
     fun stopSharing() {
         coroutineScope.launch {
-            sharingManager.stopSharing(
-                groupId = UserGroup.groupPersonalDevicesId.asGroupOrSpaceId(),
-                deleteContract = false
-            )
-            placeActivityRepo.clearForGroup(groupId = UserGroup.groupPersonalDevicesId.asGroupOrSpaceId())
-            try {
-                deviceStatusProcessor.pushDeviceStatus(groupId = UserGroup.groupPersonalDevicesId.asGroupOrSpaceId())
-            } catch (e: Exception) {
-                logg.w("Error while updating device status", e)
-            }
+            stopSharingUseCase.stopSharing(groupOrSpaceId = UserGroup.groupPersonalDevicesId.asGroupOrSpaceId())
         }
     }
 } 

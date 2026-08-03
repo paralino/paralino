@@ -289,7 +289,7 @@ class PaywallViewModel(
                         val selectedPlan = uiState.value.selectedPlan
                         if (selectedPlan == null) {
                             messageDispatcher.showSnackbar(text = MR.strings.paywall_select_plan_label.localizedString())
-                        } else if (selectedPlan.type.isPremium) {
+                        } else if (selectedPlan.config.isPremium) {
                             val activePlan = uiState.value.currentPlan
                             if (uiState.value.hasActivePlanOnAnotherPlatform && activePlan != null) {
                                 showPlanActiveOnAnotherPlatformDialog(
@@ -362,7 +362,7 @@ class PaywallViewModel(
         config: ConfigData
     ): PaywallScreenState {
 
-        val freePlanConfig = plans.nonExpiredPlans.firstOrNull { !it.config.planTypeEnum.isPremium }
+        val freePlanConfig = plans.nonExpiredPlans.firstOrNull { !it.config.isPremium }
             ?.config
             ?: config.defaultFreePlanConfig()
 
@@ -481,7 +481,7 @@ class PaywallViewModel(
         }
 
         val locationHistoryMessage = let {
-            val maxPlan = uiPlans.maxByOrNull { it.config.planTypeEnum.order }?.config
+            val maxPlan = uiPlans.maxByOrNull { it.config.planOrder }?.config
             if (maxPlan != null && maxPlan.hasUnlimitedPersonalHistory) {
                 MR.strings.paywall_header_feature_history_unlimited.localizedString(maxPlan.adjustedPlanName)
             } else {
@@ -648,7 +648,7 @@ class PaywallViewModel(
             ?.isSelected
         // after that check what user currently has as billing period
             ?: plans.highestValidPlan
-                ?.takeIf { it.plan.planTypeEnum.isPremium }
+                ?.takeIf { it.config.isPremium }
                 ?.takeIf { it.config.planTypeEnum == planType }
                 ?.plan?.billingPeriod
                 ?.let { it == period }
@@ -666,24 +666,24 @@ class PaywallViewModel(
         if (currentlySelected != null) {
             return currentlySelected.isSelected
         } else if (sourceType.shouldPreselectPlan) {
-            if (plans.highestValidPlanConfig.planTypeEnum.isPremium) {
+            if (plans.highestValidPlanConfig.isPremium) {
                 return plans.highestValidPlanConfig.planTypeEnum == planType
             } else {
                 // if user does not have a premium plan, pre-select lowest premium tier
                 val premiumPlans = config.listedPlanConfigs()
                     .filter { it.isActive }
-                    .filter { it.planTypeEnum.isPremium }
+                    .filter { it.isPremium }
 
 
                 val defaultPlan = when (sourceType) {
                     BillingScreenSourceType.UPGRADE_DEFAULT,
                     BillingScreenSourceType.UPGRADE_BILLING_PROMO,
                     BillingScreenSourceType.UPGRADE_MAP_SHEET -> {
-                        premiumPlans.minByOrNull { it.planTypeEnum.order }
+                        premiumPlans.minByOrNull { it.planOrder }
                     }
 
                     else -> {
-                        premiumPlans.firstOrNull { it.planTypeEnum == config.defaultPremiumPlan }
+                        premiumPlans.firstOrNull { it.planType == config.defaultPremiumPlan }
                     }
                 }
 
@@ -691,7 +691,7 @@ class PaywallViewModel(
                     return defaultPlan.planTypeEnum == planType
                 } else {
                     return premiumPlans
-                        .maxByOrNull { it.planTypeEnum.order }
+                        .maxByOrNull { it.planOrder }
                         ?.planTypeEnum == planType
                 }
             }

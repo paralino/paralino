@@ -189,7 +189,7 @@ class MemberActionHandler(
                                         locationRequest = LocationRequestItemState(
                                             isLoading = true,
                                             isWaitingForUser = false,
-                                            isPremiumFeatureEnabled = readyState.groupPlanConfig.planTypeEnum.isPremium
+                                            isPremiumFeatureEnabled = readyState.groupPlanConfig.hasLocationRequests
                                         )
                                     )
                                 )
@@ -223,7 +223,7 @@ class MemberActionHandler(
                                             hasDeviceUnreachableError = hasDeviceUnreachableError,
                                             hasDeviceMaybeUnreachableError = isDeviceMaybeUnreachable,
                                             lastLocationRequest = nowUTC(),
-                                            isPremiumFeatureEnabled = readyState.groupPlanConfig.planTypeEnum.isPremium
+                                            isPremiumFeatureEnabled = readyState.groupPlanConfig.hasLocationRequests
                                         )
                                     )
                                 )

@@ -764,7 +764,7 @@
     <string name="placeholder_unit_feet">%s ft</string>
     <string name="placeholder_unit_speed_kmph">%s km/h</string>
     <string name="placeholder_unit_speed_mph">%s mph</string>
-    <string name="welcome_screen_info_1">BIZTONSÁGOS - MAGÁN - TITKOSÍTOTT</string>
+    <string name="welcome_screen_info_1">Helymegosztás, amely tiszteletben tartja a magánéletedet</string>
     <string name="welcome_screen_button_join">Csatlakozás</string>
     <string name="welcome_account_edit_profile">Profilod kitöltése</string>
     <string name="recover_account_screen_error">Nem sikerült betölteni a fiók helyreállítást</string>
@@ -967,6 +967,7 @@
     <string name="group_details_add_member_admin_only_info">Csak a csoport adminisztrátora adhat hozzá új tagokat</string>
     <string name="group_members_status_location_hidden">Csak közelítő helyszín</string>
     <string name="button_edit">Szerkesztés</string>
+    <string name="button_manage">Kezelés</string>
     <string name="plans_banner_inline_privacy_zones">Hozzon létre több adatvédelmi zónát, és tartsa kézben a tartózkodási helyét!</string>
     <string name="paywall_feature_privacy_zones_group">Adatvédelmi zónák</string>
     <string name="paywall_feature_summary_privacy_zones">Adatvédelmi zónák</string>

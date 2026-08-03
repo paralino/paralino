@@ -20,9 +20,21 @@ data class ConfigData(
     val newSoftVersionIOS: Long = 0,
     val androidAppUrl: String? = null,
     val emailEnabled: Boolean = false,
+    val personalSpaceOnboardingMode: PersonalSpaceOnboardingMode,
     val freePlanPromoBillingId: String? = null,
-    val defaultPremiumPlan: PlanType = PlanType.PRO,
+    val defaultPremiumPlan: String,
     val plans: List<PlanConfig> = emptyList(),
+    /**
+     * _Inclusive_
+     * Declares from how many active locations, clients should use bulk api
+     *
+     * 0 or less -> disabled,
+     * 1 -> enabled always,
+     * 2 or more -> only for 2 or more (inclusive)
+     *
+     * i.e. if value is 2, clients should use bulk api if actively updating 2 or more locations
+     */
+    val bulkLocationApiThreshold: Int = 0,
 ) {
 
     val isEmailEnabled: Boolean get() = AppBuildConfig.instance.isDevMode || emailEnabled
@@ -43,20 +55,24 @@ data class ConfigData(
                 newSoftVersionIOS = map.get("newSoftVersionIOS")?.toLongOrNull() ?: 0,
                 androidAppUrl = map.get("androidAppUrl")?.takeIf { it.isNotBlank() },
                 emailEnabled = map.get("emailEnabled")?.toBooleanStrictOrNull() ?: false,
+                personalSpaceOnboardingMode = map.get("personalSpaceOnboardingMode")?.let {
+                    PersonalSpaceOnboardingMode.fromKey(key = it)
+                } ?: PersonalSpaceOnboardingMode.FALLBACK,
                 freePlanPromoBillingId = map.get("freePlanPromoBillingId")?.takeIf { it.isNotBlank() },
                 defaultPremiumPlan = map.get("defaultPremiumPlan")
                     ?.let {
-                        PlanType.fromKey(key = it).takeIf { it !is PlanType.UNKNOWN }
+                        PlanType.fromKey(key = it).takeIf { it !is PlanType.UNKNOWN }?.key
                     }
-                    ?: PlanType.PRO,
+                    ?: PlanType.PRO.key,
                 plans = map.get("plans")?.let {
                     try {
-                        BaseRemoteModule.formatter.decodeFromString(it)
+                        BaseRemoteModule.formatter.decodeFromString<List<PlanConfig>?>(it)
                     } catch (e: Exception) {
                         logg.e("Error parsing plans from remote: ${e.message}")
                         emptyList()
                     }
                 } ?: emptyList(),
+                bulkLocationApiThreshold = map.get("bulkLocationApiThreshold")?.toIntOrNull() ?: 0,
             )
         }
     }
@@ -71,14 +87,14 @@ data class ConfigData(
 
     fun defaultFreePlanConfig(): PlanConfig {
         return plans
-            .filter { !it.planTypeEnum.isPremium && it.isActive }
-            .maxByOrNull { it.planTypeEnum.order }
+            .filter { !it.isPremium && it.isActive }
+            .maxByOrNull { it.planOrder }
             ?: PlanConfig.default
     }
 
     fun listedPlanConfigs(): List<PlanConfig> {
         val freePlan = defaultFreePlanConfig()
-        return listOf(freePlan) + plans.filter { it.planTypeEnum.isPremium && it.isActive }
+        return listOf(freePlan) + plans.filter { it.isPremium && it.isActive }
     }
 }
 
@@ -107,3 +123,18 @@ data class SubscriptionInfoNoticeValue(
     val plans: List<String>,
     val periods: List<String>,
 )
+
+@Serializable
+enum class PersonalSpaceOnboardingMode(
+    val key: String,
+) {
+    FULL(key = "full"),
+    FALLBACK(key = "fallback"),
+    DISABLED(key = "disabled");
+
+    companion object {
+        fun fromKey(key: String): PersonalSpaceOnboardingMode {
+            return entries.firstOrNull { it.key == key } ?: FALLBACK
+        }
+    }
+}

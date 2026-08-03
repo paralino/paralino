@@ -764,7 +764,7 @@
     <string name="placeholder_unit_feet">%s ft</string>
     <string name="placeholder_unit_speed_kmph">%s km/h</string>
     <string name="placeholder_unit_speed_mph">%s mph</string>
-    <string name="welcome_screen_info_1">SECURIZAT - PRIVAT - CRIPTAT</string>
+    <string name="welcome_screen_info_1">Partajare a locației care îți respectă confidențialitatea</string>
     <string name="welcome_screen_button_join">Alătură-te</string>
     <string name="welcome_account_edit_profile">Completează-ți profilul</string>
     <string name="recover_account_screen_error">Imposibil de încărcat recuperarea contului</string>
@@ -969,6 +969,7 @@
     <string name="plans_banner_inline_privacy_zones">Creează mai multe zone de confidențialitate și păstrează controlul asupra locației tale!</string>
     <string name="paywall_feature_summary_privacy_zones">Zone de confidențialitate</string>
     <string name="button_edit">Editează</string>
+    <string name="button_manage">Gestionează</string>
     <string name="place_detail_change_location">Schimbă locația</string>
     <string name="privacy_zone_created_notification">Zonă nouă de confidențialitate %1$s creată în grupul %2$s</string>
     <string name="privacy_zone_created_notification_default">Zonă nouă de confidențialitate creată</string>

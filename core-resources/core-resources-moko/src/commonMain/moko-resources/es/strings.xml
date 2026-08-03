@@ -764,7 +764,7 @@
     <string name="placeholder_unit_feet">%s ft</string>
     <string name="placeholder_unit_speed_kmph">%s km/h</string>
     <string name="placeholder_unit_speed_mph">%s mph</string>
-    <string name="welcome_screen_info_1">SEGURO - PRIVADO - ENCRIPTADO</string>
+    <string name="welcome_screen_info_1">Compartir ubicación que respeta tu privacidad</string>
     <string name="welcome_screen_button_join">Unirse</string>
     <string name="welcome_account_edit_profile">Completa tu perfil</string>
     <string name="recover_account_screen_error">No se puede cargar la recuperación de cuenta</string>
@@ -967,6 +967,7 @@
     <string name="group_details_add_member_admin_only_info">Solo el administrador del grupo puede agregar nuevos miembros</string>
     <string name="group_members_status_location_hidden">Solo ubicación aproximada</string>
     <string name="button_edit">Editar</string>
+    <string name="button_manage">Gestionar</string>
     <string name="plans_banner_inline_privacy_zones">¡Cree más zonas de privacidad y mantenga el control de su ubicación!</string>
     <string name="paywall_feature_privacy_zones_group">Zonas de privacidad</string>
     <string name="paywall_feature_summary_privacy_zones">Zonas de privacidad</string>

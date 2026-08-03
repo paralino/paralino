@@ -69,6 +69,7 @@ data class FeatureTableState(
                                 FeatureTableItemValue.Count(
                                     content = it.config.groupsLimit.toString(),
                                     planType = it.type,
+                                    isPremium = it.config.isPremium,
                                     highlightMode = if (it.isSelected) {
                                         FeatureTableItemHighlightMode.FULL
                                     } else {
@@ -88,6 +89,7 @@ data class FeatureTableState(
                             FeatureTableItemValue.Count(
                                 content = it.config.membersLimit.toString(),
                                 planType = it.type,
+                                isPremium = it.config.isPremium,
                                 highlightMode = if (it.isSelected) {
                                     FeatureTableItemHighlightMode.FULL
                                 } else {
@@ -106,6 +108,7 @@ data class FeatureTableState(
                             FeatureTableItemValue.Count(
                                 content = it.config.devicesLimit.toString(),
                                 planType = it.type,
+                                isPremium = it.config.isPremium,
                                 highlightMode = if (it.isSelected) {
                                     FeatureTableItemHighlightMode.FULL
                                 } else {
@@ -130,12 +133,14 @@ data class FeatureTableState(
                                 FeatureTableItemValue.Count(
                                     content = it.config.placesLimit.toString(),
                                     planType = it.type,
+                                    isPremium = it.config.isPremium,
                                     highlightMode = highlightMode
                                 )
                             } else {
                                 FeatureTableItemValue.Text(
                                     content = MR.strings.paywall_feature_value_unlimited.localizedString(),
                                     planType = it.type,
+                                    isPremium = it.config.isPremium,
                                     highlightMode = highlightMode
                                 )
                             }
@@ -157,12 +162,14 @@ data class FeatureTableState(
                                 FeatureTableItemValue.Count(
                                     content = it.config.privacyZonesLimit.toString(),
                                     planType = it.type,
+                                    isPremium = it.config.isPremium,
                                     highlightMode = highlightMode
                                 )
                             } else {
                                 FeatureTableItemValue.Text(
                                     content = MR.strings.paywall_feature_value_unlimited.localizedString(),
                                     planType = it.type,
+                                    isPremium = it.config.isPremium,
                                     highlightMode = highlightMode
                                 )
                             }
@@ -192,6 +199,7 @@ data class FeatureTableState(
                                 FeatureTableItemValue.Text(
                                     content = MR.strings.paywall_feature_value_unlimited.localizedString(),
                                     planType = it.type,
+                                    isPremium = it.config.isPremium,
                                     highlightMode = highlightMode
                                 )
                             } else {
@@ -201,6 +209,7 @@ data class FeatureTableState(
                                         it.config.historyDaysLimit
                                     ),
                                     planType = it.type,
+                                    isPremium = it.config.isPremium,
                                     highlightMode = highlightMode
                                 )
                             }
@@ -239,6 +248,7 @@ data class FeatureTableState(
                                     FeatureTableItemValue.Text(
                                         content = MR.strings.paywall_feature_value_unlimited.localizedString(),
                                         planType = it.type,
+                                        isPremium = it.config.isPremium,
                                         highlightMode = highlightMode
                                     )
                                 }  else {
@@ -248,6 +258,7 @@ data class FeatureTableState(
                                             it.config.personalHistoryDaysLimit
                                         ),
                                         planType = it.type,
+                                        isPremium = it.config.isPremium,
                                         highlightMode = highlightMode
                                     )
                                 }
@@ -263,6 +274,7 @@ data class FeatureTableState(
                                 FeatureTableItemValue.Count(
                                     content = it.config.personalDevicesLimit.toString(),
                                     planType = it.type,
+                                    isPremium = it.config.isPremium,
                                     highlightMode = if (it.isSelected) {
                                         FeatureTableItemHighlightMode.FULL
                                     } else {
@@ -287,12 +299,14 @@ data class FeatureTableState(
                                     FeatureTableItemValue.Count(
                                         content = it.config.personalPlacesLimit.toString(),
                                         planType = it.type,
+                                        isPremium = it.config.isPremium,
                                         highlightMode = highlightMode
                                     )
                                 } else {
                                     FeatureTableItemValue.Text(
                                         content = MR.strings.paywall_feature_value_unlimited.localizedString(),
                                         planType = it.type,
+                                        isPremium = it.config.isPremium,
                                         highlightMode = highlightMode
                                     )
                                 }
@@ -317,7 +331,7 @@ data class FeatureTableState(
                         visibilityMode = FeatureTableItemVisibilityMode.VISIBLE_EXPANDED,
                         values = plans.map {
                             FeatureTableItemValue.Emoji(
-                                content = if (it.type.isPremium) "✅" else "❌",
+                                content = if (it.config.hasLocationRequests) "✅" else "❌",
                                 planType = it.type,
                                 highlightMode = if (it.isSelected) {
                                     FeatureTableItemHighlightMode.FULL
@@ -335,7 +349,7 @@ data class FeatureTableState(
                         visibilityMode = FeatureTableItemVisibilityMode.VISIBLE_EXPANDED,
                         values = plans.map {
                             FeatureTableItemValue.Emoji(
-                                content = if (it.type.isSilverOrMore) "✅" else "❌",
+                                content = if (it.config.hasBestLocationPerformance) "✅" else "❌",
                                 planType = it.type,
                                 highlightMode = if (it.isSelected) {
                                     FeatureTableItemHighlightMode.FULL
@@ -353,7 +367,7 @@ data class FeatureTableState(
                         visibilityMode = FeatureTableItemVisibilityMode.VISIBLE_EXPANDED,
                         values = plans.map {
                             FeatureTableItemValue.Emoji(
-                                content = "✅",
+                                content = if (it.config.hasLowBatteryAlerts) "✅" else "❌",
                                 planType = it.type,
                                 highlightMode = if (it.isSelected) {
                                     FeatureTableItemHighlightMode.FULL
@@ -371,7 +385,7 @@ data class FeatureTableState(
                         visibilityMode = FeatureTableItemVisibilityMode.VISIBLE_EXPANDED,
                         values = plans.map {
                             FeatureTableItemValue.Emoji(
-                                content = if (it.type.isSilverOrMore) "✅" else "❌",
+                                content = if (it.config.hasSharingAlerts) "✅" else "❌",
                                 planType = it.type,
                                 highlightMode = if (isGroupPlanOnly) {
                                     FeatureTableItemHighlightMode.BOTTOM
@@ -410,7 +424,7 @@ data class FeatureTableState(
                             visibilityMode = FeatureTableItemVisibilityMode.VISIBLE_EXPANDED,
                             values = plans.map {
                                 FeatureTableItemValue.Emoji(
-                                    content = if (it.type.isPremium) "✅" else "❌",
+                                    content = if (it.config.isPremium) "✅" else "❌",
                                     planType = it.type,
                                     highlightMode = if (it.isSelected) {
                                         FeatureTableItemHighlightMode.BOTTOM
@@ -581,7 +595,7 @@ data class FeatureTableState(
                         isInSection = false,
                         values = plans.map {
                             FeatureTableItemValue.Emoji(
-                                content = if (it.type.isPremium) "✅" else "❌",
+                                content = if (it.config.isPremium) "✅" else "❌",
                                 planType = it.type,
                                 highlightMode = if (it.isSelected) {
                                     FeatureTableItemHighlightMode.BOTTOM
@@ -642,7 +656,6 @@ sealed interface FeatureTableItemState {
 sealed interface FeatureTableItemValue {
     val planType: PlanType
     val highlightMode: FeatureTableItemHighlightMode
-    val isPremium: Boolean get() = planType.isPremium
 
     data class Title(
         val content: String,
@@ -653,6 +666,7 @@ sealed interface FeatureTableItemValue {
     data class Count(
         val content: String,
         override val planType: PlanType,
+        val isPremium: Boolean,
         override val highlightMode: FeatureTableItemHighlightMode,
     ) : FeatureTableItemValue
 
@@ -672,6 +686,7 @@ sealed interface FeatureTableItemValue {
     data class Text(
         val content: String,
         override val planType: PlanType,
+        val isPremium: Boolean,
         override val highlightMode: FeatureTableItemHighlightMode,
     ) : FeatureTableItemValue
 

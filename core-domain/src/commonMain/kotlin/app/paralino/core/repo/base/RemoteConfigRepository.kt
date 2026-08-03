@@ -9,6 +9,8 @@ import app.paralino.core.models.base.DeviceType
 import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.repo.api.IFunctionsApi
 import app.paralino.core.repo.api.ServerFunction
+import app.paralino.core.utils.extensions.isOlderThan
+import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -17,7 +19,9 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.jsonObject
+import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Instant
 
 class RemoteConfigRepository(
     private val database: MainDatabaseHelper,
@@ -27,6 +31,7 @@ class RemoteConfigRepository(
 ) : BaseRepository() {
 
     private val cachedConfigState = MutableStateFlow<ConfigData?>(null)
+    private var cacheLoadedAt: Instant? = null
 
     fun listenForNewAppVersionEvents(): Flow<AppUpdateType> {
         return getConfigLocally()
@@ -55,7 +60,7 @@ class RemoteConfigRepository(
     fun getConfigLocally(): Flow<ConfigData> {
         return database.remoteConfigDao.getAll()
             .map { ConfigData.init(it) }
-            .onEach { newValue -> cachedConfigState.update { newValue } }
+            .onEach { newConfig -> updateCache(newConfig) }
             .distinctUntilChanged()
     }
 
@@ -72,10 +77,18 @@ class RemoteConfigRepository(
         }
     }
 
+    suspend fun getCachedOrLocalConfigOnce(): ConfigData {
+        return cachedConfigState.value
+            ?.takeIf { cacheLoadedAt?.isOlderThan(3.hours) == false }
+            ?: ConfigData.init(database.remoteConfigDao.getAllOnce())
+                .also { updateCache(it) }
+    }
+
     suspend fun getConfigOnce(): ConfigData {
         return cachedConfigState.value
             ?: getAndUpdateConfigFromRemote()
             ?: ConfigData.init(database.remoteConfigDao.getAllOnce())
+                .also { updateCache(it) }
     }
 
     private suspend fun getAndUpdateConfigFromRemote(): ConfigData? {
@@ -101,11 +114,16 @@ class RemoteConfigRepository(
         }
 
         val newConfig = ConfigData.init(newConfigValues)
-        cachedConfigState.update { newConfig }
+        updateCache(newConfig)
 
         database.remoteConfigDao.recreateConfig(newConfigValues)
 
         return newConfig
+    }
+
+    private fun updateCache(newConfig: ConfigData) {
+        cacheLoadedAt = nowUTC()
+        cachedConfigState.update { newConfig }
     }
 
     fun getNewAppVersionUpdateType(): AppUpdateType {

@@ -7,6 +7,7 @@ import app.paralino.core.domain.group.GroupPreRefreshUseCase
 import app.paralino.core.domain.location.ClearUserLocationUseCase
 import app.paralino.core.domain.location.LocationCacheRepository
 import app.paralino.core.domain.location.LocationRequestUseCase
+import app.paralino.core.domain.location.StopSharingLocationUseCase
 import app.paralino.core.domain.location.history.DeleteLocationHistoryEntryUseCase
 import app.paralino.core.domain.location.history.GetLocationHistoryUseCase
 import app.paralino.core.domain.location.history.RefreshLocationHistoryUseCase
@@ -17,7 +18,6 @@ import app.paralino.core.logg
 import app.paralino.core.models.Resource
 import app.paralino.core.models.base.GroupWithMembersOrUserSpace
 import app.paralino.core.models.base.ImageModel
-import app.paralino.core.models.base.PlanConfig
 import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.models.data
 import app.paralino.core.models.group.UserGroup
@@ -33,7 +33,6 @@ import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.provider.RealtimeSubscriptionManager
 import app.paralino.core.repo.LocationSharingManager
-import app.paralino.core.repo.base.AppConfigRepository
 import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.location.IGeofenceManager
@@ -69,7 +68,6 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.days
-import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.Instant
 
@@ -95,7 +93,7 @@ class MapHomeViewModel constructor(
     val deviceApiProvider: IDeviceApiProvider,
     private val valueFormatter: IValueFormatter,
     private val remoteConfig: RemoteConfigRepository,
-    private val appConfigRepo: AppConfigRepository,
+    private val stopSharingLocationUseCase: StopSharingLocationUseCase,
     private val appRatingManager: AppRatingManager,
     private val premiumStatusManager: PremiumStatusManager
 ) : CoreViewModel() {
@@ -108,6 +106,7 @@ class MapHomeViewModel constructor(
             selectedGroupOwnerId = null,
             selectedGroupImage = null,
             isPersonalSpace = appPrefs.isPersonalSpaceSelected,
+            isNewAppUpdateAvailable = remoteConfig.getNewAppVersionUpdateType().isNewVersionAvailable,
             currentUserImage = userRepository.localUser.value.data?.data?.userImage
                 ?: ImageModel.emoji(Emojis.robot),
             androidMapSDKProvider = premiumStatusManager.defaultMapProvider()
@@ -201,10 +200,12 @@ class MapHomeViewModel constructor(
         memberActionHandler = memberActionHandler,
         locationFocusManager = locationFocusManager,
         groupEmptyStateManager = groupsEmptyStateManager,
+        deviceApiProvider = deviceApiProvider,
         uiState = uiState,
         eventChannel = _eventChannel,
         appPrefs = appPrefs,
         groupLocal = groupRepo,
+        stopSharingLocationUseCase = stopSharingLocationUseCase,
         messageDispatcher = messageDispatcher,
         uiFocusedStatus = uiFocusedStatus,
         updateUiState = { state -> _uiState.value = state },
@@ -260,6 +261,7 @@ class MapHomeViewModel constructor(
                             appPrefs = appPrefs,
                             remoteConfig = remoteConfig,
                             geofenceManager = geofenceManager,
+                            deviceApiProvider = deviceApiProvider,
                             coroutineScope = coroutineScope,
                             messageDispatcher = messageDispatcher
                         )
@@ -341,7 +343,7 @@ class MapHomeViewModel constructor(
         ) { groupId, isAppFocused, isUiFocused, mapFocusType ->
             MapScreenLifecycleData(
                 groupId = groupId,
-                planConfig = uiState.value.asReady()?.groupPlanConfig ?: PlanConfig.default,
+                planConfig = uiState.value.asReady()?.groupPlanConfig ?: remoteConfig.getConfigOnce().defaultFreePlanConfig(),
                 isAppFocused = isAppFocused,
                 isUiFocused = isUiFocused,
                 mapFocusType = mapFocusType
@@ -395,6 +397,7 @@ class MapHomeViewModel constructor(
                             isCurrentUserOwnerOfSelectedGroup = false,
                             selectedGroupImage = null,
                             isPersonalSpace = appPrefs.isPersonalSpaceSelected,
+                            isNewAppUpdateAvailable = remoteConfig.getNewAppVersionUpdateType().isNewVersionAvailable,
                             currentUserImage = userData?.userImage ?: ImageModel.emoji(Emojis.robot),
                             androidMapSDKProvider = mapProvider,
                             isSatelliteModeEnabled = false
@@ -431,6 +434,7 @@ class MapHomeViewModel constructor(
                     selectedGroupOwnerId = _uiState.value.selectedGroupOwnerId,
                     isCurrentUserOwnerOfSelectedGroup = _uiState.value.isCurrentUserOwnerOfSelectedGroup,
                     isPersonalSpace = true,
+                    isNewAppUpdateAvailable = remoteConfig.getNewAppVersionUpdateType().isNewVersionAvailable,
                     currentUserImage = ImageModel.emoji(Emojis.robot),
                     androidMapSDKProvider = mapProvider,
                     isSatelliteModeEnabled = false
@@ -476,6 +480,7 @@ class MapHomeViewModel constructor(
                     selectedGroupOwnerId = null,
                     isCurrentUserOwnerOfSelectedGroup = false,
                     isPersonalSpace = false,
+                    isNewAppUpdateAvailable = remoteConfig.getNewAppVersionUpdateType().isNewVersionAvailable,
                     currentUserImage = ImageModel.emoji(Emojis.robot),
                     androidMapSDKProvider = mapProvider,
                     isSatelliteModeEnabled = false
@@ -527,7 +532,7 @@ class MapHomeViewModel constructor(
     private fun tryShowFreePlanPromoPaywall(state: MapHomeScreenState.Ready) {
         if (state.isPersonalSpace) return
         if (!state.isCurrentUserOwnerOfSelectedGroup) return
-        if (state.groupPlanConfig.planTypeEnum.isPremium) return
+        if (state.groupPlanConfig.isPremium) return
 
         val appReadyTime = appPrefs.detectedAppReadyTime
         if (appReadyTime == null || !appReadyTime.isOlderThan(2.days)) return

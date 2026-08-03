@@ -764,7 +764,7 @@
     <string name="placeholder_unit_feet">%s фт</string>
     <string name="placeholder_unit_speed_kmph">%s км/ч</string>
     <string name="placeholder_unit_speed_mph">%s миља на час</string>
-    <string name="welcome_screen_info_1">СИГУРНО - ПРИВАТНО - ШИФРОВАНО</string>
+    <string name="welcome_screen_info_1">Дељење локације које поштује вашу приватност</string>
     <string name="welcome_screen_button_join">Придружите се</string>
     <string name="welcome_account_edit_profile">Попуните свој профил</string>
     <string name="recover_account_screen_error">Није могуће учитати опоравак налога</string>
@@ -1003,6 +1003,7 @@
     <string name="privacy_zones_empty_state_map_label_your_location">Ваша локација</string>
     <string name="privacy_zones_empty_state_map_label_others_view">Шта други виде</string>
     <string name="button_edit">Уреди</string>
+    <string name="button_manage">Управљај</string>
     <string name="plans_banner_inline_privacy_zones">Креирајте више зона приватности и задржите контролу над својом локацијом!</string>
     <string name="paywall_feature_privacy_zones_group">Зоне приватности</string>
     <string name="paywall_feature_summary_privacy_zones">Зоне приватности</string>

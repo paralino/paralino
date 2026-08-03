@@ -25,6 +25,8 @@ enum class ServerFunction constructor(
     LOCATION_CREATE_GROUP(method = "POST", path = "/location/group"),
     LOCATION_CREATE_PERSONAL(method = "POST", path = "/location/personal"),
 
+    LOCATION_PATCH(method = "PATCH", path = "/locations", functionId = "location-upload"),
+
     LOCATION_DELETE_GROUP(method = "DELETE", path = "/location/group"),
     LOCATION_DELETE_PERSONAL(method = "DELETE", path = "/location/personal"),
 

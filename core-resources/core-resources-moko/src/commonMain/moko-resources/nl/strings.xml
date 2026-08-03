@@ -764,7 +764,7 @@
     <string name="placeholder_unit_feet">%s ft</string>
     <string name="placeholder_unit_speed_kmph">%s km/h</string>
     <string name="placeholder_unit_speed_mph">%s mph</string>
-    <string name="welcome_screen_info_1">VEILIG - PRIVÉ - ENCRYPTED</string>
+    <string name="welcome_screen_info_1">Locatiedeling die je privacy respecteert</string>
     <string name="welcome_screen_button_join">Deelnemen</string>
     <string name="welcome_account_edit_profile">Voltooi uw profiel</string>
     <string name="recover_account_screen_error">Kan accountherstel niet laden</string>
@@ -1008,6 +1008,7 @@
     <string name="privacy_zones_create_plan_limit_info">Om meer privacyszones te maken, moet u uw abonnement upgraden.</string>
     <string name="plan_limit_overLimit_privacy_zones_banner_title">**Privacyszones zijn beperkt!**\nHet toegestane aantal privacyszones is overschreden.</string>
     <string name="button_edit">Bewerken</string>
+    <string name="button_manage">Beheren</string>
     <string name="plans_banner_inline_privacy_zones">Maak meer privacyezones en behoud de controle over uw locatie!</string>
     <string name="paywall_feature_privacy_zones_group">Privacyezones</string>
     <string name="paywall_feature_summary_privacy_zones">Privacyezones</string>

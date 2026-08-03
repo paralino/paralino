@@ -55,6 +55,7 @@ import app.paralino.core.ui.components.SettingsActionItem
 import app.paralino.core.ui.components.SmallActionButton
 import app.paralino.core.ui.components.dialogs.LoadingDialog
 import app.paralino.core.ui.components.dialogs.Show
+import app.paralino.core.ui.groups.components.ComponentWithDurationExpirationBanner
 import app.paralino.core.ui.places.PlaceListItem
 import app.paralino.core.ui.theme.AppColors
 import dev.icerock.moko.resources.compose.stringResource
@@ -253,7 +254,7 @@ private fun PrivacyZoneDetailScreen(
 
         if (state.expirationStatus.status.isNotBlank()) {
             item(key = "expiration") {
-                PrivacyZoneExpirationBanner(
+                ComponentWithDurationExpirationBanner(
                     modifier = Modifier
                         .padding(horizontal = 20.dp)
                         .padding(vertical = 10.dp),

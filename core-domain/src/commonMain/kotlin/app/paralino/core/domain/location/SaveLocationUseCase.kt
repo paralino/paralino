@@ -1,29 +1,26 @@
 package app.paralino.core.domain.location
 
-import app.paralino.core.crypto.CryptoCore
-import app.paralino.core.crypto.GroupMemberSenderKey
-import app.paralino.core.crypto.PersonalSpaceDeviceKey
-import app.paralino.core.db.AppPrefs
 import app.paralino.core.db.MainDatabaseHelper
 import app.paralino.core.db.main.groups.MemberLocationEntityDataUpdate
 import app.paralino.core.db.main.user.UserDeviceEntityLocationDataUpdate
-import app.paralino.core.domain.crypto.group.GetMemberSenderKeyUseCase
-import app.paralino.core.domain.crypto.user.CryptoUserKeysLocalSource
 import app.paralino.core.domain.location.history.ILocationHistoryUploadEngine
 import app.paralino.core.logg
-import app.paralino.core.models.AppHost
 import app.paralino.core.models.base.BackendDatabaseType
-import app.paralino.core.models.location.LocationHistoryModel
 import app.paralino.core.models.location.MemberGroupIdForUpload
-import app.paralino.core.models.mappers.PendingLocationHistoryMapper
+import app.paralino.core.models.raw.GroupLocationPatchEntry
+import app.paralino.core.models.raw.LocationPatchEntry
+import app.paralino.core.models.raw.LocationPatchPayload
+import app.paralino.core.models.raw.LocationPatchResponse
 import app.paralino.core.models.raw.MemberLocationRaw
 import app.paralino.core.models.raw.UserDeviceLocationRaw
 import app.paralino.core.repo.api.IDocumentsApi
+import app.paralino.core.repo.api.IFunctionsApi
+import app.paralino.core.repo.api.ServerFunction
+import app.paralino.core.repo.api.runAndWait
 import app.paralino.core.repo.base.AppConfigRepository
-import app.paralino.core.utils.BaseRemoteModule
+import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.utils.exceptions.CryptoException
 import app.paralino.core.utils.exceptions.MissingCryptoKeyException
-import app.paralino.core.utils.exceptions.MissingMemberKeyException
 import kotlin.coroutines.cancellation.CancellationException
 import kotlin.time.Duration.Companion.minutes
 
@@ -31,176 +28,219 @@ class SaveLocationUseCase(
     private val database: MainDatabaseHelper,
     private val documentApi: IDocumentsApi,
     private val appConfig: AppConfigRepository,
-    private val cryptoCore: CryptoCore,
-    private val getMemberSenderKey: GetMemberSenderKeyUseCase,
-    private val userKeyRepo: CryptoUserKeysLocalSource,
-    private val historyMapper: PendingLocationHistoryMapper,
+    private val payloadFactory: LocationUploadPayloadFactory,
     private val locationHistoryUpload: ILocationHistoryUploadEngine,
-    private val appPrefs: AppPrefs
+    private val functionsApi: IFunctionsApi,
+    private val remoteConfig: RemoteConfigRepository
 ) {
+    suspend fun uploadAndSaveCurrentLocations(items: List<MemberGroupIdForUpload>) {
+        val threshold = remoteConfig.getCachedOrLocalConfigOnce().bulkLocationApiThreshold
+        if (threshold <= 0 || items.size < threshold) {
+            items.forEach { uploadAndSaveSingleEntity(it) }
+        } else {
+            uploadAndSaveLocationsBulk(items)
+        }
+    }
+
     @Throws(CryptoException::class, MissingCryptoKeyException::class, CancellationException::class)
     suspend fun uploadAndSaveCurrentLocation(data: MemberGroupIdForUpload) {
-        if (data.groupId.isPersonalSpace) {
-            uploadAndSavePersonalLocation(data = data)
-        } else {
-            uploadAndSaveGroupLocation(data = data)
+        val prepared = payloadFactory.prepare(data) ?: return
+        uploadViaDocumentApi(prepared)
+        triggerHistorySyncIfNeeded(listOf(prepared))
+    }
+
+    private suspend fun uploadAndSaveSingleEntity(data: MemberGroupIdForUpload) {
+        try {
+            uploadAndSaveCurrentLocation(data)
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            logg.w(
+                tag = "location_service",
+                message = "Error saving location for group ${data.groupId}",
+                t = e
+            )
         }
     }
 
-    @Throws(CryptoException::class, MissingCryptoKeyException::class, CancellationException::class)
-    private suspend fun uploadAndSavePersonalLocation(data: MemberGroupIdForUpload): UserDeviceLocationRaw? {
-        val deviceKey = userKeyRepo.getDeviceSenderKeyForLocationId(
-            locationId = data.locationId
-        )
-        if (deviceKey !is PersonalSpaceDeviceKey.Valid)
-            throw MissingMemberKeyException(groupId = data.groupId.id, memberId = appPrefs.userId, keyError = deviceKey::class.simpleName)
-
-        val locationPayload = getLocationPayload(
-            data = data,
-            key = deviceKey.key
-        )
-
-        val historyPayload = getLocationHistoryPayload(
-            data = data,
-            key = deviceKey.key
-        )
-
-        val payload = buildMap {
-            putAll(locationPayload)
-            put("locationHistory", historyPayload.first)
-        }.filter { it.value != null }
-
-        if (payload.isEmpty()) {
-            return null
+    private suspend fun uploadAndSaveLocationsBulk(items: List<MemberGroupIdForUpload>) {
+        val prepared = items.mapNotNull { item ->
+            try {
+                payloadFactory.prepare(item)
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                logg.w(
+                    tag = "location_service",
+                    message = "Error preparing bulk location for group ${item.groupId}",
+                    t = e
+                )
+                null
+            }
         }
 
-        val newData = documentApi.updateDocument(
-            databaseType = BackendDatabaseType.DATA,
-            collectionId = appConfig.resourceIds.collectionPersonalLocationsID,
-            docId = data.locationId,
-            data = payload
-        ).let { UserDeviceLocationRaw.from(it) }
+        try {
+            if (prepared.isEmpty()) {
+                return
+            }
 
-        savePersonalLocationLocally(newData)
+            val response = try {
+                functionsApi.runAndWait(
+                    function = ServerFunction.LOCATION_PATCH,
+                    data = prepared.toPatchPayload()
+                )
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                logg.w(
+                    tag = "location_service",
+                    message = "Bulk location upload failed (${e.message}), fallback to table api"
+                )
+                null
+            }
 
-        if ((historyPayload.first?.length ?: 0) >= 50_000 || historyPayload.second > 150) {
-            locationHistoryUpload.syncPendingEntriesInBackground(cacheTime = 2.minutes)
+            when {
+                response == null || response.isFail || response.statusCode >= 500 -> {
+                    // server did not process the patch - fallback to the document api for all items
+                    prepared.forEach { tryUploadViaDocumentApi(it) }
+                }
+
+                response.isSuccess -> {
+                    val result = try {
+                        response.response<LocationPatchResponse>().data
+                    } catch (e: Exception) {
+                        logg.e(tag = "location_service", message = "Malformed bulk location response", t = e)
+                        throw e
+                    }
+
+                    handleBulkResponse(result = result, prepared = prepared)
+                }
+
+                else -> {
+                    throw response.remoteException
+                }
+            }
+        } finally {
+            triggerHistorySyncIfNeeded(prepared)
         }
-
-        return newData
     }
 
-    @Throws(CryptoException::class, MissingCryptoKeyException::class, CancellationException::class)
-    private suspend fun uploadAndSaveGroupLocation(data: MemberGroupIdForUpload): MemberLocationRaw? {
-        val memberKey = getMemberSenderKey.getCurrentUserDeviceSenderKey(
-            groupId = data.groupId.id,
-            locationId = data.locationId
-        )
-        if (memberKey !is GroupMemberSenderKey.Valid)
-            throw MissingMemberKeyException(groupId = data.groupId.id, memberId = appPrefs.userId)
-
-        val locationPayload = getLocationPayload(
-            data = data,
-            key = memberKey.key
-        )
-
-        val historyPayload = getLocationHistoryPayload(
-            data = data,
-            key = memberKey.key
-        )
-
-        val payload = buildMap {
-            putAll(locationPayload)
-            put("locationHistory", historyPayload.first)
-        }.filter { it.value != null }
-
-        if (payload.isEmpty()) {
-            return null
+    private fun List<PreparedLocationUpload>.toPatchPayload(): LocationPatchPayload {
+        val personalEntries = filterIsInstance<PreparedLocationUpload.Personal>().map {
+            LocationPatchEntry(
+                locationId = it.locationId,
+                locationData = it.locationData,
+                status = it.status,
+                locationHistory = it.locationHistory
+            )
         }
-
-        val payloadWithKey = payload.plus(
-            "deviceKeyVersion" to memberKey.deviceKeyVersion
-        )
-
-        val newData = documentApi.updateDocument(
-            databaseType = BackendDatabaseType.DATA,
-            collectionId = appConfig.resourceIds.collectionMemberLocationsID,
-            docId = data.locationId,
-            data = payloadWithKey
-        ).let { MemberLocationRaw.from(it) }
-
-        saveGroupLocationLocally(newData)
-
-        if ((historyPayload.first?.length ?: 0) >= 50_000 || historyPayload.second > 150) {
-            locationHistoryUpload.syncPendingEntriesInBackground(cacheTime = 2.minutes)
+        val groupEntries = filterIsInstance<PreparedLocationUpload.Group>().map {
+            GroupLocationPatchEntry(
+                locationId = it.locationId,
+                locationData = it.locationData,
+                status = it.status,
+                locationHistory = it.locationHistory,
+                deviceKeyVersion = it.deviceKeyVersion
+            )
         }
-
-        return newData
+        return LocationPatchPayload(
+            personalLocations = personalEntries.takeIf { it.isNotEmpty() },
+            groupLocations = groupEntries.takeIf { it.isNotEmpty() }
+        )
     }
 
-    private suspend fun getLocationPayload(
-        data: MemberGroupIdForUpload,
-        key: String
-    ): Map<String, String?> {
-        val locationData = data.locationData?.let {
-            cryptoCore.encryptDataWithKey(
-                data = BaseRemoteModule.formatter.encodeToString(it),
-                key = key
+    private suspend fun handleBulkResponse(
+        result: LocationPatchResponse,
+        prepared: List<PreparedLocationUpload>
+    ) {
+        val preparedById = prepared.associateBy { it.locationId }
+
+        result.personalResult?.updatedIds?.forEach { id ->
+            val entry = preparedById[id] as? PreparedLocationUpload.Personal ?: return@forEach
+            logg.v("Save new personal location to database ($id)")
+            database.userDeviceDao.updateUserDeviceLocationDataPartial(
+                id = id,
+                locationData = entry.locationData,
+                status = entry.status,
+                locationHistory = entry.locationHistory
             )
         }
 
-        val status = data.deviceStatus?.let {
-            cryptoCore.encryptDataWithKey(
-                data = BaseRemoteModule.formatter.encodeToString(it),
-                key = key
+        result.groupResult?.updatedIds?.forEach { id ->
+            val entry = preparedById[id] as? PreparedLocationUpload.Group ?: return@forEach
+            logg.v("Save new group location to database ($id)")
+            database.groupRelatedDao.updateMemberLocationPartial(
+                id = id,
+                locationData = entry.locationData,
+                status = entry.status,
+                locationHistory = entry.locationHistory,
+                deviceKeyVersion = entry.deviceKeyVersion
             )
         }
 
-        return mapOf(
-            "locationData" to locationData,
-            "status" to status,
-        )
+        val errors = result.personalResult?.errors.orEmpty() + result.groupResult?.errors.orEmpty()
+
+        errors.filter { !it.fallbackToTable }.forEach { error ->
+            logg.w(
+                tag = "location_service",
+                message = "Bulk location upload error for ${error.locationId} (${error.key}): ${error.error?.message}"
+            )
+        }
+
+        errors.filter { it.fallbackToTable }
+            .mapNotNull { preparedById[it.locationId] }
+            .forEach { tryUploadViaDocumentApi(it) }
     }
 
-    private suspend fun getLocationHistoryPayload(
-        data: MemberGroupIdForUpload,
-        key: String
-    ): Pair<String?, Int> {
-        when (appConfig.appHost) {
-            AppHost.MAIN_APP -> {
-                val allPendingEntries = if (data.groupId.isPersonalSpace) {
-                    database.pendingLocationHistoryDao.getAllEntriesForGroupOnce(groupOrSpaceId = data.groupId.id)
-                } else {
-                    val historyKey = database.groupLocalHistoryKeyDao.getActiveHistoryKey(groupId = data.groupId.id)
-                    database.pendingLocationHistoryDao.getAllEntriesForGroupOnce(groupOrSpaceId = data.groupId.id)
-                        // history key can be null for personal space
-                        .filter { it.localGroupHistoryKeyId == historyKey?.id }
-                }
-                    .sortedByDescending { it.id }
+    private suspend fun tryUploadViaDocumentApi(prepared: PreparedLocationUpload) {
+        try {
+            uploadViaDocumentApi(prepared)
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            logg.w(
+                tag = "location_service",
+                message = "Error saving location for group ${prepared.item.groupId}",
+                t = e
+            )
+        }
+    }
 
-                val historyEntries = allPendingEntries
-                    .take(100)
-                    .let { historyMapper.pendingLocationToCore(it) }
+    private suspend fun uploadViaDocumentApi(prepared: PreparedLocationUpload) {
+        val payload = buildMap<String, Any> {
+            prepared.locationData?.let { put("locationData", it) }
+            prepared.status?.let { put("status", it) }
+            prepared.locationHistory?.let { put("locationHistory", it) }
+        }
 
-                val locationHistory = if (historyEntries.isNotEmpty()) {
-                    val historyModel = LocationHistoryModel(
-                        history = historyEntries.map { it.history }
-                    )
-                    cryptoCore.encryptDataWithKey(
-                        data = BaseRemoteModule.locationHistoryFormatter.encodeToString(historyModel),
-                        key = key
-                    )
-                } else {
-                    ""
-                }
+        when (prepared) {
+            is PreparedLocationUpload.Personal -> {
+                val newData = documentApi.updateDocument(
+                    databaseType = BackendDatabaseType.DATA,
+                    collectionId = appConfig.resourceIds.collectionPersonalLocationsID,
+                    docId = prepared.locationId,
+                    data = payload
+                ).let { UserDeviceLocationRaw.from(it) }
 
-                return locationHistory to allPendingEntries.size
+                savePersonalLocationLocally(newData)
             }
 
-            AppHost.IOS_NOTIFICATION_EXTENSION,
-            AppHost.IOS_LOCATION_EXTENSION -> {
-                return null to 0
+            is PreparedLocationUpload.Group -> {
+                val newData = documentApi.updateDocument(
+                    databaseType = BackendDatabaseType.DATA,
+                    collectionId = appConfig.resourceIds.collectionMemberLocationsID,
+                    docId = prepared.locationId,
+                    data = payload.plus("deviceKeyVersion" to prepared.deviceKeyVersion)
+                ).let { MemberLocationRaw.from(it) }
+
+                saveGroupLocationLocally(newData)
             }
+        }
+    }
+
+    private fun triggerHistorySyncIfNeeded(prepared: List<PreparedLocationUpload>) {
+        if (prepared.any { it.shouldTriggerHistorySync }) {
+            locationHistoryUpload.syncPendingEntriesInBackground(cacheTime = 2.minutes)
         }
     }
 

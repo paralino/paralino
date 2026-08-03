@@ -6,6 +6,7 @@ import app.paralino.core.domain.location.RegisterDeviceForSharingUseCase
 import app.paralino.core.models.Resource
 import app.paralino.core.models.Resource.NotInitialized.mapReady
 import app.paralino.core.models.base.ImageModel
+import app.paralino.core.models.base.PersonalSpaceOnboardingMode
 import app.paralino.core.models.base.PushProvider
 import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.models.data
@@ -14,15 +15,16 @@ import app.paralino.core.models.user.UserMe
 import app.paralino.core.models.user.UserPersonalCode
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.presentation.billing.BillingScreenSourceType
-import app.paralino.core.provider.ICoreMessageDispatcherEvent
 import app.paralino.core.presentation.onboarding.AccountOnboardingScreenEvent.OpenPaywall
 import app.paralino.core.presentation.paralinoid.PersonalCodeScreenCodeData
 import app.paralino.core.provider.DeviceStatusData
+import app.paralino.core.provider.ICoreMessageDispatcherEvent
 import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.provider.NotificationPermissionResultEvent
 import app.paralino.core.provider.NotificationSocketServiceManager
 import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.LocationSharingManager
+import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.personal_code.PersonalCodesRepository
 import app.paralino.core.repo.user.UserRepository
@@ -59,6 +61,7 @@ class AccountOnboardingViewModel(
     private val notificationServiceManager: NotificationSocketServiceManager,
     val deviceApiProvider: IDeviceApiProvider,
     private val appPrefs: AppPrefs,
+    private val remoteConfigRepository: RemoteConfigRepository,
 ) : CoreViewModel() {
 
     private val _uiState =
@@ -75,8 +78,11 @@ class AccountOnboardingViewModel(
 
     private val shouldProceedToPaywall: Boolean
         get() {
-            return !userRepo.userPlans.value.highestValidPlanConfig.planTypeEnum.isPremium
+            return !userRepo.userPlans.value.highestValidPlanConfig.isPremium
         }
+
+    private val personalSpaceOnboardingMode: PersonalSpaceOnboardingMode
+        get() = remoteConfigRepository.getCachedConfigOnce().personalSpaceOnboardingMode
 
     init {
         combine(
@@ -134,6 +140,7 @@ class AccountOnboardingViewModel(
     ): AccountOnboardingScreenState {
 
         val personalCode = PersonalCodeScreenCodeData.viewOnlyCode(code)
+        val mode = personalSpaceOnboardingMode
 
         val onboardingStep = if (previousState != null) {
             if (previousState.onboardingStep is AccountOnboardingContent.ParalinoID) {
@@ -163,10 +170,28 @@ class AccountOnboardingViewModel(
                 }
 
                 groupCount == 0 -> {
-                    AccountOnboardingContent.AccountOnboardingStart(
-                        isGroupChecked = previousState?.isGroupModeChecked ?: false,
-                        isPersonalSpaceChecked = previousState?.isPersonalSpaceModeChecked ?: false
-                    )
+                    when (mode) {
+                        PersonalSpaceOnboardingMode.FULL -> {
+                            AccountOnboardingContent.AccountOnboardingStart(
+                                isGroupChecked = previousState?.isGroupModeChecked ?: false,
+                                isPersonalSpaceChecked = previousState?.isPersonalSpaceModeChecked ?: false
+                            )
+                        }
+
+                        PersonalSpaceOnboardingMode.FALLBACK,
+                        PersonalSpaceOnboardingMode.DISABLED -> {
+                            AccountOnboardingContent.ParalinoID(
+                                personalCode = personalCode,
+                                didShareCode = false
+                            )
+                        }
+                    }
+                }
+
+                mode != PersonalSpaceOnboardingMode.FULL -> {
+                    markOnboardingFinished()
+                    activatePushNotificationServiceIfNeeded()
+                    null
                 }
 
                 else -> {
@@ -175,13 +200,17 @@ class AccountOnboardingViewModel(
             }
         }
 
+        val startsWithGroupOnboarding = previousState == null &&
+            onboardingStep is AccountOnboardingContent.ParalinoID &&
+            mode != PersonalSpaceOnboardingMode.FULL
+
         return AccountOnboardingScreenState(
             userImage = user.data?.data?.userImage ?: ImageModel.emoji(Emojis.robot),
             personalCode = personalCode,
             onboardingStep = onboardingStep,
             groupCount = groupCount,
             fullScreenLoading = previousState?.fullScreenLoading ?: false,
-            isGroupModeChecked = previousState?.isGroupModeChecked ?: false,
+            isGroupModeChecked = previousState?.isGroupModeChecked ?: startsWithGroupOnboarding,
             didShareParalinoID = previousState?.didShareParalinoID ?: false,
             isPersonalSpaceModeChecked = previousState?.isPersonalSpaceModeChecked ?: false,
         )
@@ -261,7 +290,7 @@ class AccountOnboardingViewModel(
             }
 
             is AccountOnboardingContent.AccountOnboardingStart -> {
-                skipAccountStartOnboarding()
+                finishOnboardingOrGoToPayment()
             }
 
             null -> {
@@ -275,7 +304,23 @@ class AccountOnboardingViewModel(
                 if (uiState.value.data?.didShareParalinoID == true) {
                     finishOnboarding()
                 } else {
-                    skipAccountStartOnboarding()
+                    when (personalSpaceOnboardingMode) {
+                        PersonalSpaceOnboardingMode.FALLBACK -> {
+                            _uiState.update {
+                                it.mapReady {
+                                    it.copy(
+                                        onboardingStep = AccountOnboardingContent.PersonalSpaceNewUsersIntro,
+                                        isPersonalSpaceModeChecked = true
+                                    )
+                                }
+                            }
+                        }
+
+                        PersonalSpaceOnboardingMode.FULL,
+                        PersonalSpaceOnboardingMode.DISABLED -> {
+                            finishOnboardingOrGoToPayment()
+                        }
+                    }
                 }
             }
 
@@ -304,16 +349,18 @@ class AccountOnboardingViewModel(
             }
 
             is AccountOnboardingContent.AccountOnboardingStart -> {
-                skipAccountStartOnboarding()
+                finishOnboardingOrGoToPayment()
             }
 
             AccountOnboardingContent.PersonalSpaceNewUsersIntro -> {
                 val groupCount = uiState.value.data?.groupCount ?: 0
-                if (groupCount > 0) {
-                    finishOnboarding()
-                } else {
-                    // go back
-                    startAccountStartOnboarding()
+                when {
+                    groupCount > 0 -> finishOnboarding()
+                    personalSpaceOnboardingMode == PersonalSpaceOnboardingMode.FULL -> {
+                        // go back to start onboarding
+                        startAccountStartOnboarding()
+                    }
+                    else -> finishOnboardingOrGoToPayment()
                 }
             }
 
@@ -400,7 +447,7 @@ class AccountOnboardingViewModel(
         }
     }
 
-    private fun skipAccountStartOnboarding() {
+    private fun finishOnboardingOrGoToPayment() {
         if (shouldProceedToPaywall) {
             _eventChannel.trySend(OpenPaywall(type = BillingScreenSourceType.SKIPPED_ONBOARDING))
             coroutineScope.launch {
@@ -428,16 +475,37 @@ class AccountOnboardingViewModel(
         if (appPrefs.didHaveAccountWelcomeOnboarding) {
             finishOnboarding()
         } else if (uiState.value.data?.groupCount == 0) {
-            _uiState.update {
-                it.mapReady {
-                    it.copy(
-                        onboardingStep = AccountOnboardingContent.AccountOnboardingStart(
-                            isGroupChecked = it.isGroupModeChecked,
-                            isPersonalSpaceChecked = it.isPersonalSpaceModeChecked
-                        )
-                    )
+            when (personalSpaceOnboardingMode) {
+                PersonalSpaceOnboardingMode.FULL -> {
+                    _uiState.update {
+                        it.mapReady {
+                            it.copy(
+                                onboardingStep = AccountOnboardingContent.AccountOnboardingStart(
+                                    isGroupChecked = it.isGroupModeChecked,
+                                    isPersonalSpaceChecked = it.isPersonalSpaceModeChecked
+                                )
+                            )
+                        }
+                    }
+                }
+
+                PersonalSpaceOnboardingMode.FALLBACK,
+                PersonalSpaceOnboardingMode.DISABLED -> {
+                    _uiState.update {
+                        it.mapReady {
+                            it.copy(
+                                isGroupModeChecked = true,
+                                onboardingStep = AccountOnboardingContent.ParalinoID(
+                                    personalCode = it.personalCode,
+                                    didShareCode = false
+                                )
+                            )
+                        }
+                    }
                 }
             }
+        } else if (personalSpaceOnboardingMode == PersonalSpaceOnboardingMode.DISABLED) {
+            finishOnboarding()
         } else if (_uiState.value.data?.isGroupModeChecked != true || _uiState.value.data?.isPersonalSpaceModeChecked != true) {
             _uiState.update {
                 it.mapReady {

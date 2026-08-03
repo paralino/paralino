@@ -47,25 +47,25 @@ import app.paralino.core.models.Payload
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.base.PlanConfig
 import app.paralino.core.models.data
+import app.paralino.core.presentation.common.AlertDialogAction
 import app.paralino.core.presentation.settings.AccountScreenUiEvent
+import app.paralino.core.presentation.settings.SettingsActionItemType
 import app.paralino.core.presentation.settings.SettingsViewModel
-import app.paralino.core.ui.CoreUiState
-import app.paralino.core.ui.components.ConditionErrorItem
 import app.paralino.core.resources.CoreAppIcons
 import app.paralino.core.resources.CoreAppIcons.asPainterResource
+import app.paralino.core.ui.CoreUiState
+import app.paralino.core.ui.components.ConditionErrorItem
 import app.paralino.core.ui.components.FilledButton
 import app.paralino.core.ui.components.ImageModelImage
 import app.paralino.core.ui.components.MessageDispatcherEffect
+import app.paralino.core.ui.components.SettingsActionItem
 import app.paralino.core.ui.components.SettingsSectionHeader
-import app.paralino.core.presentation.common.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.LoadingDialog
 import app.paralino.core.ui.components.dialogs.Show
-import app.paralino.core.utils.DeeplinkType
-import app.paralino.core.ui.components.SettingsActionItem
-import app.paralino.core.presentation.settings.SettingsActionItemType
 import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.ui.theme.ButtonStyle
 import app.paralino.core.utils.ConditionErrorType
+import app.paralino.core.utils.DeeplinkType
 import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.extensions.annotatedBoldCompose
 import dev.icerock.moko.resources.compose.stringResource
@@ -270,7 +270,7 @@ fun AccountInfoHeader(
                     FlowRow(
                         modifier = Modifier.fillMaxWidth()
                             .padding(
-                                bottom = if (isGuestUser || userPlan.planTypeEnum.isOtherThanSilver) 10.dp else 0.dp
+                                bottom = if (isGuestUser) 10.dp else 0.dp
                             ),
                         verticalArrangement = Arrangement.Center,
                         horizontalArrangement = Arrangement.Start
@@ -286,15 +286,13 @@ fun AccountInfoHeader(
                             Spacer(modifier = Modifier.size(8.dp))
                         }
 
-                        if (userPlan.planTypeEnum.isOtherThanSilver) {
-                            AccountHeaderChip(
-                                backgroundColor = AppColors.accentDark,
-                                contentColor = MaterialTheme.colors.onPrimary,
-                                icon = null,
-                                text = userPlan.planName,
-                                onClick = null
-                            )
-                        }
+                        AccountHeaderChip(
+                            backgroundColor = AppColors.accentDark,
+                            contentColor = MaterialTheme.colors.onPrimary,
+                            icon = null,
+                            text = userPlan.planName,
+                            onClick = null
+                        )
                     }
 
                     Row(

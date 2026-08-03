@@ -764,7 +764,7 @@
     <string name="placeholder_unit_feet">%s ft</string>
     <string name="placeholder_unit_speed_kmph">%s km/h</string>
     <string name="placeholder_unit_speed_mph">%s mph</string>
-    <string name="welcome_screen_info_1">BEZPIECZNE - PRYWATNE - ZASZYFROWANE</string>
+    <string name="welcome_screen_info_1">Udostępnianie lokalizacji z poszanowaniem prywatności</string>
     <string name="welcome_screen_button_join">Dołącz</string>
     <string name="welcome_account_edit_profile">Uzupełnij swój profil</string>
     <string name="recover_account_screen_error">Nie można załadować odzyskiwania konta</string>
@@ -997,6 +997,7 @@
     <string name="map_long_tap_action_new_place">Nowe miejsce</string>
     <string name="map_long_tap_action_new_privacy_zone">Nowa strefa prywatności</string>
     <string name="button_edit">Edytuj</string>
+    <string name="button_manage">Zarządzaj</string>
     <string name="place_detail_change_location">Zmień lokalizację</string>
     <string name="privacy_zone_created_notification">Nowa strefa prywatności %1$s została utworzona w grupie %2$s</string>
     <string name="privacy_zone_created_notification_default">Nowa strefa prywatności została utworzona</string>

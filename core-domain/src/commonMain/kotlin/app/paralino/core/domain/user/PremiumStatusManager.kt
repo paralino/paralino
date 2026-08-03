@@ -3,7 +3,6 @@ package app.paralino.core.domain.user
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.models.base.GroupOrSpaceId
 import app.paralino.core.models.base.PlanConfig
-import app.paralino.core.models.base.PlanType
 import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.models.data
 import app.paralino.core.models.group.UserGroup
@@ -40,11 +39,11 @@ class PremiumStatusManager(
     suspend fun adjustDeviceSettingsForPlan() {
         val config = remoteConfigRepo.getConfigOnce()
         val currentPlanConfig = userRepo.userPlans.value.highestValidPlanConfig.takeIf { config.plans.isNotEmpty() }
-        val isUserPartOfPremiumGroup = groupLocalDataSource.allGroupsState.value.data?.any {
-            it.group.isGroupPremium(remoteConfigRepo.getConfigOnce())
+        val hasBestPerformanceFromGroup = groupLocalDataSource.allGroupsState.value.data?.any {
+            it.group.planConfig(remoteConfigRepo.getConfigOnce()).hasBestLocationPerformance
         } ?: false
 
-        if (currentPlanConfig?.planTypeEnum == PlanType.FREE && !isUserPartOfPremiumGroup) {
+        if (currentPlanConfig?.hasBestLocationPerformance == false && !hasBestPerformanceFromGroup) {
             appPrefs.locationSettingsHighPerformanceDurationTypeFallback = null
 
             if (LocationPerformanceSettingsType.HighPerformance.fromKey(appPrefs.locationSettingsHighPerformanceDurationType).isPremiumFeature) {
@@ -62,7 +61,7 @@ class PremiumStatusManager(
             appPrefs.locationSettingsHighPerformanceDurationTypeFallback = LocationPerformanceSettingsType.HighPerformance.defaultPremium.key
         }
 
-        if (currentPlanConfig?.planTypeEnum?.isPremium == false) {
+        if (currentPlanConfig?.hasPremiumMapStyles == false) {
             appPrefs.setAndroidMapSDKProvider(
                 appPrefs.getAndroidMapSDKProviderOrDefault(
                     hasGoogleMaps = appConfigRepo.hasGoogleMaps,
@@ -153,7 +152,7 @@ class PremiumStatusManager(
 
         val maxPlaceLimit = remoteConfigRepo.getConfigOnce()
             .plans
-            .maxByOrNull { it.planTypeEnum.order }
+            .maxByOrNull { it.planOrder }
             ?.let {
                 if (groupId.isPersonalSpace) it.personalPlacesLimit
                 else it.placesLimit
@@ -183,7 +182,7 @@ class PremiumStatusManager(
         )
 
         val maxPrivacyZoneLimit = config.plans
-            .maxByOrNull { it.planTypeEnum.order }
+            .maxByOrNull { it.planOrder }
             ?.privacyZonesLimit
             ?.takeIf { it >= 0 }
 
@@ -219,7 +218,7 @@ class PremiumStatusManager(
 
         val maxDeviceLimit = remoteConfigRepo.getConfigOnce()
             .plans
-            .maxByOrNull { it.planTypeEnum.order }
+            .maxByOrNull { it.planOrder }
             ?.let {
                 if (groupId.isPersonalSpace) {
                     it.personalDevicesLimit
@@ -250,7 +249,7 @@ class PremiumStatusManager(
 
         val maxMemberLimit = remoteConfigRepo.getConfigOnce()
             .plans
-            .maxByOrNull { it.planTypeEnum.order }
+            .maxByOrNull { it.planOrder }
             ?.membersLimit
 
         if (maxMemberLimit != null && payload.isOwner && payload.count >= maxMemberLimit) {
@@ -265,7 +264,7 @@ class PremiumStatusManager(
     fun defaultMapProvider(): MapsSDKProvider {
         return appPrefs.getAndroidMapSDKProviderOrDefault(
             hasGoogleMaps = appConfigRepo.hasGoogleMaps,
-            isPremiumPlan = userRepo.userPlans.value.highestValidPlanConfig.planTypeEnum.isPremium,
+            isPremiumPlan = userRepo.userPlans.value.highestValidPlanConfig.hasPremiumMapStyles,
             mapTilerToken = appPrefs.mapTilerToken
         )
     }

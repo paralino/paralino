@@ -1,4 +1,4 @@
-package app.paralino.core.ui.privacyzones
+package app.paralino.core.ui.groups.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row
@@ -20,7 +20,7 @@ import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.utils.extensions.annotatedBoldCompose
 
 @Composable
-fun PrivacyZoneExpirationBanner(
+fun ComponentWithDurationExpirationBanner(
     modifier: Modifier = Modifier,
     expirationTime: String,
     isExpired: Boolean,

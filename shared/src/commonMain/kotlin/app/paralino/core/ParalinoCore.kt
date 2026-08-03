@@ -55,7 +55,9 @@ import app.paralino.core.domain.location.RealtimeEventsMaker
 import app.paralino.core.domain.location.RealtimeEventsProcessor
 import app.paralino.core.domain.location.RegisterDeviceForSharingUseCase
 import app.paralino.core.domain.location.RevokeDeviceActiveStatusUseCase
+import app.paralino.core.domain.location.LocationUploadPayloadFactory
 import app.paralino.core.domain.location.SaveLocationUseCase
+import app.paralino.core.domain.location.StopSharingLocationUseCase
 import app.paralino.core.domain.location.UserMemberIdUseCase
 import app.paralino.core.domain.location.engine.HandleGetLocationPayloadRequest
 import app.paralino.core.domain.location.engine.LocationSaveEventProcessingEngine
@@ -319,7 +321,8 @@ val coreModule = module {
     factory { ExpiredSessionRecovery(get(), get(), get(), get(), get(), get()) }
     factory { SessionRenewalHandler(get(), get(), get(), get()) }
     factory { LocationRequestUseCase(get(), get(), get(), get()) }
-    factory { SaveLocationUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+    factory { LocationUploadPayloadFactory(get(), get(), get(), get(), get(), get(), get()) }
+    factory { SaveLocationUseCase(get(), get(), get(), get(), get(), get(), get()) }
     factory { SavePendingLocationUseCase(get(), get(), get(), get(), get()) }
     factory { ClearUserLocationUseCase(get(), get(), get(), get(), get(), get()) }
     factory { RealtimeEventsMaker(get(), get()) }
@@ -418,6 +421,7 @@ val coreModule = module {
     factory { LowBatteryNotificationProcessor(get(), get(), get(), get()) }
 
     single { LocationPerformanceManager(get(), get(), get()) }
+    single { StopSharingLocationUseCase(get(), get(), get()) }
 
     single { InAppLogger(get(), get(), get()) }
     single { LimitedExecutionParentManager() }

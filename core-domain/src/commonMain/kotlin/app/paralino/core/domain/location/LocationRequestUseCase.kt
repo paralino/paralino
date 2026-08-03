@@ -71,13 +71,13 @@ class LocationRequestUseCase constructor(
                 )
                 val delayDuration = when (focusType) {
                     is MapHomeScreenFocusType.MEMBER -> {
-                        when (planConfig.planTypeEnum.isPremium) {
+                        when (planConfig.hasOngoingRealtime) {
                             true -> 5.seconds
                             false -> 20.seconds
                         }
                     }
                     else -> {
-                        when (planConfig.planTypeEnum.isPremium) {
+                        when (planConfig.hasOngoingRealtime) {
                             true -> 20.seconds
                             false -> 40.seconds
                         }
@@ -98,13 +98,13 @@ class LocationRequestUseCase constructor(
                 key = "location_performance_location_focus_${groupId}_${(focusType as? MapHomeScreenFocusType.MEMBER)?.memberUserId}",
                 timeMillis = when (focusType) {
                     is MapHomeScreenFocusType.MEMBER -> {
-                        when (planConfig.planTypeEnum.isPremium) {
+                        when (planConfig.hasOngoingRealtime) {
                             true -> 20.seconds.inWholeMilliseconds
                             false -> 1.minutes.inWholeMilliseconds
                         }
                     }
                     else -> {
-                        when (planConfig.planTypeEnum.isPremium) {
+                        when (planConfig.hasOngoingRealtime) {
                             true -> 1.minutes.inWholeMilliseconds
                             false -> 3.minutes.inWholeMilliseconds
                         }

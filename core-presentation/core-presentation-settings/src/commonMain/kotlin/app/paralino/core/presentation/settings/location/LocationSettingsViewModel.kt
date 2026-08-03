@@ -6,6 +6,7 @@ import app.paralino.core.domain.user.PremiumStatusManager
 import app.paralino.core.models.base.DeviceType
 import app.paralino.core.models.data
 import app.paralino.core.presentation.CoreViewModel
+import app.paralino.core.presentation.common.MainAlertDialog
 import app.paralino.core.presentation.settings.generic.GroupOptionItem
 import app.paralino.core.provider.current
 import app.paralino.core.provider.localizedString
@@ -15,7 +16,6 @@ import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.location.LocationPerformanceManager
 import app.paralino.core.repo.location.LocationPerformanceSettingsType
 import app.paralino.core.repo.user.UserRepository
-import app.paralino.core.presentation.common.MainAlertDialog
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -301,9 +301,9 @@ class LocationSettingsViewModel(
     }
 
     private fun canUserHavePremiumModes(): Boolean {
-        return userRepository.userPlans.value.highestValidPlanConfig.planTypeEnum.isSilverOrMore ||
+        return userRepository.userPlans.value.highestValidPlanConfig.hasBestLocationPerformance ||
                 groupLocalDataSource.allGroupsState.value.data?.any {
-                    it.group.isGroupPremium(remoteConfigRepo.getCachedConfigOnce())
+                    it.group.planConfig(remoteConfigRepo.getCachedConfigOnce()).hasBestLocationPerformance
                 } ?: false
 //        return !userRepository.userPlans.value.highestValidPlanConfig.planTypeEnum.isPremium
     }

@@ -764,7 +764,7 @@
     <string name="placeholder_unit_feet">%s ft</string>
     <string name="placeholder_unit_speed_kmph">%s km/h</string>
     <string name="placeholder_unit_speed_mph">%s Meilen pro Stunde</string>
-    <string name="welcome_screen_info_1">SICHER - PRIVAT - VERSCHLÜSSELT</string>
+    <string name="welcome_screen_info_1">Standortfreigabe, die Ihre Privatsphäre respektiert</string>
     <string name="welcome_screen_button_join">Beitreten</string>
     <string name="welcome_account_edit_profile">Vervollständigen Sie Ihr Profil</string>
     <string name="recover_account_screen_error">Konto-Wiederherstellung konnte nicht geladen werden</string>
@@ -967,6 +967,7 @@
     <string name="group_details_add_member_admin_only_info">Nur die Gruppenadministratorin oder der Gruppenadministrator kann neue Mitglieder hinzufügen</string>
     <string name="group_members_status_location_hidden">Nur ungefährer Standort</string>
     <string name="button_edit">Bearbeiten</string>
+    <string name="button_manage">Verwalten</string>
     <string name="plans_banner_inline_privacy_zones">Erstellen Sie weitere Privatsphärenzonen und behalten Sie die Kontrolle über Ihren Standort!</string>
     <string name="paywall_feature_privacy_zones_group">Privatsphärenzonen</string>
     <string name="paywall_feature_summary_privacy_zones">Privatsphärenzonen</string>

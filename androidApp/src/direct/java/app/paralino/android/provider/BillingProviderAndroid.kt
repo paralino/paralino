@@ -28,8 +28,8 @@ class BillingProviderAndroid(
         val remoteBillingConfig = remoteConfigRepo.getBillingConfigFromRemote()
         val appConfig = remoteConfigRepo.getConfigOnce()
         val plans = appConfig.listedPlanConfigs()
-            .filter { it.planTypeEnum.isPremium }
-            .sortedBy { it.planTypeEnum.order }
+            .filter { it.isPremium }
+            .sortedBy { it.planOrder }
 
         val products = plans.map { plan ->
             IBillingProvider.SubscriptionPlanData(

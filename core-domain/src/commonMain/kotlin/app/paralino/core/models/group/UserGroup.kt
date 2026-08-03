@@ -54,20 +54,8 @@ data class UserGroup constructor(
         ?.let { it < nowUTC() }
         ?: false
 
-    fun hasPremiumSharingFeatures(config: ConfigData): Boolean {
-        if (isPlanExpired) {
-            return false
-        } else {
-            return config.planConfigForPlanTypeOrDefault(planType).planTypeEnum.isSilverOrMore
-        }
-    }
-
     fun isGroupPremium(config: ConfigData): Boolean {
-        if (isPlanExpired) {
-            return false
-        } else {
-            return config.planConfigForPlanTypeOrDefault(planType).planTypeEnum.isPremium
-        }
+        return planConfig(config).isPremium
     }
 
     fun membersLimit(config: ConfigData): Int {

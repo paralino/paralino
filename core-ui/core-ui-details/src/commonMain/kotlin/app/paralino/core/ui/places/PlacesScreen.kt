@@ -91,6 +91,10 @@ fun PlacesScreenCore(
                     addNewPlace()
                 }
 
+                PlacesScreenEvent.SkipOnboarding -> {
+                    onSkipOnboarding()
+                }
+
                 is PlacesScreenEvent.OpenPaywall -> {
                     openPaywall()
                 }
@@ -134,8 +138,11 @@ fun PlacesScreenCore(
                 onPlaceClick = {
                     openPlaceDetails(it)
                 },
-                onCreatePlace = {
+                onCreatePlaceClick = {
                     vm.onEvent(PlacesScreenUiEvent.CreatePlace)
+                },
+                onNextClick = {
+                    vm.onEvent(PlacesScreenUiEvent.OnNextClick)
                 },
                 onSkipOnboarding = onSkipOnboarding,
                 onPlanBannerClick = openPaywall,
@@ -160,7 +167,8 @@ private fun PlacesScreen(
     contentPadding: PaddingValues,
     onPlaceClick: (PlaceListItemData) -> Unit,
     onErrorItemClick: (ConditionErrorType) -> Unit,
-    onCreatePlace: () -> Unit,
+    onCreatePlaceClick: () -> Unit,
+    onNextClick: () -> Unit,
     onSkipOnboarding: () -> Unit,
     onPlanBannerClick: () -> Unit,
     onPostSampleNotification: (String) -> Unit,
@@ -181,19 +189,15 @@ private fun PlacesScreen(
                     } else {
                         CoreAppIcons.MapsHomeWork.asPainterResource()
                     },
-                    onClick = {
-                        if (state.placesLimitReached) {
-                            onSkipOnboarding()
-                        } else {
-                            onCreatePlace()
-                        }
-                    }
+                    onClick = onNextClick
                 ) {
                     Text(
                         text = if (state.placesLimitReached) {
                             stringResource(MR.strings.button_next)
-                        } else {
+                        } else if (state.places.isEmpty()) {
                             stringResource(MR.strings.places_create_button_create)
+                        } else {
+                            stringResource(MR.strings.places_create_screen_title)
                         }
                     )
                 }
@@ -348,19 +352,21 @@ private fun PlacesScreen(
                                 }
                             )
                             Spacer(modifier = Modifier.weight(1f))
-                            SmallActionButton(
-                                modifier = Modifier,
-                                icon = CoreAppIcons.Add.asPainterResource(),
-                                text = {
-                                    Text(
-                                        modifier = Modifier.padding(end = 2.dp),
-                                        text = stringResource(MR.strings.places_list_add_button)
-                                    )
-                                },
-                                backgroundColor = MaterialTheme.colors.primary,
-                                contentColor = MaterialTheme.colors.onPrimary,
-                                onClick = onCreatePlace
-                            )
+                            if (state.canShowPlaceAddButton) {
+                                SmallActionButton(
+                                    modifier = Modifier,
+                                    icon = CoreAppIcons.Add.asPainterResource(),
+                                    text = {
+                                        Text(
+                                            modifier = Modifier.padding(end = 2.dp),
+                                            text = stringResource(MR.strings.places_list_add_button)
+                                        )
+                                    },
+                                    backgroundColor = MaterialTheme.colors.primary,
+                                    contentColor = MaterialTheme.colors.onPrimary,
+                                    onClick = onCreatePlaceClick
+                                )
+                            }
                         }
                         Spacer(modifier = Modifier.size(4.dp))
                     }

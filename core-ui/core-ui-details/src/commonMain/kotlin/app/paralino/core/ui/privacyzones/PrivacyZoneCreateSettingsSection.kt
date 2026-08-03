@@ -20,6 +20,7 @@ import app.paralino.core.ui.components.ConditionErrorItem
 import app.paralino.core.ui.components.LargeSeekbarSwitch
 import app.paralino.core.ui.components.LargeSeekbarSwitchState
 import app.paralino.core.ui.components.rememberSeekbarState
+import app.paralino.core.ui.groups.components.ComponentWithDurationExpirationBanner
 import app.paralino.core.ui.share.getSharingTimeString
 import app.paralino.core.ui.theme.AppColors
 import dev.icerock.moko.resources.compose.stringResource
@@ -83,7 +84,7 @@ private fun PrivacyZoneDurationSettings(
                     onClick = onExpirationEditRequested
                 )
             } else {
-                PrivacyZoneExpirationBanner(
+                ComponentWithDurationExpirationBanner(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clickable(onClick = onExpirationEditRequested),

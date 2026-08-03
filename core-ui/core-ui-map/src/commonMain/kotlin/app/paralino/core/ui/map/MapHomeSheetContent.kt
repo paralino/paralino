@@ -9,8 +9,10 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -68,6 +70,7 @@ import app.paralino.core.ui.components.DefaultEmptyState
 import app.paralino.core.ui.components.FilledButton
 import app.paralino.core.ui.components.ImageModelImage
 import app.paralino.core.ui.groups.components.GroupMember
+import app.paralino.core.ui.groups.components.GroupMemberActionButton
 import app.paralino.core.ui.places.PlaceListItem
 import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.ui.theme.ButtonStyle
@@ -307,8 +310,10 @@ fun MapHomeSheetContent(
 
                 MapSheetSelectedContentType.MEMBERS -> {
                     membersList(
+                        canStopTracking = readyState.personalSpaceSharingContract != null && readyState.isPersonalSpace,
+                        canStopSharing = readyState.selectedGroupSharingContract != null && !readyState.isPersonalSpace,
                         canAddNewMember = !readyState.isPersonalSpace && readyState.isCurrentUserOwnerOfSelectedGroup,
-                        hasUpgradeBanner = !readyState.groupPlanConfig.planTypeEnum.isPremium && readyState.isCurrentUserOwnerOfSelectedGroup,
+                        hasUpgradeBanner = !readyState.groupPlanConfig.hasOngoingRealtime && (readyState.isPersonalSpace || readyState.isCurrentUserOwnerOfSelectedGroup),
                         members = members,
                         memberEvent = {
                             onEvent(MapHomeScreenUiEvent.OnMemberItemEvent(it))
@@ -316,8 +321,14 @@ fun MapHomeSheetContent(
                         onAddNewMember = {
                             onEvent(MapHomeScreenUiEvent.OnOpenMemberInviteScreen)
                         },
+                        onOpenSettings = {
+                            onEvent(MapHomeScreenUiEvent.OpenGroupDetails(readyState.groupOrSpaceId))
+                        },
                         onBannerTap = {
                             onEvent(MapHomeScreenUiEvent.OpenPaywall(type = BillingScreenSourceType.UPGRADE_MAP_SHEET))
+                        },
+                        stopLocationSharing = {
+                            onEvent(MapHomeScreenUiEvent.StopLocationSharing(groupOrSpaceId = readyState.groupOrSpaceId))
                         }
                     )
                 }
@@ -391,12 +402,16 @@ private fun SheetTabs(
 }
 
 private fun LazyListScope.membersList(
+    canStopSharing: Boolean,
+    canStopTracking: Boolean,
     canAddNewMember: Boolean,
     hasUpgradeBanner: Boolean,
     members: List<GroupMemberItemState>,
     memberEvent: (GroupMemberItemEvent) -> Unit,
     onAddNewMember: () -> Unit,
-    onBannerTap: () -> Unit
+    onBannerTap: () -> Unit,
+    onOpenSettings: () -> Unit,
+    stopLocationSharing: () -> Unit,
 ) {
     this.itemsIndexed(
         items = members,
@@ -470,13 +485,63 @@ private fun LazyListScope.membersList(
         }
     }
 
-    if (canAddNewMember) {
-        this.item(key = "add_new_member") {
-            AddNewActionButton(
+    this.item(key = "settings_divider") {
+        Divider(
+            modifier = Modifier
+                .padding(top = 20.dp)
+                .padding(horizontal = 20.dp),
+            color = Color.Gray.copy(alpha = 0.2f),
+            thickness = 0.5.dp
+        )
+    }
+
+    this.item(key = "settings_row") {
+        FlowRow(
+            modifier = Modifier.fillMaxWidth().padding(top = 20.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.Start),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            GroupMemberActionButton(
                 modifier = Modifier,
-                text = stringResource(MR.strings.invite_connect_screen_title),
-                action = onAddNewMember
+                startIcon = CoreAppIcons.Settings.asPainterResource(),
+                endIcon = CoreAppIcons.ChevronRight.asPainterResource(),
+                text = stringResource(MR.strings.button_manage),
+                onClick = onOpenSettings
             )
+
+            if (canStopSharing) {
+                GroupMemberActionButton(
+                    modifier = Modifier,
+                    startIcon = CoreAppIcons.StopCircle.asPainterResource(),
+                    endIcon = null,
+                    text = stringResource(MR.strings.location_sharing_button_stop_groups),
+                    backgroundColor = AppColors.errorBackground,
+                    contentColor = AppColors.redMain,
+                    onClick = stopLocationSharing
+                )
+            }
+
+            if (canStopTracking) {
+                GroupMemberActionButton(
+                    modifier = Modifier,
+                    startIcon = CoreAppIcons.StopCircle.asPainterResource(),
+                    endIcon = null,
+                    text = stringResource(MR.strings.location_sharing_button_stop_personal),
+                    backgroundColor = AppColors.errorBackground,
+                    contentColor = AppColors.redMain,
+                    onClick = stopLocationSharing
+                )
+            }
+
+            if (canAddNewMember) {
+                GroupMemberActionButton(
+                    modifier = Modifier,
+                    startIcon = CoreAppIcons.PersonAdd.asPainterResource(),
+                    endIcon = CoreAppIcons.ChevronRight.asPainterResource(),
+                    text = stringResource(MR.strings.invite_connect_screen_title),
+                    onClick = onAddNewMember
+                )
+            }
         }
     }
 }

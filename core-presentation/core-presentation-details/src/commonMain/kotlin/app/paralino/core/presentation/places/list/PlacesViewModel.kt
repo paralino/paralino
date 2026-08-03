@@ -117,7 +117,7 @@ class PlacesViewModel(
 
             val placesLimit = space.plan.personalPlacesLimit
                 .takeIf { it >= 0 }
-            val canShowPlanBanner = !space.plan.planTypeEnum.isPremium
+            val canShowPlanBanner = !space.plan.isPremium
             val state = PlacesListScreenState(
                 groupId = UserGroup.groupPersonalDevicesId.asGroupOrSpaceId(),
                 groupImage = space.user.data?.userImage ?: ImageModel.emoji(Emojis.robot),
@@ -125,13 +125,9 @@ class PlacesViewModel(
                 placesLimit = placesLimit,
                 isGroupOwner = true,
                 places = placesState,
-                canShowPlacesLimit = placesLimit != null,
-                shouldShowPlanBanner = if (isOnboarding && placesLimit != null) {
-                    // in onboarding only show upgrade banner if places limit is reached
-                    canShowPlanBanner && placesState.size >= placesLimit
-                } else {
-                    canShowPlanBanner
-                },
+                canShowPlacesLimit = placesLimit != null && !isOnboarding,
+                canShowPlaceAddButton = !isOnboarding || placesLimit == null || placesLimit > places.size,
+                shouldShowPlanBanner = canShowPlanBanner && !isOnboarding,
                 error = error,
                 androidMapSDKProvider = premiumStatusManager.defaultMapProvider(),
                 alertDialog = _uiState.value.data?.alertDialog
@@ -171,17 +167,13 @@ class PlacesViewModel(
                 canShowPlacesLimit = if (placesLimit == null) {
                     false
                 } else if (group.isCurrentUserOwner) {
-                    true
+                    !isOnboarding
                 } else {
                     // only show places limit to other members if close to limit
-                    placesState.size >= placesLimit.minus(2)
+                    placesState.size >= placesLimit.minus(2) && !isOnboarding
                 },
-                shouldShowPlanBanner = if (isOnboarding && placesLimit != null) {
-                    // in onboarding only show upgrade banner if places limit is reached
-                    canShowPlanBanner && placesState.size >= placesLimit
-                } else {
-                    canShowPlanBanner
-                },
+                canShowPlaceAddButton = !isOnboarding || placesLimit == null || placesLimit > places.size,
+                shouldShowPlanBanner = canShowPlanBanner && !isOnboarding,
                 error = error,
                 androidMapSDKProvider = premiumStatusManager.defaultMapProvider(),
                 alertDialog = _uiState.value.data?.alertDialog
@@ -192,7 +184,14 @@ class PlacesViewModel(
 
     fun onEvent(event: PlacesScreenUiEvent) {
         when (event) {
-            PlacesScreenUiEvent.CreatePlace -> tryCreatePlace()
+            PlacesScreenUiEvent.CreatePlace -> {
+                tryCreatePlace(isExplicitCreate = true)
+            }
+
+            PlacesScreenUiEvent.OnNextClick -> {
+                tryCreatePlace(isExplicitCreate = false)
+            }
+
             is PlacesScreenUiEvent.DialogAction -> {
                 when (event.action.dialog) {
                     is MainAlertDialog.ServiceMaxLimit,
@@ -234,8 +233,18 @@ class PlacesViewModel(
         }
     }
 
-    private fun tryCreatePlace() {
+    private fun tryCreatePlace(isExplicitCreate: Boolean) {
         val state = _uiState.value.data ?: return
+
+        if (!isExplicitCreate) {
+            if (state.placesLimitReached) {
+                if (isOnboarding) {
+                    _eventChannel.trySend(PlacesScreenEvent.SkipOnboarding)
+                    return
+                }
+            }
+        }
+
         coroutineScope.launch {
             val premiumStatus = premiumStatusManager.checkPlaceCountLimits(groupId = state.groupId)
 

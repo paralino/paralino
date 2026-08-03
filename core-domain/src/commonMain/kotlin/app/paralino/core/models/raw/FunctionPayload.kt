@@ -556,3 +556,52 @@ data class PlaceAddressSearchResult(
     val lat: Double,
     val lng: Double
 )
+
+@Serializable
+data class LocationPatchPayload(
+    val personalLocations: List<LocationPatchEntry>?,
+    val groupLocations: List<GroupLocationPatchEntry>?,
+)
+
+@Serializable
+data class LocationPatchEntry(
+    val locationId: String,
+    val locationData: String?,
+    val status: String?,
+    val locationHistory: String?,
+)
+
+@Serializable
+data class GroupLocationPatchEntry(
+    val locationId: String,
+    val locationData: String?,
+    val status: String?,
+    val locationHistory: String?,
+    val deviceKeyVersion: Long?,
+)
+
+@Serializable
+data class LocationPatchResponse(
+    val personalResult: PersonalLocationPatchResponse? = null,
+    val groupResult: GroupLocationPatchResponse? = null,
+)
+
+@Serializable
+data class PersonalLocationPatchResponse(
+    val updatedIds: List<String>,
+    val errors: List<LocationPatchError>,
+)
+
+@Serializable
+data class GroupLocationPatchResponse(
+    val updatedIds: List<String>,
+    val errors: List<LocationPatchError>,
+)
+
+@Serializable
+data class LocationPatchError(
+    val locationId: String,
+    val key: String,
+    val fallbackToTable: Boolean,
+    val error: FunctionErrorBody? = null
+)

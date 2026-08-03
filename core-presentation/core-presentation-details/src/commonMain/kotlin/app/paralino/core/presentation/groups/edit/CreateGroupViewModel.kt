@@ -251,7 +251,7 @@ class CreateGroupViewModel(
         val groupCount =
             groupRepo.allGroupsState.value.data?.filter { it.group.isCurrentUserOwner }?.size ?: 0
         val maxGroupLimit =
-            remoteConfig.getConfigOnce().plans.maxByOrNull { it.planTypeEnum.order }?.groupsLimit
+            remoteConfig.getConfigOnce().plans.maxByOrNull { it.planOrder }?.groupsLimit
 
         if (maxGroupLimit != null && groupCount >= maxGroupLimit) {
             _uiState.update {

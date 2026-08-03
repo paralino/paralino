@@ -764,7 +764,7 @@
     <string name="placeholder_unit_feet">%s фути</string>
     <string name="placeholder_unit_speed_kmph">%s км/год</string>
     <string name="placeholder_unit_speed_mph">%s миль/год</string>
-    <string name="welcome_screen_info_1">ЗАХИЩЕНО - ПРИВАТНО - ЗАШИФРОВАНО</string>
+    <string name="welcome_screen_info_1">Обмін геолокацією з повагою до вашої конфіденційності</string>
     <string name="welcome_screen_button_join">Приєднатися</string>
     <string name="welcome_account_edit_profile">Завершіть свій профіль</string>
     <string name="recover_account_screen_error">Не вдалося завантажити відновлення облікового запису</string>
@@ -967,6 +967,7 @@
     <string name="group_details_add_member_admin_only_info">Лише адміністратор групи може додавати нових учасників</string>
     <string name="group_members_status_location_hidden">Лише приблизне місцеперебування</string>
     <string name="button_edit">Редагувати</string>
+    <string name="button_manage">Керувати</string>
     <string name="plans_banner_inline_privacy_zones">Створюйте більше зон конфіденційності та зберігайте контроль над своїм місцезнаходженням!</string>
     <string name="paywall_feature_privacy_zones_group">Зони конфіденційності</string>
     <string name="paywall_feature_summary_privacy_zones">Зони конфіденційності</string>

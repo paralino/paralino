@@ -16,6 +16,7 @@ data class PlacesListScreenState constructor(
     val placesLimit: Int?,
     val isGroupOwner: Boolean,
     val canShowPlacesLimit: Boolean,
+    val canShowPlaceAddButton: Boolean,
     val shouldShowPlanBanner: Boolean,
     val places: List<PlaceListItemData>,
     val error: ConditionErrorType.PermissionNotifications?,
@@ -33,11 +34,13 @@ data class PlacesListScreenState constructor(
 sealed class PlacesScreenEvent() {
     object AddPlace : PlacesScreenEvent()
     data object OpenPaywall : PlacesScreenEvent()
+    data object SkipOnboarding : PlacesScreenEvent()
     data object MissingNotificationPermission : PlacesScreenEvent()
 }
 
 sealed interface PlacesScreenUiEvent {
     data object CreatePlace : PlacesScreenUiEvent
+    data object OnNextClick : PlacesScreenUiEvent
     data class PostSampleNotification(val content: String) : PlacesScreenUiEvent
     data class DialogAction(val action: AlertDialogAction) : PlacesScreenUiEvent
 }

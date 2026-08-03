@@ -764,7 +764,7 @@
     <string name="placeholder_unit_feet">%s ft</string>
     <string name="placeholder_unit_speed_kmph">%s km/h</string>
     <string name="placeholder_unit_speed_mph">%s mph</string>
-    <string name="welcome_screen_info_1">SEGUR - PRIVAT - ENCRIPTAT</string>
+    <string name="welcome_screen_info_1">Compartició d'ubicació que respecta la teva privacitat</string>
     <string name="welcome_screen_button_join">Unir-se</string>
     <string name="welcome_account_edit_profile">Completa el teu perfil</string>
     <string name="recover_account_screen_error">No s\'ha pogut carregar la recuperació del compte</string>
@@ -967,6 +967,7 @@
     <string name="group_details_add_member_admin_only_info">Només l\'administrador del grup pot afegir nous membres</string>
     <string name="group_members_status_location_hidden">Només ubicació aproximada</string>
     <string name="button_edit">Edita</string>
+    <string name="button_manage">Gestiona</string>
     <string name="plans_banner_inline_privacy_zones">Crea més zones de privadesa i manteniu el control de la vostra ubicació!</string>
     <string name="paywall_feature_privacy_zones_group">Zones de privadesa</string>
     <string name="paywall_feature_summary_privacy_zones">Zones de privadesa</string>

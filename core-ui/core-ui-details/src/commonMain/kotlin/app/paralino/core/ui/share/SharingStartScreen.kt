@@ -7,20 +7,18 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
@@ -72,11 +70,11 @@ import app.paralino.core.ui.components.SettingsSectionHeader
 import app.paralino.core.ui.components.dialogs.LoadingDialog
 import app.paralino.core.ui.components.dialogs.Show
 import app.paralino.core.ui.components.rememberSeekbarState
+import app.paralino.core.ui.groups.components.ComponentWithDurationExpirationBanner
 import app.paralino.core.ui.groups.components.GroupListItem
 import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.ui.theme.ButtonStyle
 import app.paralino.core.utils.ConditionErrorType
-import app.paralino.core.utils.extensions.annotatedBoldCompose
 import dev.icerock.moko.resources.PluralsResource
 import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.delay
@@ -243,14 +241,26 @@ fun SharingStartScreenCore(
             }
         } else if (!state.isNewContract) {
             @Composable {
-                OnboardingSkipButton(
-                    skipButtonText = if (state.isPersonalSpace) {
-                        stringResource(MR.strings.location_sharing_button_stop_personal)
-                    } else {
-                        stringResource(MR.strings.location_sharing_button_stop_groups)
-                    },
-                    onSkip = { vm.onEvent(SharingStartScreenUiEvent.StopSharing) }
-                )
+                FilledButton(
+                    modifier = Modifier.padding(vertical = 8.dp),
+                    style = ButtonStyle.BIG,
+                    state = AppButtonState.CONTENT,
+                    enabled = true,
+                    icon = null,
+                    colors = ButtonDefaults.buttonColors(
+                        backgroundColor = AppColors.redMain,
+                        contentColor = AppColors.lightBackground
+                    ),
+                    onClick = { vm.onEvent(SharingStartScreenUiEvent.StopSharing) }
+                ) {
+                    Text(
+                        text = if (state.isPersonalSpace) {
+                            stringResource(MR.strings.location_sharing_button_stop_personal)
+                        } else {
+                            stringResource(MR.strings.location_sharing_button_stop_groups)
+                        }
+                    )
+                }
             }
         } else if (state.shouldUpgradePlan) {
             @Composable {
@@ -424,29 +434,14 @@ fun SharingStartScreenCore(
                     SettingsSectionHeader(name = stringResource(MR.strings.title_settings))
 
                     AnimatedVisibility(visible = state.formattedEndTime != null) {
-                        Row(
+                        ComponentWithDurationExpirationBanner(
                             modifier = Modifier
-                                .background(
-                                    MaterialTheme.colors.surface,
-                                    RoundedCornerShape(percent = 50)
-                                )
-                                .padding(horizontal = 8.dp, vertical = 6.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            val sharingTime = state.formattedEndTime ?: ""
-
-                            Icon(
-                                painter = CoreAppIcons.Timer.asPainterResource(),
-                                contentDescription = null,
-                                modifier = Modifier.size(14.dp),
-                                tint = MaterialTheme.colors.onSurface
-                            )
-                            Spacer(modifier = Modifier.size(4.dp))
-                            Text(
-                                text = sharingTime.annotatedBoldCompose(),
-                                style = MaterialTheme.typography.caption.copy(color = MaterialTheme.colors.onSurface)
-                            )
-                        }
+                                .fillMaxWidth()
+                                .clickable(onClick = { vm.onEvent(SharingStartScreenUiEvent.RequestSharingDurationEdit) }),
+                            expirationTime = state.formattedEndTime.orEmpty(),
+                            isExpired = false,
+                            canEdit = true
+                        )
                     }
 
                     if (state.showDuration) {
@@ -602,73 +597,48 @@ fun SharingStartScreenCore(
                         )
                     }
 
-                    Spacer(modifier = Modifier.size(10.dp))
-
-                    if (state.isPremiumSectionHeaderVisible) {
-                        SettingsSectionHeader(
-                            modifier = Modifier.zIndex(0f),
-                            backgroundColor = Color.Transparent,
-                            name = stringResource(MR.strings.setting_location_premium_banner_title),
-                            end = {
-                                Icon(
-                                    painter = CoreAppIcons.StarFamily.asPainterResource(),
-                                    contentDescription = null,
-                                    tint = MaterialTheme.colors.primary,
-                                    modifier = Modifier
-                                        .size(24.dp)
-                                        .clickable { openSubscriptions() }
-                                        .background(
-                                            color = AppColors.highlightGold,
-                                            shape = CircleShape
-                                        )
-                                        .padding(4.dp)
-                                )
-                            }
-                        )
-                        Spacer(modifier = Modifier.size(4.dp))
-                    }
-
-                    if (state.showRealtimeUpdatesStatus) {
-                        LargeSeekbarSwitch(
-                            modifier = Modifier.fillMaxWidth(),
-                            icon = CoreAppIcons.ShareLocation.asPainterResource(),
-                            title = stringResource(MR.strings.groups_sharing_setting_realtimeUpdates_title),
-                            description = if (state.isPremiumSectionHeaderVisible || state.isRealtimeOptionSelected) {
-                                stringResource(MR.strings.groups_sharing_setting_realtimeUpdates_description_on)
-                            } else {
-                                stringResource(MR.strings.groups_sharing_setting_realtimeUpdates_description_off)
-                            },
-                            state = rememberSeekbarState(
-                                key = state,
-                                state = LargeSeekbarSwitchState.SeekbarSwitchState(
-                                    seekbarState = null,
-                                    switchState = LargeSeekbarSwitchState.Switch(state.isRealtimeOptionSelected)
-                                )
-                            ).value,
-                            onStateChange = {
-                                vm.toggleRealtimeUpdates(it)
-                            }
-                        )
-                    }
-
-                    if (state.showNotifyOthers) {
+                    if (state.isRealtimeSharingEnabledInPlan && state.showRealtimeUpdatesStatus) {
                         Spacer(modifier = Modifier.size(10.dp))
-                        LargeSeekbarSwitch(
-                            modifier = Modifier.fillMaxWidth(),
-                            icon = CoreAppIcons.NotificationsActive.asPainterResource(),
-                            title = stringResource(MR.strings.groups_sharing_setting_notifyOthers_title),
-                            description = stringResource(MR.strings.groups_sharing_setting_notifyOthers_description),
-                            state = rememberSeekbarState(
-                                key = state,
-                                state = LargeSeekbarSwitchState.SeekbarSwitchState(
-                                    seekbarState = null,
-                                    switchState = LargeSeekbarSwitchState.Switch(state.notifyOthers)
-                                )
-                            ).value,
-                            onStateChange = {
-                                vm.toggleNotifyOthers(it)
-                            }
+                        RealtimeUpdatesActionItem(
+                            isEnabledInPlan = state.isRealtimeSharingEnabledInPlan,
+                            isSelected = state.isRealtimeOptionSelected,
+                            onEvent = vm::onEvent
                         )
+                    }
+
+                    if (state.isNotifyOtherEnabledInPlan && state.showNotifyOthers) {
+                        Spacer(modifier = Modifier.size(10.dp))
+                        NotifyOthersActionItem(
+                            isSelected = state.notifyOthers,
+                            onEvent = vm::onEvent
+                        )
+                    }
+
+                    val showPremiumRealtime = !state.isRealtimeSharingEnabledInPlan && state.showRealtimeUpdatesStatus
+                    val showPremiumNotify = !state.isNotifyOtherEnabledInPlan && state.showNotifyOthers
+
+                    if (showPremiumRealtime || showPremiumNotify) {
+                        Spacer(modifier = Modifier.size(10.dp))
+                        PremiumSectionHeader(onIconClick = openSubscriptions)
+
+                        Column(
+                            verticalArrangement = Arrangement.spacedBy(10.dp)
+                        ) {
+                            if (showPremiumRealtime) {
+                                RealtimeUpdatesActionItem(
+                                    isEnabledInPlan = state.isRealtimeSharingEnabledInPlan,
+                                    isSelected = state.isRealtimeOptionSelected,
+                                    onEvent = vm::onEvent
+                                )
+                            }
+
+                            if (showPremiumNotify) {
+                                NotifyOthersActionItem(
+                                    isSelected = state.notifyOthers,
+                                    onEvent = vm::onEvent
+                                )
+                            }
+                        }
                     }
                 }
             }
@@ -698,6 +668,88 @@ fun SharingStartScreenCore(
         LoadingDialog(text = stringResource(MR.strings.login_step_generic_loading), progress = null)
     }
 }
+
+@Composable
+private fun ColumnScope.PremiumSectionHeader(
+    modifier: Modifier = Modifier,
+    onIconClick: () -> Unit
+) {
+    SettingsSectionHeader(
+        modifier = modifier.zIndex(0f),
+        backgroundColor = Color.Transparent,
+        name = stringResource(MR.strings.setting_location_premium_banner_title),
+        end = {
+            Icon(
+                painter = CoreAppIcons.StarFamily.asPainterResource(),
+                contentDescription = null,
+                tint = MaterialTheme.colors.primary,
+                modifier = Modifier
+                    .size(24.dp)
+                    .clickable(onClick = onIconClick)
+                    .background(
+                        color = AppColors.highlightGold,
+                        shape = CircleShape
+                    )
+                    .padding(4.dp)
+            )
+        }
+    )
+    Spacer(modifier = Modifier.size(4.dp))
+}
+
+@Composable
+private fun ColumnScope.NotifyOthersActionItem(
+    modifier: Modifier = Modifier,
+    isSelected: Boolean,
+    onEvent: (SharingStartScreenUiEvent) -> Unit
+) {
+    LargeSeekbarSwitch(
+        modifier = modifier.fillMaxWidth(),
+        icon = CoreAppIcons.NotificationsActive.asPainterResource(),
+        title = stringResource(MR.strings.groups_sharing_setting_notifyOthers_title),
+        description = stringResource(MR.strings.groups_sharing_setting_notifyOthers_description),
+        state = rememberSeekbarState(
+            key = isSelected,
+            state = LargeSeekbarSwitchState.SeekbarSwitchState(
+                seekbarState = null,
+                switchState = LargeSeekbarSwitchState.Switch(isSelected)
+            )
+        ).value,
+        onStateChange = {
+            onEvent(SharingStartScreenUiEvent.ToggleNotifyOthers(it))
+        }
+    )
+}
+
+@Composable
+private fun ColumnScope.RealtimeUpdatesActionItem(
+    modifier: Modifier = Modifier,
+    isEnabledInPlan: Boolean,
+    isSelected: Boolean,
+    onEvent: (SharingStartScreenUiEvent) -> Unit
+) {
+    LargeSeekbarSwitch(
+        modifier = modifier.fillMaxWidth(),
+        icon = CoreAppIcons.ShareLocation.asPainterResource(),
+        title = stringResource(MR.strings.groups_sharing_setting_realtimeUpdates_title),
+        description = if (!isEnabledInPlan || isSelected) {
+            stringResource(MR.strings.groups_sharing_setting_realtimeUpdates_description_on)
+        } else {
+            stringResource(MR.strings.groups_sharing_setting_realtimeUpdates_description_off)
+        },
+        state = rememberSeekbarState(
+            key = isSelected,
+            state = LargeSeekbarSwitchState.SeekbarSwitchState(
+                seekbarState = null,
+                switchState = LargeSeekbarSwitchState.Switch(isSelected)
+            )
+        ).value,
+        onStateChange = {
+            onEvent(SharingStartScreenUiEvent.ToggleRealtimeUpdates(it))
+        }
+    )
+}
+
 
 @Composable
 fun getSharingTimeString(

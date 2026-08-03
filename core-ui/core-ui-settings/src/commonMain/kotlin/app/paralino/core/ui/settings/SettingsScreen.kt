@@ -137,7 +137,7 @@ fun SettingsScreenCore(
             )
         }
 
-        AnimatedVisibility(visible = readyState?.userPlan?.planTypeEnum?.isPremium == false) {
+        AnimatedVisibility(visible = readyState?.userPlan?.isPremium == false) {
             PremiumPlanBanner(
                 modifier = Modifier.padding(top = 20.dp),
                 onClick = openPaywall
