@@ -16,9 +16,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import app.paralino.core.MR
 import app.paralino.core.models.base.SubscriptionOfferDialogContent
-import app.paralino.core.provider.localizedString
 import app.paralino.core.presentation.common.AlertDialogButtonData
 import app.paralino.core.presentation.common.MainAlertDialog.Buttons
+import app.paralino.core.provider.localizedString
+import app.paralino.core.ui.components.dialogs.IosKeyboardSafeDialog
 import app.paralino.core.ui.components.dialogs.MainAlertDialogActionButton
 import app.paralino.core.ui.theme.AppTheme
 import app.paralino.core.utils.extensions.annotatedBoldCompose
@@ -75,67 +76,69 @@ fun SubscriptionOfferDialogComposable(
     onAction: (buttonId: String?) -> Unit,
 ) {
     AppTheme {
-        AlertDialog(
-            properties = DialogProperties(
-                dismissOnBackPress = canDismiss,
-                dismissOnClickOutside = canDismiss
-            ),
-            onDismissRequest = { onAction(null) },
-            title = if (title != null || emoji != null) {
-                {
-                    Column(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        if (title != null) {
-                            Text(
-                                text = title,
-                                textAlign = TextAlign.Center,
-                                modifier = Modifier.fillMaxWidth(),
-                                style = MaterialTheme.typography.h6
-                            )
-                        }
+        IosKeyboardSafeDialog {
+            AlertDialog(
+                properties = DialogProperties(
+                    dismissOnBackPress = canDismiss,
+                    dismissOnClickOutside = canDismiss
+                ),
+                onDismissRequest = { onAction(null) },
+                title = if (title != null || emoji != null) {
+                    {
+                        Column(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            if (title != null) {
+                                Text(
+                                    text = title,
+                                    textAlign = TextAlign.Center,
+                                    modifier = Modifier.fillMaxWidth(),
+                                    style = MaterialTheme.typography.h6
+                                )
+                            }
 
-                        if (emoji != null) {
-                            Text(
-                                text = emoji,
-                                textAlign = TextAlign.Center,
-                                modifier = Modifier.fillMaxWidth(),
-                                style = MaterialTheme.typography.h2
-                            )
+                            if (emoji != null) {
+                                Text(
+                                    text = emoji,
+                                    textAlign = TextAlign.Center,
+                                    modifier = Modifier.fillMaxWidth(),
+                                    style = MaterialTheme.typography.h2
+                                )
+                            }
                         }
                     }
-                }
-            } else {
-                null
-            },
-            text = if (message != null) {
-                {
-                    Text(
-                        text = message.annotatedBoldCompose(),
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                }
-            } else {
-                null
-            },
-            buttons = {
-                Column(
-                    modifier = Modifier
-                        .padding(horizontal = 10.dp)
-                        .padding(bottom = 10.dp)
-                ) {
-                    buttons.forEach { buttonData ->
-                        MainAlertDialogActionButton(
-                            dialogId = dialogId,
-                            buttonData = buttonData,
-                            onAction = onAction
+                } else {
+                    null
+                },
+                text = if (message != null) {
+                    {
+                        Text(
+                            text = message.annotatedBoldCompose(),
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.fillMaxWidth()
                         )
                     }
+                } else {
+                    null
+                },
+                buttons = {
+                    Column(
+                        modifier = Modifier
+                            .padding(horizontal = 10.dp)
+                            .padding(bottom = 10.dp)
+                    ) {
+                        buttons.forEach { buttonData ->
+                            MainAlertDialogActionButton(
+                                dialogId = dialogId,
+                                buttonData = buttonData,
+                                onAction = onAction
+                            )
+                        }
+                    }
                 }
-            }
-        )
+            )
+        }
     }
 }
 
