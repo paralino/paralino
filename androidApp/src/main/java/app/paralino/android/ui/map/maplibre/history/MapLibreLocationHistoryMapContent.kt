@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -71,7 +70,6 @@ import org.maplibre.compose.layers.LineLayer
 import org.maplibre.compose.layers.SymbolLayer
 import org.maplibre.compose.map.GestureOptions
 import org.maplibre.compose.map.MapOptions
-import org.maplibre.compose.map.OrnamentOptions
 import org.maplibre.compose.map.RenderOptions
 import org.maplibre.compose.sources.GeoJsonData
 import org.maplibre.compose.sources.GeoJsonOptions
@@ -211,20 +209,7 @@ fun rememberMapLibreLocationHistoryMapController(
         derivedStateOf {
             val options = MapOptions(
                 renderOptions = RenderOptions(),
-                gestureOptions = GestureOptions(),
-                ornamentOptions = OrnamentOptions(
-                    padding = PaddingValues(
-                        top = mapContentPadding.calculateTopPadding(),
-                        bottom = 0.dp,
-                        start = mapContentPadding.calculateStartPadding(LayoutDirection.Ltr),
-                        end = mapContentPadding.calculateEndPadding(LayoutDirection.Ltr),
-                    ),
-                    isCompassEnabled = true,
-                    compassAlignment = Alignment.TopStart,
-                    attributionAlignment = Alignment.BottomEnd,
-                    logoAlignment = Alignment.BottomStart,
-                    isScaleBarEnabled = false
-                )
+                gestureOptions = GestureOptions()
             )
 
             MapLibreMapUiControlledData(

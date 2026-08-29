@@ -325,10 +325,8 @@ dependencies {
 
     playStoreImplementation(libs.maps.google.compose)
     playStoreImplementation(libs.maps.google.compose.utils)
-    implementation(libs.maps.maplibre.compose) {
-        exclude(group = "org.maplibre.gl", module = "android-sdk")
-    }
-    implementation(libs.maps.maplibre.android.opengl)
+    implementation(libs.maps.maplibre.compose)
+    runtimeOnly(libs.maps.maplibre.android.opengl)
 
     directImplementation(libs.unifiedPush.connector)
 

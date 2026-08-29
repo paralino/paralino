@@ -254,6 +254,7 @@ class MapStateMapper(
             isMapFocusRequested = previousState?.isMapFocusRequested ?: false,
             mapInteractionType = mapInteractionsType,
             desiredMapSheetPosition = previousState?.desiredMapSheetPosition,
+            canShowMapActionRowControl = previousState?.canShowMapActionRowControl ?: true,
             alertDialog = alertDialog,
             isSatelliteModeEnabled = isSatelliteModeEnabled,
             groupPlanConfig = planConfig,

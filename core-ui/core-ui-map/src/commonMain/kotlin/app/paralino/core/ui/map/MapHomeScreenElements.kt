@@ -33,6 +33,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -297,7 +298,7 @@ fun MapHomeScreenElements(
                 ) {
                     MapHomeElementSharingRow(
                         sheetFullProgress = sheetFullProgress,
-                        isActionRowControlVisible = isActionRowControlVisible,
+                        isActionRowControlVisible = isActionRowControlVisible && readyState?.canShowMapActionRowControl == true,
                         readyState = readyState,
                         onEvent = onEvent
                     )
@@ -497,11 +498,10 @@ private fun MapHomeElementSharingRow(
     AnimatedVisibility (isActionRowControlVisible) {
         Row(
             modifier = Modifier
-                .fillMaxWidth()
-//                .alpha(sheetCollapsedMinimizedProgress)
+                .wrapContentWidth(align = Alignment.End)
                 .horizontalScroll(rememberScrollState())
                 .padding(horizontal = sidePadding),
-            horizontalArrangement = Arrangement.spacedBy(6.dp, Alignment.End),
+            horizontalArrangement = Arrangement.spacedBy(6.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             if (!isMemberPlaceOrHistoryFocused && readyState?.isPersonalSpace == true) {

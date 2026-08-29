@@ -5,7 +5,6 @@ import android.graphics.Canvas
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionContext
 import androidx.compose.runtime.getValue
@@ -19,12 +18,12 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.applyCanvas
+import app.paralino.core.models.location.LatLng
 import app.paralino.core.presentation.map.MapMarkerStyle
 import app.paralino.core.presentation.map.MapPinData
 import app.paralino.core.presentation.map.MapPinType
 import app.paralino.core.ui.components.MapMarkerContent
 import app.paralino.core.ui.theme.AppColors
-import org.maplibre.android.geometry.LatLng
 import org.maplibre.compose.expressions.dsl.const
 import org.maplibre.compose.expressions.dsl.image
 import org.maplibre.compose.expressions.dsl.nil
@@ -42,6 +41,7 @@ import org.maplibre.compose.util.ClickResult
 import org.maplibre.spatialk.geojson.Point
 import org.maplibre.spatialk.geojson.Polygon
 import org.maplibre.spatialk.geojson.Position
+import androidx.core.graphics.createBitmap
 
 
 @Composable
@@ -114,7 +114,7 @@ fun MapLibreMapCircle(
 ) {
     val circlePolygon = remember(lat, lng, accuracy) {
         buildAccuracyCirclePolygon(
-            center = LatLng(latitude = lat, longitude = lng),
+            center = LatLng(lat = lat, lng = lng),
             radiusMeters = accuracy.toDouble()
         )
     }
@@ -264,12 +264,11 @@ private fun renderComposableToBitmapDescriptor(
 
     composeView.layout(0, 0, composeView.measuredWidth, composeView.measuredHeight)
 
-    val bitmap = Bitmap
-        .createBitmap(
-            composeView.measuredWidth,
-            composeView.measuredHeight,
-            Bitmap.Config.ARGB_8888,
-        )
+    val bitmap = createBitmap(
+        width = composeView.measuredWidth,
+        height = composeView.measuredHeight,
+        config = Bitmap.Config.ARGB_8888
+    )
 
     bitmap.applyCanvas { composeView.draw(this) }
 
@@ -289,7 +288,7 @@ private fun buildAccuracyCirclePolygon(
     repeat(points) { index ->
         val heading = index * angleStep
         val target = MapLibreMapUtils.computeOffset(center, radiusMeters, heading)
-        ring.add(Position(longitude = target.longitude, latitude = target.latitude))
+        ring.add(Position(longitude = target.lng, latitude = target.lat))
     }
 
     // Close the ring by repeating the first coordinate

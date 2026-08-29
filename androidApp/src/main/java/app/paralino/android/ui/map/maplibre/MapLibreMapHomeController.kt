@@ -1,8 +1,6 @@
 package app.paralino.android.ui.map.maplibre
 
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.calculateEndPadding
-import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -14,9 +12,6 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.unit.LayoutDirection
-import androidx.compose.ui.unit.dp
 import app.paralino.core.presentation.map.MapHomeScreenState
 import app.paralino.core.presentation.map.asReady
 import kotlinx.coroutines.delay
@@ -28,7 +23,6 @@ import org.maplibre.compose.camera.CameraState
 import org.maplibre.compose.camera.rememberCameraState
 import org.maplibre.compose.map.GestureOptions
 import org.maplibre.compose.map.MapOptions
-import org.maplibre.compose.map.OrnamentOptions
 import org.maplibre.compose.map.RenderOptions
 
 @Composable
@@ -101,20 +95,7 @@ fun rememberMapLibreHomeMapController(
         derivedStateOf {
             val options = MapOptions(
                 renderOptions = RenderOptions(),
-                gestureOptions = GestureOptions(),
-                ornamentOptions = OrnamentOptions(
-                    padding = PaddingValues(
-                        top = mapContentPadding.calculateTopPadding(),
-                        bottom = 0.dp,
-                        start = mapContentPadding.calculateStartPadding(LayoutDirection.Ltr),
-                        end = mapContentPadding.calculateEndPadding(LayoutDirection.Ltr),
-                    ),
-                    isCompassEnabled = true,
-                    compassAlignment = Alignment.TopStart,
-                    attributionAlignment = Alignment.BottomEnd,
-                    logoAlignment = Alignment.BottomStart,
-                    isScaleBarEnabled = false
-                )
+                gestureOptions = GestureOptions()
             )
 
             MapLibreMapUiControlledData(
