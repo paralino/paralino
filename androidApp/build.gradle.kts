@@ -283,7 +283,6 @@ dependencies {
     // region android and kotlin
     implementation(libs.kotlin.stdlib)
     implementation(libs.material)
-    implementation(libs.constraintlayout)
     implementation(libs.legacy.support.core.utils)
 
     implementation(libs.work.runtime.ktx)
