@@ -7,6 +7,6 @@ import dev.icerock.moko.resources.ImageResource
 object MokoResources {
     @Composable
     fun ImageResource.imageAsPainterResource(): Painter {
-        return dev.icerock.moko.resources.compose.painterResource(this)
+        return mokoPainterResource(this)
     }
 }
