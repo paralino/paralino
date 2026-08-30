@@ -427,6 +427,25 @@ private fun LazyListScope.membersList(
         )
     }
 
+    if (members.size == 1 && canAddNewMember) {
+        this.item("add_member_button") {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 20.dp),
+                contentAlignment = Alignment.CenterEnd
+            ) {
+                GroupMemberActionButton(
+                    modifier = Modifier,
+                    startIcon = CoreAppIcons.PersonAdd.asPainterResource(),
+                    endIcon = CoreAppIcons.ChevronRight.asPainterResource(),
+                    text = stringResource(MR.strings.invite_connect_screen_title),
+                    onClick = onAddNewMember
+                )
+            }
+        }
+    }
+
     if (hasUpgradeBanner) {
         this.item("premium_info") {
             DataInfoChip(
@@ -533,7 +552,7 @@ private fun LazyListScope.membersList(
                 )
             }
 
-            if (canAddNewMember) {
+            if (members.size > 1 && canAddNewMember) {
                 GroupMemberActionButton(
                     modifier = Modifier,
                     startIcon = CoreAppIcons.PersonAdd.asPainterResource(),
