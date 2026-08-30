@@ -544,6 +544,7 @@
     <string name="location_sharing_button_start_personal">Započni praćenje</string>
     <string name="location_sharing_button_stop_groups">Zaustavite dijeljenje</string>
     <string name="location_sharing_button_stop_personal">Prekini praćenje</string>
+    <string name="location_sharing_stop_groups_alert_message">Jeste li sigurni da želite prestati dijeliti svoju lokaciju s ovom grupom?</string>
     <string name="groups_sharing_title">Podijelite lokaciju</string>
     <string name="groups_sharing_device_name_placeholder">Naziv uređaja (nije obavezno)</string>
     <string name="groups_sharing_devices">Uređaji</string>

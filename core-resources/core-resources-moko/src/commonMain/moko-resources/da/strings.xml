@@ -544,6 +544,7 @@
     <string name="location_sharing_button_start_personal">Begynd at spore</string>
     <string name="location_sharing_button_stop_groups">Stop deling</string>
     <string name="location_sharing_button_stop_personal">Stop sporing</string>
+    <string name="location_sharing_stop_groups_alert_message">Er du sikker på, at du vil stoppe med at dele din placering med denne gruppe?</string>
     <string name="groups_sharing_title">Del placering</string>
     <string name="groups_sharing_device_name_placeholder">Enhedsnavn (valgfrit)</string>
     <string name="groups_sharing_devices">Enheder</string>

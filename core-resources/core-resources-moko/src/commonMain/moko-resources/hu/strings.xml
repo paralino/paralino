@@ -544,6 +544,7 @@
     <string name="location_sharing_button_start_personal">Kezdje el a nyomkövetést</string>
     <string name="location_sharing_button_stop_groups">Állítsa le a megosztást</string>
     <string name="location_sharing_button_stop_personal">Állítsa le a nyomkövetést</string>
+    <string name="location_sharing_stop_groups_alert_message">Biztosan leállítja a tartózkodási hely megosztását ezzel a csoporttal?</string>
     <string name="groups_sharing_title">Hely megosztása</string>
     <string name="groups_sharing_device_name_placeholder">Eszköz neve (opcionális)</string>
     <string name="groups_sharing_devices">Eszközök</string>

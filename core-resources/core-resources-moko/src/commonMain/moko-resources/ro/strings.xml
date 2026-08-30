@@ -544,6 +544,7 @@
     <string name="location_sharing_button_start_personal">Începeți urmărirea</string>
     <string name="location_sharing_button_stop_groups">Opriți partajarea</string>
     <string name="location_sharing_button_stop_personal">Opriți urmărirea</string>
+    <string name="location_sharing_stop_groups_alert_message">Sigur doriți să opriți partajarea locației cu acest grup?</string>
     <string name="groups_sharing_title">Partajați locația</string>
     <string name="groups_sharing_device_name_placeholder">Numele dispozitivului (opțional)</string>
     <string name="groups_sharing_devices">Dispozitive</string>

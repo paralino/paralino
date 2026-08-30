@@ -544,6 +544,7 @@
     <string name="location_sharing_button_start_personal">Почати відстеження</string>
     <string name="location_sharing_button_stop_groups">Припинити ділитися</string>
     <string name="location_sharing_button_stop_personal">Припинити відстеження</string>
+    <string name="location_sharing_stop_groups_alert_message">Ви впевнені, що хочете припинити ділитися своїм місцезнаходженням із цією групою?</string>
     <string name="groups_sharing_title">Поділитися місцезнаходженням</string>
     <string name="groups_sharing_device_name_placeholder">Назва пристрою (необов\'язково)</string>
     <string name="groups_sharing_devices">Пристрої</string>

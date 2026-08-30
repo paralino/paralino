@@ -544,6 +544,7 @@
     <string name="location_sharing_button_start_personal">Takibi başlat</string>
     <string name="location_sharing_button_stop_groups">Paylaşmayı durdur</string>
     <string name="location_sharing_button_stop_personal">Takibi durdur</string>
+    <string name="location_sharing_stop_groups_alert_message">Konumunuzu bu grupla paylaşmayı durdurmak istediğinizden emin misiniz?</string>
     <string name="groups_sharing_title">Konumu paylaş</string>
     <string name="groups_sharing_device_name_placeholder">Cihaz adı (isteğe bağlı)</string>
     <string name="groups_sharing_devices">Cihazlar</string>

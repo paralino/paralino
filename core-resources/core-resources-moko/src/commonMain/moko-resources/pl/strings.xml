@@ -544,6 +544,7 @@
     <string name="location_sharing_button_start_personal">Rozpocznij śledzenie</string>
     <string name="location_sharing_button_stop_groups">Zatrzymaj udostępnianie</string>
     <string name="location_sharing_button_stop_personal">Zatrzymaj śledzenie</string>
+    <string name="location_sharing_stop_groups_alert_message">Czy na pewno chcesz przestać udostępniać swoją lokalizację tej grupie?</string>
     <string name="groups_sharing_title">Udostępnij lokalizację</string>
     <string name="groups_sharing_device_name_placeholder">Nazwa urządzenia (opcjonalnie)</string>
     <string name="groups_sharing_devices">Urządzenia</string>

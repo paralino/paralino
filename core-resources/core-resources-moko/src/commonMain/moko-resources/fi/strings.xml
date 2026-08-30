@@ -544,6 +544,7 @@
     <string name="location_sharing_button_start_personal">Aloita seuranta</string>
     <string name="location_sharing_button_stop_groups">Lopeta jakaminen</string>
     <string name="location_sharing_button_stop_personal">Lopeta seuranta</string>
+    <string name="location_sharing_stop_groups_alert_message">Haluatko varmasti lopettaa sijaintisi jakamisen tälle ryhmälle?</string>
     <string name="groups_sharing_title">Jaa sijainti</string>
     <string name="groups_sharing_device_name_placeholder">Laitteen nimi (valinnainen)</string>
     <string name="groups_sharing_devices">Laitteet</string>

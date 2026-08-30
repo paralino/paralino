@@ -544,6 +544,7 @@
     <string name="location_sharing_button_start_personal">Inizia a tracciare</string>
     <string name="location_sharing_button_stop_groups">Interrompi condivisione</string>
     <string name="location_sharing_button_stop_personal">Interrompi il tracciamento</string>
+    <string name="location_sharing_stop_groups_alert_message">Vuoi davvero interrompere la condivisione della tua posizione con questo gruppo?</string>
     <string name="groups_sharing_title">Condividi posizione</string>
     <string name="groups_sharing_device_name_placeholder">Nome dispositivo (opzionale)</string>
     <string name="groups_sharing_devices">Dispositivi</string>

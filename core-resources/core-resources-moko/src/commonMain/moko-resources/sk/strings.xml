@@ -544,6 +544,7 @@
     <string name="location_sharing_button_start_personal">Začať sledovanie</string>
     <string name="location_sharing_button_stop_groups">Zastaviť zdieľanie</string>
     <string name="location_sharing_button_stop_personal">Zastaviť sledovanie</string>
+    <string name="location_sharing_stop_groups_alert_message">Naozaj chcete prestať zdieľať svoju polohu s touto skupinou?</string>
     <string name="groups_sharing_title">Zdieľať polohu</string>
     <string name="groups_sharing_device_name_placeholder">Názov zariadenia (voliteľné)</string>
     <string name="groups_sharing_devices">Zariadenia</string>

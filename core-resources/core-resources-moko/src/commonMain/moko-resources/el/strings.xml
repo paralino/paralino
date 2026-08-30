@@ -544,6 +544,7 @@
     <string name="location_sharing_button_start_personal">Αρχίστε την παρακολούθηση</string>
     <string name="location_sharing_button_stop_groups">Σταματήστε να μοιράζεστε</string>
     <string name="location_sharing_button_stop_personal">Σταματήστε την παρακολούθηση</string>
+    <string name="location_sharing_stop_groups_alert_message">Είστε βέβαιοι ότι θέλετε να σταματήσετε την κοινή χρήση της τοποθεσίας σας με αυτήν την ομάδα;</string>
     <string name="groups_sharing_title">Μοιραστείτε την τοποθεσία</string>
     <string name="groups_sharing_device_name_placeholder">Όνομα συσκευής (προαιρετικό)</string>
     <string name="groups_sharing_devices">Συσκευές</string>

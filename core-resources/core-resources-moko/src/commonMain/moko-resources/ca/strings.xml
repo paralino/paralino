@@ -544,6 +544,7 @@
     <string name="location_sharing_button_start_personal">Començar a rastrejar</string>
     <string name="location_sharing_button_stop_groups">Aturar la compartició</string>
     <string name="location_sharing_button_stop_personal">Aturar el rastreig</string>
+    <string name="location_sharing_stop_groups_alert_message">Segur que vols deixar de compartir la teva ubicació amb aquest grup?</string>
     <string name="groups_sharing_title">Compartir ubicació</string>
     <string name="groups_sharing_device_name_placeholder">Nom del dispositiu (opcional)</string>
     <string name="groups_sharing_devices">Dispositius</string>

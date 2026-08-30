@@ -544,6 +544,7 @@
     <string name="location_sharing_button_start_personal">Begin met volgen</string>
     <string name="location_sharing_button_stop_groups">Stop met delen</string>
     <string name="location_sharing_button_stop_personal">Stop met volgen</string>
+    <string name="location_sharing_stop_groups_alert_message">Weet u zeker dat u wilt stoppen met het delen van uw locatie met deze groep?</string>
     <string name="groups_sharing_title">Deel locatie</string>
     <string name="groups_sharing_device_name_placeholder">Apparaatnaam (optioneel)</string>
     <string name="groups_sharing_devices">Apparaten</string>

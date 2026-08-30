@@ -544,6 +544,7 @@
     <string name="location_sharing_button_start_personal">Iniciar rastreamento</string>
     <string name="location_sharing_button_stop_groups">Parar compartilhamento</string>
     <string name="location_sharing_button_stop_personal">Parar rastreamento</string>
+    <string name="location_sharing_stop_groups_alert_message">Você tem certeza de que deseja parar de compartilhar sua localização com este grupo?</string>
     <string name="groups_sharing_title">Compartilhar localização</string>
     <string name="groups_sharing_device_name_placeholder">Nome do dispositivo (opcional)</string>
     <string name="groups_sharing_devices">Dispositivos</string>

@@ -544,6 +544,7 @@
     <string name="location_sharing_button_start_personal">Začnite slediti</string>
     <string name="location_sharing_button_stop_groups">Prenehajte deliti</string>
     <string name="location_sharing_button_stop_personal">Prenehajte slediti</string>
+    <string name="location_sharing_stop_groups_alert_message">Ali ste prepričani, da želite prenehati deliti svojo lokacijo s to skupino?</string>
     <string name="groups_sharing_title">Deli lokacijo</string>
     <string name="groups_sharing_device_name_placeholder">Ime naprave (neobvezno)</string>
     <string name="groups_sharing_devices">Naprav</string>

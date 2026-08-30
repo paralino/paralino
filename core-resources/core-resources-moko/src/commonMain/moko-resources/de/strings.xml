@@ -544,6 +544,7 @@
     <string name="location_sharing_button_start_personal">Tracking starten</string>
     <string name="location_sharing_button_stop_groups">Freigabe beenden</string>
     <string name="location_sharing_button_stop_personal">Tracking stoppen</string>
+    <string name="location_sharing_stop_groups_alert_message">Sind Sie sicher, dass Sie die Standortfreigabe für diese Gruppe beenden möchten?</string>
     <string name="groups_sharing_title">Standort freigeben</string>
     <string name="groups_sharing_device_name_placeholder">Gerätename (optional)</string>
     <string name="groups_sharing_devices">Geräte</string>

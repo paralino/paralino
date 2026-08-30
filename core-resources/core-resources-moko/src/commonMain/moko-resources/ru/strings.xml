@@ -544,6 +544,7 @@
     <string name="location_sharing_button_start_personal">Начать отслеживание</string>
     <string name="location_sharing_button_stop_groups">Прекратить делиться</string>
     <string name="location_sharing_button_stop_personal">Прекратить отслеживание</string>
+    <string name="location_sharing_stop_groups_alert_message">Вы уверены, что хотите прекратить делиться своим местоположением с этой группой?</string>
     <string name="groups_sharing_title">Поделиться местоположением</string>
     <string name="groups_sharing_device_name_placeholder">Имя устройства (необязательно)</string>
     <string name="groups_sharing_devices">Устройства</string>
