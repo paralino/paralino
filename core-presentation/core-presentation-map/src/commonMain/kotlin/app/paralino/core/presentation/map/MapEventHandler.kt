@@ -168,6 +168,12 @@ class MapEventHandler(
                 }
             }
 
+            is MapHomeScreenUiEvent.OnMapAttributionExpanded -> {
+                updateReadyState { state ->
+                    state.copy(canShowMapActionRowControl = !event.expanded)
+                }
+            }
+
             MapHomeScreenUiEvent.OnRefocusSelectedDeviceItem -> {
                 updateReadyState { state ->
                     state.copy(isMapFocusRequested = false)

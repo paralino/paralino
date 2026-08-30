@@ -79,26 +79,27 @@ fun MainAlertDialog(
     AppTheme {
         BoxWithConstraints {
             val maxHeight = this.maxHeight
-            AlertDialog(
-                properties = DialogProperties(
-                    dismissOnBackPress = canDismiss,
-                    dismissOnClickOutside = canDismiss
-                ),
-                onDismissRequest = { onAction(null) },
-                title = {
-                    Text(
-                        text = title,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                },
-                text = {
-                    Text(
-                        text = message.annotatedBoldCompose(),
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                    // ignore for now since lineHeight is not scaled so we don't gain much
+            IosKeyboardSafeDialog {
+                AlertDialog(
+                    properties = DialogProperties(
+                        dismissOnBackPress = canDismiss,
+                        dismissOnClickOutside = canDismiss
+                    ),
+                    onDismissRequest = { onAction(null) },
+                    title = {
+                        Text(
+                            text = title,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    },
+                    text = {
+                        Text(
+                            text = message.annotatedBoldCompose(),
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                        // ignore for now since lineHeight is not scaled so we don't gain much
 //                    BasicText(
 //                        modifier = Modifier.fillMaxWidth(),
 //                        text = message.plus(message).annotatedBoldCompose(),
@@ -112,25 +113,26 @@ fun MainAlertDialog(
 //                            maxFontSize = 14.sp
 //                        )
 //                    )
-                },
-                buttons = {
-                    Column(
-                        modifier = Modifier
-                            .padding(horizontal = 10.dp)
-                            .padding(bottom = 10.dp)
-                            .heightIn(max = maxHeight * 0.45f)
-                            .verticalScroll(rememberScrollState())
-                    ) {
-                        buttons.forEach { buttonData ->
-                            MainAlertDialogActionButton(
-                                dialogId = dialogId,
-                                buttonData = buttonData,
-                                onAction = onAction
-                            )
+                    },
+                    buttons = {
+                        Column(
+                            modifier = Modifier
+                                .padding(horizontal = 10.dp)
+                                .padding(bottom = 10.dp)
+                                .heightIn(max = maxHeight * 0.45f)
+                                .verticalScroll(rememberScrollState())
+                        ) {
+                            buttons.forEach { buttonData ->
+                                MainAlertDialogActionButton(
+                                    dialogId = dialogId,
+                                    buttonData = buttonData,
+                                    onAction = onAction
+                                )
+                            }
                         }
                     }
-                }
-            )
+                )
+            }
         }
     }
 }

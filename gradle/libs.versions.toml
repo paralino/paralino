@@ -2,11 +2,11 @@
 compileSdk = "37"
 minSdk = "29"
 targetSdk = "37"
-androidGradlePlugin = "9.2.1"
+androidGradlePlugin = "9.3.2"
 kotlin = "2.3.20"
-composeBom = "2026.06.00"
-composeMultiplatform = "1.11.1"
-koin-bom = "4.2.1"
+composeBom = "2026.08.00"
+composeMultiplatform = "1.12.0"
+koin-bom = "4.2.2"
 junit = "4.+"
 androidxTestExt = "1.3.0"
 espressoCore = "3.7.0"
@@ -14,8 +14,7 @@ kotlinxCoroutinesCore = "1.11.0"
 kotlinxDatetime = "0.8.0"
 kotlinxSerializationJson = "1.11.0"
 material = "1.14.0"
-appcompat = "1.7.1"
-constraintlayout = "2.2.1"
+appcompat = "1.8.0"
 legacySupport = "1.0.0"
 multiplatformSettings = "1.3.0"
 preferenceKtx = "1.2.1"
@@ -24,26 +23,25 @@ work = "2.11.2"
 lifecycle = "2.11.0"
 lifecycleExtensions = "2.2.0"
 activityCompose = "1.13.0"
-constraintlayoutCompose = "1.1.1"
-navigationCompose = "2.9.8"
+constraintlayoutCompose = "1.1.2"
+navigationCompose = "2.10.0"
 accompanist = "0.34.0"
 aboutLibraries = "14.2.1"
-sentry = "8.43.1"
-playServicesLocation = "21.3.0"
-mapsGoogleCompose = "8.3.0"
-mapsMapLibreCompose = "0.13.0"
-mapsMapLibreAndroidOpenGl = "13.0.2"
+sentry = "8.54.0"
+playServicesLocation = "21.4.0"
+mapsGoogleCompose = "8.5.0"
+mapsMapLibreCompose = "0.15.0"
 firebaseMessaging = "24.1.2"
-nanoid = "1.0.1"
+nanoid = "2.0.1"
 mokoResources = "0.26.4"
-okhttp = "5.4.0"
-ktor = "3.5.0"
-revenuecat-android = "10.8.0"
+okhttp = "5.5.0"
+ktor = "3.5.2"
+revenuecat-android = "10.19.1"
 androidx-room = "2.8.4"
 sqlite = "2.6.2"
 ksp = "2.3.9"
 googlePlayReview = "2.0.2"
-unifiedPushConnector = "3.3.3"
+unifiedPushConnector = "3.3.5"
 
 [libraries]
 androidx-preference-ktx = { module = "androidx.preference:preference-ktx", version.ref = "preferenceKtx" }
@@ -58,7 +56,6 @@ kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
 legacy-support-core-utils = { group = "androidx.legacy", name = "legacy-support-core-utils", version.ref = "legacySupport" }
 moko-resources = { module = "dev.icerock.moko:resources", version.ref = "mokoResources" }
 moko-resources-compose = { module = "dev.icerock.moko:resources-compose", version.ref = "mokoResources" }
@@ -96,7 +93,7 @@ play-services-location = { group = "com.google.android.gms", name = "play-servic
 maps-google-compose = { group = "com.google.maps.android", name = "maps-compose", version.ref = "mapsGoogleCompose" }
 maps-google-compose-utils = { group = "com.google.maps.android", name = "maps-compose-utils", version.ref = "mapsGoogleCompose" }
 maps-maplibre-compose = { module = "org.maplibre.compose:maplibre-compose", version.ref = "mapsMapLibreCompose" }
-maps-maplibre-android-opengl = { module = "org.maplibre.gl:android-sdk-opengl", version.ref = "mapsMapLibreAndroidOpenGl" }
+maps-maplibre-android-opengl = { module = "org.maplibre.compose:maplibre-compose-runtime-opengl-android", version.ref = "mapsMapLibreCompose" }
 firebase-messaging-ktx = { group = "com.google.firebase", name = "firebase-messaging-ktx", version.ref = "firebaseMessaging" }
 nanoid = { group = "io.viascom.nanoid", name = "nanoid", version.ref = "nanoid" }
 koin-bom = { module = "io.insert-koin:koin-bom", version.ref = "koin-bom" }

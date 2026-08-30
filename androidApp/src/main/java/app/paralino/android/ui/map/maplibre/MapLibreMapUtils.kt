@@ -4,43 +4,55 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
-import app.paralino.core.presentation.map.FocusedMarkerData
+import app.paralino.core.models.location.LatLng
 import app.paralino.core.models.map.MapHomeScreenFocusType
+import app.paralino.core.presentation.map.FocusedMarkerData
 import app.paralino.core.presentation.map.MapPinData
 import app.paralino.core.presentation.map.MapPinType
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import org.maplibre.android.geometry.LatLng
-import org.maplibre.android.geometry.LatLngBounds
 import org.maplibre.compose.camera.CameraPosition
 import org.maplibre.compose.camera.CameraState
 import org.maplibre.spatialk.geojson.BoundingBox
 import org.maplibre.spatialk.geojson.Position
-import kotlin.math.sqrt
+import kotlin.math.abs
 import kotlin.math.asin
 import kotlin.math.atan2
 import kotlin.math.cos
+import kotlin.math.pow
 import kotlin.math.sin
+import kotlin.math.sqrt
 import kotlin.time.Duration.Companion.milliseconds
 
 
-fun boundsForMarkers(markers: List<MapPinData>, ignoreAccuracy: Boolean): LatLngBounds? {
+fun boundsForMarkers(markers: List<MapPinData>, ignoreAccuracy: Boolean): BoundingBox? {
     if (markers.isEmpty())
         return null
-    return LatLngBounds.Builder()
-        .apply {
-            markers.forEach {
-                val distanceFromCenterToCorner = (if (ignoreAccuracy) 1f else it.accuracy) * Math.sqrt(2.0)
-                val center = LatLng(latitude = it.lat, longitude = it.lng)
-                val southwestCorner =
-                    MapLibreMapUtils.computeOffset(center, distanceFromCenterToCorner, 225.0)
-                val northeastCorner =
-                    MapLibreMapUtils.computeOffset(center, distanceFromCenterToCorner, 45.0)
-                include(southwestCorner)
-                include(northeastCorner)
-            }
-        }
-        .build()
+
+    var minLat = Double.POSITIVE_INFINITY
+    var minLng = Double.POSITIVE_INFINITY
+    var maxLat = Double.NEGATIVE_INFINITY
+    var maxLng = Double.NEGATIVE_INFINITY
+
+    markers.forEach {
+        val distanceFromCenterToCorner = (if (ignoreAccuracy) 1f else it.accuracy) * Math.sqrt(2.0)
+        val center = LatLng(lat = it.lat, lng = it.lng)
+        val southwestCorner =
+            MapLibreMapUtils.computeOffset(center, distanceFromCenterToCorner, 225.0)
+        val northeastCorner =
+            MapLibreMapUtils.computeOffset(center, distanceFromCenterToCorner, 45.0)
+        minLat = minOf(minLat, southwestCorner.lat, northeastCorner.lat)
+        maxLat = maxOf(maxLat, southwestCorner.lat, northeastCorner.lat)
+        minLng = minOf(minLng, southwestCorner.lng, northeastCorner.lng)
+        maxLng = maxOf(maxLng, southwestCorner.lng, northeastCorner.lng)
+    }
+
+    return BoundingBox(
+        west = minLng,
+        south = minLat,
+        east = maxLng,
+        north = maxLat
+    )
 }
 
 fun CameraState.refocus(
@@ -53,31 +65,22 @@ fun CameraState.refocus(
 ) {
     scope.launch {
         if (markers.isEmpty()) return@launch
-        val bounds = boundsForMarkers(markers = markers, ignoreAccuracy = ignoreAccuracy) ?: return@launch
-
-        val box = BoundingBox(
-            southwest = Position(
-                longitude = bounds.southWest.longitude, latitude = bounds.southWest.latitude, altitude = bounds.southWest.altitude
-            ),
-            northeast = Position(
-                longitude = bounds.northEast.longitude, latitude = bounds.northEast.latitude, altitude = bounds.northEast.altitude
-            )
-        )
+        val box = boundsForMarkers(markers = markers, ignoreAccuracy = ignoreAccuracy) ?: return@launch
 
         // Calculate diagonal distance between bounds corners
         val boundsDistance = MapLibreMapUtils.computeDistanceBetween(
-            from = LatLng(bounds.northEast.latitude, bounds.northEast.longitude),
-            to = LatLng(bounds.southWest.latitude, bounds.southWest.longitude)
+            from = LatLng(lat = box.northeast.latitude, lng = box.northeast.longitude),
+            to = LatLng(lat = box.southwest.latitude, lng = box.southwest.longitude)
         )
 
         val boundsCenter = Position(
-            longitude = (bounds.southWest.longitude + bounds.northEast.longitude) / 2,
-            latitude = (bounds.southWest.latitude + bounds.northEast.latitude) / 2
+            longitude = (box.southwest.longitude + box.northeast.longitude) / 2,
+            latitude = (box.southwest.latitude + box.northeast.latitude) / 2
         )
 
         val effectiveDuration = durationMs.coerceAtLeast(1).milliseconds
 
-        val currentVisibleBounds = this@refocus.projection?.queryVisibleBoundingBox()
+        val currentVisibleBounds = this@refocus.viewport?.visibleBoundingBox
         if (currentVisibleBounds != null) {
             val fitBounds = currentVisibleBounds.canFitBounds(box)
             if (forceZoom) {
@@ -85,12 +88,12 @@ fun CameraState.refocus(
                 if (fitBounds && boundsDistance < 500) {
                     // Bounds are small and fit - zoom to center with high zoom level
                     this@refocus.animateTo(
-                        finalPosition = CameraPosition(
+                        finalPosition = cameraPositionCenteredInPadding(
                             target = boundsCenter,
                             zoom = 16.0,
+                            padding = padding,
                             bearing = this@refocus.position.bearing,
                             tilt = this@refocus.position.tilt,
-                            padding = padding
                         ),
                         duration = effectiveDuration
                     )
@@ -107,12 +110,12 @@ fun CameraState.refocus(
                 if (fitBounds) {
                     // Bounds fit in current view - just move to center without changing zoom
                     this@refocus.animateTo(
-                        finalPosition = CameraPosition(
+                        finalPosition = cameraPositionCenteredInPadding(
                             target = boundsCenter,
                             zoom = this@refocus.position.zoom,
+                            padding = padding,
                             bearing = this@refocus.position.bearing,
                             tilt = this@refocus.position.tilt,
-                            padding = padding
                         ),
                         duration = effectiveDuration
                     )
@@ -126,7 +129,7 @@ fun CameraState.refocus(
                 }
             }
         } else {
-            // No projection yet (map not initialized) - default behavior
+            // No viewport yet (map not initialized) - default behavior
             if (boundsDistance < 500) {
                 this@refocus.animateTo(
                     finalPosition = CameraPosition(
@@ -134,7 +137,6 @@ fun CameraState.refocus(
                         zoom = 16.0,
                         bearing = 0.0,
                         tilt = 0.0,
-                        padding = padding
                     ),
                     duration = effectiveDuration
                 )
@@ -220,6 +222,49 @@ fun CameraState.focusOnMap(
 }
 
 /**
+ * MapLibre 0.15 dropped [CameraPosition] padding.
+ * Now we are shifting target position so the point sits at the center of usable map, not the full map.
+ */
+private fun CameraState.cameraPositionCenteredInPadding(
+    target: Position,
+    zoom: Double,
+    padding: PaddingValues,
+    bearing: Double,
+    tilt: Double,
+    layoutDirection: LayoutDirection = LayoutDirection.Ltr,
+): CameraPosition {
+    val metersPerDpAtCurrentZoom = viewport?.metersPerDpAtTarget?.takeIf { it > 0.0 }
+        ?: return CameraPosition(target = target, zoom = zoom, bearing = bearing, tilt = tilt)
+
+    val metersPerDpAtDestination = metersPerDpAtCurrentZoom * 2.0.pow(position.zoom - zoom)
+    val offsetXDp = padding.calculateLeftPadding(layoutDirection)
+        .minus(padding.calculateRightPadding(layoutDirection))
+        .value / 2f
+    val offsetYDp = padding.calculateTopPadding()
+        .minus(padding.calculateBottomPadding())
+        .value / 2f
+
+    val origin = LatLng(lat = target.latitude, lng = target.longitude)
+    val shiftedEastWest = MapLibreMapUtils.computeOffset(
+        from = origin,
+        distance = abs(offsetXDp) * metersPerDpAtDestination,
+        heading = if (offsetXDp >= 0f) 270.0 else 90.0,
+    )
+    val shifted = MapLibreMapUtils.computeOffset(
+        from = shiftedEastWest,
+        distance = abs(offsetYDp) * metersPerDpAtDestination,
+        heading = if (offsetYDp >= 0f) 0.0 else 180.0,
+    )
+
+    return CameraPosition(
+        target = Position(longitude = shifted.lng, latitude = shifted.lat),
+        zoom = zoom,
+        bearing = bearing,
+        tilt = tilt,
+    )
+}
+
+/**
  * Checks if this bounding box can fit the given bounds without needing to zoom out.
  * Compares the width and height of both boxes using spherical distance calculations.
  */
@@ -264,8 +309,8 @@ internal object MapLibreMapUtils {
         distance /= EARTH_RADIUS
         heading = Math.toRadians(heading)
         // http://williams.best.vwh.net/avform.htm#LL
-        val fromLat = Math.toRadians(from.latitude)
-        val fromLng = Math.toRadians(from.longitude)
+        val fromLat = Math.toRadians(from.lat)
+        val fromLng = Math.toRadians(from.lng)
         val cosDistance = cos(distance)
         val sinDistance = sin(distance)
         val sinFromLat = sin(fromLat)
@@ -286,10 +331,10 @@ internal object MapLibreMapUtils {
      * Returns distance in meters.
      */
     fun computeDistanceBetween(from: LatLng, to: LatLng): Double {
-        val fromLat = Math.toRadians(from.latitude)
-        val fromLng = Math.toRadians(from.longitude)
-        val toLat = Math.toRadians(to.latitude)
-        val toLng = Math.toRadians(to.longitude)
+        val fromLat = Math.toRadians(from.lat)
+        val fromLng = Math.toRadians(from.lng)
+        val toLat = Math.toRadians(to.lat)
+        val toLng = Math.toRadians(to.lng)
 
         val dLat = toLat - fromLat
         val dLng = toLng - fromLng

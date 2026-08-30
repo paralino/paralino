@@ -79,6 +79,7 @@ sealed class MapHomeScreenState {
         val isMapFocusRequested: Boolean,
         val mapInteractionType: MapInteractionsType,
         val desiredMapSheetPosition: BottomSheetPosition?,
+        val canShowMapActionRowControl: Boolean,
 
         val sharingEndTime: String?,
         val verified: Boolean,
@@ -276,6 +277,7 @@ sealed interface MapHomeScreenUiEvent {
     data class OnMapLongPress(val location: LatLng) : MapHomeScreenUiEvent
     data object OnMapTouch : MapHomeScreenUiEvent
     data class OnMapClick(val location: LatLng) : MapHomeScreenUiEvent
+    data class OnMapAttributionExpanded(val expanded: Boolean) : MapHomeScreenUiEvent
     data object OnRefocusSelectedDeviceItem : MapHomeScreenUiEvent
     data object OnGroupPickerClick : MapHomeScreenUiEvent
     data object OnGroupDetailsClick : MapHomeScreenUiEvent
