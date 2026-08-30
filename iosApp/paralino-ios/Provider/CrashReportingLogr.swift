@@ -19,7 +19,15 @@ class CrashReportingLogr: ICrashReportingLogr {
         guard canLogToRemote else { return }
         guard priority == LogPriority.error else { return }
         guard let error = t?.description() else { return }
-        if t is InternalConnectionException || t is MissingGroupKeyException || t is KotlinCancellationException { return }
+        if t is InternalConnectionException
+            || t is RemoteConnectionException
+            || t is TimeoutException
+            || t is MissingGroupKeyException
+            || t is KotlinCancellationException {
+            return
+        }
+        // manually checking for HTTPClientError since it gets mapped to a typed exception
+        if t?.message?.contains("HTTPClientError") == true { return }
         
         SentrySDK.capture(error: KotlinError.generic(message: message, stackTrace: error))
     }

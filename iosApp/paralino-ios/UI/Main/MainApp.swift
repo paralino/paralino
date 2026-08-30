@@ -29,6 +29,7 @@ struct MainApp: App {
             options.enableUserInteractionTracing = false
             options.attachScreenshot = false
             options.attachViewHierarchy = false
+            options.enableAppHangTracking = false
             options.debug = false
         }
     }

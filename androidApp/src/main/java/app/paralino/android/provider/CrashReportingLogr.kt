@@ -31,9 +31,14 @@ class CrashReportingLogr(
             return
         }
 
-        val exceptionAllowed =
-            t != null && t !is SocketTimeoutException && t !is InternalConnectionException && t !is ConnectException &&
-                    t !is MissingGroupKeyException && t !is CancellationException && t !is RemoteConnectionException
+        val exceptionAllowed = t != null
+                && t !is SocketTimeoutException
+                && t !is InternalConnectionException
+                && t !is ConnectException
+                && t !is MissingGroupKeyException
+                && t !is CancellationException
+                && t !is RemoteConnectionException
+
         if (exceptionAllowed) {
             Sentry.captureException(t!!)
         }

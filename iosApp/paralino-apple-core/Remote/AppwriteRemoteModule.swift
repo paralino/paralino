@@ -8,6 +8,7 @@
 import Foundation
 import shared
 import Appwrite
+import AsyncHTTPClient
 
 class AppwriteRemoteModule: IRemoteModule {
     
@@ -93,20 +94,52 @@ class AppwriteRemoteModule: IRemoteModule {
             cause: nil,
             type: error.type ?? (userApi ? "general_unauthorized_scope" : nil)
         )
-        default: return KotlinException(message: error.localizedDescription)
+        case let error as HTTPClientError where error.isTimeout:
+            return TimeoutException(message: error.description, cause: nil)
+        case let error as HTTPClientError:
+            return RemoteConnectionException(message: error.description, code: nil, cause: nil)
+        default: return KotlinException(message: String(describing: error))
         }
     }
 }
 
 extension Error {
     var isConnectionError: Bool {
+        if let httpError = self as? HTTPClientError {
+            return httpError.isConnectionFailure
+        }
         let nsError = self as NSError
         return nsError.domain == NSURLErrorDomain &&
                (nsError.code == NSURLErrorNotConnectedToInternet || nsError.code == NSURLErrorCannotFindHost)
     }
     
     var isSocketTimeout: Bool {
+        if let httpError = self as? HTTPClientError {
+            return httpError.isTimeout
+        }
         let nsError = self as NSError
         return nsError.domain == NSURLErrorDomain && nsError.code == NSURLErrorTimedOut
+    }
+}
+
+private extension HTTPClientError {
+    var isTimeout: Bool {
+        self == .readTimeout
+            || self == .writeTimeout
+            || self == .connectTimeout
+            || self == .deadlineExceeded
+            || self == .getConnectionFromPoolTimeout
+            || self == .tlsHandshakeTimeout
+            || self == .socksHandshakeTimeout
+            || self == .httpProxyHandshakeTimeout
+    }
+
+    var isConnectionFailure: Bool {
+        self == .remoteConnectionClosed
+            || self == .cancelled
+            || self == .requestStreamCancelled
+            || self == .uncleanShutdown
+            || self == .connectTimeout
+            || self == .getConnectionFromPoolTimeout
     }
 }
