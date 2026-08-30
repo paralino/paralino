@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -16,6 +18,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.dropShadow
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
@@ -23,6 +26,7 @@ import androidx.compose.ui.geometry.RoundRect
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.PathOperation
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.IntOffset
@@ -76,6 +80,22 @@ fun MapActionBubbleMarkerContent(
     ) {
 
         if (boxSize != null) {
+
+            Box(
+                modifier = Modifier
+                    .size(
+                        width = with(density) { boxSize!!.width.toDp() },
+                        height = with(density) { boxSize!!.height.toDp() - pointerHeight },
+                    )
+                    .dropShadow(
+                        shape = RoundedCornerShape(22.dp),
+                        shadow = Shadow(
+                            radius = 12.dp,
+                            color = MaterialTheme.colors.onBackground.copy(alpha = 0.2f),
+                        )
+                    )
+            )
+
             val popupPath = remember(boxSize, cornerRadiusPx, pointerHeightPx, pointerHalfWidthPx) {
                 createMapLongTapPopupPath(
                     width = boxSize!!.width.toFloat(),
@@ -131,9 +151,12 @@ fun MapActionBubbleMarkerContent(
                 backgroundColor = MaterialTheme.colors.primary,
                 contentColor = MaterialTheme.colors.onPrimary,
                 icon = CoreAppIcons.MapsHomeWork.asPainterResource(),
+                iconSize = 18.dp,
+                compactMode = false,
                 text = {
                     Text(
-                        text = stringResource(MR.strings.map_long_tap_action_new_place)
+                        text = stringResource(MR.strings.map_long_tap_action_new_place),
+                        style = MaterialTheme.typography.button.copy(color = MaterialTheme.colors.onPrimary)
                     )
                 },
                 onClick = onCreatePlace
@@ -145,9 +168,12 @@ fun MapActionBubbleMarkerContent(
                     backgroundColor = MaterialTheme.colors.primary,
                     contentColor = MaterialTheme.colors.onPrimary,
                     icon = CoreAppIcons.PrivacyZone.asPainterResource(),
+                    iconSize = 18.dp,
+                    compactMode = false,
                     text = {
                         Text(
                             text = stringResource(MR.strings.map_long_tap_action_new_privacy_zone),
+                            style = MaterialTheme.typography.button.copy(color = MaterialTheme.colors.onPrimary)
                         )
                     },
                     onClick = onCreatePrivacyZone
