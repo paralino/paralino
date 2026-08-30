@@ -552,6 +552,7 @@
     <string name="groups_sharing_potential_error_title">Upozornění</string>
     <string name="groups_sharing_potential_error_message">Pro sdílení vaší polohy prosím vyřešte všechny chyby: \n\n%s\n</string>
     <string name="groups_sharing_potential_error_background_location_message">Vaše poloha nemůže být sdílena na pozadí nebo pokud restartujete svůj telefon! \n\nProsím, povolte **vždy** přístup k poloze pro spolehlivé sdílení.</string>
+    <string name="groups_sharing_potential_error_notification_permission_message">Aktualizace polohy v reálném čase nebudou fungovat správně a ostatní nebudou moci toto zařízení najít.\n\nPovolte **notifikace** pro spolehlivé sdílení.</string>
     <string name="groups_sharing_error_unverified_group_title">Neověřená skupina nebo člen</string>
     <string name="groups_sharing_error_unverified_group_message">Nemůžete sdílet polohu s neověřenou skupinou nebo členem. \n\nZkuste obnovit data skupiny.</string>
     <string name="groups_sharing_duration_type_infinite">Vždy zapnuto</string>

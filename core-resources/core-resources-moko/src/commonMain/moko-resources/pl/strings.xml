@@ -552,6 +552,7 @@
     <string name="groups_sharing_potential_error_title">Ostrzeżenie</string>
     <string name="groups_sharing_potential_error_message">Aby udostępnić swoją lokalizację, proszę rozwiązać wszystkie błędy: \n\n%s\n</string>
     <string name="groups_sharing_potential_error_background_location_message">Twoja lokalizacja nie może być udostępniana w tle ani po ponownym uruchomieniu telefonu! \n\nProszę zezwolić na **zawsze** dostęp do lokalizacji, aby zapewnić niezawodne udostępnianie.</string>
+    <string name="groups_sharing_potential_error_notification_permission_message">Aktualizacje lokalizacji w czasie rzeczywistym nie będą działać poprawnie, a inni nie będą mogli zlokalizować tego urządzenia.\n\nZezwól na **powiadomienia**, aby udostępnianie było niezawodne.</string>
     <string name="groups_sharing_error_unverified_group_title">Nieweryfikowana grupa lub członek</string>
     <string name="groups_sharing_error_unverified_group_message">Nie możesz udostępnić lokalizacji nieweryfikowanej grupie lub członkowi. \n\nSpróbuj odświeżyć dane grupy.</string>
     <string name="groups_sharing_duration_type_infinite">Zawsze włączone</string>

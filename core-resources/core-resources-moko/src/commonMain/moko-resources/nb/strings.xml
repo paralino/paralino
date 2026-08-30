@@ -552,6 +552,7 @@
     <string name="groups_sharing_potential_error_title">Advarsel</string>
     <string name="groups_sharing_potential_error_message">For å dele din plassering, vennligst løs opp alle feil: \n\n%s\n</string>
     <string name="groups_sharing_potential_error_background_location_message">Din plassering kan ikke deles i bakgrunnen eller hvis du starter telefonen på nytt! \n\nVennligst tillat **alltid** tilgang til plassering for pålitelig deling.</string>
+    <string name="groups_sharing_potential_error_notification_permission_message">Oppdateringer av posisjon i sanntid vil ikke fungere som de skal, og andre vil ikke kunne finne denne enheten.\n\nTillat **varsler** for pålitelig deling.</string>
     <string name="groups_sharing_error_unverified_group_title">Uverifisert gruppe eller medlem</string>
     <string name="groups_sharing_error_unverified_group_message">Du kan ikke dele plassering med uverifisert gruppe eller medlem. \n\nPrøv å oppdatere gruppeinformasjonen.</string>
     <string name="groups_sharing_duration_type_infinite">Alltid på</string>

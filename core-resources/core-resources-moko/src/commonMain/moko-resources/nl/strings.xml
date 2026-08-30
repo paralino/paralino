@@ -552,6 +552,7 @@
     <string name="groups_sharing_potential_error_title">Waarschuwing</string>
     <string name="groups_sharing_potential_error_message">Om uw locatie te delen, los alstublieft de fouten op: \n\n%s\n</string>
     <string name="groups_sharing_potential_error_background_location_message">Uw locatie kan niet op de achtergrond of als u uw telefoon opnieuw opstart worden gedeeld! \n\nGelieve **altijd** toegang tot locatie toe te staan voor betrouwbare delen.</string>
+    <string name="groups_sharing_potential_error_notification_permission_message">Locatie-updates in real time werken niet goed en anderen kunnen dit apparaat niet lokaliseren.\n\nSta **meldingen** toe voor betrouwbaar delen.</string>
     <string name="groups_sharing_error_unverified_group_title">Ongemarkeerde groep of lid</string>
     <string name="groups_sharing_error_unverified_group_message">U kunt geen locatie delen met een ongemarkeerde groep of lid. \n\nProbeer de groepsgegevens te vernieuwen.</string>
     <string name="groups_sharing_duration_type_infinite">Altijd aan</string>

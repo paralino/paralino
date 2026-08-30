@@ -552,6 +552,7 @@
     <string name="groups_sharing_potential_error_title">Uyarı</string>
     <string name="groups_sharing_potential_error_message">Konumunuzu paylaşmak için lütfen tüm hataları giderin: \n\n%s\n</string>
     <string name="groups_sharing_potential_error_background_location_message">Konumunuz arka planda veya telefonunuzu yeniden başlattığınızda paylaşılamaz!\n\nGüvenilir paylaşım için lütfen **her zaman** konum erişimine izin verin.</string>
+    <string name="groups_sharing_potential_error_notification_permission_message">Gerçek zamanlı konum güncellemeleri düzgün çalışmaz ve diğerleri bu cihazı konumlandıramaz.\n\nGüvenilir paylaşım için **bildirimlere** izin verin.</string>
     <string name="groups_sharing_error_unverified_group_title">Doğrulanmamış grup veya üye</string>
     <string name="groups_sharing_error_unverified_group_message">Doğrulanmamış bir grup veya üyeye konum paylaşamazsınız.\n\nGrup verilerini yenilemeyi deneyin.</string>
     <string name="groups_sharing_duration_type_infinite">Her zaman açık</string>

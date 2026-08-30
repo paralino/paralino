@@ -98,6 +98,8 @@ class SharingStartViewModel(
 
     val isPersonalSpace: Boolean get() = currentGroup.value is GroupOrUserSpace.PersonalSpace
 
+    private var didConfirmNotificationPermissionPrompt = false
+
     val shouldProceedToPaywall: Boolean
         get() {
             val isOwner = when (val item = currentGroup.value) {
@@ -206,6 +208,20 @@ class SharingStartViewModel(
                                     )
                                 )
                             }
+                        }
+                    }
+
+                    is MainAlertDialog.SharingNotificationPermissionMissing -> {
+                        _uiState.update { it.copy(alertDialog = null) }
+                        if (event.action.isOk) {
+                            coroutineScope.launch {
+                                _eventChannel.send(
+                                    AskForPermission(ConditionErrorType.PermissionNotifications)
+                                )
+                            }
+                        } else if (event.action.isCancel) {
+                            didConfirmNotificationPermissionPrompt = true
+                            startSharing()
                         }
                     }
 
@@ -428,9 +444,18 @@ class SharingStartViewModel(
         if (_uiState.value.shouldRegisterDevice) {
             proceedWithSharing()
         } else {
+            if (shouldPromptForNotificationPermission()) {
+                _uiState.update { it.copy(alertDialog = MainAlertDialog.SharingNotificationPermissionMissing) }
+                return
+            }
             // update
             updateCurrentContract()
         }
+    }
+
+    private fun shouldPromptForNotificationPermission(): Boolean {
+        return !didConfirmNotificationPermissionPrompt &&
+            !deviceApiProvider.currentDeviceStatus().notificationStatus.isNotificationPermissionAllowed
     }
 
     private fun updateCurrentContract() {
@@ -473,6 +498,10 @@ class SharingStartViewModel(
         }
 
         if (!hasSharingStartErrors(isForLongTerm = _uiState.value.isLongTerm) && _uiState.value.canShare) {
+            if (shouldPromptForNotificationPermission()) {
+                _uiState.update { it.copy(alertDialog = MainAlertDialog.SharingNotificationPermissionMissing) }
+                return
+            }
             coroutineScope.launch {
                 _uiState.update { it.copy(loadingAction = true) }
                 if (didPassPlanLimits(group)) {
@@ -483,18 +512,20 @@ class SharingStartViewModel(
             }
         } else if (group.uiType == GroupItemState.GroupUiType.UNVERIFIED) {
             _uiState.update { it.copy(alertDialog = MainAlertDialog.UnverifiedGroupInfo) }
-        } else if (hasSharingStartErrors(isForLongTerm = false) && _uiState.value.isLongTerm) {
-            // only background location permission is missing
-            _uiState.update { it.copy(alertDialog = MainAlertDialog.SharingBackgroundLocationMissing) }
         } else {
-            _uiState.update {
-                it.copy(
-                    alertDialog = MainAlertDialog.SharingErrors(
-                        errorMessages = getAllErrors(isForLongTerm = uiState.value.isLongTerm)
-                            .filter { it is MandatoryBackgroundLocationSharingConditionType }
-                            .map { it.nameRes.localizedString() }
+            if (getAllErrors(isForLongTerm = true).all { it is ConditionErrorType.PermissionLocationBackground } && _uiState.value.isLongTerm) {
+                // only background location permission is missing
+                _uiState.update { it.copy(alertDialog = MainAlertDialog.SharingBackgroundLocationMissing) }
+            } else {
+                _uiState.update {
+                    it.copy(
+                        alertDialog = MainAlertDialog.SharingErrors(
+                            errorMessages = getAllErrors(isForLongTerm = uiState.value.isLongTerm)
+                                .filter { it is MandatoryBackgroundLocationSharingConditionType }
+                                .map { it.nameRes.localizedString() }
+                        )
                     )
-                )
+                }
             }
         }
     }

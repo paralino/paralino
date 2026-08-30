@@ -552,6 +552,7 @@
     <string name="groups_sharing_potential_error_title">Warnung</string>
     <string name="groups_sharing_potential_error_message">Um Ihren Standort freizugeben, beheben Sie bitte alle Fehler: \n\n%s\n</string>
     <string name="groups_sharing_potential_error_background_location_message">Ihr Standort kann nicht im Hintergrund oder nach einem Neustart Ihres Telefons freigegeben werden!\n\nBitte erlauben Sie den **dauerhaften** Standortzugriff für eine zuverlässige Freigabe.</string>
+    <string name="groups_sharing_potential_error_notification_permission_message">Echtzeit-Standortaktualisierungen funktionieren nicht richtig und andere können dieses Gerät nicht orten.\n\nBitte erlauben Sie **Benachrichtigungen** für eine zuverlässige Freigabe.</string>
     <string name="groups_sharing_error_unverified_group_title">Unbestätigte Gruppe oder Mitglied</string>
     <string name="groups_sharing_error_unverified_group_message">Sie können Ihren Standort nicht an eine unbestätigte Gruppe oder ein unbestätigtes Mitglied freigeben.\n\nVersuchen Sie, die Gruppendaten zu aktualisieren.</string>
     <string name="groups_sharing_duration_type_infinite">Immer an</string>

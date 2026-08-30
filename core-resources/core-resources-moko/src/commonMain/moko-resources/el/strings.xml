@@ -552,6 +552,7 @@
     <string name="groups_sharing_potential_error_title">Προειδοποίηση</string>
     <string name="groups_sharing_potential_error_message">Για να μοιραστείτε την τοποθεσία σας, παρακαλώ επιλύστε όλα τα σφάλματα: \n\n%s\n</string>
     <string name="groups_sharing_potential_error_background_location_message">Η τοποθεσία σας δεν μπορεί να μοιραστεί στο παρασκήνιο ή αν επανεκκινήσετε το τηλέφωνό σας! \n\nΠαρακαλώ επιτρέψτε την πρόσβαση στην τοποθεσία **όλη την ώρα** για αξιόπιστη κοινοποίηση.</string>
+    <string name="groups_sharing_potential_error_notification_permission_message">Οι ενημερώσεις τοποθεσίας σε πραγματικό χρόνο δεν θα λειτουργούν σωστά και οι άλλοι δεν θα μπορούν να εντοπίσουν αυτή τη συσκευή.\n\nΕπιτρέψτε τις **ειδοποιήσεις** για αξιόπιστη κοινοποίηση.</string>
     <string name="groups_sharing_error_unverified_group_title">Μη επαληθευμένη ομάδα ή μέλος</string>
     <string name="groups_sharing_error_unverified_group_message">Δεν μπορείτε να μοιραστείτε την τοποθεσία σε μη επαληθευμένη ομάδα ή μέλος. \n\nΔοκιμάστε να ανανεώσετε τα δεδομένα της ομάδας.</string>
     <string name="groups_sharing_duration_type_infinite">Πάντα ενεργό</string>

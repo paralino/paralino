@@ -552,6 +552,7 @@
     <string name="groups_sharing_potential_error_title">Avviso</string>
     <string name="groups_sharing_potential_error_message">Per condividere la tua posizione, risolvi tutti gli errori: \n\n%s\n</string>
     <string name="groups_sharing_potential_error_background_location_message">La tua posizione non può essere condivisa in background o se riavvii il telefono! \n\nSi prega di consentire l\'accesso alla posizione **sempre** per una condivisione affidabile.</string>
+    <string name="groups_sharing_potential_error_notification_permission_message">Gli aggiornamenti della posizione in tempo reale non funzioneranno correttamente e gli altri non potranno localizzare questo dispositivo.\n\nConsenti le **notifiche** per una condivisione affidabile.</string>
     <string name="groups_sharing_error_unverified_group_title">Gruppo o membro non verificato</string>
     <string name="groups_sharing_error_unverified_group_message">Non puoi condividere la posizione con un gruppo o un membro non verificato. \n\nProva a aggiornare i dati del gruppo.</string>
     <string name="groups_sharing_duration_type_infinite">Sempre attivo</string>

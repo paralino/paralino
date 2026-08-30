@@ -552,6 +552,7 @@
     <string name="groups_sharing_potential_error_title">Avertisment</string>
     <string name="groups_sharing_potential_error_message">Pentru a partaja locația dumneavoastră, vă rugăm să rezolvați toate erorile: \n\n%s\n</string>
     <string name="groups_sharing_potential_error_background_location_message">Locația dumneavoastră nu poate fi partajată în fundal sau dacă reporniți telefonul! \n\nVă rugăm să permiteți accesul la locație **în permanență** pentru un partajare fiabilă.</string>
+    <string name="groups_sharing_potential_error_notification_permission_message">Actualizările locației în timp real nu vor funcționa corect și ceilalți nu vor putea localiza acest dispozitiv.\n\nPermiteți **notificările** pentru o partajare fiabilă.</string>
     <string name="groups_sharing_error_unverified_group_title">Grup sau membru neverificat</string>
     <string name="groups_sharing_error_unverified_group_message">Nu puteți partaja locația cu un grup sau un membru neverificat. \n\nÎncercați să reîmprospătați datele grupului.</string>
     <string name="groups_sharing_duration_type_infinite">Întotdeauna activ</string>

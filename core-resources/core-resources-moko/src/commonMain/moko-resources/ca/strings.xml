@@ -552,6 +552,7 @@
     <string name="groups_sharing_potential_error_title">Advertència</string>
     <string name="groups_sharing_potential_error_message">Per compartir la teva ubicació, si us plau, resol tots els errors: \n\n%s\n</string>
     <string name="groups_sharing_potential_error_background_location_message">La teva ubicació no es pot compartir en segon pla o si reinicies el teu telèfon! \n\nSi us plau, permet **sempre** l\'accés a la ubicació per a una compartició fiable.</string>
+    <string name="groups_sharing_potential_error_notification_permission_message">Les actualitzacions d\'ubicació en temps real no funcionaran correctament i els altres no podran localitzar aquest dispositiu.\n\nPermet les **notificacions** per a una compartició fiable.</string>
     <string name="groups_sharing_error_unverified_group_title">Grup o membre no verificat</string>
     <string name="groups_sharing_error_unverified_group_message">No pots compartir la ubicació amb un grup o membre no verificat. \n\nProva de refrescar les dades del grup.</string>
     <string name="groups_sharing_duration_type_infinite">Sempre activat</string>

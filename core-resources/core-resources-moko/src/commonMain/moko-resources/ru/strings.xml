@@ -552,6 +552,7 @@
     <string name="groups_sharing_potential_error_title">Предупреждение</string>
     <string name="groups_sharing_potential_error_message">Чтобы поделиться своим местоположением, пожалуйста, устраните все ошибки: \n\n%s\n</string>
     <string name="groups_sharing_potential_error_background_location_message">Ваше местоположение не может быть передано в фоновом режиме или если вы перезагрузите телефон!\n\nПожалуйста, разрешите доступ к местоположению **всегда** для надежного обмена.</string>
+    <string name="groups_sharing_potential_error_notification_permission_message">Обновления местоположения в реальном времени не будут работать должным образом, и другие не смогут найти это устройство.\n\nРазрешите **уведомления** для надёжного обмена.</string>
     <string name="groups_sharing_error_unverified_group_title">Неподтвержденная группа или участник</string>
     <string name="groups_sharing_error_unverified_group_message">Вы не можете делиться местоположением с неподтвержденной группой или участником.\n\nПопробуйте обновить данные группы.</string>
     <string name="groups_sharing_duration_type_infinite">Всегда включено</string>

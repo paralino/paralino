@@ -552,6 +552,7 @@
     <string name="groups_sharing_potential_error_title">Figyelmeztetés</string>
     <string name="groups_sharing_potential_error_message">A hely megosztásához kérjük, oldja meg az összes hibát: \n\n%s\n</string>
     <string name="groups_sharing_potential_error_background_location_message">A helyét nem lehet a háttérben megosztani, vagy ha újraindítja a telefonját! \n\nKérjük, engedélyezze a **mindig** helyhozzáférést a megbízható megosztáshoz.</string>
+    <string name="groups_sharing_potential_error_notification_permission_message">A valós idejű helyfrissítések nem fognak megfelelően működni, és mások nem tudják megtalálni ezt az eszközt.\n\nA megbízható megosztáshoz engedélyezze az **értesítéseket**.</string>
     <string name="groups_sharing_error_unverified_group_title">Nem ellenőrzött csoport vagy tag</string>
     <string name="groups_sharing_error_unverified_group_message">Nem oszthatja meg a helyét nem ellenőrzött csoporttal vagy taggal. \n\nPróbálja meg frissíteni a csoport adatait.</string>
     <string name="groups_sharing_duration_type_infinite">Mindig be</string>

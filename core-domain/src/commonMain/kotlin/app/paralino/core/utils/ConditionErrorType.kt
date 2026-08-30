@@ -2,7 +2,7 @@ package app.paralino.core.utils
 
 sealed interface ConditionErrorType {
     object GPS: ConditionErrorType, MandatoryForegroundLocationSharingConditionType
-    object PermissionNotifications: ConditionErrorType
+    object PermissionNotifications: ConditionErrorType, BackgroundLocationSharingConditionType
     sealed class PermissionLocation(): ConditionErrorType, MandatoryForegroundLocationSharingConditionType {
         object PermissionLocationPrecise: PermissionLocation()
         object PermissionLocationAny: PermissionLocation()

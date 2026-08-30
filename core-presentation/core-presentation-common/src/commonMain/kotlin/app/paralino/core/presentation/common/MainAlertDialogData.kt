@@ -411,6 +411,27 @@ interface MainAlertDialog {
         )
     }
 
+    object SharingNotificationPermissionMissing : MainAlertDialog {
+        override val key: String = this::class.simpleName ?: "dialog"
+
+        override val dialogData: AlertDialogData = AlertDialogData(
+            id = key,
+            title = stringResource(resource = MR.strings.groups_sharing_potential_error_title),
+            message = stringResource(resource = MR.strings.groups_sharing_potential_error_notification_permission_message),
+            buttons = listOf(
+                AlertDialogButtonData(
+                    id = Buttons.buttonOk,
+                    text = stringResource(resource = MR.strings.button_continue),
+                    color = AlertDialogButtonData.positiveColor
+                ),
+                AlertDialogButtonData(
+                    id = Buttons.buttonCancel,
+                    text = stringResource(resource = MR.strings.button_notNow)
+                ),
+            ),
+        )
+    }
+
     object EnableApproximateLocation : MainAlertDialog {
         override val key: String = this::class.simpleName ?: "dialog"
 

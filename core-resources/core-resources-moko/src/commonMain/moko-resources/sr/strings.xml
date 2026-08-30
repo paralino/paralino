@@ -552,6 +552,7 @@
     <string name="groups_sharing_potential_error_title">Упозорење</string>
     <string name="groups_sharing_potential_error_message">Да бисте поделили своју локацију, решите све грешке: \n\n%s\n</string>
     <string name="groups_sharing_potential_error_background_location_message">Ваша локација не може бити дељена у позадини или ако поново покренете телефон!\n\nМолимо омогућите приступ локацији **целог времена** за поуздано дељење.</string>
+    <string name="groups_sharing_potential_error_notification_permission_message">Ажурирања локације у реалном времену неће радити исправно и други неће моћи да пронађу овај уређај.\n\nОмогућите **обавештења** за поуздано дељење.</string>
     <string name="groups_sharing_error_unverified_group_title">Неверификована група или члан</string>
     <string name="groups_sharing_error_unverified_group_message">Не можете делити локацију са неверификованом групом или чланом.\n\nПокушајте освежити податке групе.</string>
     <string name="groups_sharing_duration_type_infinite">Увек укључено</string>

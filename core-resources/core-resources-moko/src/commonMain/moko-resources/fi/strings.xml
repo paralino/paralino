@@ -552,6 +552,7 @@
     <string name="groups_sharing_potential_error_title">Varoitus</string>
     <string name="groups_sharing_potential_error_message">Jotta voit jakaa sijaintisi, ratkaise kaikki virheet: \n\n%s\n</string>
     <string name="groups_sharing_potential_error_background_location_message">Sijaintiasi ei voi jakaa taustalla tai jos käynnistät puhelimesi uudelleen! \n\nOle hyvä ja salli **aina** sijainti pääsy luotettavaa jakamista varten.</string>
+    <string name="groups_sharing_potential_error_notification_permission_message">Reaaliaikaiset sijaintipäivitykset eivät toimi kunnolla, eivätkä muut voi paikantaa tätä laitetta.\n\nSalli **ilmoitukset** luotettavaa jakamista varten.</string>
     <string name="groups_sharing_error_unverified_group_title">Vahvistamaton ryhmä tai jäsen</string>
     <string name="groups_sharing_error_unverified_group_message">Et voi jakaa sijaintia vahvistamattomalle ryhmälle tai jäsenelle. \n\nYritä päivittää ryhmätiedot.</string>
     <string name="groups_sharing_duration_type_infinite">Aina päällä</string>
