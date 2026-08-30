@@ -90,11 +90,10 @@ private struct MapActionBubbleButton: View {
                     .renderingMode(.template)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
-                    .frame(width: 14, height: 14)
+                    .frame(width: 18, height: 18)
 
                 Text(text)
-                    .font(.caption)
-                    .fontWeight(.regular)
+                    .font(.system(size: 14, weight: .medium))
                     .fixedSize(horizontal: true, vertical: false)
             }
             .padding(.horizontal, 8)
@@ -142,37 +141,44 @@ struct MapActionBubbleMarkerView: View {
         .padding(.vertical, 8)
         .padding(.bottom, pointerHeight)
         .background {
-            MapLongTapPopupShape(
-                cornerRadius: cornerRadius,
-                pointerHeight: pointerHeight,
-                pointerHalfWidth: pointerHalfWidth
-            )
-            .fill(Color.themebackground)
-            .overlay(
+            ZStack {
+                RoundedRectangle(cornerRadius: cornerRadius)
+                    .fill(Color.themebackground)
+                    .padding(.bottom, pointerHeight)
+                    .shadow(color: Color.themeOnBackground.opacity(0.2), radius: 12)
+
                 MapLongTapPopupShape(
                     cornerRadius: cornerRadius,
                     pointerHeight: pointerHeight,
                     pointerHalfWidth: pointerHalfWidth
                 )
-                .fill(Color.accentDark.opacity(0.2))
-            )
-            .overlay(
-                MapLongTapPopupShape(
-                    cornerRadius: cornerRadius,
-                    pointerHeight: pointerHeight,
-                    pointerHalfWidth: pointerHalfWidth
-                )
-                .stroke(Color.themebackground, lineWidth: borderWidth)
-            )
-            .overlay(alignment: .bottom) {
-                Circle()
-                    .fill(Color.redMain)
-                    .frame(width: pointerDotRadius * 2, height: pointerDotRadius * 2)
-                    .overlay(
-                        Circle()
-                            .stroke(Color.themebackground, lineWidth: borderWidth)
+                .fill(Color.themebackground)
+                .overlay(
+                    MapLongTapPopupShape(
+                        cornerRadius: cornerRadius,
+                        pointerHeight: pointerHeight,
+                        pointerHalfWidth: pointerHalfWidth
                     )
-                    .offset(y: pointerDotRadius)
+                    .fill(Color.accentDark.opacity(0.2))
+                )
+                .overlay(
+                    MapLongTapPopupShape(
+                        cornerRadius: cornerRadius,
+                        pointerHeight: pointerHeight,
+                        pointerHalfWidth: pointerHalfWidth
+                    )
+                    .stroke(Color.themebackground, lineWidth: borderWidth)
+                )
+                .overlay(alignment: .bottom) {
+                    Circle()
+                        .fill(Color.redMain)
+                        .frame(width: pointerDotRadius * 2, height: pointerDotRadius * 2)
+                        .overlay(
+                            Circle()
+                                .stroke(Color.themebackground, lineWidth: borderWidth)
+                        )
+                        .offset(y: pointerDotRadius)
+                }
             }
         }
     }
@@ -208,7 +214,9 @@ final class SwiftUIMapTapActionMarkerView: MKAnnotationView {
         let hosting = UIHostingController(rootView: markerView)
         hostingController = hosting
         hosting.view.backgroundColor = .clear
+        hosting.view.clipsToBounds = false
         hosting.view.sizeToFit()
+        clipsToBounds = false
 
         addSubview(hosting.view)
         frame = hosting.view.frame
