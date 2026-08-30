@@ -644,6 +644,7 @@
     <string name="group_picker_button_join">Придружите се</string>
     <string name="group_member_no_location_info_message">Овај уређај још нема локацију.</string>
     <string name="group_member_devices_section_title">Уређаји</string>
+    <string name="group_member_your_devices_section_title">Ваши уређаји</string>
     <string name="group_member_device_not_responding_message">**Уређај не одговара или је ван мреже.**\n\nПоново проверите ускоро, може потрајати неколико минута да уређај одговори ако је повезан.</string>
     <string name="group_member_device_waiting">Чека се да уређај одговори...</string>
     <string name="group_member_device_requesting">Тражи се локација...</string>

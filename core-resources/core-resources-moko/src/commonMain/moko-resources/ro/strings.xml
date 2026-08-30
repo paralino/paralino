@@ -644,6 +644,7 @@
     <string name="group_picker_button_join">Alătură-te</string>
     <string name="group_member_no_location_info_message">Acest dispozitiv nu are încă o locație.</string>
     <string name="group_member_devices_section_title">Dispozitive</string>
+    <string name="group_member_your_devices_section_title">Dispozitivele dumneavoastră</string>
     <string name="group_member_device_not_responding_message">**Dispozitivul nu răspunde sau este offline.** \n\nVerificați din nou în scurt timp, ar putea dura câteva minute pentru a răspunde dacă dispozitivul este online.</string>
     <string name="group_member_device_waiting">Așteptând ca dispozitivul să răspundă...</string>
     <string name="group_member_device_requesting">Solicitând locația...</string>

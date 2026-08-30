@@ -644,6 +644,7 @@
     <string name="group_picker_button_join">Deltag</string>
     <string name="group_member_no_location_info_message">Denne enhed har endnu ikke en placering.</string>
     <string name="group_member_devices_section_title">Enheder</string>
+    <string name="group_member_your_devices_section_title">Dine enheder</string>
     <string name="group_member_device_not_responding_message">**Enheden svarer ikke eller er offline.** \nKontroller igen om kort tid, det kan tage et par minutter at svare, hvis enheden er online.</string>
     <string name="group_member_device_waiting">Venter på, at enheden svarer...</string>
     <string name="group_member_device_requesting">Anmoder om placering...</string>

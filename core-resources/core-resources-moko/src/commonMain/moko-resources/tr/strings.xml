@@ -644,6 +644,7 @@
     <string name="group_picker_button_join">Katıl</string>
     <string name="group_member_no_location_info_message">Bu cihazın henüz bir konumu yok.</string>
     <string name="group_member_devices_section_title">Cihazlar</string>
+    <string name="group_member_your_devices_section_title">Cihazlarınız</string>
     <string name="group_member_device_not_responding_message">**Cihaz yanıt vermiyor veya çevrimdışı.**\n\nLütfen kısa bir süre sonra tekrar kontrol edin, cihaz çevrimiçi ise yanıt vermesi birkaç dakika sürebilir.</string>
     <string name="group_member_device_waiting">Cihazın yanıt vermesini bekliyorum...</string>
     <string name="group_member_device_requesting">Konum talep ediliyor...</string>

@@ -644,6 +644,7 @@
     <string name="group_picker_button_join">Pridružite se</string>
     <string name="group_member_no_location_info_message">Lokacija trenutno nije dostupna za ovaj uređaj.</string>
     <string name="group_member_devices_section_title">Uređaji</string>
+    <string name="group_member_your_devices_section_title">Vaši uređaji</string>
     <string name="group_member_device_not_responding_message">**Uređaj trenutno nije dostupan ili nije na mreži.**\n\nUkoliko uređaj ne odgovori u roku od par minuta, probajte osvježiti lokaciju ponovno.</string>
     <string name="group_member_device_waiting">Čekanje na uređaj...</string>
     <string name="group_member_device_requesting">Zahtjev za lokaciju u tijeku...</string>

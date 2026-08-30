@@ -644,6 +644,7 @@
     <string name="group_picker_button_join">Rejoindre</string>
     <string name="group_member_no_location_info_message">Cet appareil n\'a pas encore de localisation.</string>
     <string name="group_member_devices_section_title">Appareils</string>
+    <string name="group_member_your_devices_section_title">Vos appareils</string>
     <string name="group_member_device_not_responding_message">**L\'appareil ne répond pas ou est hors ligne.**\n\nVérifiez à nouveau sous peu, cela peut prendre quelques minutes pour répondre si l\'appareil est en ligne.</string>
     <string name="group_member_device_waiting">En attente de la réponse de l\'appareil...</string>
     <string name="group_member_device_requesting">Demande de localisation...</string>

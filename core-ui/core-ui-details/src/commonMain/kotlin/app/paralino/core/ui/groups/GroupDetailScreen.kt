@@ -201,7 +201,7 @@ fun GroupDetailScreenCore(
                         start = 20.dp,
                         end = 20.dp,
                         top = contentPadding.calculateTopPadding() + 20.dp,
-                        bottom = contentPadding.calculateBottomPadding() + 100.dp
+                        bottom = contentPadding.calculateBottomPadding() + 120.dp
                     )
                 ) {
                     if (state.data.arePlacesOverLimit == true) {
@@ -337,7 +337,8 @@ fun GroupDetailScreenCore(
                                 .animateItem()
                                 .padding(top = if (index > 0) 8.dp else 0.dp),
                             state = item,
-                            forceExpandAction = item.memberState.memberId == state.data.focusedMemberId,
+                            forceFullExpandAction = item.memberState.memberId == state.data.focusedMemberId,
+                            forceDevicesExpandAction = item.memberState.isCurrentUser,
                             collapseOnActionClick = false,
                             onEvent = { event ->
                                 vm.onEvent(GroupDetailScreenUiEvent.OnMemberItemEvent(event))

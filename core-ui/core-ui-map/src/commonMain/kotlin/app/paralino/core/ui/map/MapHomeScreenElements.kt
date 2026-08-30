@@ -464,7 +464,7 @@ fun BoxScope.MapHomeElementMainCards(
                         shape = RoundedCornerShape(16.dp),
                         shadow = 12.dp,
                         collapseOnActionClick = false,
-                        forceExpandAction = true,
+                        forceFullExpandAction = true,
                         canShowOldLocation = true,
                         onEvent = { event ->
                             onEvent(MapHomeScreenUiEvent.OnMemberItemEvent(event = event))

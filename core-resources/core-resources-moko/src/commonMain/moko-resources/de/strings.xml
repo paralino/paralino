@@ -644,6 +644,7 @@
     <string name="group_picker_button_join">Beitreten</string>
     <string name="group_member_no_location_info_message">Dieses Gerät hat noch keinen Standort.</string>
     <string name="group_member_devices_section_title">Geräte</string>
+    <string name="group_member_your_devices_section_title">Ihre Geräte</string>
     <string name="group_member_device_not_responding_message">**Gerät reagiert nicht oder ist offline.**\n\nÜberprüfen Sie es in Kürze erneut, es kann einige Minuten dauern, bis das Gerät antwortet, wenn es online ist.</string>
     <string name="group_member_device_waiting">Warten auf Antwort des Geräts...</string>
     <string name="group_member_device_requesting">Standort wird angefordert...</string>

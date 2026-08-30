@@ -644,6 +644,7 @@
     <string name="group_picker_button_join">Připojit</string>
     <string name="group_member_no_location_info_message">Tento zařízení zatím nemá polohu.</string>
     <string name="group_member_devices_section_title">Zařízení</string>
+    <string name="group_member_your_devices_section_title">Vaše zařízení</string>
     <string name="group_member_device_not_responding_message">**Zařízení neodpovídá nebo je offline.** \n\nZkontrolujte to znovu za chvíli, může trvat několik minut, než zařízení odpoví, pokud je online.</string>
     <string name="group_member_device_waiting">Čekání na odpověď zařízení...</string>
     <string name="group_member_device_requesting">Žádám o polohu...</string>

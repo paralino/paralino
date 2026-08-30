@@ -39,7 +39,8 @@ fun GroupMember(
     backgroundColor: Color = MaterialTheme.colors.surface,
     shape: CornerBasedShape = RoundedCornerShape(12.dp),
     shadow: Dp? = null,
-    forceExpandAction: Boolean = false,
+    forceFullExpandAction: Boolean = false,
+    forceDevicesExpandAction: Boolean = false,
     collapseOnActionClick: Boolean = true,
     canShowOldLocation: Boolean = false,
     onEvent: (GroupMemberItemEvent) -> Unit
@@ -68,7 +69,8 @@ fun GroupMember(
     ) {
         GroupMemberWithLocations(
             state = state,
-            forceExpandAction = forceExpandAction,
+            forceFullExpandAction = forceFullExpandAction,
+            forceDevicesExpandAction = forceDevicesExpandAction,
             collapseOnActionClick = collapseOnActionClick,
             canShowOldLocation = canShowOldLocation,
             onEvent = onEvent

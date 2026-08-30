@@ -644,6 +644,7 @@
     <string name="group_picker_button_join">Unir-se</string>
     <string name="group_member_no_location_info_message">Aquest dispositiu no té una ubicació encara.</string>
     <string name="group_member_devices_section_title">Dispositius</string>
+    <string name="group_member_your_devices_section_title">Els vostres dispositius</string>
     <string name="group_member_device_not_responding_message">**El dispositiu no respon o està fora de línia.**\n\nComproveu-ho de nou d\'aquí a poc, pot trigar uns minuts a respondre si el dispositiu està en línia.</string>
     <string name="group_member_device_waiting">Esperant que el dispositiu respongui...</string>
     <string name="group_member_device_requesting">Sol·licitant ubicació...</string>

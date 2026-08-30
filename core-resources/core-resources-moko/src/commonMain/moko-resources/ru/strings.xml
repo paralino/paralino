@@ -644,6 +644,7 @@
     <string name="group_picker_button_join">Присоединиться</string>
     <string name="group_member_no_location_info_message">Это устройство еще не имеет местоположения.</string>
     <string name="group_member_devices_section_title">Устройства</string>
+    <string name="group_member_your_devices_section_title">Ваши устройства</string>
     <string name="group_member_device_not_responding_message">**Устройство не отвечает или оффлайн.**\n\nПроверьте снова через несколько минут, возможно, потребуется немного времени, чтобы ответить, если устройство в сети.</string>
     <string name="group_member_device_waiting">Ожидание ответа устройства...</string>
     <string name="group_member_device_requesting">Запрос местоположения...</string>

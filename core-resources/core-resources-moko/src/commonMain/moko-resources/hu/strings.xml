@@ -644,6 +644,7 @@
     <string name="group_picker_button_join">Csatlakozás</string>
     <string name="group_member_no_location_info_message">Ez az eszköz még nem rendelkezik helymeghatározással.</string>
     <string name="group_member_devices_section_title">Eszközök</string>
+    <string name="group_member_your_devices_section_title">Az Ön eszközei</string>
     <string name="group_member_device_not_responding_message">**Az eszköz nem válaszol, vagy offline van.** \n\nKérjük, ellenőrizze újra rövidesen, lehet, hogy néhány percet igénybe vesz a válasz, ha az eszköz online van.</string>
     <string name="group_member_device_waiting">Várakozás az eszköz válaszára...</string>
     <string name="group_member_device_requesting">Helymeghatározás kérése...</string>

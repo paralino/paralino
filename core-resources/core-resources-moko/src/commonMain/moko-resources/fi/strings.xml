@@ -644,6 +644,7 @@
     <string name="group_picker_button_join">Liity</string>
     <string name="group_member_no_location_info_message">Tällä laitteella ei ole vielä sijaintia.</string>
     <string name="group_member_devices_section_title">Laitteet</string>
+    <string name="group_member_your_devices_section_title">Laitteesi</string>
     <string name="group_member_device_not_responding_message">**Laite ei vastaa tai on offline-tilassa.**\n\nTarkista hetken kuluttua uudelleen, laite saattaa kestää muutaman minuutin vastata, jos se on online-tilassa.</string>
     <string name="group_member_device_waiting">Odotetaan laitteen vastausta...</string>
     <string name="group_member_device_requesting">Sijaintia pyydetään...</string>

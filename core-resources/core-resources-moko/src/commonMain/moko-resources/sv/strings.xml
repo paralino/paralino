@@ -644,6 +644,7 @@
     <string name="group_picker_button_join">Gå med</string>
     <string name="group_member_no_location_info_message">Denna enhet har ännu ingen plats.</string>
     <string name="group_member_devices_section_title">Enheter</string>
+    <string name="group_member_your_devices_section_title">Dina enheter</string>
     <string name="group_member_device_not_responding_message">**Enheten svarar inte eller är offline.**\n\nKontrollera igen om en stund, det kan ta några minuter att svara om enheten är online.</string>
     <string name="group_member_device_waiting">Väntar på att enheten ska svara...</string>
     <string name="group_member_device_requesting">Begär plats...</string>

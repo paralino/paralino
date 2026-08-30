@@ -644,6 +644,7 @@
     <string name="group_picker_button_join">Συμμετοχή</string>
     <string name="group_member_no_location_info_message">Αυτή η συσκευή δεν έχει ακόμη τοποθεσία.</string>
     <string name="group_member_devices_section_title">Συσκευές</string>
+    <string name="group_member_your_devices_section_title">Οι συσκευές σας</string>
     <string name="group_member_device_not_responding_message">**Η συσκευή δεν ανταποκρίνεται ή είναι εκτός σύνδεσης.**\n\nΕλέγξτε ξανά σύντομα, μπορεί να χρειαστούν μερικά λεπτά για να ανταποκριθεί αν η συσκευή είναι online.</string>
     <string name="group_member_device_waiting">Περιμένοντας την ανταπόκριση της συσκευής...</string>
     <string name="group_member_device_requesting">Αιτούμενη τοποθεσία...</string>

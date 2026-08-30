@@ -644,6 +644,7 @@
     <string name="group_picker_button_join">Entrar</string>
     <string name="group_member_no_location_info_message">Este dispositivo ainda não tem uma localização.</string>
     <string name="group_member_devices_section_title">Dispositivos</string>
+    <string name="group_member_your_devices_section_title">Os seus dispositivos</string>
     <string name="group_member_device_not_responding_message">**O dispositivo não responde ou está desconectado.**\n\nVerifique novamente em breve, pode levar alguns minutos para responder se o dispositivo estiver online.</string>
     <string name="group_member_device_waiting">Aguardando resposta do dispositivo...</string>
     <string name="group_member_device_requesting">Solicitando localização...</string>

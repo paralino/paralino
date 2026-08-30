@@ -644,6 +644,7 @@
     <string name="group_picker_button_join">Deelnemen</string>
     <string name="group_member_no_location_info_message">Dit apparaat heeft nog geen locatie.</string>
     <string name="group_member_devices_section_title">Apparaten</string>
+    <string name="group_member_your_devices_section_title">Uw apparaten</string>
     <string name="group_member_device_not_responding_message">**Apparaat reageert niet of is offline.**\n\nControleer over een tijdje opnieuw, het kan enkele minuten duren voordat het apparaat reageert als het online is.</string>
     <string name="group_member_device_waiting">Wachten op reactie van het apparaat...</string>
     <string name="group_member_device_requesting">Locatie aanvragen...</string>

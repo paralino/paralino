@@ -644,6 +644,7 @@
     <string name="group_picker_button_join">Unisciti</string>
     <string name="group_member_no_location_info_message">Questo dispositivo non ha ancora una posizione.</string>
     <string name="group_member_devices_section_title">Dispositivi</string>
+    <string name="group_member_your_devices_section_title">I suoi dispositivi</string>
     <string name="group_member_device_not_responding_message">**Il dispositivo non risponde o è offline.**\n\nControlla di nuovo tra poco, potrebbe impiegare alcuni minuti per rispondere se il dispositivo è online.</string>
     <string name="group_member_device_waiting">In attesa che il dispositivo risponda...</string>
     <string name="group_member_device_requesting">Richiesta della posizione...</string>

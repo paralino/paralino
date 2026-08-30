@@ -644,6 +644,7 @@
     <string name="group_picker_button_join">Bli med</string>
     <string name="group_member_no_location_info_message">Denne enheten har ikke en plassering ennå.</string>
     <string name="group_member_devices_section_title">Enheter</string>
+    <string name="group_member_your_devices_section_title">Enhetene dine</string>
     <string name="group_member_device_not_responding_message">**Enheten svarer ikke eller er offline.** \n \nSjekk igjen om kort tid, det kan ta noen minutter å svare hvis enheten er online.</string>
     <string name="group_member_device_waiting">Venter på at enheten skal svare...</string>
     <string name="group_member_device_requesting">Ber om plassering...</string>

@@ -644,6 +644,7 @@
     <string name="group_picker_button_join">Приєднатися</string>
     <string name="group_member_no_location_info_message">Цей пристрій ще не має місцезнаходження.</string>
     <string name="group_member_devices_section_title">Пристрої</string>
+    <string name="group_member_your_devices_section_title">Ваші пристрої</string>
     <string name="group_member_device_not_responding_message">**Пристрій не відповідає або офлайн.** \n\nПеревірте знову через кілька хвилин, можливо, знадобиться кілька хвилин, щоб відповісти, якщо пристрій онлайн.</string>
     <string name="group_member_device_waiting">Очікування відповіді пристрою...</string>
     <string name="group_member_device_requesting">Запит на місцезнаходження...</string>
