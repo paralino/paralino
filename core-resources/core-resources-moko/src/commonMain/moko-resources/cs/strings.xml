@@ -23,6 +23,7 @@
     <string name="button_notNow">Nyní ne</string>
     <string name="button_delete">Smazat</string>
     <string name="button_enable">Povolit</string>
+    <string name="button_enableAnyway">Přesto povolit</string>
     <string name="button_activate">Aktivovat</string>
     <string name="button_later">Později</string>
     <string name="button_yes">Ano</string>
@@ -965,6 +966,7 @@
     <string name="groups_sharing_setting_approximateLocation_title">Přibližná poloha</string>
     <string name="groups_sharing_setting_approximateLocation_description_off">Sdílejte pouze přibližnou oblast polohy, i když je vaše poloha přesná.</string>
     <string name="groups_sharing_setting_approximateLocation_description_on">Vyberte poloměr přibližné oblasti. Vaše přesná poloha bude skryta a nahrazena bodem někde uvnitř zvoleného poloměru.</string>
+    <string name="groups_sharing_setting_approximateLocation_alert_message">Vaše skutečná poloha bude skryta a ostatní členové vás nebudou moci přesně lokalizovat. Rychlost a nadmořská výška nebudou k dispozici.</string>
     <string name="group_member_role_admin">Správce</string>
     <string name="group_details_add_member_admin_only_info">Nové členy může přidávat pouze správce skupiny</string>
     <string name="group_members_status_location_hidden">Pouze přibližná poloha</string>

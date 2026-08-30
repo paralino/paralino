@@ -23,6 +23,7 @@
     <string name="button_notNow">Nie teraz</string>
     <string name="button_delete">Usuń</string>
     <string name="button_enable">Włącz</string>
+    <string name="button_enableAnyway">Włącz mimo to</string>
     <string name="button_activate">Aktywuj</string>
     <string name="button_later">Później</string>
     <string name="button_yes">Tak</string>
@@ -965,6 +966,7 @@
     <string name="groups_sharing_setting_approximateLocation_title">Przybliżona lokalizacja</string>
     <string name="groups_sharing_setting_approximateLocation_description_off">Udostępniaj wyłącznie przybliżony obszar lokalizacji, nawet jeśli Twoja lokalizacja jest dokładna.</string>
     <string name="groups_sharing_setting_approximateLocation_description_on">Wybierz promień przybliżonego obszaru. Twoja dokładna lokalizacja zostanie ukryta i zastąpiona punktem znajdującym się gdzieś w obrębie wybranego promienia.</string>
+    <string name="groups_sharing_setting_approximateLocation_alert_message">Twoja rzeczywista lokalizacja zostanie ukryta, a inni członkowie nie będą mogli Cię precyzyjnie zlokalizować. Prędkość i wysokość nie będą dostępne.</string>
     <string name="group_member_role_admin">Administrator</string>
     <string name="group_details_add_member_admin_only_info">Tylko administrator grupy może dodawać nowych członków</string>
     <string name="group_members_status_location_hidden">Tylko przybliżona lokalizacja</string>

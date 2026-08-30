@@ -23,6 +23,7 @@
     <string name="button_notNow">Όχι τώρα</string>
     <string name="button_delete">Διαγραφή</string>
     <string name="button_enable">Ενεργοποίηση</string>
+    <string name="button_enableAnyway">Ενεργοποίηση ούτως ή άλλως</string>
     <string name="button_activate">Ενεργοποιήστε</string>
     <string name="button_later">Αργότερα</string>
     <string name="button_yes">Ναι</string>
@@ -965,6 +966,7 @@
     <string name="groups_sharing_setting_approximateLocation_title">Κατά προσέγγιση τοποθεσία</string>
     <string name="groups_sharing_setting_approximateLocation_description_off">Να κοινοποιείται μόνο η κατά προσέγγιση περιοχή τοποθεσίας, ακόμη και αν η τοποθεσία σας είναι ακριβής.</string>
     <string name="groups_sharing_setting_approximateLocation_description_on">Επιλέξτε την ακτίνα μιας κατά προσέγγιση περιοχής. Η ακριβής τοποθεσία σας θα αποκρυφτεί και θα αντικατασταθεί από ένα σημείο κάπου μέσα στην επιλεγμένη ακτίνα.</string>
+    <string name="groups_sharing_setting_approximateLocation_alert_message">Η πραγματική τοποθεσία σας θα αποκρυφτεί και τα άλλα μέλη δεν θα μπορούν να σας εντοπίσουν με ακρίβεια. Η ταχύτητα και το υψόμετρο δεν θα είναι διαθέσιμα.</string>
     <string name="group_member_role_admin">Διαχειριστής</string>
     <string name="group_details_add_member_admin_only_info">Μόνο ο διαχειριστής της ομάδας μπορεί να προσθέσει νέα μέλη</string>
     <string name="group_members_status_location_hidden">Μόνο κατά προσέγγιση τοποθεσία</string>

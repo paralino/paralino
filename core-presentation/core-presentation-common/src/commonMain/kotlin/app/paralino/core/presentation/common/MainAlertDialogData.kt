@@ -411,6 +411,27 @@ interface MainAlertDialog {
         )
     }
 
+    object EnableApproximateLocation : MainAlertDialog {
+        override val key: String = this::class.simpleName ?: "dialog"
+
+        override val dialogData: AlertDialogData = AlertDialogData(
+            id = key,
+            title = stringResource(resource = MR.strings.alert_title_confirm),
+            message = stringResource(resource = MR.strings.groups_sharing_setting_approximateLocation_alert_message),
+            buttons = listOf(
+                AlertDialogButtonData(
+                    id = Buttons.buttonOk,
+                    text = stringResource(resource = MR.strings.button_enableAnyway),
+                    color = AlertDialogButtonData.positiveColor
+                ),
+                AlertDialogButtonData(
+                    id = Buttons.buttonCancel,
+                    text = stringResource(resource = MR.strings.button_cancel)
+                ),
+            ),
+        )
+    }
+
     data class StopLocationSharing(
         val groupOrSpaceId: GroupOrSpaceId
     ) : MainAlertDialog {

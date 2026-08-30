@@ -23,6 +23,7 @@
     <string name="button_notNow">Agora não</string>
     <string name="button_delete">Excluir</string>
     <string name="button_enable">Ativar</string>
+    <string name="button_enableAnyway">Ativar mesmo assim</string>
     <string name="button_activate">Ativar</string>
     <string name="button_later">Mais tarde</string>
     <string name="button_yes">Sim</string>
@@ -965,6 +966,7 @@
     <string name="groups_sharing_setting_approximateLocation_title">Localização aproximada</string>
     <string name="groups_sharing_setting_approximateLocation_description_off">Compartilhe apenas a área de localização aproximada, mesmo que sua localização seja precisa.</string>
     <string name="groups_sharing_setting_approximateLocation_description_on">Selecione o raio de uma área aproximada. Sua localização precisa ficará oculta e será substituída por um ponto em algum lugar dentro do raio escolhido.</string>
+    <string name="groups_sharing_setting_approximateLocation_alert_message">Sua localização real ficará oculta e os outros membros não poderão localizá-lo com precisão. A velocidade e a elevação não estarão disponíveis.</string>
     <string name="group_member_role_admin">Administrador</string>
     <string name="group_details_add_member_admin_only_info">Somente o administrador do grupo pode adicionar novos membros</string>
     <string name="group_members_status_location_hidden">Apenas localização aproximada</string>

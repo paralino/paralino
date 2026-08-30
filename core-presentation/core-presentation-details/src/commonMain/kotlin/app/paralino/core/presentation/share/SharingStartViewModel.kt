@@ -198,7 +198,7 @@ class SharingStartViewModel(
 
                     is MainAlertDialog.SharingBackgroundLocationMissing -> {
                         _uiState.update { it.copy(alertDialog = null) }
-                        if (event.action.action == MainAlertDialog.Buttons.buttonOk) {
+                        if (event.action.isOk) {
                             coroutineScope.launch {
                                 _eventChannel.send(
                                     AskForPermission(
@@ -217,11 +217,18 @@ class SharingStartViewModel(
                         _uiState.update { it.copy(alertDialog = null) }
                         coroutineScope.launch {
                             _eventChannel.send(SharingStartScreenEvent.AdjustScrollPosition)
-                            if (event.action.action == MainAlertDialog.Buttons.buttonOk) {
+                            if (event.action.isOk) {
                                 uiState.value.errors.firstOrNull()?.let {
                                     _eventChannel.send(AskForPermission(it))
                                 }
                             }
+                        }
+                    }
+
+                    is MainAlertDialog.EnableApproximateLocation -> {
+                        _uiState.update { it.copy(alertDialog = null) }
+                        if (event.action.isOk) {
+                            applyApproximateLocationSharing(true)
                         }
                     }
 
@@ -619,6 +626,14 @@ class SharingStartViewModel(
     }
 
     fun turnOnApproximateLocationSharing(state: Boolean) {
+        if (state) {
+            _uiState.update { it.copy(alertDialog = MainAlertDialog.EnableApproximateLocation) }
+        } else {
+            applyApproximateLocationSharing(false)
+        }
+    }
+
+    private fun applyApproximateLocationSharing(state: Boolean) {
         _uiState.update {
             it.copy(
                 shareApproximateLocation = state,

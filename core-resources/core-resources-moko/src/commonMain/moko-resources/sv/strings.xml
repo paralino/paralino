@@ -23,6 +23,7 @@
     <string name="button_notNow">Inte nu</string>
     <string name="button_delete">Ta bort</string>
     <string name="button_enable">Aktivera</string>
+    <string name="button_enableAnyway">Aktivera ändå</string>
     <string name="button_activate">Aktivera</string>
     <string name="button_later">Senare</string>
     <string name="button_yes">Ja</string>
@@ -965,6 +966,7 @@
     <string name="groups_sharing_setting_approximateLocation_title">Ungefärlig plats</string>
     <string name="groups_sharing_setting_approximateLocation_description_off">Dela endast ett ungefärligt område även om din plats är exakt.</string>
     <string name="groups_sharing_setting_approximateLocation_description_on">Välj radien för ett ungefärligt område. Din exakta plats kommer att döljas och ersättas av en punkt någonstans inom den valda radien.</string>
+    <string name="groups_sharing_setting_approximateLocation_alert_message">Din faktiska plats kommer att döljas och andra medlemmar kommer inte att kunna hitta dig exakt. Hastighet och höjd kommer inte att vara tillgängliga.</string>
     <string name="group_member_role_admin">Administratör</string>
     <string name="group_details_add_member_admin_only_info">Endast gruppadministratören kan lägga till nya medlemmar</string>
     <string name="group_members_status_location_hidden">Endast ungefärlig plats</string>

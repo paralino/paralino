@@ -23,6 +23,7 @@
     <string name="button_notNow">Ei nyt</string>
     <string name="button_delete">Poista</string>
     <string name="button_enable">Ota käyttöön</string>
+    <string name="button_enableAnyway">Ota silti käyttöön</string>
     <string name="button_activate">Aktivoi</string>
     <string name="button_later">Myöhemmin</string>
     <string name="button_yes">Kyllä</string>
@@ -965,6 +966,7 @@
     <string name="groups_sharing_setting_approximateLocation_title">Likimääräinen sijainti</string>
     <string name="groups_sharing_setting_approximateLocation_description_off">Jaa vain likimääräinen sijaintialue, vaikka sijaintisi olisi tarkka.</string>
     <string name="groups_sharing_setting_approximateLocation_description_on">Valitse likimääräisen alueen säde. Tarkka sijaintisi piilotetaan ja korvataan pisteellä jossakin valitun säteen sisällä.</string>
+    <string name="groups_sharing_setting_approximateLocation_alert_message">Todellinen sijaintisi piilotetaan, eivätkä muut jäsenet pysty paikantamaan sinua tarkasti. Nopeus ja korkeusero eivät ole käytettävissä.</string>
     <string name="group_member_role_admin">Ylläpitäjä</string>
     <string name="group_details_add_member_admin_only_info">Vain ryhmän ylläpitäjä voi lisätä uusia jäseniä</string>
     <string name="group_members_status_location_hidden">Vain likimääräinen sijainti</string>

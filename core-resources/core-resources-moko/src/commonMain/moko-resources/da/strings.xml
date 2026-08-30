@@ -23,6 +23,7 @@
     <string name="button_notNow">Ikke nu</string>
     <string name="button_delete">Slet</string>
     <string name="button_enable">Aktiver</string>
+    <string name="button_enableAnyway">Aktivér alligevel</string>
     <string name="button_activate">Aktiver</string>
     <string name="button_later">Senere</string>
     <string name="button_yes">Ja</string>
@@ -965,6 +966,7 @@
     <string name="groups_sharing_setting_approximateLocation_title">Omtrentlig placering</string>
     <string name="groups_sharing_setting_approximateLocation_description_off">Del kun et omtrentligt placeringsområde, selv hvis din placering er nøjagtig.</string>
     <string name="groups_sharing_setting_approximateLocation_description_on">Vælg radius for et omtrentligt område. Din præcise placering skjules og erstattes af et punkt et sted inden for den valgte radius.</string>
+    <string name="groups_sharing_setting_approximateLocation_alert_message">Din faktiske placering vil blive skjult, og andre medlemmer vil ikke kunne finde dig præcist. Hastighed og højdemeter vil ikke være tilgængelige.</string>
     <string name="group_member_role_admin">Administrator</string>
     <string name="group_details_add_member_admin_only_info">Kun gruppeadministratoren kan tilføje nye medlemmer</string>
     <string name="group_members_status_location_hidden">Kun omtrentlig placering</string>

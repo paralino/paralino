@@ -23,6 +23,7 @@
     <string name="button_notNow">Most nem</string>
     <string name="button_delete">Törlés</string>
     <string name="button_enable">Engedélyezés</string>
+    <string name="button_enableAnyway">Mégis engedélyezés</string>
     <string name="button_activate">Aktiválás</string>
     <string name="button_later">Később</string>
     <string name="button_yes">Igen</string>
@@ -965,6 +966,7 @@
     <string name="groups_sharing_setting_approximateLocation_title">Közelítő hely</string>
     <string name="groups_sharing_setting_approximateLocation_description_off">Csak a közelítő helyterületet ossza meg, még akkor is, ha a helye pontos.</string>
     <string name="groups_sharing_setting_approximateLocation_description_on">Válassza ki a közelítő terület sugarát. Az Ön pontos tartózkodási helye el lesz rejtve, és egy, a kiválasztott sugáron belüli pontra lesz cserélve.</string>
+    <string name="groups_sharing_setting_approximateLocation_alert_message">Az Ön tényleges tartózkodási helye el lesz rejtve, és a többi tag nem tudja Önt pontosan megtalálni. A sebesség és a magasság nem lesz elérhető.</string>
     <string name="group_member_role_admin">Adminisztrátor</string>
     <string name="group_details_add_member_admin_only_info">Csak a csoport adminisztrátora adhat hozzá új tagokat</string>
     <string name="group_members_status_location_hidden">Csak közelítő helyszín</string>

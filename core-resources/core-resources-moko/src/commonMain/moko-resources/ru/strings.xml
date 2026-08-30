@@ -23,6 +23,7 @@
     <string name="button_notNow">Не сейчас</string>
     <string name="button_delete">Удалить</string>
     <string name="button_enable">Включить</string>
+    <string name="button_enableAnyway">Включить всё равно</string>
     <string name="button_activate">Активировать</string>
     <string name="button_later">Позже</string>
     <string name="button_yes">Да</string>
@@ -965,6 +966,7 @@
     <string name="groups_sharing_setting_approximateLocation_title">Приблизительное местоположение</string>
     <string name="groups_sharing_setting_approximateLocation_description_off">Делитесь только приблизительной областью местоположения, даже если ваше местоположение определено точно.</string>
     <string name="groups_sharing_setting_approximateLocation_description_on">Выберите радиус приблизительной области. Ваше точное местоположение будет скрыто и заменено точкой где-то внутри выбранного радиуса.</string>
+    <string name="groups_sharing_setting_approximateLocation_alert_message">Ваше фактическое местоположение будет скрыто, и другие участники не смогут определить его точно. Скорость и высота будут недоступны.</string>
     <string name="group_member_role_admin">Администратор</string>
     <string name="group_details_add_member_admin_only_info">Только администратор группы может добавлять новых участников</string>
     <string name="group_members_status_location_hidden">Только приблизительное местоположение</string>

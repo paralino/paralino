@@ -23,6 +23,7 @@
     <string name="button_notNow">Не сада</string>
     <string name="button_delete">Избришите</string>
     <string name="button_enable">Омогућите</string>
+    <string name="button_enableAnyway">Ипак омогућите</string>
     <string name="button_activate">Активирајте</string>
     <string name="button_later">Касније</string>
     <string name="button_yes">Да</string>
@@ -965,6 +966,7 @@
     <string name="groups_sharing_setting_approximateLocation_title">Приближна локација</string>
     <string name="groups_sharing_setting_approximateLocation_description_off">Делите само приближно подручје локације, чак и ако је ваша локација прецизна.</string>
     <string name="groups_sharing_setting_approximateLocation_description_on">Изаберите радијус приближног подручја. Ваша тачна локација биће сакривена и замењена тачком негде унутар изабраног радијуса.</string>
+    <string name="groups_sharing_setting_approximateLocation_alert_message">Ваша стварна локација биће сакривена и остали чланови неће моћи да вас прецизно лоцирају. Брзина и надморска висина неће бити доступне.</string>
     <string name="group_member_role_admin">Администратор</string>
     <string name="group_details_add_member_admin_only_info">Само администратор групе може да додаје нове чланове</string>
     <string name="group_members_status_location_hidden">Само приближна локација</string>

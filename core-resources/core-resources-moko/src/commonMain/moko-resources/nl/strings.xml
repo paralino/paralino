@@ -23,6 +23,7 @@
     <string name="button_notNow">Niet nu</string>
     <string name="button_delete">Verwijderen</string>
     <string name="button_enable">Inschakelen</string>
+    <string name="button_enableAnyway">Toch inschakelen</string>
     <string name="button_activate">Activeren</string>
     <string name="button_later">Later</string>
     <string name="button_yes">Ja</string>
@@ -965,6 +966,7 @@
     <string name="groups_sharing_setting_approximateLocation_title">Geschatte locatie</string>
     <string name="groups_sharing_setting_approximateLocation_description_off">Deel alleen het gebied van uw geschatte locatie, zelfs als uw locatie nauwkeurig is.</string>
     <string name="groups_sharing_setting_approximateLocation_description_on">Selecteer de straal van een geschat gebied. Uw precieze locatie wordt verborgen en vervangen door een punt ergens binnen de gekozen straal.</string>
+    <string name="groups_sharing_setting_approximateLocation_alert_message">Uw werkelijke locatie wordt verborgen en andere leden kunnen u niet nauwkeurig lokaliseren. Snelheid en hoogte zijn niet beschikbaar.</string>
     <string name="group_member_role_admin">Beheerder</string>
     <string name="group_details_add_member_admin_only_info">Alleen de groepsbeheerder kan nieuwe leden toevoegen</string>
     <string name="group_members_status_location_hidden">Alleen geschatte locatie</string>

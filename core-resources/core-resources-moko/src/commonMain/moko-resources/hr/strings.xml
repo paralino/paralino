@@ -23,6 +23,7 @@
     <string name="button_notNow">Ne sada</string>
     <string name="button_delete">Izbriši</string>
     <string name="button_enable">Omogući</string>
+    <string name="button_enableAnyway">Ipak omogući</string>
     <string name="button_activate">Aktiviraj</string>
     <string name="button_later">Kasnije</string>
     <string name="button_yes">Da</string>
@@ -58,7 +59,7 @@
     <string name="error_crypto_encryption_generic">Nemoguće je šifrirati podatke, molimo pokušajte ponovno.</string>
     <string name="error_crypto_decryption_generic">Nemoguće je dešifrirati podatke, molimo pokušajte ponovno.</string>
     <string name="error_notification_service_error_message">Usluga obaveštenja se ne može pokrenuti.\nMolimo otvorite aplikaciju da ponovo pokrenete uslugu obaveštenja!</string>
-    <string name="error_unrestricted_background_access_message_android">Molimo omogućite **neograničenu upotrebu u pozadini** i onemogućite **opтимizacije baterije sistema** kako biste omogućili da Paralino radi u pozadini bez prekida.</string>
+    <string name="error_unrestricted_background_access_message_android">Molimo omogućite **neograničenu upotrebu u pozadini** i onemogućite **optimizacije baterije sistema** kako biste omogućili da Paralino radi u pozadini bez prekida.</string>
     <string name="error_unrestricted_background_access_message_ios">Molimo omogućite **osvežavanje aplikacije u pozadini** kako biste omogućili da Paralino radi u pozadini bez prekida.</string>
     <string name="notifications_sharing_active_title">Dijeljenje aktivno</string>
     <string name="notifications_tracking_active_message">Praćenje osobne lokacije je aktivno</string>
@@ -965,6 +966,7 @@
     <string name="groups_sharing_setting_approximateLocation_title">Približna lokacija</string>
     <string name="groups_sharing_setting_approximateLocation_description_off">Dijelite samo približno područje lokacije čak i ako je vaša lokacija točna.</string>
     <string name="groups_sharing_setting_approximateLocation_description_on">Odaberite radijus približnog područja. Vaša točna lokacija bit će skrivena i zamijenjena točkom negdje unutar odabranog radijusa.</string>
+    <string name="groups_sharing_setting_approximateLocation_alert_message">Vaša stvarna lokacija bit će skrivena i ostali članovi neće vas moći precizno locirati. Brzina i nadmorska visina neće biti dostupne.</string>
     <string name="group_member_role_admin">Administrator</string>
     <string name="group_details_add_member_admin_only_info">Samo administrator grupe može dodavati nove članove</string>
     <string name="group_members_status_location_hidden">Samo približna lokacija</string>

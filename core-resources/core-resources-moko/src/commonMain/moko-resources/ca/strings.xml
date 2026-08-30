@@ -23,6 +23,7 @@
     <string name="button_notNow">No ara</string>
     <string name="button_delete">Eliminar</string>
     <string name="button_enable">Activar</string>
+    <string name="button_enableAnyway">Activar de totes maneres</string>
     <string name="button_activate">Activar</string>
     <string name="button_later">Més tard</string>
     <string name="button_yes">Sí</string>
@@ -965,6 +966,7 @@
     <string name="groups_sharing_setting_approximateLocation_title">Ubicació aproximada</string>
     <string name="groups_sharing_setting_approximateLocation_description_off">Compartiu només l\'àrea aproximada de la ubicació, fins i tot si la vostra ubicació és exacta.</string>
     <string name="groups_sharing_setting_approximateLocation_description_on">Seleccioneu el radi d\'una àrea aproximada. La vostra ubicació precisa s\'amagarà i es substituirà per un punt en algun lloc dins del radi escollit.</string>
+    <string name="groups_sharing_setting_approximateLocation_alert_message">La vostra ubicació real s\'amagarà i els altres membres no us podran localitzar amb precisió. La velocitat i l\'altitud no estaran disponibles.</string>
     <string name="group_member_role_admin">Administrador</string>
     <string name="group_details_add_member_admin_only_info">Només l\'administrador del grup pot afegir nous membres</string>
     <string name="group_members_status_location_hidden">Només ubicació aproximada</string>

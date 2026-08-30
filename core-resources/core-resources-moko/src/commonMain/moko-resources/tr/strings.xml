@@ -23,6 +23,7 @@
     <string name="button_notNow">Şu an değil</string>
     <string name="button_delete">Sil</string>
     <string name="button_enable">Etkinleştir</string>
+    <string name="button_enableAnyway">Yine de etkinleştir</string>
     <string name="button_activate">Aktif et</string>
     <string name="button_later">Sonra</string>
     <string name="button_yes">Evet</string>
@@ -965,6 +966,7 @@
     <string name="groups_sharing_setting_approximateLocation_title">Yaklaşık konum</string>
     <string name="groups_sharing_setting_approximateLocation_description_off">Konumunuz doğru olsa bile yalnızca yaklaşık konum alanını paylaşın.</string>
     <string name="groups_sharing_setting_approximateLocation_description_on">Yaklaşık bir alanın yarıçapını seçin. Kesin konumunuz gizlenecek ve seçilen yarıçapın içindeki bir noktayla değiştirilecektir.</string>
+    <string name="groups_sharing_setting_approximateLocation_alert_message">Gerçek konumunuz gizlenecek ve diğer üyeler sizi tam olarak konumlandıramayacak. Hız ve yükselti kullanılamaz.</string>
     <string name="group_member_role_admin">Yönetici</string>
     <string name="group_details_add_member_admin_only_info">Yalnızca grup yöneticisi yeni üyeler ekleyebilir</string>
     <string name="group_members_status_location_hidden">Yalnızca yaklaşık konum</string>
