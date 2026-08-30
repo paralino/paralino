@@ -1011,6 +1011,7 @@
     <string name="plan_limit_overLimit_privacy_zones_banner_title">**As zonas de privacidade são limitadas!**\nO número permitido de zonas de privacidade foi excedido.</string>
     <string name="button_edit">Editar</string>
     <string name="button_manage">Gerir</string>
+    <string name="dashboard_groups_manage_button">Gerir grupo</string>
     <string name="plans_banner_inline_privacy_zones">Crie mais zonas de privacidade e mantenha o controlo da sua localização!</string>
     <string name="paywall_feature_privacy_zones_group">Zonas de privacidade</string>
     <string name="place_detail_change_location">Alterar localização</string>

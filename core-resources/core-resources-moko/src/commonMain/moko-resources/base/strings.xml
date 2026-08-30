@@ -82,6 +82,7 @@
     <string name="location_banner_fix">Fix</string>
     <string name="dashboard_groups_section_unverified">UNVERIFIED</string>
     <string name="dashboard_groups_add_button">Create a new group</string>
+    <string name="dashboard_groups_manage_button">Manage group</string>
     <string name="dashboard_groups_join_button">Join a group</string>
     <string name="dashboard_groups_title_created">Created groups</string>
     <string name="dashboard_groups_title_joined">Joined groups</string>

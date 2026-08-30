@@ -970,6 +970,7 @@
     <string name="paywall_feature_summary_privacy_zones">Zone de confidențialitate</string>
     <string name="button_edit">Editează</string>
     <string name="button_manage">Gestionează</string>
+    <string name="dashboard_groups_manage_button">Gestionează grupul</string>
     <string name="place_detail_change_location">Schimbă locația</string>
     <string name="privacy_zone_created_notification">Zonă nouă de confidențialitate %1$s creată în grupul %2$s</string>
     <string name="privacy_zone_created_notification_default">Zonă nouă de confidențialitate creată</string>

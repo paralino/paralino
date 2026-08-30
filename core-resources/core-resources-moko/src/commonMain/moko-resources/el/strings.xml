@@ -968,6 +968,7 @@
     <string name="group_members_status_location_hidden">Μόνο κατά προσέγγιση τοποθεσία</string>
     <string name="button_edit">Επεξεργασία</string>
     <string name="button_manage">Διαχείριση</string>
+    <string name="dashboard_groups_manage_button">Διαχείριση ομάδας</string>
     <string name="plans_banner_inline_privacy_zones">Δημιουργήστε περισσότερες ζώνες απορρήτου και διατηρήστε τον έλεγχο της τοποθεσίας σας!</string>
     <string name="paywall_feature_privacy_zones_group">Ζώνες απορρήτου</string>
     <string name="paywall_feature_summary_privacy_zones">Ζώνες απορρήτου</string>

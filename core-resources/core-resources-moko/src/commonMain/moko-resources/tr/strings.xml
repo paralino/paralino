@@ -1015,6 +1015,7 @@
     <string name="plan_limit_overLimit_privacy_zones_banner_title">**Gizlilik bölgeleri sınırlıdır!**\nİzin verilen gizlilik bölgesi sayısı aşıldı.</string>
     <string name="button_edit">Düzenle</string>
     <string name="button_manage">Yönet</string>
+    <string name="dashboard_groups_manage_button">Grubu yönet</string>
     <string name="plans_banner_inline_privacy_zones">Konumunuz üzerindeki kontrolü elinizde tutmak için daha fazla gizlilik bölgesi oluşturun!</string>
     <string name="onboarding_step_privacyZonesIntro_title">Gizlilik bölgeleri burada</string>
     <string name="onboarding_step_privacyZonesIntro_title_tag">Gizlilik bölgeleri</string>

@@ -1009,6 +1009,7 @@
     <string name="plan_limit_overLimit_privacy_zones_banner_title">**Privacyszones zijn beperkt!**\nHet toegestane aantal privacyszones is overschreden.</string>
     <string name="button_edit">Bewerken</string>
     <string name="button_manage">Beheren</string>
+    <string name="dashboard_groups_manage_button">Groep beheren</string>
     <string name="plans_banner_inline_privacy_zones">Maak meer privacyezones en behoud de controle over uw locatie!</string>
     <string name="paywall_feature_privacy_zones_group">Privacyezones</string>
     <string name="paywall_feature_summary_privacy_zones">Privacyezones</string>

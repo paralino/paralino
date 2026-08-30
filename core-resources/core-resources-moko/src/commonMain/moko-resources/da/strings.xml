@@ -968,6 +968,7 @@
     <string name="group_members_status_location_hidden">Kun omtrentlig placering</string>
     <string name="button_edit">Rediger</string>
     <string name="button_manage">Administrer</string>
+    <string name="dashboard_groups_manage_button">Administrer gruppe</string>
     <string name="plans_banner_inline_privacy_zones">Opret flere privatlivszoner, og bevar kontrollen over din placering!</string>
     <string name="paywall_feature_privacy_zones_group">Privatlivszoner</string>
     <string name="paywall_feature_summary_privacy_zones">Privatlivszoner</string>

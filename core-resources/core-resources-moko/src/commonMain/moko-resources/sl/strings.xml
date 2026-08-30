@@ -972,6 +972,7 @@
     <string name="plan_limit_privacy_zones_alert_info">cone zasebnosti</string>
     <string name="button_edit">Uredi</string>
     <string name="button_manage">Upravljaj</string>
+    <string name="dashboard_groups_manage_button">Upravljaj skupino</string>
     <string name="plans_banner_inline_privacy_zones">Ustvarite več območij zasebnosti in ohranite nadzor nad svojo lokacijo!</string>
     <string name="paywall_feature_privacy_zones_group">Območja zasebnosti</string>
     <string name="paywall_feature_summary_privacy_zones">Območja zasebnosti</string>

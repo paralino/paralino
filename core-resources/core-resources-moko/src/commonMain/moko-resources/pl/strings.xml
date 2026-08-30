@@ -998,6 +998,7 @@
     <string name="map_long_tap_action_new_privacy_zone">Nowa strefa prywatności</string>
     <string name="button_edit">Edytuj</string>
     <string name="button_manage">Zarządzaj</string>
+    <string name="dashboard_groups_manage_button">Zarządzaj grupą</string>
     <string name="place_detail_change_location">Zmień lokalizację</string>
     <string name="privacy_zone_created_notification">Nowa strefa prywatności %1$s została utworzona w grupie %2$s</string>
     <string name="privacy_zone_created_notification_default">Nowa strefa prywatności została utworzona</string>

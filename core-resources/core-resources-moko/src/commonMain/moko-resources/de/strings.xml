@@ -968,6 +968,7 @@
     <string name="group_members_status_location_hidden">Nur ungefährer Standort</string>
     <string name="button_edit">Bearbeiten</string>
     <string name="button_manage">Verwalten</string>
+    <string name="dashboard_groups_manage_button">Gruppe verwalten</string>
     <string name="plans_banner_inline_privacy_zones">Erstellen Sie weitere Privatsphärenzonen und behalten Sie die Kontrolle über Ihren Standort!</string>
     <string name="paywall_feature_privacy_zones_group">Privatsphärenzonen</string>
     <string name="paywall_feature_summary_privacy_zones">Privatsphärenzonen</string>

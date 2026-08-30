@@ -990,6 +990,7 @@
     <string name="map_long_tap_action_new_privacy_zone">Новая зона приватности</string>
     <string name="button_edit">Редактировать</string>
     <string name="button_manage">Управлять</string>
+    <string name="dashboard_groups_manage_button">Управлять группой</string>
     <string name="plans_banner_inline_privacy_zones">Создавайте больше зон приватности и сохраняйте контроль над своим местоположением!</string>
     <string name="groups_sharing_setting_approximateLocation_speedElevation_unavailable">Скорость и высота недоступны, когда включен режим *приблизительного местоположения*.</string>
     <string name="privacy_zone_created_notification">Новая зона приватности %1$s создана в группе %2$s</string>

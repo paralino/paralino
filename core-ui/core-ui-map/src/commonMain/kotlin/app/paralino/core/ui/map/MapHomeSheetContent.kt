@@ -524,7 +524,7 @@ private fun LazyListScope.membersList(
                 modifier = Modifier,
                 startIcon = CoreAppIcons.Settings.asPainterResource(),
                 endIcon = CoreAppIcons.ChevronRight.asPainterResource(),
-                text = stringResource(MR.strings.button_manage),
+                text = stringResource(MR.strings.dashboard_groups_manage_button),
                 onClick = onOpenSettings
             )
 
