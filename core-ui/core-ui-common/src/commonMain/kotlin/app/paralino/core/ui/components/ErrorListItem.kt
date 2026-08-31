@@ -46,7 +46,7 @@ fun ConditionErrorItem(
         endAction = if (data.endActionTextRes != null)
             stringResource(data.endActionTextRes!!)
         else null,
-        endActionLoading = false,
+        endActionLoading = data.isEndActionLoading,
         onClick = onClick
     )
 }
@@ -151,3 +151,9 @@ val ConditionErrorType.icon: Painter
         ConditionErrorType.NewAppUpdate -> CoreAppIcons.DownloadArrow
         ConditionErrorType.UnrestrictedBackgroundAccess -> CoreAppIcons.BatteryFull
     }.asPainterResource()
+
+val ConditionErrorType.isEndActionLoading: Boolean
+    get() = when (this) {
+        is ConditionErrorType.EmailVerification -> this.isLoading
+        else -> false
+    }

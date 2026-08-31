@@ -9,7 +9,7 @@ sealed interface ConditionErrorType {
     }
     object PermissionLocationBackground: ConditionErrorType, MandatoryBackgroundLocationSharingConditionType
     object Network: ConditionErrorType, MandatoryForegroundLocationSharingConditionType
-    data class EmailVerification(val email: String): ConditionErrorType
+    data class EmailVerification(val email: String, val isLoading: Boolean): ConditionErrorType
     object GuestAccount: ConditionErrorType
     object NewAppUpdate: ConditionErrorType
     object UnrestrictedBackgroundAccess: ConditionErrorType, BackgroundLocationSharingConditionType

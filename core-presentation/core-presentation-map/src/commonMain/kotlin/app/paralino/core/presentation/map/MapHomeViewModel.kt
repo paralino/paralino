@@ -12,6 +12,7 @@ import app.paralino.core.domain.location.history.DeleteLocationHistoryEntryUseCa
 import app.paralino.core.domain.location.history.GetLocationHistoryUseCase
 import app.paralino.core.domain.location.history.RefreshLocationHistoryUseCase
 import app.paralino.core.domain.privacyzone.GetPrivacyZonesUseCase
+import app.paralino.core.domain.user.AppAccountStateMonitor
 import app.paralino.core.domain.user.PersonalSpaceRefreshUseCase
 import app.paralino.core.domain.user.PremiumStatusManager
 import app.paralino.core.logg
@@ -95,7 +96,8 @@ class MapHomeViewModel constructor(
     private val remoteConfig: RemoteConfigRepository,
     private val stopSharingLocationUseCase: StopSharingLocationUseCase,
     private val appRatingManager: AppRatingManager,
-    private val premiumStatusManager: PremiumStatusManager
+    private val premiumStatusManager: PremiumStatusManager,
+    private val accountStateMonitor: AppAccountStateMonitor,
 ) : CoreViewModel() {
 
     private val _uiState = MutableStateFlow<MapHomeScreenState>(
@@ -190,6 +192,8 @@ class MapHomeViewModel constructor(
         personalCodesRepo = personalCodeRepo,
         groupLocalDataSource = groupRepo,
         deviceApiProvider = deviceApiProvider,
+        appPrefs = appPrefs,
+        accountStateMonitor = accountStateMonitor,
         messageDispatcher = messageDispatcher,
         coroutineScope = coroutineScope,
         eventChannel = _eventChannel
