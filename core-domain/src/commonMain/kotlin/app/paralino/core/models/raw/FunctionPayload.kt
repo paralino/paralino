@@ -561,6 +561,7 @@ data class PlaceAddressSearchResult(
 data class LocationPatchPayload(
     val personalLocations: List<LocationPatchEntry>?,
     val groupLocations: List<GroupLocationPatchEntry>?,
+    val targetBulkLocationThreshold: Int
 )
 
 @Serializable
@@ -584,6 +585,7 @@ data class GroupLocationPatchEntry(
 data class LocationPatchResponse(
     val personalResult: PersonalLocationPatchResponse? = null,
     val groupResult: GroupLocationPatchResponse? = null,
+    val refreshConfig: Boolean = false
 )
 
 @Serializable

@@ -23,6 +23,7 @@ import app.paralino.core.utils.exceptions.CryptoException
 import app.paralino.core.utils.exceptions.MissingCryptoKeyException
 import kotlin.coroutines.cancellation.CancellationException
 import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Duration.Companion.seconds
 
 class SaveLocationUseCase(
     private val database: MainDatabaseHelper,
@@ -38,7 +39,7 @@ class SaveLocationUseCase(
         if (threshold <= 0 || items.size < threshold) {
             items.forEach { uploadAndSaveSingleEntity(it) }
         } else {
-            uploadAndSaveLocationsBulk(items)
+            uploadAndSaveLocationsBulk(items = items, threshold = threshold)
         }
     }
 
@@ -63,7 +64,10 @@ class SaveLocationUseCase(
         }
     }
 
-    private suspend fun uploadAndSaveLocationsBulk(items: List<MemberGroupIdForUpload>) {
+    private suspend fun uploadAndSaveLocationsBulk(
+        items: List<MemberGroupIdForUpload>,
+        threshold: Int
+    ) {
         val prepared = items.mapNotNull { item ->
             try {
                 payloadFactory.prepare(item)
@@ -87,7 +91,7 @@ class SaveLocationUseCase(
             val response = try {
                 functionsApi.runAndWait(
                     function = ServerFunction.LOCATION_PATCH,
-                    data = prepared.toPatchPayload()
+                    data = prepared.toPatchPayload(threshold = threshold)
                 )
             } catch (e: CancellationException) {
                 throw e
@@ -125,7 +129,9 @@ class SaveLocationUseCase(
         }
     }
 
-    private fun List<PreparedLocationUpload>.toPatchPayload(): LocationPatchPayload {
+    private fun List<PreparedLocationUpload>.toPatchPayload(
+        threshold: Int
+    ): LocationPatchPayload {
         val personalEntries = filterIsInstance<PreparedLocationUpload.Personal>().map {
             LocationPatchEntry(
                 locationId = it.locationId,
@@ -145,7 +151,8 @@ class SaveLocationUseCase(
         }
         return LocationPatchPayload(
             personalLocations = personalEntries.takeIf { it.isNotEmpty() },
-            groupLocations = groupEntries.takeIf { it.isNotEmpty() }
+            groupLocations = groupEntries.takeIf { it.isNotEmpty() },
+            targetBulkLocationThreshold = threshold
         )
     }
 
@@ -190,6 +197,10 @@ class SaveLocationUseCase(
         errors.filter { it.fallbackToTable }
             .mapNotNull { preparedById[it.locationId] }
             .forEach { tryUploadViaDocumentApi(it) }
+
+        if (result.refreshConfig) {
+            remoteConfig.refreshConfig(cacheTimeMillis = 20.seconds.inWholeMilliseconds)
+        }
     }
 
     private suspend fun tryUploadViaDocumentApi(prepared: PreparedLocationUpload) {
