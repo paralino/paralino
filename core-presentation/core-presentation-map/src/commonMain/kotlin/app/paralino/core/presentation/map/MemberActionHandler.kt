@@ -201,13 +201,24 @@ class MemberActionHandler(
                 }
             }
             .onCompletion { error ->
-                val hasDeviceUnreachableError = error?.asRemoteException()?.code == 404
-                val hasDeviceSetupWrongError = error?.asRemoteException()?.type.let {
-                    it == "device_setup_invalid" || it == "push_message_failed"
+                val errorCode = error?.asRemoteException()?.code
+                val errorType = error?.asRemoteException()?.type
+
+                val requestError = when {
+                    errorType == "device_setup_invalid" -> LocationRequestItemState.RequestError.DeviceSetupInvalid
+                    errorType == "device_setup_passive" -> LocationRequestItemState.RequestError.DeviceSetupPassive
+                    errorType == "device_not_found" -> LocationRequestItemState.RequestError.DeviceNotFound
+                    errorType == "device_setup_missing" -> LocationRequestItemState.RequestError.DeviceSetupMissing
+                    errorType == "push_message_failed" -> LocationRequestItemState.RequestError.PushFailed
+                    errorCode == 404 -> LocationRequestItemState.RequestError.Generic(apiErrorType = errorType)
+                    errorCode == 429 -> LocationRequestItemState.RequestError.TooManyRequests
+                    error != null -> LocationRequestItemState.RequestError.Unknown(
+                        apiErrorType = errorType,
+                        apiErrorCode = errorCode
+                    )
+                    else -> null
                 }
-                val isDeviceMaybeUnreachable = error?.asRemoteException()?.type.let {
-                    it == "device_setup_passive"
-                }
+
                 updateReadyState { readyState ->
                     readyState.copy(
                         allMembersOrDevices = readyState.allMembersOrDevices.map {
@@ -215,13 +226,11 @@ class MemberActionHandler(
                                 it.copy(
                                     actions = it.actions.copy(
                                         locationRequest = it.actions.locationRequest?.copy(
+                                            // loading as in we are waiting for device to respond
                                             isLoading = error == null,
                                             isEnabled = true,
                                             isWaitingForUser = error == null,
-                                            hasRequestError = error != null,
-                                            hasDeviceSetupWrongError = hasDeviceSetupWrongError,
-                                            hasDeviceUnreachableError = hasDeviceUnreachableError,
-                                            hasDeviceMaybeUnreachableError = isDeviceMaybeUnreachable,
+                                            requestError = requestError,
                                             lastLocationRequest = nowUTC(),
                                             isPremiumFeatureEnabled = readyState.groupPlanConfig.hasLocationRequests
                                         )
@@ -235,16 +244,30 @@ class MemberActionHandler(
                 }
 
                 if (error != null) {
-                    // only show snackbar for other type of errors
-                    // these are displayed on member item on map
-                    if (isDeviceMaybeUnreachable) {
-                        messageDispatcher.showSnackbar(MR.strings.group_member_device_maybe_unreachable_message.localizedString())
-                    } else if (!hasDeviceUnreachableError && !hasDeviceSetupWrongError) {
-                        if (error.asRemoteException()?.code == 429) {
+                    // only show snackbar for some type of errors
+                    // others are displayed on member item on map
+                    when (requestError) {
+                        LocationRequestItemState.RequestError.DeviceSetupPassive -> {
+                            messageDispatcher.showSnackbar(MR.strings.group_member_device_maybe_unreachable_message.localizedString())
+                        }
+
+                        LocationRequestItemState.RequestError.DeviceSetupMissing -> {
+                            messageDispatcher.showSnackbar(MR.strings.group_member_device_setup_missing_message.localizedString())
+                        }
+
+                        LocationRequestItemState.RequestError.PushFailed -> {
+                            messageDispatcher.showSnackbar(MR.strings.group_member_device_push_failed_message.localizedString())
+                        }
+
+                        LocationRequestItemState.RequestError.TooManyRequests -> {
                             messageDispatcher.showSnackbar(MR.strings.group_member_device_request_disabled.localizedString())
-                        } else {
+                        }
+
+                        is LocationRequestItemState.RequestError.Unknown -> {
                             messageDispatcher.showSnackbar(error.errorString())
                         }
+
+                        else -> {}
                     }
                 } else {
                     scheduleDeviceResponseCheck()

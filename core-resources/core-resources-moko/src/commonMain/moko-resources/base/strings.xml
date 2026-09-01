@@ -691,6 +691,8 @@
     <string name="group_member_device_maybe_unreachable">Device will take longer to respond</string>
     <string name="group_member_device_maybe_unreachable_message">This device can not be reached on demand and will take longer to respond.\nPlease check the location again after some time.</string>
     <string name="group_member_device_setup_invalid">Device is not fully compatible and can not be reached</string>
+    <string name="group_member_device_setup_missing_message">Device is missing push notifications configuration and can not be reached.</string>
+    <string name="group_member_device_push_failed_message">Device can not accept push notifications now and can not be reached</string>
     <string name="group_member_device_request_failed">Request failed, please try again</string>
     <string name="group_member_device_request_disabled">Please wait a few moments before requesting location again 🙏</string>
     <!-- Shows distance from other device. For all languages besides English use format: "%s from me" -->

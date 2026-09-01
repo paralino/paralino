@@ -44,6 +44,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -1167,7 +1168,7 @@ private fun LocationRequestItem(
                 )
             } else {
                 Icon(
-                    painter = if (state.hasError) {
+                    painter = if (state.requestError != null) {
                         CoreAppIcons.Warning.asPainterResource()
                     } else if (!state.isEnabled) {
                         CoreAppIcons.AccessTime.asPainterResource()
@@ -1180,18 +1181,45 @@ private fun LocationRequestItem(
             }
         }
 
-        Text(
-            modifier = Modifier.padding(horizontal = 8.dp).weight(1f),
-            text = when {
+        val buttonText = key(state) {
+            val baseText = when {
                 state.isWaitingForUser -> stringResource(MR.strings.group_member_device_waiting)
                 state.isLoading -> stringResource(MR.strings.group_member_device_requesting)
-                state.hasDeviceSetupWrongError -> stringResource(MR.strings.group_member_device_setup_invalid)
-                state.hasDeviceUnreachableError -> stringResource(MR.strings.group_member_device_unreachable)
-                state.hasDeviceMaybeUnreachableError -> stringResource(MR.strings.group_member_device_maybe_unreachable)
-                state.hasRequestError -> stringResource(MR.strings.group_member_device_request_failed)
+                state.requestError != null -> {
+                    when (state.requestError) {
+                        LocationRequestItemState.RequestError.DeviceSetupPassive -> stringResource(MR.strings.group_member_device_maybe_unreachable)
+                        LocationRequestItemState.RequestError.DeviceNotFound -> stringResource(MR.strings.group_member_device_unreachable)
+                        LocationRequestItemState.RequestError.DeviceSetupInvalid -> stringResource(MR.strings.group_member_device_setup_invalid)
+                        LocationRequestItemState.RequestError.DeviceSetupMissing -> stringResource(MR.strings.group_member_device_setup_invalid)
+                        is LocationRequestItemState.RequestError.Generic -> stringResource(MR.strings.group_member_device_setup_invalid)
+                        LocationRequestItemState.RequestError.PushFailed -> stringResource(MR.strings.group_member_device_unreachable)
+                        LocationRequestItemState.RequestError.TooManyRequests -> stringResource(MR.strings.group_members_status_too_many_requests)
+                        is LocationRequestItemState.RequestError.Unknown,
+                        null -> stringResource(MR.strings.group_member_device_request_failed)
+                    }
+                }
                 state.isStatusRecent -> stringResource(MR.strings.group_members_item_refresh_location_button)
                 else -> stringResource(MR.strings.group_members_item_request_location_button)
-            },
+            }
+
+            val type = when (val error = state.requestError) {
+                LocationRequestItemState.RequestError.DeviceNotFound -> "device_404"
+                LocationRequestItemState.RequestError.DeviceSetupInvalid -> "device_400"
+                LocationRequestItemState.RequestError.DeviceSetupMissing -> "device_403"
+                LocationRequestItemState.RequestError.PushFailed -> "notification_500"
+                is LocationRequestItemState.RequestError.Generic -> error.apiErrorType
+                is LocationRequestItemState.RequestError.Unknown -> error.apiErrorType
+                else -> null
+            }
+
+            baseText.plus(
+                type?.let { " [$it]" } ?: ""
+            )
+        }
+
+        Text(
+            modifier = Modifier.padding(horizontal = 8.dp).weight(1f),
+            text = buttonText,
             style = MaterialTheme.typography.caption,
             fontWeight = FontWeight.Medium,
         )
