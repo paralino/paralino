@@ -57,6 +57,10 @@ fun SimpleGenericMapComposable(
             )
         }
 
+        MapsSDKProvider.NONE -> {
+            MapUnavailablePlaceholder(modifier = modifier)
+        }
+
         null -> {}
     }
 }

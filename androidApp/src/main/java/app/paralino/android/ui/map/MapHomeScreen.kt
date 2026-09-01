@@ -346,6 +346,10 @@ internal fun HomeScreenMapWithElements(
                 )
             }
 
+            MapsSDKProvider.NONE -> {
+                MapUnavailablePlaceholder(modifier = Modifier.fillMaxSize())
+            }
+
             null -> {}
         }
 

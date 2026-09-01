@@ -6,6 +6,7 @@ import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.AppFlavor
 import app.paralino.core.models.AppHost
 import app.paralino.core.models.base.BackendResourceIDs
+import app.paralino.core.provider.MapLibreAvailability
 
 class AppConfigRepository(
     private val appPrefs: AppPrefs,
@@ -23,6 +24,7 @@ class AppConfigRepository(
     val appHost: AppHost get() = appBuildConfig.appHost
     val resourceIds: BackendResourceIDs get() = BackendResourceIDs
     val hasGoogleMaps: Boolean get() = appBuildConfig.hasGoogleMaps
+    val canUseMapLibre: Boolean get() = MapLibreAvailability.canUseMapLibre
     val hasNotificationSocketService: Boolean get() = appBuildConfig.hasNotificationSocketService
     val appFlavor: AppFlavor get() = appBuildConfig.appFlavor
 }
