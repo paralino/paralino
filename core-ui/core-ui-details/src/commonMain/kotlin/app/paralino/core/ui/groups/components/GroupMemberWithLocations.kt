@@ -481,6 +481,7 @@ fun BoxScope.GroupMemberWithLocations(
             GroupMemberActions(
                 modifier = Modifier
                     .padding(bottom = 10.dp)
+                    .padding(horizontal = 10.dp)
                     .fillMaxWidth(),
                 state = state,
                 canShowOldLocation = canShowOldLocation,
