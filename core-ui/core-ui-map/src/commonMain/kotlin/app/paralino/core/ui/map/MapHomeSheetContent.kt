@@ -422,9 +422,28 @@ private fun LazyListScope.membersList(
         GroupMember(
             state = itemState,
             collapseOnActionClick = true,
-            forceExpandAction = itemState.locations.size > 1,
+            forceFullExpandAction = itemState.locations.size > 1,
             onEvent = memberEvent
         )
+    }
+
+    if (members.size == 1 && canAddNewMember) {
+        this.item("add_member_button") {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 20.dp),
+                contentAlignment = Alignment.CenterEnd
+            ) {
+                GroupMemberActionButton(
+                    modifier = Modifier,
+                    startIcon = CoreAppIcons.PersonAdd.asPainterResource(),
+                    endIcon = CoreAppIcons.ChevronRight.asPainterResource(),
+                    text = stringResource(MR.strings.invite_connect_screen_title),
+                    onClick = onAddNewMember
+                )
+            }
+        }
     }
 
     if (hasUpgradeBanner) {
@@ -505,7 +524,7 @@ private fun LazyListScope.membersList(
                 modifier = Modifier,
                 startIcon = CoreAppIcons.Settings.asPainterResource(),
                 endIcon = CoreAppIcons.ChevronRight.asPainterResource(),
-                text = stringResource(MR.strings.button_manage),
+                text = stringResource(MR.strings.dashboard_groups_manage_button),
                 onClick = onOpenSettings
             )
 
@@ -533,7 +552,7 @@ private fun LazyListScope.membersList(
                 )
             }
 
-            if (canAddNewMember) {
+            if (members.size > 1 && canAddNewMember) {
                 GroupMemberActionButton(
                     modifier = Modifier,
                     startIcon = CoreAppIcons.PersonAdd.asPainterResource(),

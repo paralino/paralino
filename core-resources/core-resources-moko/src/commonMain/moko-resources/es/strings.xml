@@ -23,6 +23,7 @@
     <string name="button_notNow">Ahora no</string>
     <string name="button_delete">Eliminar</string>
     <string name="button_enable">Habilitar</string>
+    <string name="button_enableAnyway">Habilitar de todos modos</string>
     <string name="button_activate">Activar</string>
     <string name="button_later">Más tarde</string>
     <string name="button_yes">Sí</string>
@@ -544,12 +545,14 @@
     <string name="location_sharing_button_start_personal">Iniciar seguimiento</string>
     <string name="location_sharing_button_stop_groups">Detener compartir</string>
     <string name="location_sharing_button_stop_personal">Detener seguimiento</string>
+    <string name="location_sharing_stop_groups_alert_message">¿Seguro que quieres dejar de compartir tu ubicación con este grupo?</string>
     <string name="groups_sharing_title">Compartir ubicación</string>
     <string name="groups_sharing_device_name_placeholder">Nombre del dispositivo (opcional)</string>
     <string name="groups_sharing_devices">Dispositivos</string>
     <string name="groups_sharing_potential_error_title">Advertencia</string>
     <string name="groups_sharing_potential_error_message">Para compartir tu ubicación, por favor resuelve todos los errores: \n\n%s\n</string>
     <string name="groups_sharing_potential_error_background_location_message">¡Tu ubicación no se puede compartir en segundo plano o si reinicias tu teléfono!\n\nPor favor permite el acceso a la ubicación **todo el tiempo** para un compartir confiable.</string>
+    <string name="groups_sharing_potential_error_notification_permission_message">Las actualizaciones de ubicación en tiempo real no funcionarán correctamente y otros no podrán localizar este dispositivo.\n\nPermite las **notificaciones** para un compartir confiable.</string>
     <string name="groups_sharing_error_unverified_group_title">Grupo o miembro no verificado</string>
     <string name="groups_sharing_error_unverified_group_message">No puedes compartir ubicación con un grupo o miembro no verificado.\n\nIntenta actualizar los datos del grupo.</string>
     <string name="groups_sharing_duration_type_infinite">Siempre activo</string>
@@ -643,6 +646,7 @@
     <string name="group_picker_button_join">Unirse</string>
     <string name="group_member_no_location_info_message">Este dispositivo aún no tiene una ubicación.</string>
     <string name="group_member_devices_section_title">Dispositivos</string>
+    <string name="group_member_your_devices_section_title">Sus dispositivos</string>
     <string name="group_member_device_not_responding_message">**El dispositivo no responde o está desconectado.**\n\nRevisa de nuevo en breve, podría tomar unos minutos responder si el dispositivo está en línea.</string>
     <string name="group_member_device_waiting">Esperando que el dispositivo responda...</string>
     <string name="group_member_device_requesting">Solicitando ubicación...</string>
@@ -650,6 +654,8 @@
     <string name="group_member_device_maybe_unreachable">El dispositivo tardará más en responder</string>
     <string name="group_member_device_maybe_unreachable_message">Este dispositivo no puede alcanzarse a demanda y tardará más en responder. \nPor favor verifica la ubicación nuevamente después de algún tiempo.</string>
     <string name="group_member_device_setup_invalid">El dispositivo no es totalmente compatible y no se puede alcanzar</string>
+    <string name="group_member_device_setup_missing_message">El dispositivo no tiene configuradas las notificaciones push y no se puede alcanzar</string>
+    <string name="group_member_device_push_failed_message">El dispositivo no puede recibir notificaciones push en este momento y no se puede alcanzar</string>
     <string name="group_member_device_request_failed">La solicitud falló, por favor intenta de nuevo</string>
     <string name="group_member_device_request_disabled">Por favor espera unos momentos antes de solicitar la ubicación de nuevo 🙏</string>
     <string name="group_members_last_active_status_now">Justo ahora</string>
@@ -963,11 +969,13 @@
     <string name="groups_sharing_setting_approximateLocation_title">Ubicación aproximada</string>
     <string name="groups_sharing_setting_approximateLocation_description_off">Comparta solo una zona de ubicación aproximada, incluso si su ubicación es precisa.</string>
     <string name="groups_sharing_setting_approximateLocation_description_on">Seleccione el radio de un área aproximada. Su ubicación precisa se ocultará y se reemplazará por un punto en algún lugar dentro del radio elegido.</string>
+    <string name="groups_sharing_setting_approximateLocation_alert_message">Su ubicación real se ocultará y los demás miembros no podrán localizarle con precisión. La velocidad y la elevación no estarán disponibles.</string>
     <string name="group_member_role_admin">Administrador</string>
     <string name="group_details_add_member_admin_only_info">Solo el administrador del grupo puede agregar nuevos miembros</string>
     <string name="group_members_status_location_hidden">Solo ubicación aproximada</string>
     <string name="button_edit">Editar</string>
     <string name="button_manage">Gestionar</string>
+    <string name="dashboard_groups_manage_button">Gestionar grupo</string>
     <string name="plans_banner_inline_privacy_zones">¡Cree más zonas de privacidad y mantenga el control de su ubicación!</string>
     <string name="paywall_feature_privacy_zones_group">Zonas de privacidad</string>
     <string name="paywall_feature_summary_privacy_zones">Zonas de privacidad</string>

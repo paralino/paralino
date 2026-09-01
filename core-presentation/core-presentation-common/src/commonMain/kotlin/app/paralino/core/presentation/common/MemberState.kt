@@ -276,10 +276,7 @@ data class LocationHistoryActionItemState(
 
 data class LocationRequestItemState(
     val isWaitingForUser: Boolean = false,
-    val hasRequestError: Boolean = false,
-    val hasDeviceSetupWrongError: Boolean = false,
-    val hasDeviceUnreachableError: Boolean = false,
-    val hasDeviceMaybeUnreachableError: Boolean = false,
+    val requestError: RequestError? = null,
     val isLoading: Boolean = false,
     val isEnabled: Boolean = true,
     val isPremiumFeatureEnabled: Boolean,
@@ -287,8 +284,24 @@ data class LocationRequestItemState(
     val lastDeviceUpdate: Instant? = null
 ) {
     val canInteract: Boolean = !isLoading && !isWaitingForUser
-    val hasError = hasRequestError || hasDeviceSetupWrongError || hasDeviceUnreachableError || hasDeviceMaybeUnreachableError
     val isStatusRecent: Boolean = lastDeviceUpdate?.isOlderThan(10.minutes) == false
+
+    sealed interface RequestError {
+        data class Generic(
+            val apiErrorType: String?
+        ): RequestError
+
+        object DeviceSetupPassive: RequestError
+        object DeviceNotFound: RequestError
+        object DeviceSetupInvalid: RequestError
+        object DeviceSetupMissing: RequestError
+        object PushFailed: RequestError
+        object TooManyRequests: RequestError
+        data class Unknown(
+            val apiErrorType: String?,
+            val apiErrorCode: Int?
+        ): RequestError
+    }
 }
 
 enum class MemberLocationVisibilityType {

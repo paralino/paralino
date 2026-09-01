@@ -23,6 +23,7 @@
     <string name="button_notNow">Ne sada</string>
     <string name="button_delete">Izbriši</string>
     <string name="button_enable">Omogući</string>
+    <string name="button_enableAnyway">Ipak omogući</string>
     <string name="button_activate">Aktiviraj</string>
     <string name="button_later">Kasnije</string>
     <string name="button_yes">Da</string>
@@ -58,7 +59,7 @@
     <string name="error_crypto_encryption_generic">Nemoguće je šifrirati podatke, molimo pokušajte ponovno.</string>
     <string name="error_crypto_decryption_generic">Nemoguće je dešifrirati podatke, molimo pokušajte ponovno.</string>
     <string name="error_notification_service_error_message">Usluga obaveštenja se ne može pokrenuti.\nMolimo otvorite aplikaciju da ponovo pokrenete uslugu obaveštenja!</string>
-    <string name="error_unrestricted_background_access_message_android">Molimo omogućite **neograničenu upotrebu u pozadini** i onemogućite **opтимizacije baterije sistema** kako biste omogućili da Paralino radi u pozadini bez prekida.</string>
+    <string name="error_unrestricted_background_access_message_android">Molimo omogućite **neograničenu upotrebu u pozadini** i onemogućite **optimizacije baterije sistema** kako biste omogućili da Paralino radi u pozadini bez prekida.</string>
     <string name="error_unrestricted_background_access_message_ios">Molimo omogućite **osvežavanje aplikacije u pozadini** kako biste omogućili da Paralino radi u pozadini bez prekida.</string>
     <string name="notifications_sharing_active_title">Dijeljenje aktivno</string>
     <string name="notifications_tracking_active_message">Praćenje osobne lokacije je aktivno</string>
@@ -544,12 +545,14 @@
     <string name="location_sharing_button_start_personal">Započni praćenje</string>
     <string name="location_sharing_button_stop_groups">Zaustavite dijeljenje</string>
     <string name="location_sharing_button_stop_personal">Prekini praćenje</string>
+    <string name="location_sharing_stop_groups_alert_message">Jeste li sigurni da želite prestati dijeliti svoju lokaciju s ovom grupom?</string>
     <string name="groups_sharing_title">Podijelite lokaciju</string>
     <string name="groups_sharing_device_name_placeholder">Naziv uređaja (nije obavezno)</string>
     <string name="groups_sharing_devices">Uređaji</string>
     <string name="groups_sharing_potential_error_title">Upozorenje</string>
     <string name="groups_sharing_potential_error_message">Za dijeljenje lokacije riješite sve greške:\n\n%s\n</string>
     <string name="groups_sharing_potential_error_background_location_message">Vašu lokaciju nije moguće dijeliti ako ponovno pokrenete telefon!\n\nOmogućite pristup lokaciji **uvijek** za pouzdano dijeljenje.</string>
+    <string name="groups_sharing_potential_error_notification_permission_message">Ažuriranja lokacije u stvarnom vremenu neće raditi ispravno i drugi neće moći locirati ovaj uređaj.\n\nOmogućite **obavijesti** za pouzdano dijeljenje.</string>
     <string name="groups_sharing_error_unverified_group_title">Nepotvrđena grupa ili član</string>
     <string name="groups_sharing_error_unverified_group_message">Nemoguće je dijeliti lokaciju s nepotvrđenom grupom ili članom.\nPokušajte osvježiti podatke grupe.</string>
     <string name="groups_sharing_duration_type_infinite">Uvijek uključeno</string>
@@ -643,6 +646,7 @@
     <string name="group_picker_button_join">Pridružite se</string>
     <string name="group_member_no_location_info_message">Lokacija trenutno nije dostupna za ovaj uređaj.</string>
     <string name="group_member_devices_section_title">Uređaji</string>
+    <string name="group_member_your_devices_section_title">Vaši uređaji</string>
     <string name="group_member_device_not_responding_message">**Uređaj trenutno nije dostupan ili nije na mreži.**\n\nUkoliko uređaj ne odgovori u roku od par minuta, probajte osvježiti lokaciju ponovno.</string>
     <string name="group_member_device_waiting">Čekanje na uređaj...</string>
     <string name="group_member_device_requesting">Zahtjev za lokaciju u tijeku...</string>
@@ -650,6 +654,8 @@
     <string name="group_member_device_maybe_unreachable">Uređaj će duže odgovoriti</string>
     <string name="group_member_device_maybe_unreachable_message">Ovaj uređaj nije moguće kontaktirati na zahtjev i trebati će više vremena za odgovor. \nMolimo provjerite lokaciju ponovno nakon nekog vremena.</string>
     <string name="group_member_device_setup_invalid">Uređaj nije u potpunosti podržan te je nedostupan</string>
+    <string name="group_member_device_setup_missing_message">Uređaju nedostaje konfiguracija push obavijesti te je nedostupan</string>
+    <string name="group_member_device_push_failed_message">Uređaj trenutno ne može primati push obavijesti te je nedostupan</string>
     <string name="group_member_device_request_failed">Zahtjev nije uspio, pokušajte ponovno</string>
     <string name="group_member_device_request_disabled">Sačekajte nekoliko trenutaka prije nego što ponovno zatražite lokaciju 🙏</string>
     <string name="group_members_last_active_status_now">Upravo sada</string>
@@ -963,11 +969,13 @@
     <string name="groups_sharing_setting_approximateLocation_title">Približna lokacija</string>
     <string name="groups_sharing_setting_approximateLocation_description_off">Dijelite samo približno područje lokacije čak i ako je vaša lokacija točna.</string>
     <string name="groups_sharing_setting_approximateLocation_description_on">Odaberite radijus približnog područja. Vaša točna lokacija bit će skrivena i zamijenjena točkom negdje unutar odabranog radijusa.</string>
+    <string name="groups_sharing_setting_approximateLocation_alert_message">Vaša stvarna lokacija bit će skrivena i ostali članovi neće vas moći precizno locirati. Brzina i nadmorska visina neće biti dostupne.</string>
     <string name="group_member_role_admin">Administrator</string>
     <string name="group_details_add_member_admin_only_info">Samo administrator grupe može dodavati nove članove</string>
     <string name="group_members_status_location_hidden">Samo približna lokacija</string>
     <string name="button_edit">Uredi</string>
     <string name="button_manage">Upravljaj</string>
+    <string name="dashboard_groups_manage_button">Upravljaj grupom</string>
     <string name="plans_banner_inline_privacy_zones">Stvorite više zona privatnosti i zadržite kontrolu nad svojom lokacijom!</string>
     <string name="paywall_feature_privacy_zones_group">Zone privatnosti</string>
     <string name="paywall_feature_summary_privacy_zones">Zone privatnosti</string>

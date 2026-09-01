@@ -3,6 +3,7 @@ package app.paralino.core.presentation.common
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.graphics.Color
 import app.paralino.core.MR
+import app.paralino.core.models.base.GroupOrSpaceId
 import app.paralino.core.models.base.SubscriptionOfferDialogContent
 import app.paralino.core.models.location.UserDeviceModel
 import app.paralino.core.models.user.BlocklistType
@@ -401,6 +402,71 @@ interface MainAlertDialog {
                     id = Buttons.buttonOk,
                     text = stringResource(resource = MR.strings.button_ok),
                     color = AlertDialogButtonData.positiveColor
+                ),
+                AlertDialogButtonData(
+                    id = Buttons.buttonCancel,
+                    text = stringResource(resource = MR.strings.button_cancel)
+                ),
+            ),
+        )
+    }
+
+    object SharingNotificationPermissionMissing : MainAlertDialog {
+        override val key: String = this::class.simpleName ?: "dialog"
+
+        override val dialogData: AlertDialogData = AlertDialogData(
+            id = key,
+            title = stringResource(resource = MR.strings.groups_sharing_potential_error_title),
+            message = stringResource(resource = MR.strings.groups_sharing_potential_error_notification_permission_message),
+            buttons = listOf(
+                AlertDialogButtonData(
+                    id = Buttons.buttonOk,
+                    text = stringResource(resource = MR.strings.button_continue),
+                    color = AlertDialogButtonData.positiveColor
+                ),
+                AlertDialogButtonData(
+                    id = Buttons.buttonCancel,
+                    text = stringResource(resource = MR.strings.button_notNow)
+                ),
+            ),
+        )
+    }
+
+    object EnableApproximateLocation : MainAlertDialog {
+        override val key: String = this::class.simpleName ?: "dialog"
+
+        override val dialogData: AlertDialogData = AlertDialogData(
+            id = key,
+            title = stringResource(resource = MR.strings.alert_title_confirm),
+            message = stringResource(resource = MR.strings.groups_sharing_setting_approximateLocation_alert_message),
+            buttons = listOf(
+                AlertDialogButtonData(
+                    id = Buttons.buttonOk,
+                    text = stringResource(resource = MR.strings.button_enableAnyway),
+                    color = AlertDialogButtonData.positiveColor
+                ),
+                AlertDialogButtonData(
+                    id = Buttons.buttonCancel,
+                    text = stringResource(resource = MR.strings.button_cancel)
+                ),
+            ),
+        )
+    }
+
+    data class StopLocationSharing(
+        val groupOrSpaceId: GroupOrSpaceId
+    ) : MainAlertDialog {
+        override val key: String = this::class.simpleName ?: "dialog"
+
+        override val dialogData: AlertDialogData = AlertDialogData(
+            id = key,
+            title = stringResource(resource = MR.strings.alert_title_confirm),
+            message = stringResource(resource = MR.strings.location_sharing_stop_groups_alert_message),
+            buttons = listOf(
+                AlertDialogButtonData(
+                    id = Buttons.buttonOk,
+                    text = stringResource(resource = MR.strings.location_sharing_button_stop_groups),
+                    color = AlertDialogButtonData.destructiveColor
                 ),
                 AlertDialogButtonData(
                     id = Buttons.buttonCancel,

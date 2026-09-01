@@ -23,6 +23,7 @@
     <string name="button_notNow">Şu an değil</string>
     <string name="button_delete">Sil</string>
     <string name="button_enable">Etkinleştir</string>
+    <string name="button_enableAnyway">Yine de etkinleştir</string>
     <string name="button_activate">Aktif et</string>
     <string name="button_later">Sonra</string>
     <string name="button_yes">Evet</string>
@@ -544,12 +545,14 @@
     <string name="location_sharing_button_start_personal">Takibi başlat</string>
     <string name="location_sharing_button_stop_groups">Paylaşmayı durdur</string>
     <string name="location_sharing_button_stop_personal">Takibi durdur</string>
+    <string name="location_sharing_stop_groups_alert_message">Konumunuzu bu grupla paylaşmayı durdurmak istediğinizden emin misiniz?</string>
     <string name="groups_sharing_title">Konumu paylaş</string>
     <string name="groups_sharing_device_name_placeholder">Cihaz adı (isteğe bağlı)</string>
     <string name="groups_sharing_devices">Cihazlar</string>
     <string name="groups_sharing_potential_error_title">Uyarı</string>
     <string name="groups_sharing_potential_error_message">Konumunuzu paylaşmak için lütfen tüm hataları giderin: \n\n%s\n</string>
     <string name="groups_sharing_potential_error_background_location_message">Konumunuz arka planda veya telefonunuzu yeniden başlattığınızda paylaşılamaz!\n\nGüvenilir paylaşım için lütfen **her zaman** konum erişimine izin verin.</string>
+    <string name="groups_sharing_potential_error_notification_permission_message">Gerçek zamanlı konum güncellemeleri düzgün çalışmaz ve diğerleri bu cihazı konumlandıramaz.\n\nGüvenilir paylaşım için **bildirimlere** izin verin.</string>
     <string name="groups_sharing_error_unverified_group_title">Doğrulanmamış grup veya üye</string>
     <string name="groups_sharing_error_unverified_group_message">Doğrulanmamış bir grup veya üyeye konum paylaşamazsınız.\n\nGrup verilerini yenilemeyi deneyin.</string>
     <string name="groups_sharing_duration_type_infinite">Her zaman açık</string>
@@ -643,6 +646,7 @@
     <string name="group_picker_button_join">Katıl</string>
     <string name="group_member_no_location_info_message">Bu cihazın henüz bir konumu yok.</string>
     <string name="group_member_devices_section_title">Cihazlar</string>
+    <string name="group_member_your_devices_section_title">Cihazlarınız</string>
     <string name="group_member_device_not_responding_message">**Cihaz yanıt vermiyor veya çevrimdışı.**\n\nLütfen kısa bir süre sonra tekrar kontrol edin, cihaz çevrimiçi ise yanıt vermesi birkaç dakika sürebilir.</string>
     <string name="group_member_device_waiting">Cihazın yanıt vermesini bekliyorum...</string>
     <string name="group_member_device_requesting">Konum talep ediliyor...</string>
@@ -650,6 +654,8 @@
     <string name="group_member_device_maybe_unreachable">Cihazın yanıt vermesi daha uzun sürecek</string>
     <string name="group_member_device_maybe_unreachable_message">Bu cihaza talep üzerine ulaşılamaz ve yanıt vermesi daha uzun sürecektir.\nLütfen bir süre sonra konumu tekrar kontrol edin.</string>
     <string name="group_member_device_setup_invalid">Cihaz tam olarak uyumlu değil ve ulaşılamıyor</string>
+    <string name="group_member_device_setup_missing_message">Cihazda push bildirim yapılandırması eksik ve ulaşılamıyor</string>
+    <string name="group_member_device_push_failed_message">Cihaz şu anda push bildirimlerini alamıyor ve ulaşılamıyor</string>
     <string name="group_member_device_request_failed">Talep başarısız oldu, lütfen tekrar deneyin</string>
     <string name="group_member_device_request_disabled">Lütfen konumu tekrar talep etmeden önce birkaç dakika bekleyin 🙏</string>
     <string name="group_members_last_active_status_now">Şu anda</string>
@@ -963,6 +969,7 @@
     <string name="groups_sharing_setting_approximateLocation_title">Yaklaşık konum</string>
     <string name="groups_sharing_setting_approximateLocation_description_off">Konumunuz doğru olsa bile yalnızca yaklaşık konum alanını paylaşın.</string>
     <string name="groups_sharing_setting_approximateLocation_description_on">Yaklaşık bir alanın yarıçapını seçin. Kesin konumunuz gizlenecek ve seçilen yarıçapın içindeki bir noktayla değiştirilecektir.</string>
+    <string name="groups_sharing_setting_approximateLocation_alert_message">Gerçek konumunuz gizlenecek ve diğer üyeler sizi tam olarak konumlandıramayacak. Hız ve yükselti kullanılamaz.</string>
     <string name="group_member_role_admin">Yönetici</string>
     <string name="group_details_add_member_admin_only_info">Yalnızca grup yöneticisi yeni üyeler ekleyebilir</string>
     <string name="group_members_status_location_hidden">Yalnızca yaklaşık konum</string>
@@ -1015,6 +1022,7 @@
     <string name="plan_limit_overLimit_privacy_zones_banner_title">**Gizlilik bölgeleri sınırlıdır!**\nİzin verilen gizlilik bölgesi sayısı aşıldı.</string>
     <string name="button_edit">Düzenle</string>
     <string name="button_manage">Yönet</string>
+    <string name="dashboard_groups_manage_button">Grubu yönet</string>
     <string name="plans_banner_inline_privacy_zones">Konumunuz üzerindeki kontrolü elinizde tutmak için daha fazla gizlilik bölgesi oluşturun!</string>
     <string name="onboarding_step_privacyZonesIntro_title">Gizlilik bölgeleri burada</string>
     <string name="onboarding_step_privacyZonesIntro_title_tag">Gizlilik bölgeleri</string>

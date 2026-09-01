@@ -2,14 +2,14 @@ package app.paralino.core.utils
 
 sealed interface ConditionErrorType {
     object GPS: ConditionErrorType, MandatoryForegroundLocationSharingConditionType
-    object PermissionNotifications: ConditionErrorType
+    object PermissionNotifications: ConditionErrorType, BackgroundLocationSharingConditionType
     sealed class PermissionLocation(): ConditionErrorType, MandatoryForegroundLocationSharingConditionType {
         object PermissionLocationPrecise: PermissionLocation()
         object PermissionLocationAny: PermissionLocation()
     }
     object PermissionLocationBackground: ConditionErrorType, MandatoryBackgroundLocationSharingConditionType
     object Network: ConditionErrorType, MandatoryForegroundLocationSharingConditionType
-    data class EmailVerification(val email: String): ConditionErrorType
+    data class EmailVerification(val email: String, val isLoading: Boolean): ConditionErrorType
     object GuestAccount: ConditionErrorType
     object NewAppUpdate: ConditionErrorType
     object UnrestrictedBackgroundAccess: ConditionErrorType, BackgroundLocationSharingConditionType

@@ -77,6 +77,7 @@ class LocationPayloadProvider(
                             groupId = groupId,
                             trueLat = data.lat,
                             trueLng = data.lng,
+                            accuracyMeters = data.accuracy,
                         )
                     } else {
                         null

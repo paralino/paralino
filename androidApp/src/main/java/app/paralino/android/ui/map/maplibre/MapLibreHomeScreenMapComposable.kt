@@ -74,6 +74,9 @@ fun HomeScreenMapLibreMapComposable(
             onMapLoaded = {
                 isMapLoaded = true
             },
+            onMapAttributionExpanded = {
+                onMainEvent(MapHomeScreenUiEvent.OnMapAttributionExpanded(it))
+            },
             content = {
                 if (historyUiState != null) {
                     MapLibreLocationHistoryMapContent(

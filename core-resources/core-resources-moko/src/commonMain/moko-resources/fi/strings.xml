@@ -23,6 +23,7 @@
     <string name="button_notNow">Ei nyt</string>
     <string name="button_delete">Poista</string>
     <string name="button_enable">Ota käyttöön</string>
+    <string name="button_enableAnyway">Ota silti käyttöön</string>
     <string name="button_activate">Aktivoi</string>
     <string name="button_later">Myöhemmin</string>
     <string name="button_yes">Kyllä</string>
@@ -544,12 +545,14 @@
     <string name="location_sharing_button_start_personal">Aloita seuranta</string>
     <string name="location_sharing_button_stop_groups">Lopeta jakaminen</string>
     <string name="location_sharing_button_stop_personal">Lopeta seuranta</string>
+    <string name="location_sharing_stop_groups_alert_message">Haluatko varmasti lopettaa sijaintisi jakamisen tälle ryhmälle?</string>
     <string name="groups_sharing_title">Jaa sijainti</string>
     <string name="groups_sharing_device_name_placeholder">Laitteen nimi (valinnainen)</string>
     <string name="groups_sharing_devices">Laitteet</string>
     <string name="groups_sharing_potential_error_title">Varoitus</string>
     <string name="groups_sharing_potential_error_message">Jotta voit jakaa sijaintisi, ratkaise kaikki virheet: \n\n%s\n</string>
     <string name="groups_sharing_potential_error_background_location_message">Sijaintiasi ei voi jakaa taustalla tai jos käynnistät puhelimesi uudelleen! \n\nOle hyvä ja salli **aina** sijainti pääsy luotettavaa jakamista varten.</string>
+    <string name="groups_sharing_potential_error_notification_permission_message">Reaaliaikaiset sijaintipäivitykset eivät toimi kunnolla, eivätkä muut voi paikantaa tätä laitetta.\n\nSalli **ilmoitukset** luotettavaa jakamista varten.</string>
     <string name="groups_sharing_error_unverified_group_title">Vahvistamaton ryhmä tai jäsen</string>
     <string name="groups_sharing_error_unverified_group_message">Et voi jakaa sijaintia vahvistamattomalle ryhmälle tai jäsenelle. \n\nYritä päivittää ryhmätiedot.</string>
     <string name="groups_sharing_duration_type_infinite">Aina päällä</string>
@@ -643,6 +646,7 @@
     <string name="group_picker_button_join">Liity</string>
     <string name="group_member_no_location_info_message">Tällä laitteella ei ole vielä sijaintia.</string>
     <string name="group_member_devices_section_title">Laitteet</string>
+    <string name="group_member_your_devices_section_title">Laitteesi</string>
     <string name="group_member_device_not_responding_message">**Laite ei vastaa tai on offline-tilassa.**\n\nTarkista hetken kuluttua uudelleen, laite saattaa kestää muutaman minuutin vastata, jos se on online-tilassa.</string>
     <string name="group_member_device_waiting">Odotetaan laitteen vastausta...</string>
     <string name="group_member_device_requesting">Sijaintia pyydetään...</string>
@@ -650,6 +654,8 @@
     <string name="group_member_device_maybe_unreachable">Laite reagoi hitaammin</string>
     <string name="group_member_device_maybe_unreachable_message">Tätä laitetta ei voida tavoittaa pyynnöstä ja sen reagointi vie enemmän aikaa. \nTarkista sijainti uudelleen jonkin ajan kuluttua.</string>
     <string name="group_member_device_setup_invalid">Laite ei ole täysin yhteensopiva eikä siihen pääse</string>
+    <string name="group_member_device_setup_missing_message">Laitteelta puuttuu push-ilmoitusten määritys eikä siihen pääse</string>
+    <string name="group_member_device_push_failed_message">Laite ei voi tällä hetkellä vastaanottaa push-ilmoituksia eikä siihen pääse</string>
     <string name="group_member_device_request_failed">Pyyntö epäonnistui, yritä uudelleen</string>
     <string name="group_member_device_request_disabled">Ole hyvä ja odota hetki ennen kuin pyydät sijaintia uudelleen 🙏</string>
     <string name="group_members_last_active_status_now">Juuri nyt</string>
@@ -963,11 +969,13 @@
     <string name="groups_sharing_setting_approximateLocation_title">Likimääräinen sijainti</string>
     <string name="groups_sharing_setting_approximateLocation_description_off">Jaa vain likimääräinen sijaintialue, vaikka sijaintisi olisi tarkka.</string>
     <string name="groups_sharing_setting_approximateLocation_description_on">Valitse likimääräisen alueen säde. Tarkka sijaintisi piilotetaan ja korvataan pisteellä jossakin valitun säteen sisällä.</string>
+    <string name="groups_sharing_setting_approximateLocation_alert_message">Todellinen sijaintisi piilotetaan, eivätkä muut jäsenet pysty paikantamaan sinua tarkasti. Nopeus ja korkeusero eivät ole käytettävissä.</string>
     <string name="group_member_role_admin">Ylläpitäjä</string>
     <string name="group_details_add_member_admin_only_info">Vain ryhmän ylläpitäjä voi lisätä uusia jäseniä</string>
     <string name="group_members_status_location_hidden">Vain likimääräinen sijainti</string>
     <string name="button_edit">Muokkaa</string>
     <string name="button_manage">Hallitse</string>
+    <string name="dashboard_groups_manage_button">Hallitse ryhmää</string>
     <string name="plans_banner_inline_privacy_zones">Luo lisää yksityisyysalueita ja pidä sijaintisi hallinnassa!</string>
     <string name="paywall_feature_privacy_zones_group">Yksityisyysalueet</string>
     <string name="paywall_feature_summary_privacy_zones">Yksityisyysalueet</string>

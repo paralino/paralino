@@ -3,6 +3,7 @@ package app.paralino.core.repo.base
 import app.paralino.core.logg
 import app.paralino.core.provider.IConnectionStatusProvider
 import app.paralino.core.utils.exceptions.InternalConnectionException
+import app.paralino.core.utils.exceptions.asRemoteException
 import app.paralino.core.utils.extensions.blocking
 import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.coroutines.CoroutineScope
@@ -12,14 +13,19 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
+import kotlin.time.Duration.Companion.minutes
 
 
 abstract class BaseRepository: KoinComponent {
 
     private val connection: IConnectionStatusProvider by inject()
     private val cachedInfo = hashMapOf<String, Long>()
+    private val recentExceptionClasses = hashMapOf<String, Long>()
+    private val recentExceptionClassesLock = Mutex()
 
     /**
      * Will subscribe to local data flow, and also refresh the data from remote
@@ -47,7 +53,7 @@ abstract class BaseRepository: KoinComponent {
             // find a better solution or maybe it will be fixed when FlowAPI reaches stable
             .debounce(10)
             .catch {
-                logg.e(tag = "BaseRepo.mergeDataWithRemote", message = "BaseRepo request error - $remotePreference", t = it)
+                logRequestError(tag = "BaseRepo.mergeDataWithRemote", message = "BaseRepo request error - $remotePreference", error = it)
                 throw it
             }
     }
@@ -74,7 +80,7 @@ abstract class BaseRepository: KoinComponent {
                 emit(it)
             }
         }.catch {
-            logg.e(tag = "BaseRepo.getDataOnce", message = "BaseRepo request error - $remotePreference", t = it)
+            logRequestError(tag = "BaseRepo.getDataOnce", message = "BaseRepo request error - $remotePreference", error = it)
             throw it
         }
     }
@@ -90,7 +96,7 @@ abstract class BaseRepository: KoinComponent {
                 remote = remote
             )!!
         } catch (e: Exception) {
-            logg.e(tag = "BaseRepo.triggerRemoteOnly", message = "BaseRepo request error", t = e)
+            logRequestError(tag = "BaseRepo.triggerRemoteOnly", message = "BaseRepo request error", error = e)
             throw e
         }
     }
@@ -173,6 +179,28 @@ abstract class BaseRepository: KoinComponent {
                     }
                 }
             }
+        }
+    }
+
+    private suspend fun logRequestError(tag: String, message: String, error: Throwable) {
+        val isServerError = (error.asRemoteException()?.code ?: 0) >= 500
+        val exceptionClass = error::class.qualifiedName ?: error::class.simpleName
+        val now = nowUTC().toEpochMilliseconds()
+        val isRepeated = recentExceptionClassesLock.withLock {
+            recentExceptionClasses.entries.removeAll { now - it.value > 5.minutes.inWholeMilliseconds }
+            val lastSeen = exceptionClass?.let { recentExceptionClasses[it] }
+            val repeated = lastSeen != null && now - lastSeen <= 2.minutes.inWholeMilliseconds
+            if (exceptionClass != null) {
+                recentExceptionClasses[exceptionClass] = now
+            }
+            repeated
+        }
+
+        // Only log as error in certain cases
+        if (isServerError || isRepeated) {
+            logg.e(tag = tag, message = message, t = error)
+        } else {
+            logg.w(tag = tag, message = message, t = error)
         }
     }
 

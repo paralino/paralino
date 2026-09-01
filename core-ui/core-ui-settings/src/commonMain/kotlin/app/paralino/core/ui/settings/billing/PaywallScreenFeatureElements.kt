@@ -387,7 +387,7 @@ private fun MemberItem(
             isHighlighted = true,
             isCollapsedOrMinimized = false
         ),
-        forceExpandAction = true,
+        forceFullExpandAction = true,
         collapseOnActionClick = false,
         backgroundColor = MaterialTheme.colors.background,
         canShowOldLocation = true
@@ -542,7 +542,7 @@ private fun MemberItemWithLocations(
             lastLocationPing = locations.first().lastLocationPing,
             lastStatusPing = locations.first().lastStatusPing
         ),
-        forceExpandAction = true,
+        forceFullExpandAction = true,
         collapseOnActionClick = false,
         backgroundColor = MaterialTheme.colors.background,
         canShowOldLocation = false

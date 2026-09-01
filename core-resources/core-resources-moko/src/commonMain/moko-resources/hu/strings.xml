@@ -23,6 +23,7 @@
     <string name="button_notNow">Most nem</string>
     <string name="button_delete">Törlés</string>
     <string name="button_enable">Engedélyezés</string>
+    <string name="button_enableAnyway">Mégis engedélyezés</string>
     <string name="button_activate">Aktiválás</string>
     <string name="button_later">Később</string>
     <string name="button_yes">Igen</string>
@@ -544,12 +545,14 @@
     <string name="location_sharing_button_start_personal">Kezdje el a nyomkövetést</string>
     <string name="location_sharing_button_stop_groups">Állítsa le a megosztást</string>
     <string name="location_sharing_button_stop_personal">Állítsa le a nyomkövetést</string>
+    <string name="location_sharing_stop_groups_alert_message">Biztosan leállítja a tartózkodási hely megosztását ezzel a csoporttal?</string>
     <string name="groups_sharing_title">Hely megosztása</string>
     <string name="groups_sharing_device_name_placeholder">Eszköz neve (opcionális)</string>
     <string name="groups_sharing_devices">Eszközök</string>
     <string name="groups_sharing_potential_error_title">Figyelmeztetés</string>
     <string name="groups_sharing_potential_error_message">A hely megosztásához kérjük, oldja meg az összes hibát: \n\n%s\n</string>
     <string name="groups_sharing_potential_error_background_location_message">A helyét nem lehet a háttérben megosztani, vagy ha újraindítja a telefonját! \n\nKérjük, engedélyezze a **mindig** helyhozzáférést a megbízható megosztáshoz.</string>
+    <string name="groups_sharing_potential_error_notification_permission_message">A valós idejű helyfrissítések nem fognak megfelelően működni, és mások nem tudják megtalálni ezt az eszközt.\n\nA megbízható megosztáshoz engedélyezze az **értesítéseket**.</string>
     <string name="groups_sharing_error_unverified_group_title">Nem ellenőrzött csoport vagy tag</string>
     <string name="groups_sharing_error_unverified_group_message">Nem oszthatja meg a helyét nem ellenőrzött csoporttal vagy taggal. \n\nPróbálja meg frissíteni a csoport adatait.</string>
     <string name="groups_sharing_duration_type_infinite">Mindig be</string>
@@ -643,6 +646,7 @@
     <string name="group_picker_button_join">Csatlakozás</string>
     <string name="group_member_no_location_info_message">Ez az eszköz még nem rendelkezik helymeghatározással.</string>
     <string name="group_member_devices_section_title">Eszközök</string>
+    <string name="group_member_your_devices_section_title">Az Ön eszközei</string>
     <string name="group_member_device_not_responding_message">**Az eszköz nem válaszol, vagy offline van.** \n\nKérjük, ellenőrizze újra rövidesen, lehet, hogy néhány percet igénybe vesz a válasz, ha az eszköz online van.</string>
     <string name="group_member_device_waiting">Várakozás az eszköz válaszára...</string>
     <string name="group_member_device_requesting">Helymeghatározás kérése...</string>
@@ -650,6 +654,8 @@
     <string name="group_member_device_maybe_unreachable">Az eszköz válaszadása lassabb lesz</string>
     <string name="group_member_device_maybe_unreachable_message">Ez az eszköz nem érhető el kérésre, és a válaszidő hosszabb lesz. \nKérjük, ellenőrizze a helyet néhány idő elteltével.</string>
     <string name="group_member_device_setup_invalid">Az eszköz nem teljesen kompatibilis, és nem érhető el</string>
+    <string name="group_member_device_setup_missing_message">Az eszközről hiányzik a push értesítések konfigurációja, és nem érhető el</string>
+    <string name="group_member_device_push_failed_message">Az eszköz jelenleg nem tud push értesítéseket fogadni, és nem érhető el</string>
     <string name="group_member_device_request_failed">A kérés meghiúsult, kérjük, próbálja újra</string>
     <string name="group_member_device_request_disabled">Kérjük, várjon néhány pillanatot, mielőtt újra kérné a helymeghatározást 🙏</string>
     <string name="group_members_last_active_status_now">Éppen most</string>
@@ -963,11 +969,13 @@
     <string name="groups_sharing_setting_approximateLocation_title">Közelítő hely</string>
     <string name="groups_sharing_setting_approximateLocation_description_off">Csak a közelítő helyterületet ossza meg, még akkor is, ha a helye pontos.</string>
     <string name="groups_sharing_setting_approximateLocation_description_on">Válassza ki a közelítő terület sugarát. Az Ön pontos tartózkodási helye el lesz rejtve, és egy, a kiválasztott sugáron belüli pontra lesz cserélve.</string>
+    <string name="groups_sharing_setting_approximateLocation_alert_message">Az Ön tényleges tartózkodási helye el lesz rejtve, és a többi tag nem tudja Önt pontosan megtalálni. A sebesség és a magasság nem lesz elérhető.</string>
     <string name="group_member_role_admin">Adminisztrátor</string>
     <string name="group_details_add_member_admin_only_info">Csak a csoport adminisztrátora adhat hozzá új tagokat</string>
     <string name="group_members_status_location_hidden">Csak közelítő helyszín</string>
     <string name="button_edit">Szerkesztés</string>
     <string name="button_manage">Kezelés</string>
+    <string name="dashboard_groups_manage_button">Csoport kezelése</string>
     <string name="plans_banner_inline_privacy_zones">Hozzon létre több adatvédelmi zónát, és tartsa kézben a tartózkodási helyét!</string>
     <string name="paywall_feature_privacy_zones_group">Adatvédelmi zónák</string>
     <string name="paywall_feature_summary_privacy_zones">Adatvédelmi zónák</string>

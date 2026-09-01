@@ -107,7 +107,7 @@ fun PrivacyZoneNotifyOthersSettings(
         GroupMember(
             modifier = Modifier,
             state = memberPreviewState,
-            forceExpandAction = true,
+            forceFullExpandAction = true,
             collapseOnActionClick = false,
             canShowOldLocation = true,
             onEvent = {}

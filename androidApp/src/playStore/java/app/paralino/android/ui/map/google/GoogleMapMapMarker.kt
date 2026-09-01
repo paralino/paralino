@@ -4,15 +4,19 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionContext
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCompositionContext
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.unit.Dp
 import androidx.core.graphics.applyCanvas
 import app.paralino.core.presentation.map.MapMarkerStyle
 import app.paralino.core.presentation.map.MapPinData
@@ -21,8 +25,8 @@ import app.paralino.core.ui.components.MapMarkerInfoWindowContent
 import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
-import com.google.maps.android.compose.MarkerInfoWindow
-import com.google.maps.android.compose.MarkerState
+import com.google.maps.android.compose.AdvancedMarkerInfoWindow
+import com.google.maps.android.compose.rememberUpdatedMarkerState
 
 
 @Composable
@@ -33,10 +37,17 @@ fun GoogleMapMarkerComposable(
     zIndex: Float,
     onClick: (MapPinData) -> Unit
 ) {
-    val markerState = MarkerState(position = position)
+    // Workaround for maps sdk 8.5.0 which does not measure info window properly and makes it stretched horizontally
+    // TODO check if fixed upstream when new sdk is out
+    val mapWidth = LocalView.current.width
+    val maxInfoWindowWidth: Dp? = if (mapWidth > 0) {
+        with(LocalDensity.current) { mapWidth.toDp() }
+    } else {
+        null
+    }
 
-    MarkerInfoWindow(
-        state = markerState,
+    AdvancedMarkerInfoWindow(
+        state = rememberUpdatedMarkerState(position = position),
         tag = state.markerId,
         anchor = when (state.markerStyle) {
             MapMarkerStyle.PIN -> Offset(0.5f, 1f)
@@ -55,10 +66,18 @@ fun GoogleMapMarkerComposable(
         },
         infoWindowAnchor = Offset(0.5f, 0f),
         icon = mapMarkerIcon(state = state),
-        zIndex = zIndex
-    ) {
-        MapMarkerInfoWindowContent(state = state)
-    }
+        zIndex = zIndex,
+        content = {
+            MapMarkerInfoWindowContent(
+                state = state,
+                modifier = if (maxInfoWindowWidth != null) {
+                    Modifier.widthIn(max = maxInfoWindowWidth)
+                } else {
+                    Modifier
+                }
+            )
+        }
+    )
 }
 
 @Composable

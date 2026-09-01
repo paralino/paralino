@@ -23,6 +23,7 @@
     <string name="button_notNow">Ne zdaj</string>
     <string name="button_delete">Izbriši</string>
     <string name="button_enable">Omogoči</string>
+    <string name="button_enableAnyway">Vseeno omogoči</string>
     <string name="button_activate">Aktiviraj</string>
     <string name="button_later">Kasneje</string>
     <string name="button_yes">Da</string>
@@ -544,12 +545,14 @@
     <string name="location_sharing_button_start_personal">Začnite slediti</string>
     <string name="location_sharing_button_stop_groups">Prenehajte deliti</string>
     <string name="location_sharing_button_stop_personal">Prenehajte slediti</string>
+    <string name="location_sharing_stop_groups_alert_message">Ali ste prepričani, da želite prenehati deliti svojo lokacijo s to skupino?</string>
     <string name="groups_sharing_title">Deli lokacijo</string>
     <string name="groups_sharing_device_name_placeholder">Ime naprave (neobvezno)</string>
     <string name="groups_sharing_devices">Naprav</string>
     <string name="groups_sharing_potential_error_title">Opozorilo</string>
     <string name="groups_sharing_potential_error_message">Da bi delili svojo lokacijo, odpravite vse napake: \n\n%s\n</string>
     <string name="groups_sharing_potential_error_background_location_message">Vaša lokacija ne more biti deljena v ozadju ali če ponovno zaženete telefon! \n\nProsimo, omogočite **dostop do lokacije ves čas** za zanesljivo deljenje.</string>
+    <string name="groups_sharing_potential_error_notification_permission_message">Posodobitve lokacije v realnem času ne bodo delovale pravilno in drugi ne bodo mogli locirati te naprave.\n\nOmogočite **obvestila** za zanesljivo deljenje.</string>
     <string name="groups_sharing_error_unverified_group_title">Nepotrjena skupina ali član</string>
     <string name="groups_sharing_error_unverified_group_message">Ne morete deliti lokacije z nepotrjeno skupino ali članom. \n\nPoskusite osvežiti podatke skupine.</string>
     <string name="groups_sharing_duration_type_infinite">Vedno vklopljeno</string>
@@ -643,6 +646,7 @@
     <string name="group_picker_button_join">Pridruži se</string>
     <string name="group_member_no_location_info_message">Ta naprava še nima lokacije.</string>
     <string name="group_member_devices_section_title">Naprav</string>
+    <string name="group_member_your_devices_section_title">Vaše naprave</string>
     <string name="group_member_device_not_responding_message">**Naprava ne odgovarja ali je brez povezave.** \n \nPreverite ponovno čez nekaj trenutkov, morda bo trajalo nekaj minut, da se naprava odzove, če je povezana.</string>
     <string name="group_member_device_waiting">Čakam na odziv naprave...</string>
     <string name="group_member_device_requesting">Zahtevam lokacijo...</string>
@@ -650,6 +654,8 @@
     <string name="group_member_device_maybe_unreachable">Napravilo bo trajalo dlje, da se odzove</string>
     <string name="group_member_device_maybe_unreachable_message">Te naprave ni mogoče doseči na zahtevo in bo trajalo dlje, da se odzove. \nProsimo, da ponovno preverite lokacijo po določenem času.</string>
     <string name="group_member_device_setup_invalid">Naprava ni popolnoma združljiva in je ni mogoče doseči</string>
+    <string name="group_member_device_setup_missing_message">Napravi manjka konfiguracija potisnih obvestil in je ni mogoče doseči</string>
+    <string name="group_member_device_push_failed_message">Naprava trenutno ne more prejemati potisnih obvestil in je ni mogoče doseči</string>
     <string name="group_member_device_request_failed">Zahteva je spodletela, prosim poskusite znova</string>
     <string name="group_member_device_request_disabled">Prosim, počakajte nekaj trenutkov, preden ponovno zahtevate lokacijo 🙏</string>
     <string name="group_members_last_active_status_now">Pred trenutkom</string>
@@ -963,6 +969,7 @@
     <string name="groups_sharing_setting_approximateLocation_title">Približna lokacija</string>
     <string name="groups_sharing_setting_approximateLocation_description_off">Delite le približno območje lokacije, tudi če je vaša lokacija natančna.</string>
     <string name="groups_sharing_setting_approximateLocation_description_on">Izberite polmer približnega območja. Vaša natančna lokacija bo skrita in nadomeščena s točko nekje znotraj izbranega polmera.</string>
+    <string name="groups_sharing_setting_approximateLocation_alert_message">Vaša dejanska lokacija bo skrita in drugi člani vas ne bodo mogli natančno locirati. Hitrost in nadmorska višina ne bosta na voljo.</string>
     <string name="group_member_role_admin">Administrator</string>
     <string name="group_details_add_member_admin_only_info">Samo skrbnik skupine lahko doda nove člane</string>
     <string name="group_members_status_location_hidden">Samo približna lokacija</string>
@@ -972,6 +979,7 @@
     <string name="plan_limit_privacy_zones_alert_info">cone zasebnosti</string>
     <string name="button_edit">Uredi</string>
     <string name="button_manage">Upravljaj</string>
+    <string name="dashboard_groups_manage_button">Upravljaj skupino</string>
     <string name="plans_banner_inline_privacy_zones">Ustvarite več območij zasebnosti in ohranite nadzor nad svojo lokacijo!</string>
     <string name="paywall_feature_privacy_zones_group">Območja zasebnosti</string>
     <string name="paywall_feature_summary_privacy_zones">Območja zasebnosti</string>

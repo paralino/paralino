@@ -8,7 +8,7 @@ import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.models.data
 import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.map.MapHomeScreenFocusType
-import app.paralino.core.models.map.MapHomeScreenFocusType.*
+import app.paralino.core.models.map.MapHomeScreenFocusType.LOCATION_HISTORY
 import app.paralino.core.models.settings.MapInteractionsType
 import app.paralino.core.presentation.billing.BillingScreenSourceType
 import app.paralino.core.presentation.common.AppSnackbarData
@@ -20,7 +20,15 @@ import app.paralino.core.presentation.common.ICoreMessageDispatcher
 import app.paralino.core.presentation.common.MainAlertDialog
 import app.paralino.core.presentation.common.SnackbarDuration
 import app.paralino.core.presentation.common.onAction
-import app.paralino.core.presentation.map.MapHomeScreenEvent.*
+import app.paralino.core.presentation.map.MapHomeScreenEvent.OpenCreatePlace
+import app.paralino.core.presentation.map.MapHomeScreenEvent.OpenCreatePrivacyZone
+import app.paralino.core.presentation.map.MapHomeScreenEvent.OpenGroupDetails
+import app.paralino.core.presentation.map.MapHomeScreenEvent.OpenGroupPicker
+import app.paralino.core.presentation.map.MapHomeScreenEvent.OpenMemberInviteScreen
+import app.paralino.core.presentation.map.MapHomeScreenEvent.OpenPaywall
+import app.paralino.core.presentation.map.MapHomeScreenEvent.OpenPlaces
+import app.paralino.core.presentation.map.MapHomeScreenEvent.OpenPrivacyZones
+import app.paralino.core.presentation.map.MapHomeScreenEvent.OpenSharingStart
 import app.paralino.core.presentation.map.MapScreenViewSourceType.DefaultGroup
 import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.provider.localizedString
@@ -165,6 +173,12 @@ class MapEventHandler(
                     }
                 } else {
                     mapStateManager.onMapTouch(uiState, updateReadyState)
+                }
+            }
+
+            is MapHomeScreenUiEvent.OnMapAttributionExpanded -> {
+                updateReadyState { state ->
+                    state.copy(canShowMapActionRowControl = !event.expanded)
                 }
             }
 
@@ -370,26 +384,45 @@ class MapEventHandler(
             }
 
             is MapHomeScreenUiEvent.StopLocationSharing -> {
-                coroutineScope.launch {
-                    stopSharingLocationUseCase.stopSharing(groupOrSpaceId = event.groupOrSpaceId)
+                if (event.groupOrSpaceId.isPersonalSpace) {
+                    coroutineScope.launch {
+                        stopSharingLocationUseCase.stopSharing(groupOrSpaceId = event.groupOrSpaceId)
+                    }
+                } else {
+                    updateAlertDialog(
+                        MainAlertDialog.StopLocationSharing(groupOrSpaceId = event.groupOrSpaceId)
+                    )
                 }
             }
         }
     }
 
     private fun handleDialogAction(event: MapHomeScreenUiEvent.DialogAction) {
-        when (event.action.dialog) {
-            is MainAlertDialog.ServiceMaxLimit -> {
-                updateUiState(
-                    when (val currentState = uiState.value) {
-                        is MapHomeScreenState.Empty -> currentState.copy(alertDialog = null)
-                        is MapHomeScreenState.Ready -> currentState.copy(alertDialog = null)
+        when (val dialog = event.action.dialog) {
+            is MainAlertDialog.StopLocationSharing -> {
+                updateAlertDialog(null)
+                if (event.action.isOk) {
+                    coroutineScope.launch {
+                        stopSharingLocationUseCase.stopSharing(groupOrSpaceId = dialog.groupOrSpaceId)
                     }
-                )
+                }
+            }
+
+            is MainAlertDialog.ServiceMaxLimit -> {
+                updateAlertDialog(null)
             }
 
             else -> {}
         }
+    }
+
+    private fun updateAlertDialog(dialog: MainAlertDialog?) {
+        updateUiState(
+            when (val currentState = uiState.value) {
+                is MapHomeScreenState.Empty -> currentState.copy(alertDialog = dialog)
+                is MapHomeScreenState.Ready -> currentState.copy(alertDialog = dialog)
+            }
+        )
     }
 
     private fun handleMemberItemEvent(event: GroupMemberItemEvent) {

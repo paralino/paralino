@@ -23,6 +23,7 @@
     <string name="button_notNow">Inte nu</string>
     <string name="button_delete">Ta bort</string>
     <string name="button_enable">Aktivera</string>
+    <string name="button_enableAnyway">Aktivera ändå</string>
     <string name="button_activate">Aktivera</string>
     <string name="button_later">Senare</string>
     <string name="button_yes">Ja</string>
@@ -544,12 +545,14 @@
     <string name="location_sharing_button_start_personal">Börja spåra</string>
     <string name="location_sharing_button_stop_groups">Sluta dela</string>
     <string name="location_sharing_button_stop_personal">Sluta spåra</string>
+    <string name="location_sharing_stop_groups_alert_message">Är du säker på att du vill sluta dela din plats med den här gruppen?</string>
     <string name="groups_sharing_title">Dela plats</string>
     <string name="groups_sharing_device_name_placeholder">Enhetsnamn (valfritt)</string>
     <string name="groups_sharing_devices">Enheter</string>
     <string name="groups_sharing_potential_error_title">Varning</string>
     <string name="groups_sharing_potential_error_message">För att dela din plats, vänligen åtgärda alla fel: \n\n%s\n</string>
     <string name="groups_sharing_potential_error_background_location_message">Din plats kan inte delas i bakgrunden eller om du startar om din telefon! \n\nVänligen tillåt **hela tiden** platsåtkomst för pålitlig delning.</string>
+    <string name="groups_sharing_potential_error_notification_permission_message">Platsuppdateringar i realtid fungerar inte korrekt och andra kommer inte att kunna hitta den här enheten.\n\nTillåt **aviseringar** för tillförlitlig delning.</string>
     <string name="groups_sharing_error_unverified_group_title">Overifierad grupp eller medlem</string>
     <string name="groups_sharing_error_unverified_group_message">Du kan inte dela plats med en overifierad grupp eller medlem. \n\nFörsök att uppdatera gruppdata.</string>
     <string name="groups_sharing_duration_type_infinite">Alltid på</string>
@@ -643,6 +646,7 @@
     <string name="group_picker_button_join">Gå med</string>
     <string name="group_member_no_location_info_message">Denna enhet har ännu ingen plats.</string>
     <string name="group_member_devices_section_title">Enheter</string>
+    <string name="group_member_your_devices_section_title">Dina enheter</string>
     <string name="group_member_device_not_responding_message">**Enheten svarar inte eller är offline.**\n\nKontrollera igen om en stund, det kan ta några minuter att svara om enheten är online.</string>
     <string name="group_member_device_waiting">Väntar på att enheten ska svara...</string>
     <string name="group_member_device_requesting">Begär plats...</string>
@@ -650,6 +654,8 @@
     <string name="group_member_device_maybe_unreachable">Enheten kommer att ta längre tid att svara</string>
     <string name="group_member_device_maybe_unreachable_message">Denna enhet kan inte nås på begäran och kommer att ta längre tid att svara. \nVänligen kontrollera platsen igen efter en tid.</string>
     <string name="group_member_device_setup_invalid">Enheten är inte helt kompatibel och kan inte nås</string>
+    <string name="group_member_device_setup_missing_message">Enheten saknar konfiguration för push-notifikationer och kan inte nås</string>
+    <string name="group_member_device_push_failed_message">Enheten kan för tillfället inte ta emot push-notifikationer och kan inte nås</string>
     <string name="group_member_device_request_failed">Begäran misslyckades, vänligen försök igen</string>
     <string name="group_member_device_request_disabled">Vänligen vänta några ögonblick innan du begär plats igen 🙏</string>
     <string name="group_members_last_active_status_now">Nyss</string>
@@ -963,6 +969,7 @@
     <string name="groups_sharing_setting_approximateLocation_title">Ungefärlig plats</string>
     <string name="groups_sharing_setting_approximateLocation_description_off">Dela endast ett ungefärligt område även om din plats är exakt.</string>
     <string name="groups_sharing_setting_approximateLocation_description_on">Välj radien för ett ungefärligt område. Din exakta plats kommer att döljas och ersättas av en punkt någonstans inom den valda radien.</string>
+    <string name="groups_sharing_setting_approximateLocation_alert_message">Din faktiska plats kommer att döljas och andra medlemmar kommer inte att kunna hitta dig exakt. Hastighet och höjd kommer inte att vara tillgängliga.</string>
     <string name="group_member_role_admin">Administratör</string>
     <string name="group_details_add_member_admin_only_info">Endast gruppadministratören kan lägga till nya medlemmar</string>
     <string name="group_members_status_location_hidden">Endast ungefärlig plats</string>
@@ -970,6 +977,7 @@
     <string name="privacy_zones_empty_state_map_label_others_view">Vad andra ser</string>
     <string name="button_edit">Redigera</string>
     <string name="button_manage">Hantera</string>
+    <string name="dashboard_groups_manage_button">Hantera grupp</string>
     <string name="plans_banner_inline_privacy_zones">Skapa fler integritetszoner och behåll kontrollen över din plats!</string>
     <string name="paywall_feature_privacy_zones_group">Integritetszoner</string>
     <string name="paywall_feature_summary_privacy_zones">Integritetszoner</string>

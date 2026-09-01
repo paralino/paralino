@@ -23,6 +23,7 @@
     <string name="button_notNow">Nu acum</string>
     <string name="button_delete">Șterge</string>
     <string name="button_enable">Activează</string>
+    <string name="button_enableAnyway">Activează oricum</string>
     <string name="button_activate">Activează</string>
     <string name="button_later">Mai târziu</string>
     <string name="button_yes">Da</string>
@@ -544,12 +545,14 @@
     <string name="location_sharing_button_start_personal">Începeți urmărirea</string>
     <string name="location_sharing_button_stop_groups">Opriți partajarea</string>
     <string name="location_sharing_button_stop_personal">Opriți urmărirea</string>
+    <string name="location_sharing_stop_groups_alert_message">Sigur doriți să opriți partajarea locației cu acest grup?</string>
     <string name="groups_sharing_title">Partajați locația</string>
     <string name="groups_sharing_device_name_placeholder">Numele dispozitivului (opțional)</string>
     <string name="groups_sharing_devices">Dispozitive</string>
     <string name="groups_sharing_potential_error_title">Avertisment</string>
     <string name="groups_sharing_potential_error_message">Pentru a partaja locația dumneavoastră, vă rugăm să rezolvați toate erorile: \n\n%s\n</string>
     <string name="groups_sharing_potential_error_background_location_message">Locația dumneavoastră nu poate fi partajată în fundal sau dacă reporniți telefonul! \n\nVă rugăm să permiteți accesul la locație **în permanență** pentru un partajare fiabilă.</string>
+    <string name="groups_sharing_potential_error_notification_permission_message">Actualizările locației în timp real nu vor funcționa corect și ceilalți nu vor putea localiza acest dispozitiv.\n\nPermiteți **notificările** pentru o partajare fiabilă.</string>
     <string name="groups_sharing_error_unverified_group_title">Grup sau membru neverificat</string>
     <string name="groups_sharing_error_unverified_group_message">Nu puteți partaja locația cu un grup sau un membru neverificat. \n\nÎncercați să reîmprospătați datele grupului.</string>
     <string name="groups_sharing_duration_type_infinite">Întotdeauna activ</string>
@@ -643,6 +646,7 @@
     <string name="group_picker_button_join">Alătură-te</string>
     <string name="group_member_no_location_info_message">Acest dispozitiv nu are încă o locație.</string>
     <string name="group_member_devices_section_title">Dispozitive</string>
+    <string name="group_member_your_devices_section_title">Dispozitivele dumneavoastră</string>
     <string name="group_member_device_not_responding_message">**Dispozitivul nu răspunde sau este offline.** \n\nVerificați din nou în scurt timp, ar putea dura câteva minute pentru a răspunde dacă dispozitivul este online.</string>
     <string name="group_member_device_waiting">Așteptând ca dispozitivul să răspundă...</string>
     <string name="group_member_device_requesting">Solicitând locația...</string>
@@ -650,6 +654,8 @@
     <string name="group_member_device_maybe_unreachable">Dispozitivul va lua mai mult timp pentru a răspunde</string>
     <string name="group_member_device_maybe_unreachable_message">Acest dispozitiv nu poate fi accesat la cerere și va lua mai mult timp pentru a răspunde.\nVă rugăm să verificați din nou locația după ceva timp.</string>
     <string name="group_member_device_setup_invalid">Dispozitivul nu este complet compatibil și nu poate fi accesat</string>
+    <string name="group_member_device_setup_missing_message">Dispozitivului îi lipsește configurația notificărilor push și nu poate fi accesat</string>
+    <string name="group_member_device_push_failed_message">Dispozitivul nu poate primi notificări push momentan și nu poate fi accesat</string>
     <string name="group_member_device_request_failed">Solicitarea a eșuat, vă rugăm să încercați din nou</string>
     <string name="group_member_device_request_disabled">Vă rugăm să așteptați câteva momente înainte de a solicita din nou locația 🙏</string>
     <string name="group_members_last_active_status_now">Chiar acum</string>
@@ -963,6 +969,7 @@
     <string name="groups_sharing_setting_approximateLocation_title">Localizare aproximativă</string>
     <string name="groups_sharing_setting_approximateLocation_description_off">Partajați doar zona de localizare aproximativă, chiar dacă locația dvs. este precisă.</string>
     <string name="groups_sharing_setting_approximateLocation_description_on">Selectați raza unei zone aproximative. Locația dvs. precisă va fi ascunsă și înlocuită cu un punct aflat undeva în interiorul razei alese.</string>
+    <string name="groups_sharing_setting_approximateLocation_alert_message">Locația dvs. reală va fi ascunsă, iar ceilalți membri nu vă vor putea localiza cu precizie. Viteza și altitudinea nu vor fi disponibile.</string>
     <string name="group_member_role_admin">Administrator</string>
     <string name="group_details_add_member_admin_only_info">Doar administratorul grupului poate adăuga membri noi</string>
     <string name="group_members_status_location_hidden">Numai localizare aproximativă</string>
@@ -970,6 +977,7 @@
     <string name="paywall_feature_summary_privacy_zones">Zone de confidențialitate</string>
     <string name="button_edit">Editează</string>
     <string name="button_manage">Gestionează</string>
+    <string name="dashboard_groups_manage_button">Gestionează grupul</string>
     <string name="place_detail_change_location">Schimbă locația</string>
     <string name="privacy_zone_created_notification">Zonă nouă de confidențialitate %1$s creată în grupul %2$s</string>
     <string name="privacy_zone_created_notification_default">Zonă nouă de confidențialitate creată</string>

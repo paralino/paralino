@@ -34,13 +34,12 @@ fun MapLibreTapActionOverlay(
     LaunchedEffect(tappedState, cameraState) {
         snapshotFlow { cameraState.position }
             .collectLatest {
-                val projection = cameraState.projection ?: return@collectLatest
-                val screenOffset = projection.screenLocationFromPosition(
+                val screenOffset = cameraState.screenLocationFromPosition(
                     Position(
                         latitude = tappedState.lat,
                         longitude = tappedState.lng
                     )
-                )
+                ) ?: return@collectLatest
 
                 val screenPoint = with(density) {
                     IntOffset(

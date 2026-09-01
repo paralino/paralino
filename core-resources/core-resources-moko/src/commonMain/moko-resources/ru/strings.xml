@@ -23,6 +23,7 @@
     <string name="button_notNow">Не сейчас</string>
     <string name="button_delete">Удалить</string>
     <string name="button_enable">Включить</string>
+    <string name="button_enableAnyway">Включить всё равно</string>
     <string name="button_activate">Активировать</string>
     <string name="button_later">Позже</string>
     <string name="button_yes">Да</string>
@@ -544,12 +545,14 @@
     <string name="location_sharing_button_start_personal">Начать отслеживание</string>
     <string name="location_sharing_button_stop_groups">Прекратить делиться</string>
     <string name="location_sharing_button_stop_personal">Прекратить отслеживание</string>
+    <string name="location_sharing_stop_groups_alert_message">Вы уверены, что хотите прекратить делиться своим местоположением с этой группой?</string>
     <string name="groups_sharing_title">Поделиться местоположением</string>
     <string name="groups_sharing_device_name_placeholder">Имя устройства (необязательно)</string>
     <string name="groups_sharing_devices">Устройства</string>
     <string name="groups_sharing_potential_error_title">Предупреждение</string>
     <string name="groups_sharing_potential_error_message">Чтобы поделиться своим местоположением, пожалуйста, устраните все ошибки: \n\n%s\n</string>
     <string name="groups_sharing_potential_error_background_location_message">Ваше местоположение не может быть передано в фоновом режиме или если вы перезагрузите телефон!\n\nПожалуйста, разрешите доступ к местоположению **всегда** для надежного обмена.</string>
+    <string name="groups_sharing_potential_error_notification_permission_message">Обновления местоположения в реальном времени не будут работать должным образом, и другие не смогут найти это устройство.\n\nРазрешите **уведомления** для надёжного обмена.</string>
     <string name="groups_sharing_error_unverified_group_title">Неподтвержденная группа или участник</string>
     <string name="groups_sharing_error_unverified_group_message">Вы не можете делиться местоположением с неподтвержденной группой или участником.\n\nПопробуйте обновить данные группы.</string>
     <string name="groups_sharing_duration_type_infinite">Всегда включено</string>
@@ -643,6 +646,7 @@
     <string name="group_picker_button_join">Присоединиться</string>
     <string name="group_member_no_location_info_message">Это устройство еще не имеет местоположения.</string>
     <string name="group_member_devices_section_title">Устройства</string>
+    <string name="group_member_your_devices_section_title">Ваши устройства</string>
     <string name="group_member_device_not_responding_message">**Устройство не отвечает или оффлайн.**\n\nПроверьте снова через несколько минут, возможно, потребуется немного времени, чтобы ответить, если устройство в сети.</string>
     <string name="group_member_device_waiting">Ожидание ответа устройства...</string>
     <string name="group_member_device_requesting">Запрос местоположения...</string>
@@ -650,6 +654,8 @@
     <string name="group_member_device_maybe_unreachable">Устройство будет медленнее отвечать</string>
     <string name="group_member_device_maybe_unreachable_message">Это устройство не может быть доступно по запросу и будет медленнее отвечать.\nПожалуйста, проверьте местоположение снова через некоторое время.</string>
     <string name="group_member_device_setup_invalid">Устройство не полностью совместимо и недоступно</string>
+    <string name="group_member_device_setup_missing_message">Устройству не хватает конфигурации push-уведомлений и оно недоступно</string>
+    <string name="group_member_device_push_failed_message">Устройство сейчас не может принимать push-уведомления и недоступно</string>
     <string name="group_member_device_request_failed">Запрос не удался, пожалуйста, попробуйте снова</string>
     <string name="group_member_device_request_disabled">Пожалуйста, подождите несколько мгновений перед повторным запросом местоположения 🙏</string>
     <string name="group_members_last_active_status_now">Только что</string>
@@ -963,6 +969,7 @@
     <string name="groups_sharing_setting_approximateLocation_title">Приблизительное местоположение</string>
     <string name="groups_sharing_setting_approximateLocation_description_off">Делитесь только приблизительной областью местоположения, даже если ваше местоположение определено точно.</string>
     <string name="groups_sharing_setting_approximateLocation_description_on">Выберите радиус приблизительной области. Ваше точное местоположение будет скрыто и заменено точкой где-то внутри выбранного радиуса.</string>
+    <string name="groups_sharing_setting_approximateLocation_alert_message">Ваше фактическое местоположение будет скрыто, и другие участники не смогут определить его точно. Скорость и высота будут недоступны.</string>
     <string name="group_member_role_admin">Администратор</string>
     <string name="group_details_add_member_admin_only_info">Только администратор группы может добавлять новых участников</string>
     <string name="group_members_status_location_hidden">Только приблизительное местоположение</string>
@@ -990,6 +997,7 @@
     <string name="map_long_tap_action_new_privacy_zone">Новая зона приватности</string>
     <string name="button_edit">Редактировать</string>
     <string name="button_manage">Управлять</string>
+    <string name="dashboard_groups_manage_button">Управлять группой</string>
     <string name="plans_banner_inline_privacy_zones">Создавайте больше зон приватности и сохраняйте контроль над своим местоположением!</string>
     <string name="groups_sharing_setting_approximateLocation_speedElevation_unavailable">Скорость и высота недоступны, когда включен режим *приблизительного местоположения*.</string>
     <string name="privacy_zone_created_notification">Новая зона приватности %1$s создана в группе %2$s</string>

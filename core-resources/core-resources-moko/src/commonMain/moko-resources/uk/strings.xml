@@ -23,6 +23,7 @@
     <string name="button_notNow">Не зараз</string>
     <string name="button_delete">Видалити</string>
     <string name="button_enable">Увімкнути</string>
+    <string name="button_enableAnyway">Увімкнути все одно</string>
     <string name="button_activate">Активувати</string>
     <string name="button_later">Пізніше</string>
     <string name="button_yes">Так</string>
@@ -544,12 +545,14 @@
     <string name="location_sharing_button_start_personal">Почати відстеження</string>
     <string name="location_sharing_button_stop_groups">Припинити ділитися</string>
     <string name="location_sharing_button_stop_personal">Припинити відстеження</string>
+    <string name="location_sharing_stop_groups_alert_message">Ви впевнені, що хочете припинити ділитися своїм місцезнаходженням із цією групою?</string>
     <string name="groups_sharing_title">Поділитися місцезнаходженням</string>
     <string name="groups_sharing_device_name_placeholder">Назва пристрою (необов\'язково)</string>
     <string name="groups_sharing_devices">Пристрої</string>
     <string name="groups_sharing_potential_error_title">Попередження</string>
     <string name="groups_sharing_potential_error_message">Щоб поділитися своїм місцезнаходженням, будь ласка, усуньте всі помилки: \n\n%s\n</string>
     <string name="groups_sharing_potential_error_background_location_message">Ваше місцезнаходження не може бути поділено у фоновому режимі або якщо ви перезавантажите телефон! \n\nБудь ласка, надайте **доступ до місцезнаходження завжди** для надійного обміну.</string>
+    <string name="groups_sharing_potential_error_notification_permission_message">Оновлення місцезнаходження в реальному часі не працюватимуть належним чином, і інші не зможуть знайти цей пристрій.\n\nДозвольте **сповіщення** для надійного обміну.</string>
     <string name="groups_sharing_error_unverified_group_title">Непідтверджена група або учасник</string>
     <string name="groups_sharing_error_unverified_group_message">Ви не можете поділитися місцезнаходженням з непідтвердженою групою або учасником. \n\nСпробуйте оновити дані групи.</string>
     <string name="groups_sharing_duration_type_infinite">Завжди увімкнено</string>
@@ -643,6 +646,7 @@
     <string name="group_picker_button_join">Приєднатися</string>
     <string name="group_member_no_location_info_message">Цей пристрій ще не має місцезнаходження.</string>
     <string name="group_member_devices_section_title">Пристрої</string>
+    <string name="group_member_your_devices_section_title">Ваші пристрої</string>
     <string name="group_member_device_not_responding_message">**Пристрій не відповідає або офлайн.** \n\nПеревірте знову через кілька хвилин, можливо, знадобиться кілька хвилин, щоб відповісти, якщо пристрій онлайн.</string>
     <string name="group_member_device_waiting">Очікування відповіді пристрою...</string>
     <string name="group_member_device_requesting">Запит на місцезнаходження...</string>
@@ -650,6 +654,8 @@
     <string name="group_member_device_maybe_unreachable">Пристрій буде повільно реагувати</string>
     <string name="group_member_device_maybe_unreachable_message">Цей пристрій не може бути досягнуто за запитом і буде повільно реагувати.\nБудь ласка, перевірте розташування знову через деякий час.</string>
     <string name="group_member_device_setup_invalid">Пристрій не повністю сумісний і не може бути досягнутий</string>
+    <string name="group_member_device_setup_missing_message">Пристрою бракує конфігурації push-сповіщень і він не може бути досягнутий</string>
+    <string name="group_member_device_push_failed_message">Пристрій зараз не може приймати push-сповіщення і не може бути досягнутий</string>
     <string name="group_member_device_request_failed">Запит не вдався, будь ласка, спробуйте ще раз</string>
     <string name="group_member_device_request_disabled">Будь ласка, почекайте кілька моментів перед повторним запитом на місцезнаходження 🙏</string>
     <string name="group_members_last_active_status_now">Щойно</string>
@@ -963,11 +969,13 @@
     <string name="groups_sharing_setting_approximateLocation_title">Приблизне місцеперебування</string>
     <string name="groups_sharing_setting_approximateLocation_description_off">Діліться лише приблизною областю місцеперебування, навіть якщо ваше місцеперебування є точним.</string>
     <string name="groups_sharing_setting_approximateLocation_description_on">Виберіть радіус приблизної області. Ваше точне місцеперебування буде приховано й замінено точкою десь у межах вибраного радіуса.</string>
+    <string name="groups_sharing_setting_approximateLocation_alert_message">Ваше фактичне місцеперебування буде приховано, і інші учасники не зможуть визначити його точно. Швидкість і висота будуть недоступні.</string>
     <string name="group_member_role_admin">Адміністратор</string>
     <string name="group_details_add_member_admin_only_info">Лише адміністратор групи може додавати нових учасників</string>
     <string name="group_members_status_location_hidden">Лише приблизне місцеперебування</string>
     <string name="button_edit">Редагувати</string>
     <string name="button_manage">Керувати</string>
+    <string name="dashboard_groups_manage_button">Керувати групою</string>
     <string name="plans_banner_inline_privacy_zones">Створюйте більше зон конфіденційності та зберігайте контроль над своїм місцезнаходженням!</string>
     <string name="paywall_feature_privacy_zones_group">Зони конфіденційності</string>
     <string name="paywall_feature_summary_privacy_zones">Зони конфіденційності</string>

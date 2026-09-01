@@ -23,6 +23,7 @@
     <string name="button_notNow">Niet nu</string>
     <string name="button_delete">Verwijderen</string>
     <string name="button_enable">Inschakelen</string>
+    <string name="button_enableAnyway">Toch inschakelen</string>
     <string name="button_activate">Activeren</string>
     <string name="button_later">Later</string>
     <string name="button_yes">Ja</string>
@@ -544,12 +545,14 @@
     <string name="location_sharing_button_start_personal">Begin met volgen</string>
     <string name="location_sharing_button_stop_groups">Stop met delen</string>
     <string name="location_sharing_button_stop_personal">Stop met volgen</string>
+    <string name="location_sharing_stop_groups_alert_message">Weet u zeker dat u wilt stoppen met het delen van uw locatie met deze groep?</string>
     <string name="groups_sharing_title">Deel locatie</string>
     <string name="groups_sharing_device_name_placeholder">Apparaatnaam (optioneel)</string>
     <string name="groups_sharing_devices">Apparaten</string>
     <string name="groups_sharing_potential_error_title">Waarschuwing</string>
     <string name="groups_sharing_potential_error_message">Om uw locatie te delen, los alstublieft de fouten op: \n\n%s\n</string>
     <string name="groups_sharing_potential_error_background_location_message">Uw locatie kan niet op de achtergrond of als u uw telefoon opnieuw opstart worden gedeeld! \n\nGelieve **altijd** toegang tot locatie toe te staan voor betrouwbare delen.</string>
+    <string name="groups_sharing_potential_error_notification_permission_message">Locatie-updates in real time werken niet goed en anderen kunnen dit apparaat niet lokaliseren.\n\nSta **meldingen** toe voor betrouwbaar delen.</string>
     <string name="groups_sharing_error_unverified_group_title">Ongemarkeerde groep of lid</string>
     <string name="groups_sharing_error_unverified_group_message">U kunt geen locatie delen met een ongemarkeerde groep of lid. \n\nProbeer de groepsgegevens te vernieuwen.</string>
     <string name="groups_sharing_duration_type_infinite">Altijd aan</string>
@@ -643,6 +646,7 @@
     <string name="group_picker_button_join">Deelnemen</string>
     <string name="group_member_no_location_info_message">Dit apparaat heeft nog geen locatie.</string>
     <string name="group_member_devices_section_title">Apparaten</string>
+    <string name="group_member_your_devices_section_title">Uw apparaten</string>
     <string name="group_member_device_not_responding_message">**Apparaat reageert niet of is offline.**\n\nControleer over een tijdje opnieuw, het kan enkele minuten duren voordat het apparaat reageert als het online is.</string>
     <string name="group_member_device_waiting">Wachten op reactie van het apparaat...</string>
     <string name="group_member_device_requesting">Locatie aanvragen...</string>
@@ -650,6 +654,8 @@
     <string name="group_member_device_maybe_unreachable">Apparaat heeft meer tijd nodig om te reageren</string>
     <string name="group_member_device_maybe_unreachable_message">Dit apparaat kan niet op verzoek worden bereikt en zal langer nodig hebben om te reageren. \nControleer de locatie opnieuw na enige tijd.</string>
     <string name="group_member_device_setup_invalid">Apparaat is niet volledig compatibel en kan niet worden bereikt</string>
+    <string name="group_member_device_setup_missing_message">Apparaat mist de configuratie voor pushmeldingen en kan niet worden bereikt</string>
+    <string name="group_member_device_push_failed_message">Apparaat kan momenteel geen pushmeldingen ontvangen en kan niet worden bereikt</string>
     <string name="group_member_device_request_failed">Aanvraag mislukt, probeer het opnieuw</string>
     <string name="group_member_device_request_disabled">Wacht een paar momenten voordat u opnieuw om de locatie vraagt 🙏</string>
     <string name="group_members_last_active_status_now">Zojuist</string>
@@ -963,6 +969,7 @@
     <string name="groups_sharing_setting_approximateLocation_title">Geschatte locatie</string>
     <string name="groups_sharing_setting_approximateLocation_description_off">Deel alleen het gebied van uw geschatte locatie, zelfs als uw locatie nauwkeurig is.</string>
     <string name="groups_sharing_setting_approximateLocation_description_on">Selecteer de straal van een geschat gebied. Uw precieze locatie wordt verborgen en vervangen door een punt ergens binnen de gekozen straal.</string>
+    <string name="groups_sharing_setting_approximateLocation_alert_message">Uw werkelijke locatie wordt verborgen en andere leden kunnen u niet nauwkeurig lokaliseren. Snelheid en hoogte zijn niet beschikbaar.</string>
     <string name="group_member_role_admin">Beheerder</string>
     <string name="group_details_add_member_admin_only_info">Alleen de groepsbeheerder kan nieuwe leden toevoegen</string>
     <string name="group_members_status_location_hidden">Alleen geschatte locatie</string>
@@ -1009,6 +1016,7 @@
     <string name="plan_limit_overLimit_privacy_zones_banner_title">**Privacyszones zijn beperkt!**\nHet toegestane aantal privacyszones is overschreden.</string>
     <string name="button_edit">Bewerken</string>
     <string name="button_manage">Beheren</string>
+    <string name="dashboard_groups_manage_button">Groep beheren</string>
     <string name="plans_banner_inline_privacy_zones">Maak meer privacyezones en behoud de controle over uw locatie!</string>
     <string name="paywall_feature_privacy_zones_group">Privacyezones</string>
     <string name="paywall_feature_summary_privacy_zones">Privacyezones</string>

@@ -23,6 +23,7 @@
     <string name="button_notNow">Ikke nu</string>
     <string name="button_delete">Slet</string>
     <string name="button_enable">Aktiver</string>
+    <string name="button_enableAnyway">Aktivér alligevel</string>
     <string name="button_activate">Aktiver</string>
     <string name="button_later">Senere</string>
     <string name="button_yes">Ja</string>
@@ -544,12 +545,14 @@
     <string name="location_sharing_button_start_personal">Begynd at spore</string>
     <string name="location_sharing_button_stop_groups">Stop deling</string>
     <string name="location_sharing_button_stop_personal">Stop sporing</string>
+    <string name="location_sharing_stop_groups_alert_message">Er du sikker på, at du vil stoppe med at dele din placering med denne gruppe?</string>
     <string name="groups_sharing_title">Del placering</string>
     <string name="groups_sharing_device_name_placeholder">Enhedsnavn (valgfrit)</string>
     <string name="groups_sharing_devices">Enheder</string>
     <string name="groups_sharing_potential_error_title">Advarsel</string>
     <string name="groups_sharing_potential_error_message">For at dele din placering, bedes du løse alle fejl: \n\n%s\n</string>
     <string name="groups_sharing_potential_error_background_location_message">Din placering kan ikke deles i baggrunden eller hvis du genstarter din telefon! \n\nVenligst tillad **hele tiden** adgang til placering for pålidelig deling.</string>
+    <string name="groups_sharing_potential_error_notification_permission_message">Opdateringer af placering i realtid virker ikke korrekt, og andre kan ikke finde denne enhed.\n\nTillad **notifikationer** for pålidelig deling.</string>
     <string name="groups_sharing_error_unverified_group_title">Uverificeret gruppe eller medlem</string>
     <string name="groups_sharing_error_unverified_group_message">Du kan ikke dele placering med en uverificeret gruppe eller medlem. \n\nPrøv at opdatere gruppedataene.</string>
     <string name="groups_sharing_duration_type_infinite">Altid tændt</string>
@@ -643,6 +646,7 @@
     <string name="group_picker_button_join">Deltag</string>
     <string name="group_member_no_location_info_message">Denne enhed har endnu ikke en placering.</string>
     <string name="group_member_devices_section_title">Enheder</string>
+    <string name="group_member_your_devices_section_title">Dine enheder</string>
     <string name="group_member_device_not_responding_message">**Enheden svarer ikke eller er offline.** \nKontroller igen om kort tid, det kan tage et par minutter at svare, hvis enheden er online.</string>
     <string name="group_member_device_waiting">Venter på, at enheden svarer...</string>
     <string name="group_member_device_requesting">Anmoder om placering...</string>
@@ -650,6 +654,8 @@
     <string name="group_member_device_maybe_unreachable">Enheden vil tage længere tid om at reagere</string>
     <string name="group_member_device_maybe_unreachable_message">Denne enhed kan ikke nås ved forespørgsel og vil tage længere tid om at reagere. \nVenligst tjek placeringen igen efter noget tid.</string>
     <string name="group_member_device_setup_invalid">Enheden er ikke fuldt kompatibel og kan ikke nås</string>
+    <string name="group_member_device_setup_missing_message">Enheden mangler konfiguration af push-notifikationer og kan ikke nås</string>
+    <string name="group_member_device_push_failed_message">Enheden kan i øjeblikket ikke modtage push-notifikationer og kan ikke nås</string>
     <string name="group_member_device_request_failed">Anmodning mislykkedes, prøv venligst igen</string>
     <string name="group_member_device_request_disabled">Vent venligst et øjeblik, før du anmoder om placering igen 🙏</string>
     <string name="group_members_last_active_status_now">Lige nu</string>
@@ -963,11 +969,13 @@
     <string name="groups_sharing_setting_approximateLocation_title">Omtrentlig placering</string>
     <string name="groups_sharing_setting_approximateLocation_description_off">Del kun et omtrentligt placeringsområde, selv hvis din placering er nøjagtig.</string>
     <string name="groups_sharing_setting_approximateLocation_description_on">Vælg radius for et omtrentligt område. Din præcise placering skjules og erstattes af et punkt et sted inden for den valgte radius.</string>
+    <string name="groups_sharing_setting_approximateLocation_alert_message">Din faktiske placering vil blive skjult, og andre medlemmer vil ikke kunne finde dig præcist. Hastighed og højdemeter vil ikke være tilgængelige.</string>
     <string name="group_member_role_admin">Administrator</string>
     <string name="group_details_add_member_admin_only_info">Kun gruppeadministratoren kan tilføje nye medlemmer</string>
     <string name="group_members_status_location_hidden">Kun omtrentlig placering</string>
     <string name="button_edit">Rediger</string>
     <string name="button_manage">Administrer</string>
+    <string name="dashboard_groups_manage_button">Administrer gruppe</string>
     <string name="plans_banner_inline_privacy_zones">Opret flere privatlivszoner, og bevar kontrollen over din placering!</string>
     <string name="paywall_feature_privacy_zones_group">Privatlivszoner</string>
     <string name="paywall_feature_summary_privacy_zones">Privatlivszoner</string>

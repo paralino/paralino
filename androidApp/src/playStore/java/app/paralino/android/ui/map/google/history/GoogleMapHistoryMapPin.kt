@@ -98,19 +98,8 @@ class LocationHistoryClusterItem(
         )
     }
 
-    override fun getPosition(): LatLng {
-        return LatLng(item.lat!!, item.lng!!)
-    }
-
-    override fun getTitle(): String? {
-        return null
-    }
-
-    override fun getSnippet(): String? {
-        return null
-    }
-
-    override fun getZIndex(): Float? {
-        return null
-    }
+    override val position: LatLng = LatLng(item.lat!!, item.lng!!)
+    override val title: String? = null
+    override val snippet: String? = null
+    override val zIndex: Float? = null
 }

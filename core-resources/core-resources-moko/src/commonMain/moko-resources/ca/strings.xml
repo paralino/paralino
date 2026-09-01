@@ -23,6 +23,7 @@
     <string name="button_notNow">No ara</string>
     <string name="button_delete">Eliminar</string>
     <string name="button_enable">Activar</string>
+    <string name="button_enableAnyway">Activar de totes maneres</string>
     <string name="button_activate">Activar</string>
     <string name="button_later">Més tard</string>
     <string name="button_yes">Sí</string>
@@ -544,12 +545,14 @@
     <string name="location_sharing_button_start_personal">Començar a rastrejar</string>
     <string name="location_sharing_button_stop_groups">Aturar la compartició</string>
     <string name="location_sharing_button_stop_personal">Aturar el rastreig</string>
+    <string name="location_sharing_stop_groups_alert_message">Segur que vols deixar de compartir la teva ubicació amb aquest grup?</string>
     <string name="groups_sharing_title">Compartir ubicació</string>
     <string name="groups_sharing_device_name_placeholder">Nom del dispositiu (opcional)</string>
     <string name="groups_sharing_devices">Dispositius</string>
     <string name="groups_sharing_potential_error_title">Advertència</string>
     <string name="groups_sharing_potential_error_message">Per compartir la teva ubicació, si us plau, resol tots els errors: \n\n%s\n</string>
     <string name="groups_sharing_potential_error_background_location_message">La teva ubicació no es pot compartir en segon pla o si reinicies el teu telèfon! \n\nSi us plau, permet **sempre** l\'accés a la ubicació per a una compartició fiable.</string>
+    <string name="groups_sharing_potential_error_notification_permission_message">Les actualitzacions d\'ubicació en temps real no funcionaran correctament i els altres no podran localitzar aquest dispositiu.\n\nPermet les **notificacions** per a una compartició fiable.</string>
     <string name="groups_sharing_error_unverified_group_title">Grup o membre no verificat</string>
     <string name="groups_sharing_error_unverified_group_message">No pots compartir la ubicació amb un grup o membre no verificat. \n\nProva de refrescar les dades del grup.</string>
     <string name="groups_sharing_duration_type_infinite">Sempre activat</string>
@@ -643,6 +646,7 @@
     <string name="group_picker_button_join">Unir-se</string>
     <string name="group_member_no_location_info_message">Aquest dispositiu no té una ubicació encara.</string>
     <string name="group_member_devices_section_title">Dispositius</string>
+    <string name="group_member_your_devices_section_title">Els vostres dispositius</string>
     <string name="group_member_device_not_responding_message">**El dispositiu no respon o està fora de línia.**\n\nComproveu-ho de nou d\'aquí a poc, pot trigar uns minuts a respondre si el dispositiu està en línia.</string>
     <string name="group_member_device_waiting">Esperant que el dispositiu respongui...</string>
     <string name="group_member_device_requesting">Sol·licitant ubicació...</string>
@@ -650,6 +654,8 @@
     <string name="group_member_device_maybe_unreachable">L\'aparell trigarà més a respondre</string>
     <string name="group_member_device_maybe_unreachable_message">Aquest aparell no es pot localitzar a demanda i trigarà més a respondre. \nSi us plau, verifica la ubicació de nou després d\'uns moments.</string>
     <string name="group_member_device_setup_invalid">El dispositiu no és totalment compatible i no es pot accedir</string>
+    <string name="group_member_device_setup_missing_message">Al dispositiu li falta la configuració de les notificacions push i no es pot accedir</string>
+    <string name="group_member_device_push_failed_message">El dispositiu no pot rebre notificacions push en aquest moment i no es pot accedir</string>
     <string name="group_member_device_request_failed">La sol·licitud ha fallat, si us plau, torneu-ho a intentar</string>
     <string name="group_member_device_request_disabled">Si us plau, espereu uns moments abans de sol·licitar la ubicació de nou 🙏</string>
     <string name="group_members_last_active_status_now">Just ara</string>
@@ -963,11 +969,13 @@
     <string name="groups_sharing_setting_approximateLocation_title">Ubicació aproximada</string>
     <string name="groups_sharing_setting_approximateLocation_description_off">Compartiu només l\'àrea aproximada de la ubicació, fins i tot si la vostra ubicació és exacta.</string>
     <string name="groups_sharing_setting_approximateLocation_description_on">Seleccioneu el radi d\'una àrea aproximada. La vostra ubicació precisa s\'amagarà i es substituirà per un punt en algun lloc dins del radi escollit.</string>
+    <string name="groups_sharing_setting_approximateLocation_alert_message">La vostra ubicació real s\'amagarà i els altres membres no us podran localitzar amb precisió. La velocitat i l\'altitud no estaran disponibles.</string>
     <string name="group_member_role_admin">Administrador</string>
     <string name="group_details_add_member_admin_only_info">Només l\'administrador del grup pot afegir nous membres</string>
     <string name="group_members_status_location_hidden">Només ubicació aproximada</string>
     <string name="button_edit">Edita</string>
     <string name="button_manage">Gestiona</string>
+    <string name="dashboard_groups_manage_button">Gestionar grup</string>
     <string name="plans_banner_inline_privacy_zones">Crea més zones de privadesa i manteniu el control de la vostra ubicació!</string>
     <string name="paywall_feature_privacy_zones_group">Zones de privadesa</string>
     <string name="paywall_feature_summary_privacy_zones">Zones de privadesa</string>

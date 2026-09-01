@@ -5,6 +5,7 @@ import app.paralino.core.app_rating.AppRatingManager
 import app.paralino.core.app_rating.AppRatingSource
 import app.paralino.core.app_update.IAppUpdateManager
 import app.paralino.core.db.AppPrefs
+import app.paralino.core.domain.user.AppAccountStateMonitor
 import app.paralino.core.domain.user.LogoutUseCase
 import app.paralino.core.domain.user.PremiumStatusManager
 import app.paralino.core.logg
@@ -22,6 +23,7 @@ import app.paralino.core.models.user.UserMe
 import app.paralino.core.models.user.UserPersonalCode
 import app.paralino.core.models.user.UserPlans
 import app.paralino.core.presentation.CoreViewModel
+import app.paralino.core.presentation.common.MainAlertDialog
 import app.paralino.core.provider.DeviceStatusData
 import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.provider.IValueFormatter
@@ -31,7 +33,6 @@ import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.location.LocationPerformanceManager
 import app.paralino.core.repo.personal_code.PersonalCodesRepository
 import app.paralino.core.repo.user.UserRepository
-import app.paralino.core.presentation.common.MainAlertDialog
 import app.paralino.core.utils.ConditionErrorType
 import app.paralino.core.utils.exceptions.UnauthorizedException
 import app.paralino.core.utils.extensions.errorString
@@ -57,6 +58,7 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Duration.Companion.seconds
 
 class SettingsViewModel(
     private val logoutControl: LogoutUseCase,
@@ -71,6 +73,7 @@ class SettingsViewModel(
     private val appConfig: AppConfigRepository,
     private val appRatingManager: AppRatingManager,
     private val appUpdateManager: IAppUpdateManager,
+    private val accountStateMonitor: AppAccountStateMonitor,
 ) : CoreViewModel() {
 
     private val _accountState = MutableStateFlow<Payload<AccountScreenState>>(
@@ -170,7 +173,16 @@ class SettingsViewModel(
                             },
                             errors = buildList {
                                 if (userStateData.canVerifyEmail) {
-                                    add(ConditionErrorType.EmailVerification(userStateData.email))
+                                    add(
+                                        ConditionErrorType.EmailVerification(
+                                            email = userStateData.email,
+                                            isLoading = previousState?.errors
+                                                ?.filterIsInstance<ConditionErrorType.EmailVerification>()
+                                                ?.firstOrNull()
+                                                ?.isLoading
+                                                ?: false
+                                        )
+                                    )
                                 }
 
                                 if (!deviceStatus.notificationStatus.isNotificationPermissionAllowed) {
@@ -191,13 +203,50 @@ class SettingsViewModel(
     }
 
     private fun sendEmailVerification() {
+        val isEmailSendingLoading = _accountState.value.data?.errors
+            ?.filterIsInstance<ConditionErrorType.EmailVerification>()
+            ?.firstOrNull()
+            ?.isLoading
+            ?: false
+
+        if (isEmailSendingLoading) {
+            return
+        }
+
         coroutineScope.launch {
             try {
+                // first invalidate skip time so verification screen can be shown
+                appPrefs.emailVerificationSkipTime = null
+                setEmailVerificationLoading(isLoading = true)
                 userRepo.initEmailVerification()
                 messageDispatcher.showSnackbar(MR.strings.info_email_check_instructions_popup.localizedString())
+                setEmailVerificationLoading(isLoading = false)
+
+                // a bit of delay for the ui
+                // not a big issue if screen is gone in the meantime, verification will popup again
+                delay(1.seconds)
+                accountStateMonitor.triggerStateCheck()
                 _eventChannel.send(AccountScreenEvent.EmailVerificationSent)
             } catch (e: Exception) {
+                setEmailVerificationLoading(isLoading = false)
                 messageDispatcher.showSnackbar(e.errorString())
+                accountStateMonitor.triggerStateCheck()
+            }
+        }
+    }
+
+    private fun setEmailVerificationLoading(isLoading: Boolean) {
+        _accountState.update {
+            it.mapSuccess {
+                it.copy(
+                    errors = it.errors.map {
+                        if (it is ConditionErrorType.EmailVerification) {
+                            it.copy(isLoading = isLoading)
+                        } else {
+                            it
+                        }
+                    }
+                )
             }
         }
     }

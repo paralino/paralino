@@ -23,6 +23,7 @@
     <string name="button_notNow">Не сада</string>
     <string name="button_delete">Избришите</string>
     <string name="button_enable">Омогућите</string>
+    <string name="button_enableAnyway">Ипак омогућите</string>
     <string name="button_activate">Активирајте</string>
     <string name="button_later">Касније</string>
     <string name="button_yes">Да</string>
@@ -544,12 +545,14 @@
     <string name="location_sharing_button_start_personal">Почните праћење</string>
     <string name="location_sharing_button_stop_groups">Прекините дељење</string>
     <string name="location_sharing_button_stop_personal">Прекините праћење</string>
+    <string name="location_sharing_stop_groups_alert_message">Да ли сте сигурни да желите да прекинете дељење своје локације са овом групом?</string>
     <string name="groups_sharing_title">Поделите локацију</string>
     <string name="groups_sharing_device_name_placeholder">Име уређаја (опционо)</string>
     <string name="groups_sharing_devices">Уређаји</string>
     <string name="groups_sharing_potential_error_title">Упозорење</string>
     <string name="groups_sharing_potential_error_message">Да бисте поделили своју локацију, решите све грешке: \n\n%s\n</string>
     <string name="groups_sharing_potential_error_background_location_message">Ваша локација не може бити дељена у позадини или ако поново покренете телефон!\n\nМолимо омогућите приступ локацији **целог времена** за поуздано дељење.</string>
+    <string name="groups_sharing_potential_error_notification_permission_message">Ажурирања локације у реалном времену неће радити исправно и други неће моћи да пронађу овај уређај.\n\nОмогућите **обавештења** за поуздано дељење.</string>
     <string name="groups_sharing_error_unverified_group_title">Неверификована група или члан</string>
     <string name="groups_sharing_error_unverified_group_message">Не можете делити локацију са неверификованом групом или чланом.\n\nПокушајте освежити податке групе.</string>
     <string name="groups_sharing_duration_type_infinite">Увек укључено</string>
@@ -643,6 +646,7 @@
     <string name="group_picker_button_join">Придружите се</string>
     <string name="group_member_no_location_info_message">Овај уређај још нема локацију.</string>
     <string name="group_member_devices_section_title">Уређаји</string>
+    <string name="group_member_your_devices_section_title">Ваши уређаји</string>
     <string name="group_member_device_not_responding_message">**Уређај не одговара или је ван мреже.**\n\nПоново проверите ускоро, може потрајати неколико минута да уређај одговори ако је повезан.</string>
     <string name="group_member_device_waiting">Чека се да уређај одговори...</string>
     <string name="group_member_device_requesting">Тражи се локација...</string>
@@ -650,6 +654,8 @@
     <string name="group_member_device_maybe_unreachable">Уређај ће дуже одговарати</string>
     <string name="group_member_device_maybe_unreachable_message">Овај уређај не може бити достигнут на захтев и одговараће дуже.\nМолимо проверите локацију поново после неког времена.</string>
     <string name="group_member_device_setup_invalid">Уређај није у потпуности компатибилан и не може му се приступити</string>
+    <string name="group_member_device_setup_missing_message">Уређају недостаје конфигурација push обавештења и не може му се приступити</string>
+    <string name="group_member_device_push_failed_message">Уређај тренутно не може примати push обавештења и не може му се приступити</string>
     <string name="group_member_device_request_failed">Захтев није успео, молимо покушајте поново</string>
     <string name="group_member_device_request_disabled">Молимо сачекајте неколико тренутака пре него што поново затражите локацију 🙏</string>
     <string name="group_members_last_active_status_now">Управо сада</string>
@@ -963,6 +969,7 @@
     <string name="groups_sharing_setting_approximateLocation_title">Приближна локација</string>
     <string name="groups_sharing_setting_approximateLocation_description_off">Делите само приближно подручје локације, чак и ако је ваша локација прецизна.</string>
     <string name="groups_sharing_setting_approximateLocation_description_on">Изаберите радијус приближног подручја. Ваша тачна локација биће сакривена и замењена тачком негде унутар изабраног радијуса.</string>
+    <string name="groups_sharing_setting_approximateLocation_alert_message">Ваша стварна локација биће сакривена и остали чланови неће моћи да вас прецизно лоцирају. Брзина и надморска висина неће бити доступне.</string>
     <string name="group_member_role_admin">Администратор</string>
     <string name="group_details_add_member_admin_only_info">Само администратор групе може да додаје нове чланове</string>
     <string name="group_members_status_location_hidden">Само приближна локација</string>
@@ -1004,6 +1011,7 @@
     <string name="privacy_zones_empty_state_map_label_others_view">Шта други виде</string>
     <string name="button_edit">Уреди</string>
     <string name="button_manage">Управљај</string>
+    <string name="dashboard_groups_manage_button">Управљај групом</string>
     <string name="plans_banner_inline_privacy_zones">Креирајте више зона приватности и задржите контролу над својом локацијом!</string>
     <string name="paywall_feature_privacy_zones_group">Зоне приватности</string>
     <string name="paywall_feature_summary_privacy_zones">Зоне приватности</string>

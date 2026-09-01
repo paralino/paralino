@@ -86,6 +86,8 @@ fun MainNavHost(
         exitTransition = { this.slideOutOfContainer(towards = AnimatedContentTransitionScope.SlideDirection.Start, targetOffset = { it / 4 }) },
         popEnterTransition = { this.slideIntoContainer(towards = AnimatedContentTransitionScope.SlideDirection.Start, initialOffset = { -it / 4 }) },
         popExitTransition = { this.slideOutOfContainer(towards = AnimatedContentTransitionScope.SlideDirection.End) },
+        predictivePopEnterTransition = { this.slideIntoContainer(towards = AnimatedContentTransitionScope.SlideDirection.Start, initialOffset = { -it / 4 }) },
+        predictivePopExitTransition = { this.slideOutOfContainer(towards = AnimatedContentTransitionScope.SlideDirection.End) },
     ) {
         homeGraph(appState = appState, onAppClose = onAppClose)
         settingsGraph(appState)

@@ -23,6 +23,7 @@
     <string name="button_notNow">Όχι τώρα</string>
     <string name="button_delete">Διαγραφή</string>
     <string name="button_enable">Ενεργοποίηση</string>
+    <string name="button_enableAnyway">Ενεργοποίηση ούτως ή άλλως</string>
     <string name="button_activate">Ενεργοποιήστε</string>
     <string name="button_later">Αργότερα</string>
     <string name="button_yes">Ναι</string>
@@ -544,12 +545,14 @@
     <string name="location_sharing_button_start_personal">Αρχίστε την παρακολούθηση</string>
     <string name="location_sharing_button_stop_groups">Σταματήστε να μοιράζεστε</string>
     <string name="location_sharing_button_stop_personal">Σταματήστε την παρακολούθηση</string>
+    <string name="location_sharing_stop_groups_alert_message">Είστε βέβαιοι ότι θέλετε να σταματήσετε την κοινή χρήση της τοποθεσίας σας με αυτήν την ομάδα;</string>
     <string name="groups_sharing_title">Μοιραστείτε την τοποθεσία</string>
     <string name="groups_sharing_device_name_placeholder">Όνομα συσκευής (προαιρετικό)</string>
     <string name="groups_sharing_devices">Συσκευές</string>
     <string name="groups_sharing_potential_error_title">Προειδοποίηση</string>
     <string name="groups_sharing_potential_error_message">Για να μοιραστείτε την τοποθεσία σας, παρακαλώ επιλύστε όλα τα σφάλματα: \n\n%s\n</string>
     <string name="groups_sharing_potential_error_background_location_message">Η τοποθεσία σας δεν μπορεί να μοιραστεί στο παρασκήνιο ή αν επανεκκινήσετε το τηλέφωνό σας! \n\nΠαρακαλώ επιτρέψτε την πρόσβαση στην τοποθεσία **όλη την ώρα** για αξιόπιστη κοινοποίηση.</string>
+    <string name="groups_sharing_potential_error_notification_permission_message">Οι ενημερώσεις τοποθεσίας σε πραγματικό χρόνο δεν θα λειτουργούν σωστά και οι άλλοι δεν θα μπορούν να εντοπίσουν αυτή τη συσκευή.\n\nΕπιτρέψτε τις **ειδοποιήσεις** για αξιόπιστη κοινοποίηση.</string>
     <string name="groups_sharing_error_unverified_group_title">Μη επαληθευμένη ομάδα ή μέλος</string>
     <string name="groups_sharing_error_unverified_group_message">Δεν μπορείτε να μοιραστείτε την τοποθεσία σε μη επαληθευμένη ομάδα ή μέλος. \n\nΔοκιμάστε να ανανεώσετε τα δεδομένα της ομάδας.</string>
     <string name="groups_sharing_duration_type_infinite">Πάντα ενεργό</string>
@@ -643,6 +646,7 @@
     <string name="group_picker_button_join">Συμμετοχή</string>
     <string name="group_member_no_location_info_message">Αυτή η συσκευή δεν έχει ακόμη τοποθεσία.</string>
     <string name="group_member_devices_section_title">Συσκευές</string>
+    <string name="group_member_your_devices_section_title">Οι συσκευές σας</string>
     <string name="group_member_device_not_responding_message">**Η συσκευή δεν ανταποκρίνεται ή είναι εκτός σύνδεσης.**\n\nΕλέγξτε ξανά σύντομα, μπορεί να χρειαστούν μερικά λεπτά για να ανταποκριθεί αν η συσκευή είναι online.</string>
     <string name="group_member_device_waiting">Περιμένοντας την ανταπόκριση της συσκευής...</string>
     <string name="group_member_device_requesting">Αιτούμενη τοποθεσία...</string>
@@ -650,6 +654,8 @@
     <string name="group_member_device_maybe_unreachable">Η συσκευή θα χρειαστεί περισσότερο χρόνο για να ανταποκριθεί</string>
     <string name="group_member_device_maybe_unreachable_message">Αυτή η συσκευή δεν μπορεί να προσπελαστεί κατόπιν αιτήματος και θα χρειαστεί περισσότερος χρόνος για να ανταποκριθεί. \nΠαρακαλώ ελέγξτε ξανά την τοποθεσία μετά από κάποιο χρονικό διάστημα.</string>
     <string name="group_member_device_setup_invalid">Η συσκευή δεν είναι πλήρως συμβατή και δεν μπορεί να προσεγγιστεί</string>
+    <string name="group_member_device_setup_missing_message">Η συσκευή δεν έχει διαμόρφωση ειδοποιήσεων push και δεν μπορεί να προσεγγιστεί</string>
+    <string name="group_member_device_push_failed_message">Η συσκευή δεν μπορεί να λάβει ειδοποιήσεις push αυτή τη στιγμή και δεν μπορεί να προσεγγιστεί</string>
     <string name="group_member_device_request_failed">Η αίτηση απέτυχε, παρακαλώ δοκιμάστε ξανά</string>
     <string name="group_member_device_request_disabled">Παρακαλώ περιμένετε λίγα λεπτά πριν ζητήσετε ξανά την τοποθεσία 🙏</string>
     <string name="group_members_last_active_status_now">Μόλις τώρα</string>
@@ -963,11 +969,13 @@
     <string name="groups_sharing_setting_approximateLocation_title">Κατά προσέγγιση τοποθεσία</string>
     <string name="groups_sharing_setting_approximateLocation_description_off">Να κοινοποιείται μόνο η κατά προσέγγιση περιοχή τοποθεσίας, ακόμη και αν η τοποθεσία σας είναι ακριβής.</string>
     <string name="groups_sharing_setting_approximateLocation_description_on">Επιλέξτε την ακτίνα μιας κατά προσέγγιση περιοχής. Η ακριβής τοποθεσία σας θα αποκρυφτεί και θα αντικατασταθεί από ένα σημείο κάπου μέσα στην επιλεγμένη ακτίνα.</string>
+    <string name="groups_sharing_setting_approximateLocation_alert_message">Η πραγματική τοποθεσία σας θα αποκρυφτεί και τα άλλα μέλη δεν θα μπορούν να σας εντοπίσουν με ακρίβεια. Η ταχύτητα και το υψόμετρο δεν θα είναι διαθέσιμα.</string>
     <string name="group_member_role_admin">Διαχειριστής</string>
     <string name="group_details_add_member_admin_only_info">Μόνο ο διαχειριστής της ομάδας μπορεί να προσθέσει νέα μέλη</string>
     <string name="group_members_status_location_hidden">Μόνο κατά προσέγγιση τοποθεσία</string>
     <string name="button_edit">Επεξεργασία</string>
     <string name="button_manage">Διαχείριση</string>
+    <string name="dashboard_groups_manage_button">Διαχείριση ομάδας</string>
     <string name="plans_banner_inline_privacy_zones">Δημιουργήστε περισσότερες ζώνες απορρήτου και διατηρήστε τον έλεγχο της τοποθεσίας σας!</string>
     <string name="paywall_feature_privacy_zones_group">Ζώνες απορρήτου</string>
     <string name="paywall_feature_summary_privacy_zones">Ζώνες απορρήτου</string>

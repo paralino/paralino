@@ -23,6 +23,7 @@
     <string name="button_notNow">Nie teraz</string>
     <string name="button_delete">Usuń</string>
     <string name="button_enable">Włącz</string>
+    <string name="button_enableAnyway">Włącz mimo to</string>
     <string name="button_activate">Aktywuj</string>
     <string name="button_later">Później</string>
     <string name="button_yes">Tak</string>
@@ -544,12 +545,14 @@
     <string name="location_sharing_button_start_personal">Rozpocznij śledzenie</string>
     <string name="location_sharing_button_stop_groups">Zatrzymaj udostępnianie</string>
     <string name="location_sharing_button_stop_personal">Zatrzymaj śledzenie</string>
+    <string name="location_sharing_stop_groups_alert_message">Czy na pewno chcesz przestać udostępniać swoją lokalizację tej grupie?</string>
     <string name="groups_sharing_title">Udostępnij lokalizację</string>
     <string name="groups_sharing_device_name_placeholder">Nazwa urządzenia (opcjonalnie)</string>
     <string name="groups_sharing_devices">Urządzenia</string>
     <string name="groups_sharing_potential_error_title">Ostrzeżenie</string>
     <string name="groups_sharing_potential_error_message">Aby udostępnić swoją lokalizację, proszę rozwiązać wszystkie błędy: \n\n%s\n</string>
     <string name="groups_sharing_potential_error_background_location_message">Twoja lokalizacja nie może być udostępniana w tle ani po ponownym uruchomieniu telefonu! \n\nProszę zezwolić na **zawsze** dostęp do lokalizacji, aby zapewnić niezawodne udostępnianie.</string>
+    <string name="groups_sharing_potential_error_notification_permission_message">Aktualizacje lokalizacji w czasie rzeczywistym nie będą działać poprawnie, a inni nie będą mogli zlokalizować tego urządzenia.\n\nZezwól na **powiadomienia**, aby udostępnianie było niezawodne.</string>
     <string name="groups_sharing_error_unverified_group_title">Nieweryfikowana grupa lub członek</string>
     <string name="groups_sharing_error_unverified_group_message">Nie możesz udostępnić lokalizacji nieweryfikowanej grupie lub członkowi. \n\nSpróbuj odświeżyć dane grupy.</string>
     <string name="groups_sharing_duration_type_infinite">Zawsze włączone</string>
@@ -643,6 +646,7 @@
     <string name="group_picker_button_join">Dołącz</string>
     <string name="group_member_no_location_info_message">To urządzenie nie ma jeszcze lokalizacji.</string>
     <string name="group_member_devices_section_title">Urządzenia</string>
+    <string name="group_member_your_devices_section_title">Twoje urządzenia</string>
     <string name="group_member_device_not_responding_message">**Urządzenie nie odpowiada lub jest offline.** \n\nSprawdź ponownie za chwilę, może zająć kilka minut, aby odpowiedzieć, jeśli urządzenie jest online.</string>
     <string name="group_member_device_waiting">Czekam na odpowiedź urządzenia...</string>
     <string name="group_member_device_requesting">Żądanie lokalizacji...</string>
@@ -650,6 +654,8 @@
     <string name="group_member_device_maybe_unreachable">Urządzenie będzie reagować wolniej</string>
     <string name="group_member_device_maybe_unreachable_message">To urządzenie nie może być osiągnięte na żądanie i będzie wymagać więcej czasu na reakcję. \nProszę sprawdzić lokalizację ponownie po pewnym czasie.</string>
     <string name="group_member_device_setup_invalid">Urządzenie nie jest w pełni kompatybilne i nie może być osiągnięte</string>
+    <string name="group_member_device_setup_missing_message">Urządzeniu brakuje konfiguracji powiadomień push i nie może być osiągnięte</string>
+    <string name="group_member_device_push_failed_message">Urządzenie nie może obecnie odbierać powiadomień push i nie może być osiągnięte</string>
     <string name="group_member_device_request_failed">Żądanie nie powiodło się, spróbuj ponownie</string>
     <string name="group_member_device_request_disabled">Proszę poczekać kilka chwil przed ponownym żądaniem lokalizacji 🙏</string>
     <string name="group_members_last_active_status_now">Właśnie teraz</string>
@@ -963,6 +969,7 @@
     <string name="groups_sharing_setting_approximateLocation_title">Przybliżona lokalizacja</string>
     <string name="groups_sharing_setting_approximateLocation_description_off">Udostępniaj wyłącznie przybliżony obszar lokalizacji, nawet jeśli Twoja lokalizacja jest dokładna.</string>
     <string name="groups_sharing_setting_approximateLocation_description_on">Wybierz promień przybliżonego obszaru. Twoja dokładna lokalizacja zostanie ukryta i zastąpiona punktem znajdującym się gdzieś w obrębie wybranego promienia.</string>
+    <string name="groups_sharing_setting_approximateLocation_alert_message">Twoja rzeczywista lokalizacja zostanie ukryta, a inni członkowie nie będą mogli Cię precyzyjnie zlokalizować. Prędkość i wysokość nie będą dostępne.</string>
     <string name="group_member_role_admin">Administrator</string>
     <string name="group_details_add_member_admin_only_info">Tylko administrator grupy może dodawać nowych członków</string>
     <string name="group_members_status_location_hidden">Tylko przybliżona lokalizacja</string>
@@ -998,6 +1005,7 @@
     <string name="map_long_tap_action_new_privacy_zone">Nowa strefa prywatności</string>
     <string name="button_edit">Edytuj</string>
     <string name="button_manage">Zarządzaj</string>
+    <string name="dashboard_groups_manage_button">Zarządzaj grupą</string>
     <string name="place_detail_change_location">Zmień lokalizację</string>
     <string name="privacy_zone_created_notification">Nowa strefa prywatności %1$s została utworzona w grupie %2$s</string>
     <string name="privacy_zone_created_notification_default">Nowa strefa prywatności została utworzona</string>

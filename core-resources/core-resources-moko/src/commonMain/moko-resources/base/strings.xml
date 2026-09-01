@@ -23,6 +23,7 @@
     <string name="button_notNow">Not now</string>
     <string name="button_delete">Delete</string>
     <string name="button_enable">Enable</string>
+    <string name="button_enableAnyway">Enable anyway</string>
     <string name="button_activate">Activate</string>
     <string name="button_later">Later</string>
     <string name="button_yes">Yes</string>
@@ -82,6 +83,7 @@
     <string name="location_banner_fix">Fix</string>
     <string name="dashboard_groups_section_unverified">UNVERIFIED</string>
     <string name="dashboard_groups_add_button">Create a new group</string>
+    <string name="dashboard_groups_manage_button">Manage group</string>
     <string name="dashboard_groups_join_button">Join a group</string>
     <string name="dashboard_groups_title_created">Created groups</string>
     <string name="dashboard_groups_title_joined">Joined groups</string>
@@ -572,17 +574,20 @@
     <string name="groups_sharing_setting_approximateLocation_title">Approximate location</string>
     <string name="groups_sharing_setting_approximateLocation_description_off">Only share approximate location area even if your location is accurate.</string>
     <string name="groups_sharing_setting_approximateLocation_description_on">Select the radius of an approximate area. Your precise location will be hidden and replaced by a point somewhere inside the chosen radius.</string>
+    <string name="groups_sharing_setting_approximateLocation_alert_message">Your actual location will be hidden and other members will not be able to locate you precisely. Speed and elevation will not be available.</string>
     <string name="groups_sharing_setting_approximateLocation_speedElevation_unavailable">Speed and elevation are not available when **approximate location** sharing is enabled.</string>
     <string name="location_sharing_button_start_groups">Start sharing</string>
     <string name="location_sharing_button_start_personal">Start tracking</string>
     <string name="location_sharing_button_stop_groups">Stop sharing</string>
     <string name="location_sharing_button_stop_personal">Stop tracking</string>
+    <string name="location_sharing_stop_groups_alert_message">Are you sure you want to stop sharing your location with this group?</string>
     <string name="groups_sharing_title">Share location</string>
     <string name="groups_sharing_device_name_placeholder">Device name (optional)</string>
     <string name="groups_sharing_devices">Devices</string>
     <string name="groups_sharing_potential_error_title">Warning</string>
     <string name="groups_sharing_potential_error_message">To share your location please resolve all the errors: \n\n%s\n</string>
     <string name="groups_sharing_potential_error_background_location_message">Your location can not be shared in the background or if you restart your phone!\n\nPlease allow **all the time** location access for reliable sharing.</string>
+    <string name="groups_sharing_potential_error_notification_permission_message">Real-time location updates will not work properly and others will not be able to locate this device.\n\nPlease allow **notifications** for reliable sharing.</string>
     <string name="groups_sharing_error_unverified_group_title">Unverified group or member</string>
     <string name="groups_sharing_error_unverified_group_message">You can not share location to unverified group or member.\n\nTry refreshing the group data.</string>
     <string name="groups_sharing_duration_type_infinite">Always on</string>
@@ -678,6 +683,7 @@
     <string name="group_picker_button_join">Join</string>
     <string name="group_member_no_location_info_message">This device does not have a location yet.</string>
     <string name="group_member_devices_section_title">Devices</string>
+    <string name="group_member_your_devices_section_title">Your devices</string>
     <string name="group_member_device_not_responding_message">**Device is not responding or is offline.**\n\nCheck again shortly, it might take few minutes to respond if device is online.</string>
     <string name="group_member_device_waiting">Waiting for device to respond...</string>
     <string name="group_member_device_requesting">Requesting location...</string>
@@ -685,6 +691,8 @@
     <string name="group_member_device_maybe_unreachable">Device will take longer to respond</string>
     <string name="group_member_device_maybe_unreachable_message">This device can not be reached on demand and will take longer to respond.\nPlease check the location again after some time.</string>
     <string name="group_member_device_setup_invalid">Device is not fully compatible and can not be reached</string>
+    <string name="group_member_device_setup_missing_message">Device is missing push notification configuration and can not be reached</string>
+    <string name="group_member_device_push_failed_message">Device can not receive push notifications at the moment and can not be reached</string>
     <string name="group_member_device_request_failed">Request failed, please try again</string>
     <string name="group_member_device_request_disabled">Please wait a few moments before requesting location again 🙏</string>
     <!-- Shows distance from other device. For all languages besides English use format: "%s from me" -->

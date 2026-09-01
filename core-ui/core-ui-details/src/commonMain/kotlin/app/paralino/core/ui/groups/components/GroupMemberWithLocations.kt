@@ -33,6 +33,7 @@ import androidx.compose.foundation.text.InlineTextContent
 import androidx.compose.foundation.text.appendInlineContent
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.ContentAlpha
+import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.LocalContentAlpha
@@ -43,6 +44,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -54,7 +56,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.graphics.takeOrElse
 import androidx.compose.ui.text.Placeholder
 import androidx.compose.ui.text.PlaceholderVerticalAlign
 import androidx.compose.ui.text.SpanStyle
@@ -102,14 +103,18 @@ import kotlin.time.Duration.Companion.milliseconds
 @Composable
 fun BoxScope.GroupMemberWithLocations(
     state: GroupMemberItemState,
-    forceExpandAction: Boolean = false,
+    forceFullExpandAction: Boolean = false,
+    forceDevicesExpandAction: Boolean = false,
     collapseOnActionClick: Boolean = true,
     canShowOldLocation: Boolean = false,
     onEvent: ((GroupMemberItemEvent) -> Unit)? = null
 ) {
 
-    var expanded by rememberSaveable(state.keyId, forceExpandAction) {
-        mutableStateOf(forceExpandAction)
+    var expanded by rememberSaveable(state.keyId, forceFullExpandAction, forceDevicesExpandAction) {
+        mutableStateOf(forceFullExpandAction)
+    }
+    val isShowingDevicesList by rememberSaveable(expanded, forceDevicesExpandAction) {
+        mutableStateOf(expanded || forceDevicesExpandAction)
     }
     val singleVisibleLocation = state.singleVisibleLocation
 
@@ -151,7 +156,7 @@ fun BoxScope.GroupMemberWithLocations(
                             value = state.singleVisibleLocation?.onlineStatus?.isOnlineOrMaybeOnline == true
                         ) {
                             pulsate(
-                                pulseAmount = when(state.singleVisibleLocation?.onlineStatus) {
+                                pulseAmount = when (state.singleVisibleLocation?.onlineStatus) {
                                     MemberDeviceOnlineStatusType.ONLINE -> 1.2f
                                     else -> 1f
                                 }
@@ -177,6 +182,7 @@ fun BoxScope.GroupMemberWithLocations(
                             color = when (state.singleVisibleLocation?.onlineStatus) {
                                 MemberDeviceOnlineStatusType.ONLINE,
                                 MemberDeviceOnlineStatusType.ONLINE_MAYBE -> AppColors.accent
+
                                 MemberDeviceOnlineStatusType.BUSY -> AppColors.highlightGold
                                 MemberDeviceOnlineStatusType.OFFLINE -> Color.Gray
                                 MemberDeviceOnlineStatusType.UNKNOWN,
@@ -206,12 +212,12 @@ fun BoxScope.GroupMemberWithLocations(
                         text = remember(
                             state.memberState.name,
                             state.singleLocation?.name,
-                            expanded,
+                            isShowingDevicesList,
                             state.allowShowingDevices
                         ) {
                             buildAnnotatedString {
                                 this.append(state.memberState.name.annotatedBold())
-                                if (!state.singleLocation?.name.isNullOrBlank() && (!expanded || !state.allowShowingDevices)) {
+                                if (!state.singleLocation?.name.isNullOrBlank() && (!isShowingDevicesList || !state.allowShowingDevices)) {
                                     this.append(" • ")
                                     appendInlineContent(iconId, "[device]")
                                     this.withStyle(
@@ -253,7 +259,7 @@ fun BoxScope.GroupMemberWithLocations(
                 }
 
                 val isLastPingVisible =
-                    state.filteredLastPing != null && (!expanded || !state.allowShowingDevices)
+                    state.filteredLastPing != null && (!isShowingDevicesList || !state.allowShowingDevices)
 
                 FlowRow(
                     horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.Start),
@@ -280,7 +286,7 @@ fun BoxScope.GroupMemberWithLocations(
                         }
                     }
 
-                    state.toStatusTagType(expanded = expanded)?.let {
+                    state.toStatusTagType(expanded = isShowingDevicesList)?.let {
                         Row(
                             modifier = Modifier.align(Alignment.CenterVertically),
                             horizontalArrangement = Arrangement.spacedBy(4.dp, Alignment.Start)
@@ -292,31 +298,33 @@ fun BoxScope.GroupMemberWithLocations(
                         }
                     }
 
-                    if (isLastPingVisible) {
-                        Row(
-                            modifier = Modifier.align(Alignment.CenterVertically),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Icon(
-                                painter = CoreAppIcons.AccessTime.asPainterResource(),
-                                tint = MaterialTheme.colors.onSurface.copy(alpha = 0.5f),
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .padding(end = 2.dp)
-                                    .size(16.dp)
-                            )
-                            Text(
-                                text = (state.filteredLastPing ?: "").annotatedBoldCompose(),
-                                style = MaterialTheme.typography.caption,
-                                color = MaterialTheme.colors.onSurface.copy(alpha = 0.5f),
+                    if (!isShowingDevicesList || !state.allowShowingDevices) {
+                        if (isLastPingVisible) {
+                            Row(
+                                modifier = Modifier.align(Alignment.CenterVertically),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(
+                                    painter = CoreAppIcons.AccessTime.asPainterResource(),
+                                    tint = MaterialTheme.colors.onSurface.copy(alpha = 0.5f),
+                                    contentDescription = null,
+                                    modifier = Modifier
+                                        .padding(end = 2.dp)
+                                        .size(16.dp)
+                                )
+                                Text(
+                                    text = (state.filteredLastPing ?: "").annotatedBoldCompose(),
+                                    style = MaterialTheme.typography.caption,
+                                    color = MaterialTheme.colors.onSurface.copy(alpha = 0.5f),
+                                )
+                            }
+                        } else {
+                            MemberLocationDistanceFromMeIndicator(distanceText = singleVisibleLocation?.distancePlaceText)
+                            GroupMemberDeviceDataRowContent(
+                                state = singleVisibleLocation,
+                                isBatteryVisible = (!isShowingDevicesList || !state.allowShowingDevices)
                             )
                         }
-                    } else {
-                        MemberLocationDistanceFromMeIndicator(distanceText = singleVisibleLocation?.distancePlaceText)
-                        GroupMemberDeviceDataRowContent(
-                            state = singleVisibleLocation,
-                            isBatteryVisible = (!expanded || !state.allowShowingDevices)
-                        )
                     }
                 }
 
@@ -328,7 +336,7 @@ fun BoxScope.GroupMemberWithLocations(
                     GroupMemberDeviceDataFlowRow(
                         modifier = Modifier.padding(top = 2.dp),
                         state = singleVisibleLocation,
-                        isBatteryVisible = (!expanded || !state.allowShowingDevices)
+                        isBatteryVisible = (!isShowingDevicesList || !state.allowShowingDevices)
                     )
                 }
             }
@@ -354,122 +362,138 @@ fun BoxScope.GroupMemberWithLocations(
             }
         }
 
-        // action item
         AnimatedVisibility(
-            visible = expanded && !state.isCollapsedOrMinimized
+            visible = expanded && !state.isCollapsedOrMinimized && state.allowShowingDevices && !state.memberState.paralinoId.isNullOrBlank()
         ) {
-            Column(
-                modifier = Modifier
-                    .padding(horizontal = 10.dp)
-                    .fillMaxWidth(),
+            Row(
+                modifier = Modifier.padding(horizontal = 10.dp, vertical = 8.dp),
+                verticalAlignment = Alignment.CenterVertically,
             ) {
-                val memberState = state.memberState
-                if (!memberState.paralinoId.isNullOrBlank() && state.allowShowingDevices) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                    ) {
-                        Icon(
-                            modifier = Modifier
-                                .size(32.dp)
-                                .clickable {
-                                    onEvent?.invoke(
-                                        GroupMemberItemEvent.onCopyCode(
-                                            memberState.paralinoId ?: ""
-                                        )
-                                    )
-                                }
-                                .padding(6.dp),
-                            painter = CoreAppIcons.ContentCopy.asPainterResource(),
-                            contentDescription = null
+                Icon(
+                    modifier = Modifier
+                        .size(32.dp)
+                        .clickable {
+                            onEvent?.invoke(
+                                GroupMemberItemEvent.onCopyCode(
+                                    state.memberState.paralinoId ?: ""
+                                )
+                            )
+                        }
+                        .padding(6.dp),
+                    painter = CoreAppIcons.ContentCopy.asPainterResource(),
+                    contentDescription = null
+                )
+                Column {
+                    CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
+                        Text(
+                            modifier = Modifier.padding(start = 4.dp),
+                            text = stringResource(MR.strings.settings_section_personal_code_title),
+                            style = TextStyle(
+                                fontWeight = FontWeight.Light,
+                                fontSize = 12.sp,
+                            )
                         )
-                        Column {
-                            CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-                                Text(
-                                    modifier = Modifier.padding(start = 4.dp),
-                                    text = stringResource(MR.strings.settings_section_personal_code_title),
-                                    style = TextStyle(
-                                        fontWeight = FontWeight.Light,
-                                        fontSize = 12.sp,
-                                    )
-                                )
-                            }
-                            Text(
-                                modifier = Modifier.padding(start = 4.dp),
-                                text = memberState.paralinoId ?: "",
-                                style = TextStyle(
-                                    fontWeight = FontWeight.SemiBold,
-                                    fontSize = 14.sp,
-                                    letterSpacing = 2.sp,
-                                    lineHeight = 14.sp,
-                                    textAlign = TextAlign.Start,
-                                    lineBreak = LineBreak.Heading
-                                ),
-                                maxLines = 1
-                            )
-                        }
                     }
-                }
-
-                state.locations.takeIf { state.allowShowingDevices }?.takeIf { it.isNotEmpty() }
-                    ?.let { devices ->
-                        Column(
-                            modifier = Modifier.padding(
-                                top = if (!state.compactMultiDeviceMode) 16.dp else 0.dp,
-                                bottom = 8.dp
-                            )
-                        ) {
-                            if (!state.compactMultiDeviceMode) {
-                                Text(
-                                    modifier = Modifier.padding(start = 8.dp),
-                                    text = stringResource(MR.strings.group_member_devices_section_title),
-                                    style = MaterialTheme.typography.caption.copy(fontWeight = FontWeight.Medium)
-                                )
-                            }
-
-                            devices.forEach { device ->
-                                GroupMemberLocationChild(
-                                    state = device,
-                                    onClick = {
-                                        // open device
-                                        onEvent?.invoke(
-                                            GroupMemberItemEvent.onDeviceClick(
-                                                item = state,
-                                                device = it
-                                            )
-                                        )
-                                    },
-                                    onDelete = {
-                                        // delete device
-                                        onEvent?.invoke(
-                                            GroupMemberItemEvent.onDeleteDeviceClick(
-                                                item = state,
-                                                device = it
-                                            )
-                                        )
-                                    }
-                                )
-                            }
-                        }
-                    }
-
-                if (state.actions.isActive || canShowOldLocation) {
-                    GroupMemberActions(
-                        modifier = Modifier
-                            .padding(bottom = 10.dp)
-                            .fillMaxWidth(),
-                        state = state,
-                        canShowOldLocation = canShowOldLocation,
-                        onEvent = { event ->
-                            if (collapseOnActionClick) {
-                                expanded = !expanded
-                            }
-                            logg.v("location_request", "Invoking action: ${event::class}")
-                            onEvent?.invoke(event)
-                        }
+                    Text(
+                        modifier = Modifier.padding(start = 4.dp),
+                        text = state.memberState.paralinoId ?: "",
+                        style = TextStyle(
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = 14.sp,
+                            letterSpacing = 2.sp,
+                            lineHeight = 14.sp,
+                            textAlign = TextAlign.Start,
+                            lineBreak = LineBreak.Heading
+                        ),
+                        maxLines = 1
                     )
                 }
             }
+        }
+
+        AnimatedVisibility(
+            visible = (expanded || forceDevicesExpandAction) && !state.isCollapsedOrMinimized
+        ) {
+            state.locations.takeIf { state.allowShowingDevices }?.takeIf { it.isNotEmpty() }
+                ?.let { devices ->
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(
+                                top = if (!state.compactMultiDeviceMode) 8.dp else 0.dp,
+                                bottom = 8.dp
+                            )
+                            .padding(horizontal = 8.dp)
+                    ) {
+                        if (!state.compactMultiDeviceMode) {
+                            Divider(
+                                modifier = Modifier
+                                    .padding(bottom = 10.dp)
+                                    .padding(horizontal = 6.dp),
+                                color = Color.Gray.copy(alpha = 0.2f),
+                                thickness = 0.5.dp
+                            )
+
+                            Text(
+                                modifier = Modifier.padding(start = 6.dp),
+                                text = stringResource(
+                                    if (state.memberState.isCurrentUser) {
+                                        MR.strings.group_member_your_devices_section_title
+                                    } else {
+                                        MR.strings.group_member_devices_section_title
+                                    }
+                                ),
+                                style = MaterialTheme.typography.caption.copy(
+                                    fontWeight = FontWeight.Medium,
+                                    color = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.medium)
+                                )
+                            )
+                        }
+
+                        devices.forEach { device ->
+                            GroupMemberLocationChild(
+                                state = device,
+                                onClick = {
+                                    onEvent?.invoke(
+                                        GroupMemberItemEvent.onDeviceClick(
+                                            item = state,
+                                            device = it
+                                        )
+                                    )
+                                },
+                                onDelete = {
+                                    // delete device
+                                    onEvent?.invoke(
+                                        GroupMemberItemEvent.onDeleteDeviceClick(
+                                            item = state,
+                                            device = it
+                                        )
+                                    )
+                                }
+                            )
+                        }
+                    }
+                }
+        }
+
+        AnimatedVisibility(
+            visible = expanded && !state.isCollapsedOrMinimized && (state.actions.isActive || canShowOldLocation)
+        ) {
+            GroupMemberActions(
+                modifier = Modifier
+                    .padding(bottom = 10.dp)
+                    .padding(horizontal = 10.dp)
+                    .fillMaxWidth(),
+                state = state,
+                canShowOldLocation = canShowOldLocation,
+                onEvent = { event ->
+                    if (collapseOnActionClick) {
+                        expanded = !expanded
+                    }
+                    logg.v("location_request", "Invoking action: ${event::class}")
+                    onEvent?.invoke(event)
+                }
+            )
         }
 
         if (
@@ -713,7 +737,8 @@ private fun GroupMemberLocationChild(
     onClick: (GroupMemberItemLocationState) -> Unit,
     onDelete: (GroupMemberItemLocationState) -> Unit
 ) {
-    val visibleLocationState = remember(state.visibility) { state.takeIf { it.visibility.isVisible() } }
+    val visibleLocationState =
+        remember(state.visibility) { state.takeIf { it.visibility.isVisible() } }
     Row(
         modifier = modifier
             .fillMaxWidth()
@@ -759,8 +784,20 @@ private fun GroupMemberLocationChild(
             verticalArrangement = Arrangement.spacedBy(2.dp, Alignment.CenterVertically)
         ) {
             Text(
-                text = state.name?.takeIf { it.isNotBlank() }
-                    ?: stringResource(MR.strings.group_members_device_name_default),
+                text = when {
+                    state.currentDevice -> {
+                        if (!state.name.isNullOrBlank()) {
+                            stringResource(
+                                MR.strings.personalSpace_current_device_withName,
+                                state.name ?: ""
+                            )
+                        } else {
+                            stringResource(MR.strings.personalSpace_current_device)
+                        }
+                    }
+                    !state.name.isNullOrBlank() -> state.name ?: ""
+                    else -> stringResource(MR.strings.group_members_device_name_default)
+                }.annotatedBoldCompose(),
                 style = MaterialTheme.typography.caption,
                 modifier = Modifier
             )
@@ -1131,7 +1168,7 @@ private fun LocationRequestItem(
                 )
             } else {
                 Icon(
-                    painter = if (state.hasError) {
+                    painter = if (state.requestError != null) {
                         CoreAppIcons.Warning.asPainterResource()
                     } else if (!state.isEnabled) {
                         CoreAppIcons.AccessTime.asPainterResource()
@@ -1144,18 +1181,45 @@ private fun LocationRequestItem(
             }
         }
 
-        Text(
-            modifier = Modifier.padding(horizontal = 8.dp).weight(1f),
-            text = when {
+        val buttonText = key(state) {
+            val baseText = when {
                 state.isWaitingForUser -> stringResource(MR.strings.group_member_device_waiting)
                 state.isLoading -> stringResource(MR.strings.group_member_device_requesting)
-                state.hasDeviceSetupWrongError -> stringResource(MR.strings.group_member_device_setup_invalid)
-                state.hasDeviceUnreachableError -> stringResource(MR.strings.group_member_device_unreachable)
-                state.hasDeviceMaybeUnreachableError -> stringResource(MR.strings.group_member_device_maybe_unreachable)
-                state.hasRequestError -> stringResource(MR.strings.group_member_device_request_failed)
+                state.requestError != null -> {
+                    when (state.requestError) {
+                        LocationRequestItemState.RequestError.DeviceSetupPassive -> stringResource(MR.strings.group_member_device_maybe_unreachable)
+                        LocationRequestItemState.RequestError.DeviceNotFound -> stringResource(MR.strings.group_member_device_unreachable)
+                        LocationRequestItemState.RequestError.DeviceSetupInvalid -> stringResource(MR.strings.group_member_device_setup_invalid)
+                        LocationRequestItemState.RequestError.DeviceSetupMissing -> stringResource(MR.strings.group_member_device_setup_invalid)
+                        is LocationRequestItemState.RequestError.Generic -> stringResource(MR.strings.group_member_device_setup_invalid)
+                        LocationRequestItemState.RequestError.PushFailed -> stringResource(MR.strings.group_member_device_unreachable)
+                        LocationRequestItemState.RequestError.TooManyRequests -> stringResource(MR.strings.group_members_status_too_many_requests)
+                        is LocationRequestItemState.RequestError.Unknown,
+                        null -> stringResource(MR.strings.group_member_device_request_failed)
+                    }
+                }
                 state.isStatusRecent -> stringResource(MR.strings.group_members_item_refresh_location_button)
                 else -> stringResource(MR.strings.group_members_item_request_location_button)
-            },
+            }
+
+            val type = when (val error = state.requestError) {
+                LocationRequestItemState.RequestError.DeviceNotFound -> "device_404"
+                LocationRequestItemState.RequestError.DeviceSetupInvalid -> "device_400"
+                LocationRequestItemState.RequestError.DeviceSetupMissing -> "device_403"
+                LocationRequestItemState.RequestError.PushFailed -> "notification_500"
+                is LocationRequestItemState.RequestError.Generic -> error.apiErrorType
+                is LocationRequestItemState.RequestError.Unknown -> error.apiErrorType
+                else -> null
+            }
+
+            baseText.plus(
+                type?.let { " [$it]" } ?: ""
+            )
+        }
+
+        Text(
+            modifier = Modifier.padding(horizontal = 8.dp).weight(1f),
+            text = buttonText,
             style = MaterialTheme.typography.caption,
             fontWeight = FontWeight.Medium,
         )

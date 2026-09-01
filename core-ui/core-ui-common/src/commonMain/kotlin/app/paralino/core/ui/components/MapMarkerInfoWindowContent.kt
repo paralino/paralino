@@ -29,14 +29,15 @@ import dev.icerock.moko.resources.compose.stringResource
 
 @Composable
 fun MapMarkerInfoWindowContent(
-    state: MapPinData
+    modifier: Modifier = Modifier,
+    state: MapPinData,
 ) {
     val timeShow = !state.timeInfo.isNullOrBlank()
     val accuracyInfoShow =
         state.pinType == MapPinType.MEMBER && state.markerStyle == MapMarkerStyle.CIRCLE && !state.title.isNullOrBlank()
     if (timeShow || accuracyInfoShow) {
         Column(
-            modifier = Modifier
+            modifier = modifier
                 .padding(horizontal = 40.dp)
                 .background(
                     color = MaterialTheme.colors.surface.copy(alpha = 0.95f),

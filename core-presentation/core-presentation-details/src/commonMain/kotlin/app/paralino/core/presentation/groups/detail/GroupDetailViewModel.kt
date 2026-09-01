@@ -501,10 +501,23 @@ class GroupDetailViewModel(
                         }
                     }
 
+                    is GroupMemberItemEvent.onDeviceClick -> {
+                        _uiState.update {
+                            it.mapSuccess {
+                                it.copy(
+                                    focusedMemberId = if (it.focusedMemberId.isNullOrBlank()) {
+                                        event.event.item.memberState.memberId
+                                    } else {
+                                        null
+                                    }
+                                )
+                            }
+                        }
+                    }
+
                     is GroupMemberItemEvent.onDirectionsRequest,
                     is GroupMemberItemEvent.onCoordinateCopy,
                     is GroupMemberItemEvent.onLocationRequest,
-                    is GroupMemberItemEvent.onDeviceClick,
                     is GroupMemberItemEvent.onOpenLocationHistory,
                     is GroupMemberItemEvent.onShowLocation -> {
                     }

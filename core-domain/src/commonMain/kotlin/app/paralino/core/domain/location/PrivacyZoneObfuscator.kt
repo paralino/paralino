@@ -39,12 +39,13 @@ class PrivacyZoneObfuscator(
         groupId: GroupOrSpaceId,
         trueLat: Double,
         trueLng: Double,
+        accuracyMeters: Float,
     ): PrivacyZoneObfuscationResult? {
         val zones = privacyZonesLocal.getNonExpiredPrivacyZonesForGroupOnce(groupId = groupId.id)
         val matches = zones.mapNotNull { zone ->
             val data = zone.data.data ?: return@mapNotNull null
             if (data.isExpired()) return@mapNotNull null
-            if (!isInsideZone(trueLat, trueLng, data)) {
+            if (!isInsideZone(trueLat, trueLng, accuracyMeters, data)) {
                 sharedLocationLocal.delete(groupId = groupId.id, privacyZoneId = zone.id)
                 return@mapNotNull null
             }
@@ -177,13 +178,19 @@ class PrivacyZoneObfuscator(
             }
     }
 
-    private fun isInsideZone(trueLat: Double, trueLng: Double, data: PrivacyZoneData): Boolean {
-        return geofenceManager.distanceBetweenPoints(
+    private fun isInsideZone(
+        trueLat: Double,
+        trueLng: Double,
+        accuracyMeters: Float,
+        data: PrivacyZoneData,
+    ): Boolean {
+        val distance = geofenceManager.distanceBetweenPoints(
             lat1 = trueLat,
             lng1 = trueLng,
             lat2 = data.lat,
             lng2 = data.lng,
-        ) <= data.radiusMeters
+        )
+        return distance <= data.radiusMeters + accuracyMeters.coerceAtLeast(0f)
     }
 
     private fun destinationPoint(

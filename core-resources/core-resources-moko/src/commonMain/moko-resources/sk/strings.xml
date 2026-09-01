@@ -23,6 +23,7 @@
     <string name="button_notNow">Nie teraz</string>
     <string name="button_delete">Odstrániť</string>
     <string name="button_enable">Povoliť</string>
+    <string name="button_enableAnyway">Aj tak povoliť</string>
     <string name="button_activate">Aktivovať</string>
     <string name="button_later">Neskôr</string>
     <string name="button_yes">Áno</string>
@@ -544,12 +545,14 @@
     <string name="location_sharing_button_start_personal">Začať sledovanie</string>
     <string name="location_sharing_button_stop_groups">Zastaviť zdieľanie</string>
     <string name="location_sharing_button_stop_personal">Zastaviť sledovanie</string>
+    <string name="location_sharing_stop_groups_alert_message">Naozaj chcete prestať zdieľať svoju polohu s touto skupinou?</string>
     <string name="groups_sharing_title">Zdieľať polohu</string>
     <string name="groups_sharing_device_name_placeholder">Názov zariadenia (voliteľné)</string>
     <string name="groups_sharing_devices">Zariadenia</string>
     <string name="groups_sharing_potential_error_title">Upozornenie</string>
     <string name="groups_sharing_potential_error_message">Aby ste mohli zdieľať svoju polohu, prosím, vyriešte všetky chyby: \n\n%s\n</string>
     <string name="groups_sharing_potential_error_background_location_message">Vaša poloha nemôže byť zdieľaná na pozadí alebo ak reštartujete svoj telefón! \n\nProsím, povoľte **počas celého času** prístup k polohe pre spoľahlivé zdieľanie.</string>
+    <string name="groups_sharing_potential_error_notification_permission_message">Aktualizácie polohy v reálnom čase nebudú fungovať správne a ostatní nebudú môcť toto zariadenie nájsť.\n\nPovoľte **notifikácie** pre spoľahlivé zdieľanie.</string>
     <string name="groups_sharing_error_unverified_group_title">Neoverená skupina alebo člen</string>
     <string name="groups_sharing_error_unverified_group_message">Nemôžete zdieľať polohu s neoverenou skupinou alebo členom. \n\nSkúste obnoviť údaje skupiny.</string>
     <string name="groups_sharing_duration_type_infinite">Vždy zapnuté</string>
@@ -643,6 +646,7 @@
     <string name="group_picker_button_join">Pripojiť sa</string>
     <string name="group_member_no_location_info_message">Tento zariadenie zatiaľ nemá polohu.</string>
     <string name="group_member_devices_section_title">Zariadenia</string>
+    <string name="group_member_your_devices_section_title">Vaše zariadenia</string>
     <string name="group_member_device_not_responding_message">**Zariadenie neodpovedá alebo je offline.** \n\nSkontrolujte to znova o chvíľu, môže trvať niekoľko minút, kým zariadenie odpovie, ak je online.</string>
     <string name="group_member_device_waiting">Čakám na odpoveď zariadenia...</string>
     <string name="group_member_device_requesting">Žiadam o polohu...</string>
@@ -650,6 +654,8 @@
     <string name="group_member_device_maybe_unreachable">Zariadenie bude reagovať dlhšie</string>
     <string name="group_member_device_maybe_unreachable_message">Toto zariadenie nie je možné dosiahnuť na požiadanie a bude trvať dlhšie, kým odpovie. \nProsím, skontrolujte svoju polohu znova po chvíli.</string>
     <string name="group_member_device_setup_invalid">Zariadenie nie je plne kompatibilné a nie je možné ho dosiahnuť</string>
+    <string name="group_member_device_setup_missing_message">Zariadeniu chýba konfigurácia push notifikácií a nie je možné ho dosiahnuť</string>
+    <string name="group_member_device_push_failed_message">Zariadenie momentálne nemôže prijímať push notifikácie a nie je možné ho dosiahnuť</string>
     <string name="group_member_device_request_failed">Žiadosť zlyhala, skúste to prosím znova</string>
     <string name="group_member_device_request_disabled">Prosím, počkajte niekoľko okamihov pred opätovným požiadavkom na polohu 🙏</string>
     <string name="group_members_last_active_status_now">Práve teraz</string>
@@ -963,11 +969,13 @@
     <string name="groups_sharing_setting_approximateLocation_title">Približná poloha</string>
     <string name="groups_sharing_setting_approximateLocation_description_off">Zdieľať iba približnú oblasť polohy, aj keď je vaša poloha presná.</string>
     <string name="groups_sharing_setting_approximateLocation_description_on">Vyberte polomer približnej oblasti. Vaša presná poloha bude skrytá a nahradená bodom niekde v rámci zvoleného polomeru.</string>
+    <string name="groups_sharing_setting_approximateLocation_alert_message">Vaša skutočná poloha bude skrytá a ostatní členovia vás nebudú môcť presne lokalizovať. Rýchlosť a nadmorská výška nebudú k dispozícii.</string>
     <string name="group_member_role_admin">Administrátor</string>
     <string name="group_details_add_member_admin_only_info">Nových členov môže pridávať iba administrátor skupiny</string>
     <string name="group_members_status_location_hidden">Iba približná poloha</string>
     <string name="button_edit">Upraviť</string>
     <string name="button_manage">Spravovať</string>
+    <string name="dashboard_groups_manage_button">Spravovať skupinu</string>
     <string name="paywall_feature_privacy_zones_group">Zóny súkromia</string>
     <string name="paywall_feature_summary_privacy_zones">Zóny súkromia</string>
     <string name="group_members_status_privacy_zone">Zóna súkromia aktívna</string>

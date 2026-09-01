@@ -206,8 +206,8 @@ android {
     productFlavors {
         create("playStore") {
             dimension = "version"
-            versionCode = 96
-            versionName = "2.5.0"
+            versionCode = 97
+            versionName = "2.5.1"
 
             val userProps = loadUserProperties(rootProject.rootDir)
             buildConfigField("String", "revenueCatApiKey", userProps?.getProperty("revenueCatApiKey") ?: "null")
@@ -215,8 +215,8 @@ android {
         }
         create("direct") {
             dimension = "version"
-            versionCode = 96
-            versionName = "2.5.0"
+            versionCode = 97
+            versionName = "2.5.1"
             isDefault = true
 
             buildConfigField("String", "revenueCatApiKey", "null")
@@ -283,7 +283,6 @@ dependencies {
     // region android and kotlin
     implementation(libs.kotlin.stdlib)
     implementation(libs.material)
-    implementation(libs.constraintlayout)
     implementation(libs.legacy.support.core.utils)
 
     implementation(libs.work.runtime.ktx)
@@ -326,10 +325,8 @@ dependencies {
 
     playStoreImplementation(libs.maps.google.compose)
     playStoreImplementation(libs.maps.google.compose.utils)
-    implementation(libs.maps.maplibre.compose) {
-        exclude(group = "org.maplibre.gl", module = "android-sdk")
-    }
-    implementation(libs.maps.maplibre.android.opengl)
+    implementation(libs.maps.maplibre.compose)
+    runtimeOnly(libs.maps.maplibre.android.opengl)
 
     directImplementation(libs.unifiedPush.connector)
 

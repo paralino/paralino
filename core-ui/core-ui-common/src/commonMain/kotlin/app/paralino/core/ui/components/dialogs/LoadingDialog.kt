@@ -34,34 +34,42 @@ fun LoadingDialog(
     }
 
     AppTheme {
-        AlertDialog(
-            properties = DialogProperties(
-                dismissOnBackPress = false,
-                dismissOnClickOutside = false
-            ),
-            onDismissRequest = {},
-            title = title,
-            text = {
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    if (isCircular) {
-                        if (progress != null) {
-                            CircularProgressIndicator(progress = progress, strokeCap = StrokeCap.Round)
+        IosKeyboardSafeDialog {
+            AlertDialog(
+                properties = DialogProperties(
+                    dismissOnBackPress = false,
+                    dismissOnClickOutside = false
+                ),
+                onDismissRequest = {},
+                title = title,
+                text = {
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        if (isCircular) {
+                            if (progress != null) {
+                                CircularProgressIndicator(
+                                    progress = progress,
+                                    strokeCap = StrokeCap.Round
+                                )
+                            } else {
+                                CircularProgressIndicator(strokeCap = StrokeCap.Round)
+                            }
                         } else {
-                            CircularProgressIndicator(strokeCap = StrokeCap.Round)
-                        }
-                    } else {
-                        if (progress != null) {
-                            LinearProgressIndicator(progress = progress, strokeCap = StrokeCap.Round)
-                        } else {
-                            LinearProgressIndicator(strokeCap = StrokeCap.Round)
+                            if (progress != null) {
+                                LinearProgressIndicator(
+                                    progress = progress,
+                                    strokeCap = StrokeCap.Round
+                                )
+                            } else {
+                                LinearProgressIndicator(strokeCap = StrokeCap.Round)
+                            }
                         }
                     }
-                }
-            },
-            buttons = {}
-        )
+                },
+                buttons = {}
+            )
+        }
     }
 }
