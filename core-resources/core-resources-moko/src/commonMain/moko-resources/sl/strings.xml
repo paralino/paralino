@@ -654,6 +654,8 @@
     <string name="group_member_device_maybe_unreachable">Napravilo bo trajalo dlje, da se odzove</string>
     <string name="group_member_device_maybe_unreachable_message">Te naprave ni mogoče doseči na zahtevo in bo trajalo dlje, da se odzove. \nProsimo, da ponovno preverite lokacijo po določenem času.</string>
     <string name="group_member_device_setup_invalid">Naprava ni popolnoma združljiva in je ni mogoče doseči</string>
+    <string name="group_member_device_setup_missing_message">Napravi manjka konfiguracija potisnih obvestil in je ni mogoče doseči</string>
+    <string name="group_member_device_push_failed_message">Naprava trenutno ne more prejemati potisnih obvestil in je ni mogoče doseči</string>
     <string name="group_member_device_request_failed">Zahteva je spodletela, prosim poskusite znova</string>
     <string name="group_member_device_request_disabled">Prosim, počakajte nekaj trenutkov, preden ponovno zahtevate lokacijo 🙏</string>
     <string name="group_members_last_active_status_now">Pred trenutkom</string>

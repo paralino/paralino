@@ -654,6 +654,8 @@
     <string name="group_member_device_maybe_unreachable">Dispozitivul va lua mai mult timp pentru a răspunde</string>
     <string name="group_member_device_maybe_unreachable_message">Acest dispozitiv nu poate fi accesat la cerere și va lua mai mult timp pentru a răspunde.\nVă rugăm să verificați din nou locația după ceva timp.</string>
     <string name="group_member_device_setup_invalid">Dispozitivul nu este complet compatibil și nu poate fi accesat</string>
+    <string name="group_member_device_setup_missing_message">Dispozitivului îi lipsește configurația notificărilor push și nu poate fi accesat</string>
+    <string name="group_member_device_push_failed_message">Dispozitivul nu poate primi notificări push momentan și nu poate fi accesat</string>
     <string name="group_member_device_request_failed">Solicitarea a eșuat, vă rugăm să încercați din nou</string>
     <string name="group_member_device_request_disabled">Vă rugăm să așteptați câteva momente înainte de a solicita din nou locația 🙏</string>
     <string name="group_members_last_active_status_now">Chiar acum</string>

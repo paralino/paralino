@@ -654,6 +654,8 @@
     <string name="group_member_device_maybe_unreachable">Cihazın yanıt vermesi daha uzun sürecek</string>
     <string name="group_member_device_maybe_unreachable_message">Bu cihaza talep üzerine ulaşılamaz ve yanıt vermesi daha uzun sürecektir.\nLütfen bir süre sonra konumu tekrar kontrol edin.</string>
     <string name="group_member_device_setup_invalid">Cihaz tam olarak uyumlu değil ve ulaşılamıyor</string>
+    <string name="group_member_device_setup_missing_message">Cihazda push bildirim yapılandırması eksik ve ulaşılamıyor</string>
+    <string name="group_member_device_push_failed_message">Cihaz şu anda push bildirimlerini alamıyor ve ulaşılamıyor</string>
     <string name="group_member_device_request_failed">Talep başarısız oldu, lütfen tekrar deneyin</string>
     <string name="group_member_device_request_disabled">Lütfen konumu tekrar talep etmeden önce birkaç dakika bekleyin 🙏</string>
     <string name="group_members_last_active_status_now">Şu anda</string>

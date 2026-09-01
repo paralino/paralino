@@ -654,6 +654,8 @@
     <string name="group_member_device_maybe_unreachable">Laite reagoi hitaammin</string>
     <string name="group_member_device_maybe_unreachable_message">Tätä laitetta ei voida tavoittaa pyynnöstä ja sen reagointi vie enemmän aikaa. \nTarkista sijainti uudelleen jonkin ajan kuluttua.</string>
     <string name="group_member_device_setup_invalid">Laite ei ole täysin yhteensopiva eikä siihen pääse</string>
+    <string name="group_member_device_setup_missing_message">Laitteelta puuttuu push-ilmoitusten määritys eikä siihen pääse</string>
+    <string name="group_member_device_push_failed_message">Laite ei voi tällä hetkellä vastaanottaa push-ilmoituksia eikä siihen pääse</string>
     <string name="group_member_device_request_failed">Pyyntö epäonnistui, yritä uudelleen</string>
     <string name="group_member_device_request_disabled">Ole hyvä ja odota hetki ennen kuin pyydät sijaintia uudelleen 🙏</string>
     <string name="group_members_last_active_status_now">Juuri nyt</string>

@@ -654,6 +654,8 @@
     <string name="group_member_device_maybe_unreachable">Apparaat heeft meer tijd nodig om te reageren</string>
     <string name="group_member_device_maybe_unreachable_message">Dit apparaat kan niet op verzoek worden bereikt en zal langer nodig hebben om te reageren. \nControleer de locatie opnieuw na enige tijd.</string>
     <string name="group_member_device_setup_invalid">Apparaat is niet volledig compatibel en kan niet worden bereikt</string>
+    <string name="group_member_device_setup_missing_message">Apparaat mist de configuratie voor pushmeldingen en kan niet worden bereikt</string>
+    <string name="group_member_device_push_failed_message">Apparaat kan momenteel geen pushmeldingen ontvangen en kan niet worden bereikt</string>
     <string name="group_member_device_request_failed">Aanvraag mislukt, probeer het opnieuw</string>
     <string name="group_member_device_request_disabled">Wacht een paar momenten voordat u opnieuw om de locatie vraagt 🙏</string>
     <string name="group_members_last_active_status_now">Zojuist</string>

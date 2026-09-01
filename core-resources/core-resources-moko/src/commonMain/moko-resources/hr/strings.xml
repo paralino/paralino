@@ -654,6 +654,8 @@
     <string name="group_member_device_maybe_unreachable">Uređaj će duže odgovoriti</string>
     <string name="group_member_device_maybe_unreachable_message">Ovaj uređaj nije moguće kontaktirati na zahtjev i trebati će više vremena za odgovor. \nMolimo provjerite lokaciju ponovno nakon nekog vremena.</string>
     <string name="group_member_device_setup_invalid">Uređaj nije u potpunosti podržan te je nedostupan</string>
+    <string name="group_member_device_setup_missing_message">Uređaju nedostaje konfiguracija push obavijesti te je nedostupan</string>
+    <string name="group_member_device_push_failed_message">Uređaj trenutno ne može primati push obavijesti te je nedostupan</string>
     <string name="group_member_device_request_failed">Zahtjev nije uspio, pokušajte ponovno</string>
     <string name="group_member_device_request_disabled">Sačekajte nekoliko trenutaka prije nego što ponovno zatražite lokaciju 🙏</string>
     <string name="group_members_last_active_status_now">Upravo sada</string>

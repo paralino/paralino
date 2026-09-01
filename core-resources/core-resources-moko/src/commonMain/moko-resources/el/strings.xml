@@ -654,6 +654,8 @@
     <string name="group_member_device_maybe_unreachable">Η συσκευή θα χρειαστεί περισσότερο χρόνο για να ανταποκριθεί</string>
     <string name="group_member_device_maybe_unreachable_message">Αυτή η συσκευή δεν μπορεί να προσπελαστεί κατόπιν αιτήματος και θα χρειαστεί περισσότερος χρόνος για να ανταποκριθεί. \nΠαρακαλώ ελέγξτε ξανά την τοποθεσία μετά από κάποιο χρονικό διάστημα.</string>
     <string name="group_member_device_setup_invalid">Η συσκευή δεν είναι πλήρως συμβατή και δεν μπορεί να προσεγγιστεί</string>
+    <string name="group_member_device_setup_missing_message">Η συσκευή δεν έχει διαμόρφωση ειδοποιήσεων push και δεν μπορεί να προσεγγιστεί</string>
+    <string name="group_member_device_push_failed_message">Η συσκευή δεν μπορεί να λάβει ειδοποιήσεις push αυτή τη στιγμή και δεν μπορεί να προσεγγιστεί</string>
     <string name="group_member_device_request_failed">Η αίτηση απέτυχε, παρακαλώ δοκιμάστε ξανά</string>
     <string name="group_member_device_request_disabled">Παρακαλώ περιμένετε λίγα λεπτά πριν ζητήσετε ξανά την τοποθεσία 🙏</string>
     <string name="group_members_last_active_status_now">Μόλις τώρα</string>

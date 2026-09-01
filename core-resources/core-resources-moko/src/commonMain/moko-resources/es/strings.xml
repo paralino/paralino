@@ -654,6 +654,8 @@
     <string name="group_member_device_maybe_unreachable">El dispositivo tardará más en responder</string>
     <string name="group_member_device_maybe_unreachable_message">Este dispositivo no puede alcanzarse a demanda y tardará más en responder. \nPor favor verifica la ubicación nuevamente después de algún tiempo.</string>
     <string name="group_member_device_setup_invalid">El dispositivo no es totalmente compatible y no se puede alcanzar</string>
+    <string name="group_member_device_setup_missing_message">El dispositivo no tiene configuradas las notificaciones push y no se puede alcanzar</string>
+    <string name="group_member_device_push_failed_message">El dispositivo no puede recibir notificaciones push en este momento y no se puede alcanzar</string>
     <string name="group_member_device_request_failed">La solicitud falló, por favor intenta de nuevo</string>
     <string name="group_member_device_request_disabled">Por favor espera unos momentos antes de solicitar la ubicación de nuevo 🙏</string>
     <string name="group_members_last_active_status_now">Justo ahora</string>

@@ -654,6 +654,8 @@
     <string name="group_member_device_maybe_unreachable">L\'aparell trigarà més a respondre</string>
     <string name="group_member_device_maybe_unreachable_message">Aquest aparell no es pot localitzar a demanda i trigarà més a respondre. \nSi us plau, verifica la ubicació de nou després d\'uns moments.</string>
     <string name="group_member_device_setup_invalid">El dispositiu no és totalment compatible i no es pot accedir</string>
+    <string name="group_member_device_setup_missing_message">Al dispositiu li falta la configuració de les notificacions push i no es pot accedir</string>
+    <string name="group_member_device_push_failed_message">El dispositiu no pot rebre notificacions push en aquest moment i no es pot accedir</string>
     <string name="group_member_device_request_failed">La sol·licitud ha fallat, si us plau, torneu-ho a intentar</string>
     <string name="group_member_device_request_disabled">Si us plau, espereu uns moments abans de sol·licitar la ubicació de nou 🙏</string>
     <string name="group_members_last_active_status_now">Just ara</string>

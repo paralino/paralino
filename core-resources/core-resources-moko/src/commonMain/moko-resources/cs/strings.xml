@@ -654,6 +654,8 @@
     <string name="group_member_device_maybe_unreachable">Zařízení bude reagovat déle</string>
     <string name="group_member_device_maybe_unreachable_message">Toto zařízení nelze na požádání dosáhnout a bude reagovat déle.\nProsím, zkontrolujte polohu znovu po nějakém čase.</string>
     <string name="group_member_device_setup_invalid">Zařízení není plně kompatibilní a nelze dosáhnout</string>
+    <string name="group_member_device_setup_missing_message">Zařízení postrádá konfiguraci push notifikací a nelze ho dosáhnout</string>
+    <string name="group_member_device_push_failed_message">Zařízení momentálně nemůže přijímat push notifikace a nelze ho dosáhnout</string>
     <string name="group_member_device_request_failed">Žádost selhala, zkuste to prosím znovu</string>
     <string name="group_member_device_request_disabled">Prosím, počkejte několik okamžiků před opětovným požadavkem na polohu 🙏</string>
     <string name="group_members_last_active_status_now">Právě teď</string>

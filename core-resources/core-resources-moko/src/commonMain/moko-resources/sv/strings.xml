@@ -654,6 +654,8 @@
     <string name="group_member_device_maybe_unreachable">Enheten kommer att ta längre tid att svara</string>
     <string name="group_member_device_maybe_unreachable_message">Denna enhet kan inte nås på begäran och kommer att ta längre tid att svara. \nVänligen kontrollera platsen igen efter en tid.</string>
     <string name="group_member_device_setup_invalid">Enheten är inte helt kompatibel och kan inte nås</string>
+    <string name="group_member_device_setup_missing_message">Enheten saknar konfiguration för push-notifikationer och kan inte nås</string>
+    <string name="group_member_device_push_failed_message">Enheten kan för tillfället inte ta emot push-notifikationer och kan inte nås</string>
     <string name="group_member_device_request_failed">Begäran misslyckades, vänligen försök igen</string>
     <string name="group_member_device_request_disabled">Vänligen vänta några ögonblick innan du begär plats igen 🙏</string>
     <string name="group_members_last_active_status_now">Nyss</string>

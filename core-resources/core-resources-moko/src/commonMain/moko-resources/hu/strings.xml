@@ -654,6 +654,8 @@
     <string name="group_member_device_maybe_unreachable">Az eszköz válaszadása lassabb lesz</string>
     <string name="group_member_device_maybe_unreachable_message">Ez az eszköz nem érhető el kérésre, és a válaszidő hosszabb lesz. \nKérjük, ellenőrizze a helyet néhány idő elteltével.</string>
     <string name="group_member_device_setup_invalid">Az eszköz nem teljesen kompatibilis, és nem érhető el</string>
+    <string name="group_member_device_setup_missing_message">Az eszközről hiányzik a push értesítések konfigurációja, és nem érhető el</string>
+    <string name="group_member_device_push_failed_message">Az eszköz jelenleg nem tud push értesítéseket fogadni, és nem érhető el</string>
     <string name="group_member_device_request_failed">A kérés meghiúsult, kérjük, próbálja újra</string>
     <string name="group_member_device_request_disabled">Kérjük, várjon néhány pillanatot, mielőtt újra kérné a helymeghatározást 🙏</string>
     <string name="group_members_last_active_status_now">Éppen most</string>

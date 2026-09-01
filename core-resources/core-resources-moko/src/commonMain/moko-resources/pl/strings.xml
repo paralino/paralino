@@ -654,6 +654,8 @@
     <string name="group_member_device_maybe_unreachable">Urządzenie będzie reagować wolniej</string>
     <string name="group_member_device_maybe_unreachable_message">To urządzenie nie może być osiągnięte na żądanie i będzie wymagać więcej czasu na reakcję. \nProszę sprawdzić lokalizację ponownie po pewnym czasie.</string>
     <string name="group_member_device_setup_invalid">Urządzenie nie jest w pełni kompatybilne i nie może być osiągnięte</string>
+    <string name="group_member_device_setup_missing_message">Urządzeniu brakuje konfiguracji powiadomień push i nie może być osiągnięte</string>
+    <string name="group_member_device_push_failed_message">Urządzenie nie może obecnie odbierać powiadomień push i nie może być osiągnięte</string>
     <string name="group_member_device_request_failed">Żądanie nie powiodło się, spróbuj ponownie</string>
     <string name="group_member_device_request_disabled">Proszę poczekać kilka chwil przed ponownym żądaniem lokalizacji 🙏</string>
     <string name="group_members_last_active_status_now">Właśnie teraz</string>

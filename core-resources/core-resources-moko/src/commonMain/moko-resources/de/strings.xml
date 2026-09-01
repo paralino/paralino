@@ -654,6 +654,8 @@
     <string name="group_member_device_maybe_unreachable">Das Gerät benötigt länger, um zu reagieren.</string>
     <string name="group_member_device_maybe_unreachable_message">Dieses Gerät kann nicht auf Anfrage erreicht werden und benötigt länger, um zu reagieren. \nBitte überprüfen Sie den Standort nach einiger Zeit erneut.</string>
     <string name="group_member_device_setup_invalid">Gerät ist nicht vollständig kompatibel und kann nicht erreicht werden</string>
+    <string name="group_member_device_setup_missing_message">Gerät fehlt die Konfiguration für Push-Benachrichtigungen und kann nicht erreicht werden</string>
+    <string name="group_member_device_push_failed_message">Gerät kann derzeit keine Push-Benachrichtigungen empfangen und kann nicht erreicht werden</string>
     <string name="group_member_device_request_failed">Anfrage fehlgeschlagen, bitte versuchen Sie es erneut</string>
     <string name="group_member_device_request_disabled">Bitte warten Sie einen Moment, bevor Sie den Standort erneut anfordern 🙏</string>
     <string name="group_members_last_active_status_now">Gerade eben</string>

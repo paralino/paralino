@@ -654,6 +654,8 @@
     <string name="group_member_device_maybe_unreachable">Пристрій буде повільно реагувати</string>
     <string name="group_member_device_maybe_unreachable_message">Цей пристрій не може бути досягнуто за запитом і буде повільно реагувати.\nБудь ласка, перевірте розташування знову через деякий час.</string>
     <string name="group_member_device_setup_invalid">Пристрій не повністю сумісний і не може бути досягнутий</string>
+    <string name="group_member_device_setup_missing_message">Пристрою бракує конфігурації push-сповіщень і він не може бути досягнутий</string>
+    <string name="group_member_device_push_failed_message">Пристрій зараз не може приймати push-сповіщення і не може бути досягнутий</string>
     <string name="group_member_device_request_failed">Запит не вдався, будь ласка, спробуйте ще раз</string>
     <string name="group_member_device_request_disabled">Будь ласка, почекайте кілька моментів перед повторним запитом на місцезнаходження 🙏</string>
     <string name="group_members_last_active_status_now">Щойно</string>

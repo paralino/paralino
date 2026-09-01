@@ -654,6 +654,8 @@
     <string name="group_member_device_maybe_unreachable">Enheten vil bruke lenger tid på å svare</string>
     <string name="group_member_device_maybe_unreachable_message">Denne enheten kan ikke nås på forespørsel og vil ta lengre tid å svare. \nVennligst sjekk plasseringen igjen etter en stund.</string>
     <string name="group_member_device_setup_invalid">Enheten er ikke fullt kompatibel og kan ikke nås</string>
+    <string name="group_member_device_setup_missing_message">Enheten mangler konfigurasjon for push-varsler og kan ikke nås</string>
+    <string name="group_member_device_push_failed_message">Enheten kan for øyeblikket ikke motta push-varsler og kan ikke nås</string>
     <string name="group_member_device_request_failed">Forespørsel mislyktes, vennligst prøv igjen</string>
     <string name="group_member_device_request_disabled">Vennligst vent et øyeblikk før du ber om plassering igjen 🙏</string>
     <string name="group_members_last_active_status_now">Akkurat nå</string>
