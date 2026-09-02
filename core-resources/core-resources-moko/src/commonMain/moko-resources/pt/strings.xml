@@ -299,6 +299,8 @@
     <string name="setting_placeSearch_location_info">Quando habilitado, a localização aproximada da área do mapa atualmente selecionada será enviada ao servidor para fornecer resultados de busca localizados.</string>
     <string name="setting_mapsProvider_title">Provedor de mapas</string>
     <string name="setting_mapsProvider_info">Escolha seu provedor de serviços preferido para mapas usados no aplicativo. O estilo do mapa, animações e desempenho serão diferentes entre os diferentes provedores.</string>
+    <string name="setting_mapsProvider_none_title">Nenhum</string>
+    <string name="setting_mapsProvider_none_info">Os mapas não estão disponíveis neste dispositivo.</string>
     <string name="setting_mapsProvider_googleMaps_title">Google Maps</string>
     <string name="setting_mapsProvider_googleMaps_info">SDK padrão do Google Maps com mapas de ruas e satélites.</string>
     <string name="setting_mapsProvider_mapLibreFree_title">MapLibre Free</string>

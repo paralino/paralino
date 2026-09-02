@@ -299,6 +299,8 @@
     <string name="setting_placeSearch_location_info">Când este activat, locația aproximativă a zonei de pe hartă selectată în prezent va fi trimisă către server pentru a oferi rezultate de căutare localizate.</string>
     <string name="setting_mapsProvider_title">Furnizor de hărți</string>
     <string name="setting_mapsProvider_info">Alegeți furnizorul de servicii preferat pentru hărțile utilizate în aplicație. Stilul hărții, animațiile și performanța vor fi diferite între diferiți furnizori.</string>
+    <string name="setting_mapsProvider_none_title">Niciunul</string>
+    <string name="setting_mapsProvider_none_info">Hărțile nu sunt disponibile pe acest dispozitiv.</string>
     <string name="setting_mapsProvider_googleMaps_title">Google Maps</string>
     <string name="setting_mapsProvider_googleMaps_info">SDK-ul Google Maps implicit cu hărți de stradă și satelit.</string>
     <string name="setting_mapsProvider_mapLibreFree_title">MapLibre Free</string>

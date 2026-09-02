@@ -299,6 +299,8 @@
     <string name="setting_placeSearch_location_info">Kada je omogućeno, približna lokacija trenutno odabranog područja na karti će se slati poslužitelju kako bi se pružili lokalizirani rezultati pretraživanja.</string>
     <string name="setting_mapsProvider_title">Pružatelj karata</string>
     <string name="setting_mapsProvider_info">Izaberite svog omiljenog provajdera usluga za mape koje se koriste u aplikaciji. Stil mape, animacije i performanse će se razlikovati među različitim provajderima.</string>
+    <string name="setting_mapsProvider_none_title">Nijedno</string>
+    <string name="setting_mapsProvider_none_info">Karte nisu dostupne na ovom uređaju.</string>
     <string name="setting_mapsProvider_googleMaps_title">Google Mape</string>
     <string name="setting_mapsProvider_googleMaps_info">Zadani Google Maps SDK sa uličnim i satelitskim mapama.</string>
     <string name="setting_mapsProvider_mapLibreFree_title">MapLibre Free</string>

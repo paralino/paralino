@@ -299,6 +299,8 @@
     <string name="setting_placeSearch_location_info">Når det er aktiveret, vil den omtrentlige placering af det aktuelt valgte kortområde blive sendt til serveren for at give lokaliserede søgeresultater.</string>
     <string name="setting_mapsProvider_title">Kortudbyder</string>
     <string name="setting_mapsProvider_info">Vælg din foretrukne serviceudbyder til kort, der anvendes i appen. Kortstil, animationer og ydeevne vil være forskellige på tværs af forskellige udbydere.</string>
+    <string name="setting_mapsProvider_none_title">Ingen</string>
+    <string name="setting_mapsProvider_none_info">Kort er ikke tilgængelige på denne enhed.</string>
     <string name="setting_mapsProvider_googleMaps_title">Google Maps</string>
     <string name="setting_mapsProvider_googleMaps_info">Standard Google Maps SDK med gade- og satellitkort.</string>
     <string name="setting_mapsProvider_mapLibreFree_title">MapLibre Free</string>

@@ -299,6 +299,8 @@
     <string name="setting_placeSearch_location_info">Όταν είναι ενεργοποιημένο, η περίπου τοποθεσία της τρέχουσας επιλεγμένης περιοχής χάρτη θα σταλεί στον διακομιστή για να παρέχει τοπικά αποτελέσματα αναζήτησης.</string>
     <string name="setting_mapsProvider_title">Πάροχος χαρτών</string>
     <string name="setting_mapsProvider_info">Επιλέξτε τον προτιμώμενο πάροχο υπηρεσιών για τους χάρτες που χρησιμοποιούνται στην εφαρμογή. Ο στυλ των χαρτών, οι κινήσεις και η απόδοση θα είναι διαφορετικές μεταξύ των διαφορετικών παρόχων.</string>
+    <string name="setting_mapsProvider_none_title">Καμία</string>
+    <string name="setting_mapsProvider_none_info">Οι χάρτες δεν είναι διαθέσιμοι σε αυτή τη συσκευή.</string>
     <string name="setting_mapsProvider_googleMaps_title">Google Maps</string>
     <string name="setting_mapsProvider_googleMaps_info">Προεπιλεγμένο SDK Google Maps με χάρτες δρόμων και δορυφόρων.</string>
     <string name="setting_mapsProvider_mapLibreFree_title">MapLibre Free</string>

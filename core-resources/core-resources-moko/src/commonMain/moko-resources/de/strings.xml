@@ -299,6 +299,8 @@
     <string name="setting_placeSearch_location_info">Wenn aktiviert, wird die ungefähre Position des aktuell ausgewählten Kartenbereichs an den Server gesendet, um lokalisierte Suchergebnisse bereitzustellen.</string>
     <string name="setting_mapsProvider_title">Kartenanbieter</string>
     <string name="setting_mapsProvider_info">Wählen Sie Ihren bevorzugten Dienstanbieter für Karten, die in der App verwendet werden. Der Kartenstil, Animationen und die Leistung können je nach Anbieter unterschiedlich sein.</string>
+    <string name="setting_mapsProvider_none_title">Keine</string>
+    <string name="setting_mapsProvider_none_info">Karten sind auf diesem Gerät nicht verfügbar.</string>
     <string name="setting_mapsProvider_googleMaps_title">Google Maps</string>
     <string name="setting_mapsProvider_googleMaps_info">Standard Google Maps SDK mit Straßen- und Satellitenkarten.</string>
     <string name="setting_mapsProvider_mapLibreFree_title">MapLibre Free</string>

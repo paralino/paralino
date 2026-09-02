@@ -299,6 +299,8 @@
     <string name="setting_placeSearch_location_info">Ko je vklopljeno, se približna lokacija trenutno izbranega območja na zemljevidu pošlje strežniku za zagotavljanje lokaliziranih rezultatov iskanja.</string>
     <string name="setting_mapsProvider_title">Ponudnik zemljevidov</string>
     <string name="setting_mapsProvider_info">Izberite svoj želeni ponudnik storitev za zemljevide, uporabljene v aplikaciji. Slog zemljevida, animacije in uspešnost se bodo razlikovale med različnimi ponudniki.</string>
+    <string name="setting_mapsProvider_none_title">Noben</string>
+    <string name="setting_mapsProvider_none_info">Zemljevidi niso na voljo na tej napravi.</string>
     <string name="setting_mapsProvider_googleMaps_title">Google Zemljevidi</string>
     <string name="setting_mapsProvider_googleMaps_info">Privzeti Google Zemljevide SDK s cestnimi in satelitskimi zemljevidi.</string>
     <string name="setting_mapsProvider_mapLibreFree_title">MapLibre Prosto</string>
