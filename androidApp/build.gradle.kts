@@ -206,7 +206,7 @@ android {
     productFlavors {
         create("playStore") {
             dimension = "version"
-            versionCode = 98
+            versionCode = 99
             versionName = "2.5.1"
 
             val userProps = loadUserProperties(rootProject.rootDir)
@@ -215,7 +215,7 @@ android {
         }
         create("direct") {
             dimension = "version"
-            versionCode = 97
+            versionCode = 99
             versionName = "2.5.1"
             isDefault = true
 
