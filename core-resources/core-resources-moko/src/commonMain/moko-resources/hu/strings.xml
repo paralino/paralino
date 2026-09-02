@@ -299,6 +299,8 @@
     <string name="setting_placeSearch_location_info">Ha engedélyezve van, a jelenleg kiválasztott térképrészlet hozzávetőleges helye a szerverhez kerül továbbításra, hogy lokalizált keresési eredményeket biztosítson.</string>
     <string name="setting_mapsProvider_title">Térképszolgáltató</string>
     <string name="setting_mapsProvider_info">Válassza ki a kívánt szolgáltatót a térképekhez, amelyeket az alkalmazásban használ. A térkép stílusa, animációi és teljesítménye eltérő lesz a különböző szolgáltatók között.</string>
+    <string name="setting_mapsProvider_none_title">Nincs</string>
+    <string name="setting_mapsProvider_none_info">A térképek ezen az eszközön nem érhetők el.</string>
     <string name="setting_mapsProvider_googleMaps_title">Google Térképek</string>
     <string name="setting_mapsProvider_googleMaps_info">Alapértelmezett Google Térképek SDK utcai és műholdas térképekkel.</string>
     <string name="setting_mapsProvider_mapLibreFree_title">MapLibre Ingyenes</string>

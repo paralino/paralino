@@ -299,6 +299,8 @@
     <string name="setting_placeSearch_location_info">När denna funktion är aktiverad kommer den ungefärliga platsen för det för närvarande valda kartaområdet att skickas till servern för att ge lokaliserade sökresultat.</string>
     <string name="setting_mapsProvider_title">Kartleverantör</string>
     <string name="setting_mapsProvider_info">Välj din föredragna tjänsteleverantör för kartor som används i appen. Kartstil, animationer och prestanda kommer att skilja sig åt mellan olika leverantörer.</string>
+    <string name="setting_mapsProvider_none_title">Ingen</string>
+    <string name="setting_mapsProvider_none_info">Kartor är inte tillgängliga på denna enhet.</string>
     <string name="setting_mapsProvider_googleMaps_title">Google Maps</string>
     <string name="setting_mapsProvider_googleMaps_info">Standard Google Maps SDK med gatu- och satellitkartor.</string>
     <string name="setting_mapsProvider_mapLibreFree_title">MapLibre Free</string>

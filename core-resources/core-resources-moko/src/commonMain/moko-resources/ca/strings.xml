@@ -299,6 +299,8 @@
     <string name="setting_placeSearch_location_info">Quan està habilitada, la ubicació aproximada de l\'àrea del mapa seleccionada actualment s\'enviarà al servidor per proporcionar resultats de cerca localitzats.</string>
     <string name="setting_mapsProvider_title">Proveïdor de mapes</string>
     <string name="setting_mapsProvider_info">Tria el teu proveïdor de serveis preferit per als mapes utilitzats a l\'aplicació. L\'estil del mapa, les animacions i el rendiment seran diferents entre diferents proveïdors.</string>
+    <string name="setting_mapsProvider_none_title">Cap</string>
+    <string name="setting_mapsProvider_none_info">Els mapes no estan disponibles en aquest dispositiu.</string>
     <string name="setting_mapsProvider_googleMaps_title">Google Maps</string>
     <string name="setting_mapsProvider_googleMaps_info">SDK de Google Maps per defecte amb mapes de carrer i satèl·lit.</string>
     <string name="setting_mapsProvider_mapLibreFree_title">MapLibre Free</string>

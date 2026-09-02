@@ -317,6 +317,8 @@
     <string name="setting_placeSearch_location_info">When enabled, the approximate location of the currently selected map area will be sent to the server to provide localized search results.</string>
     <string name="setting_mapsProvider_title">Map provider</string>
     <string name="setting_mapsProvider_info">Choose your preferred service provider for maps used in the app. Map style, animations and performance will be different across different providers.</string>
+    <string name="setting_mapsProvider_none_title">None</string>
+    <string name="setting_mapsProvider_none_info">Maps are not available on this device.</string>
     <string name="setting_mapsProvider_googleMaps_title">Google Maps</string>
     <string name="setting_mapsProvider_googleMaps_info">Default Google Maps SDK with street and satellite maps.</string>
     <string name="setting_mapsProvider_mapLibreFree_title">MapLibre Free</string>

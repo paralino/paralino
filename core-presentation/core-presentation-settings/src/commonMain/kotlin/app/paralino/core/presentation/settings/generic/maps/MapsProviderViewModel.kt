@@ -18,6 +18,7 @@ import app.paralino.core.repo.base.AppConfigRepository
 import app.paralino.core.repo.user.UserConfigRepository
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.presentation.common.MainAlertDialog
+import app.paralino.core.resources.CoreAppIcons
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.minutes
@@ -50,153 +51,169 @@ class MapsProviderViewModel(
     }
 
     override fun createInitialState(): GenericSettingsScreenState {
-        val currentOption = appPrefs.getAndroidMapSDKProviderOrDefault(
-            hasGoogleMaps = appConfigRepo.hasGoogleMaps,
-            isPremiumPlan = canUserHavePremiumMaps(),
-            mapTilerToken = appPrefs.mapTilerToken
-        )
+        val currentOption = currentMapProvider()
 
         val options = buildList {
             if (appConfigRepo.hasGoogleMaps) {
                 add(MapsSDKProvider.GOOGLE)
             }
 
-            add(MapsSDKProvider.MAPLIBRE.MAPLIBRE_FREE())
-            add(MapsSDKProvider.MAPLIBRE.MAPLIBRE_PREMIUM(mapTilerToken = ""))
+            if (appConfigRepo.canUseMapLibre) {
+                add(MapsSDKProvider.MAPLIBRE.MAPLIBRE_FREE())
+                add(MapsSDKProvider.MAPLIBRE.MAPLIBRE_PREMIUM(mapTilerToken = ""))
+            }
+        }
+
+        val contentItems = if (options.isEmpty()) {
+            buildList {
+                add(GenericSettingListItem.Spacer(20.dp, keyId = "top_space"))
+                if (options.isEmpty()) {
+                    add(
+                        GenericSettingListItem.Notice(
+                            content = MR.strings.setting_mapsProvider_none_info.localizedString(),
+                            icon = CoreAppIcons.InfoCircle
+                        )
+                    )
+                    add(GenericSettingListItem.Spacer(spacing = 40.dp, keyId = "bottom_space"))
+                }
+            }
+        } else {
+            buildList {
+                add(GenericSettingListItem.Spacer(20.dp, keyId = "top_space"))
+
+                add(GenericSettingListItem.Subtitle(MR.strings.setting_mapsProvider_info.localizedString()))
+                add(
+                    GenericSettingListItem.GroupOptions(
+                        defaultId = currentOption.key,
+                        keyId = "mapProvider",
+                        items = options.map {
+                            GroupOptionItem(
+                                key = it,
+                                id = it.key,
+                                title = it.title.localizedString(),
+                                description = it.description.localizedString(),
+                                tag = it.tag?.localizedString(),
+                                isTagWarning = true,
+                                isPremiumFeatureEnabled = if (it is MapsSDKProvider.MAPLIBRE.MAPLIBRE_PREMIUM) {
+                                    canUserHavePremiumMaps()
+                                } else {
+                                    true
+                                },
+                                isSelected = it.key == currentOption.key
+                            )
+                        }
+                    )
+                )
+
+                if (currentOption is MapsSDKProvider.MAPLIBRE) {
+                    add(GenericSettingListItem.Spacer(20.dp, keyId = "premium_space"))
+                    add(
+                        GenericSettingListItem.Subtitle(
+                            content = MR.strings.setting_mapsProvider_style_light_title.localizedString(),
+                            bottomPadding = 10.dp
+                        )
+                    )
+                    add(
+                        GenericSettingListItem.GroupOptions(
+                            defaultId = currentOption.lightStyle.key,
+                            keyId = "mapStyleLight",
+                            items = MapStyle.Light.allLightStyles
+                                .filter {
+                                    if (canUserHavePremiumMaps()) {
+                                        !it.isPremium || currentOption.isPremium
+                                    } else {
+                                        true
+                                    }
+                                }
+                                .map {
+                                    GroupOptionItem(
+                                        key = it,
+                                        id = "light_${it.key}",
+                                        title = it.title,
+                                        description = null,
+                                        isSelected = it == currentOption.lightStyle,
+                                        tag = null,
+                                        isTagWarning = false,
+                                        isPremiumFeatureEnabled = !it.isPremium || canUserHavePremiumMaps(),
+                                    )
+                                }
+                        )
+                    )
+                    add(
+                        GenericSettingListItem.Map(
+                            keyId = "lightMap_${currentOption.lightStyle.key}",
+                            mapSDKProvider = currentOption,
+                            isDarkMode = false,
+                            height = 150.dp,
+                            // hardcoded to Salzburg, Austria
+                            centerLocation = LatLng(
+                                lat = 47.798478,
+                                lng = 13.046638
+                            ),
+                            zoomLevel = 14f,
+                            isVisible = true
+                        )
+                    )
+
+                    add(GenericSettingListItem.Spacer(30.dp, keyId = "premium_space_dark"))
+                    add(
+                        GenericSettingListItem.Subtitle(
+                            content = MR.strings.setting_mapsProvider_style_dark_title.localizedString(),
+                            bottomPadding = 10.dp
+                        )
+                    )
+                    add(
+                        GenericSettingListItem.GroupOptions(
+                            defaultId = currentOption.darkStyle.key,
+                            keyId = "mapStyleDark",
+                            items = MapStyle.Dark.allDarkStyles
+                                .filter {
+                                    if (canUserHavePremiumMaps()) {
+                                        !it.isPremium || currentOption.isPremium
+                                    } else {
+                                        true
+                                    }
+                                }
+                                .map {
+                                    GroupOptionItem(
+                                        key = it,
+                                        id = "dark_${it.key}",
+                                        title = it.title,
+                                        description = null,
+                                        isSelected = it == currentOption.darkStyle,
+                                        tag = null,
+                                        isTagWarning = false,
+                                        isPremiumFeatureEnabled = !it.isPremium || canUserHavePremiumMaps(),
+                                    )
+                                }
+                        )
+                    )
+                    add(
+                        GenericSettingListItem.Map(
+                            keyId = "darkMap_${currentOption.darkStyle.key}",
+                            mapSDKProvider = currentOption,
+                            isDarkMode = true,
+                            height = 150.dp,
+                            // hardcoded to Salzburg, Austria
+                            centerLocation = LatLng(
+                                lat = 47.798478,
+                                lng = 13.046638
+                            ),
+                            zoomLevel = 14f,
+                            isVisible = true
+                        )
+                    )
+                }
+
+                add(GenericSettingListItem.Spacer(spacing = 40.dp, keyId = "bottom_space"))
+            }
         }
 
         return GenericSettingsScreenState(
             screenTitle = initialScreenTitle,
             alertDialog = null,
             content = GenericSettingsScreenStateContent.ListItems(
-                items = buildList {
-                    add(GenericSettingListItem.Spacer(20.dp, keyId = "top_space"))
-                    add(GenericSettingListItem.Subtitle(MR.strings.setting_mapsProvider_info.localizedString()))
-                    add(
-                        GenericSettingListItem.GroupOptions(
-                            defaultId = currentOption.key,
-                            keyId = "mapProvider",
-                            items = options.map {
-                                GroupOptionItem(
-                                    key = it,
-                                    id = it.key,
-                                    title = it.title.localizedString(),
-                                    description = it.description.localizedString(),
-                                    tag = it.tag?.localizedString(),
-                                    isTagWarning = true,
-                                    isPremiumFeatureEnabled = if (it is MapsSDKProvider.MAPLIBRE.MAPLIBRE_PREMIUM) {
-                                        canUserHavePremiumMaps()
-                                    } else {
-                                        true
-                                    },
-                                    isSelected = it.key == currentOption.key
-                                )
-                            }
-                        )
-                    )
-
-                    if (currentOption is MapsSDKProvider.MAPLIBRE) {
-                        add(GenericSettingListItem.Spacer(20.dp, keyId = "premium_space"))
-                        add(
-                            GenericSettingListItem.Subtitle(
-                                content = MR.strings.setting_mapsProvider_style_light_title.localizedString(),
-                                bottomPadding = 10.dp
-                            )
-                        )
-                        add(
-                            GenericSettingListItem.GroupOptions(
-                                defaultId = currentOption.lightStyle.key,
-                                keyId = "mapStyleLight",
-                                items = MapStyle.Light.allLightStyles
-                                    .filter {
-                                        if (canUserHavePremiumMaps()) {
-                                            !it.isPremium || currentOption.isPremium
-                                        } else {
-                                            true
-                                        }
-                                    }
-                                    .map {
-                                        GroupOptionItem(
-                                            key = it,
-                                            id = "light_${it.key}",
-                                            title = it.title,
-                                            description = null,
-                                            isSelected = it == currentOption.lightStyle,
-                                            tag = null,
-                                            isTagWarning = false,
-                                            isPremiumFeatureEnabled = !it.isPremium || canUserHavePremiumMaps(),
-                                        )
-                                    }
-                            )
-                        )
-                        add(
-                            GenericSettingListItem.Map(
-                                keyId = "lightMap_${currentOption.lightStyle.key}",
-                                mapSDKProvider = currentOption,
-                                isDarkMode = false,
-                                height = 150.dp,
-                                // hardcoded to Salzburg, Austria
-                                centerLocation = LatLng(
-                                    lat = 47.798478,
-                                    lng = 13.046638
-                                ),
-                                zoomLevel = 14f,
-                                isVisible = true
-                            )
-                        )
-
-                        add(GenericSettingListItem.Spacer(30.dp, keyId = "premium_space_dark"))
-                        add(
-                            GenericSettingListItem.Subtitle(
-                                content = MR.strings.setting_mapsProvider_style_dark_title.localizedString(),
-                                bottomPadding = 10.dp
-                            )
-                        )
-                        add(
-                            GenericSettingListItem.GroupOptions(
-                                defaultId = currentOption.darkStyle.key,
-                                keyId = "mapStyleDark",
-                                items = MapStyle.Dark.allDarkStyles
-                                    .filter {
-                                        if (canUserHavePremiumMaps()) {
-                                            !it.isPremium || currentOption.isPremium
-                                        } else {
-                                            true
-                                        }
-                                    }
-                                    .map {
-                                        GroupOptionItem(
-                                            key = it,
-                                            id = "dark_${it.key}",
-                                            title = it.title,
-                                            description = null,
-                                            isSelected = it == currentOption.darkStyle,
-                                            tag = null,
-                                            isTagWarning = false,
-                                            isPremiumFeatureEnabled = !it.isPremium || canUserHavePremiumMaps(),
-                                        )
-                                    }
-                            )
-                        )
-                        add(
-                            GenericSettingListItem.Map(
-                                keyId = "darkMap_${currentOption.darkStyle.key}",
-                                mapSDKProvider = currentOption,
-                                isDarkMode = true,
-                                height = 150.dp,
-                                // hardcoded to Salzburg, Austria
-                                centerLocation = LatLng(
-                                    lat = 47.798478,
-                                    lng = 13.046638
-                                ),
-                                zoomLevel = 14f,
-                                isVisible = true
-                            )
-                        )
-                    }
-
-                    add(GenericSettingListItem.Spacer(spacing = 40.dp, keyId = "bottom_space"))
-                }
+                items = contentItems
             )
         )
     }
@@ -216,17 +233,14 @@ class MapsProviderViewModel(
                     (currentState.content as? GenericSettingsScreenStateContent.ListItems)?.items
                         ?: return
 
-                val currentOption = appPrefs.getAndroidMapSDKProviderOrDefault(
-                    hasGoogleMaps = appConfigRepo.hasGoogleMaps,
-                    isPremiumPlan = canUserHavePremiumMaps(),
-                    mapTilerToken = appPrefs.mapTilerToken
-                )
+                val currentOption = currentMapProvider()
 
                 when (event.option.key) {
                     is MapsSDKProvider -> {
                         val newProvider = event.option.key as MapsSDKProvider
                         val finalProvider = when (newProvider) {
-                            MapsSDKProvider.GOOGLE -> newProvider
+                            MapsSDKProvider.GOOGLE,
+                            MapsSDKProvider.NONE -> newProvider
 
                             is MapsSDKProvider.MAPLIBRE.MAPLIBRE_FREE -> {
                                 newProvider.copy(
@@ -254,7 +268,8 @@ class MapsProviderViewModel(
                         val newStyle = event.option.key as MapStyle
 
                         val updatedProvider = when (currentOption) {
-                            MapsSDKProvider.GOOGLE -> null
+                            MapsSDKProvider.GOOGLE,
+                            MapsSDKProvider.NONE -> null
                             is MapsSDKProvider.MAPLIBRE.MAPLIBRE_FREE -> {
                                 when (newStyle) {
                                     is MapStyle.Dark -> currentOption.copy(darkStyle = newStyle)
@@ -294,6 +309,15 @@ class MapsProviderViewModel(
 
             else -> {}
         }
+    }
+
+    private fun currentMapProvider(): MapsSDKProvider {
+        return appPrefs.getAndroidMapSDKProviderOrDefault(
+            hasGoogleMaps = appConfigRepo.hasGoogleMaps,
+            canUseMapLibre = appConfigRepo.canUseMapLibre,
+            isPremiumPlan = canUserHavePremiumMaps(),
+            mapTilerToken = appPrefs.mapTilerToken
+        )
     }
 
     private fun canUserHavePremiumMaps(): Boolean {

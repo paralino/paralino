@@ -32,11 +32,21 @@ class AppUpdateManager(
 
     override fun startUpdateProcess(data: ConfigData) {
         val url = data.androidAppUrl?.takeIf { it.isNotBlank() }
-        if (url == null) {
+        if (url == null || !isAllowedDownloadUrl(url)) {
+            logg.w("app_update", "Rejected download url: $url")
             appClass.openUri(BackendResourceIDs.downloadLandingPageUrl.toUri())
         } else {
             downloadAndInstall(url)
         }
+    }
+
+    private fun isAllowedDownloadUrl(url: String): Boolean {
+        // keep the last "/" in url comparison so we don't have to do actual host matching
+        // this way it is full base url that is compared
+        return url.startsWith("https://static.paralino.com/") ||
+            url.startsWith("https://paralino.com/") ||
+            url.startsWith("https://paralino.app/") ||
+            url.startsWith("https://github.com/paralino/")
     }
 
     private fun downloadAndInstall(url: String) {

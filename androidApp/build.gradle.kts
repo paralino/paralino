@@ -206,7 +206,7 @@ android {
     productFlavors {
         create("playStore") {
             dimension = "version"
-            versionCode = 97
+            versionCode = 99
             versionName = "2.5.1"
 
             val userProps = loadUserProperties(rootProject.rootDir)
@@ -215,11 +215,17 @@ android {
         }
         create("direct") {
             dimension = "version"
-            versionCode = 97
+            versionCode = 99
             versionName = "2.5.1"
             isDefault = true
 
             buildConfigField("String", "revenueCatApiKey", "null")
+
+            // MapLibre Compose (0.15+) ships only 64-bit libs, and direct release has no Google Maps fallback.
+            // Which means there are no maps at all for 32-bit direct release, and we can only target 64-bit here
+            ndk {
+                abiFilters += listOf("arm64-v8a", "x86_64")
+            }
         }
     }
 

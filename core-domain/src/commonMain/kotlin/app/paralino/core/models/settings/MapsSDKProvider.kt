@@ -20,6 +20,15 @@ sealed interface MapsSDKProvider {
         override val isPremium = false
     }
 
+    data object NONE : MapsSDKProvider {
+        override val key: String = "none"
+        override val title = MR.strings.setting_mapsProvider_none_title
+        override val description = MR.strings.setting_mapsProvider_none_info
+        override val tag = null
+        override val hasSatelliteMaps = false
+        override val isPremium = false
+    }
+
     sealed interface MAPLIBRE : MapsSDKProvider {
         val lightStyle: MapStyle.Light
         val darkStyle: MapStyle.Dark
@@ -120,6 +129,7 @@ sealed interface MapsSDKProvider {
         ): MapsSDKProvider? {
             return when (key) {
                 GOOGLE.key -> GOOGLE
+                NONE.key -> NONE
 
                 MAPLIBRE.MAPLIBRE_FREE().key -> MAPLIBRE.MAPLIBRE_FREE(
                     lightStyle = lightStyle.takeIf { !it.isPremium }

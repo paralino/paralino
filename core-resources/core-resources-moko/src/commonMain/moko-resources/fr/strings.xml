@@ -299,6 +299,8 @@
     <string name="setting_placeSearch_location_info">Lorsque cela est activé, la localisation approximative de la zone de carte actuellement sélectionnée sera envoyée au serveur pour fournir des résultats de recherche localisés.</string>
     <string name="setting_mapsProvider_title">Fournisseur de cartes</string>
     <string name="setting_mapsProvider_info">Choisissez votre fournisseur de services préféré pour les cartes utilisées dans l\'application. Le style de carte, les animations et les performances varieront selon les différents fournisseurs.</string>
+    <string name="setting_mapsProvider_none_title">Aucun</string>
+    <string name="setting_mapsProvider_none_info">Les cartes ne sont pas disponibles sur cet appareil.</string>
     <string name="setting_mapsProvider_googleMaps_title">Google Maps</string>
     <string name="setting_mapsProvider_googleMaps_info">SDK Google Maps par défaut avec cartes routières et satellites.</string>
     <string name="setting_mapsProvider_mapLibreFree_title">MapLibre Free</string>

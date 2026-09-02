@@ -299,6 +299,8 @@
     <string name="setting_placeSearch_location_info">Kun tämä on käytössä, nykyisen valitun kartta-alueen arvioitu sijainti lähetetään palvelimelle paikallisten hakutulosten tuottamiseksi.</string>
     <string name="setting_mapsProvider_title">Karttapalveluntarjoaja</string>
     <string name="setting_mapsProvider_info">Valitse haluamasi palveluntarjoaja kartoille, joita käytetään sovelluksessa. Kartan tyyli, animaatiot ja suorituskyky vaihtelevat eri tarjoajien välillä.</string>
+    <string name="setting_mapsProvider_none_title">Ei mitään</string>
+    <string name="setting_mapsProvider_none_info">Kartat eivät ole saatavilla tällä laitteella.</string>
     <string name="setting_mapsProvider_googleMaps_title">Google Maps</string>
     <string name="setting_mapsProvider_googleMaps_info">Oletusarvoinen Google Maps SDK katu- ja satelliittikartoilla.</string>
     <string name="setting_mapsProvider_mapLibreFree_title">MapLibre Free</string>

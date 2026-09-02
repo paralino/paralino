@@ -299,6 +299,8 @@
     <string name="setting_placeSearch_location_info">Keď je táto možnosť zapnutá, približná poloha aktuálne vyberanej mapovej oblasti sa odošle na server na poskytovanie lokalizovaných výsledkov hľadania.</string>
     <string name="setting_mapsProvider_title">Poskytovateľ máp</string>
     <string name="setting_mapsProvider_info">Vyberte svoj preferovaný poskytovateľ služieb máp používaných v aplikácii. Štýl máp, animácie a výkon sa budú líšiť medzi rôznymi poskytovateľmi.</string>
+    <string name="setting_mapsProvider_none_title">Žiadne</string>
+    <string name="setting_mapsProvider_none_info">Mapy nie sú na tomto zariadení k dispozícii.</string>
     <string name="setting_mapsProvider_googleMaps_title">Google Maps</string>
     <string name="setting_mapsProvider_googleMaps_info">Predvolený SDK Google Maps s mapami ulíc a satelitnými mapami.</string>
     <string name="setting_mapsProvider_mapLibreFree_title">MapLibre Free</string>

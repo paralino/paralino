@@ -65,6 +65,7 @@ class PremiumStatusManager(
             appPrefs.setAndroidMapSDKProvider(
                 appPrefs.getAndroidMapSDKProviderOrDefault(
                     hasGoogleMaps = appConfigRepo.hasGoogleMaps,
+                    canUseMapLibre = appConfigRepo.canUseMapLibre,
                     isPremiumPlan = false,
                     mapTilerToken = null
                 )
@@ -264,6 +265,7 @@ class PremiumStatusManager(
     fun defaultMapProvider(): MapsSDKProvider {
         return appPrefs.getAndroidMapSDKProviderOrDefault(
             hasGoogleMaps = appConfigRepo.hasGoogleMaps,
+            canUseMapLibre = appConfigRepo.canUseMapLibre,
             isPremiumPlan = userRepo.userPlans.value.highestValidPlanConfig.hasPremiumMapStyles,
             mapTilerToken = appPrefs.mapTilerToken
         )

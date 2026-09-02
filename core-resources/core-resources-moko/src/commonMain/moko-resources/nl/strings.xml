@@ -299,6 +299,8 @@
     <string name="setting_placeSearch_location_info">Wanneer ingeschakeld, wordt de geschatte locatie van het momenteel geselecteerde kaartgebied naar de server gestuurd om gelokaliseerde zoekresultaten te bieden.</string>
     <string name="setting_mapsProvider_title">Kaartprovider</string>
     <string name="setting_mapsProvider_info">Kies uw favoriete serviceprovider voor kaarten die in de app worden gebruikt. De stijl van de kaart, animaties en prestaties zullen verschillen tussen de verschillende providers.</string>
+    <string name="setting_mapsProvider_none_title">Geen</string>
+    <string name="setting_mapsProvider_none_info">Kaarten zijn niet beschikbaar op dit apparaat.</string>
     <string name="setting_mapsProvider_googleMaps_title">Google Maps</string>
     <string name="setting_mapsProvider_googleMaps_info">Standaard Google Maps SDK met straat- en satellietkaarten.</string>
     <string name="setting_mapsProvider_mapLibreFree_title">MapLibre Gratis</string>

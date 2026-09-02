@@ -299,6 +299,8 @@
     <string name="setting_placeSearch_location_info">Etkinleştirildiğinde, şu anda seçilen harita alanının yaklaşık konumu, yerelleştirilmiş arama sonuçları sağlamak için sunucuya gönderilecektir.</string>
     <string name="setting_mapsProvider_title">Harita sağlayıcısı</string>
     <string name="setting_mapsProvider_info">Uygulamada kullanılan haritalar için tercih ettiğiniz hizmet sağlayıcısını seçin. Harita tarzı, animasyonlar ve performans farklı sağlayıcılara göre değişiklik gösterecektir.</string>
+    <string name="setting_mapsProvider_none_title">Hiçbiri</string>
+    <string name="setting_mapsProvider_none_info">Haritalar bu cihazda mevcut değil.</string>
     <string name="setting_mapsProvider_googleMaps_title">Google Haritalar</string>
     <string name="setting_mapsProvider_googleMaps_info">Sokak ve uydu haritalarıyla standart Google Haritalar SDK\'sı.</string>
     <string name="setting_mapsProvider_mapLibreFree_title">MapLibre Ücretsiz</string>

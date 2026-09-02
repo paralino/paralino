@@ -655,6 +655,7 @@ class AppPrefs(
 
     fun getAndroidMapSDKProviderOrDefault(
         hasGoogleMaps: Boolean,
+        canUseMapLibre: Boolean,
         isPremiumPlan: Boolean,
         mapTilerToken: String?
     ): MapsSDKProvider {
@@ -665,12 +666,13 @@ class AppPrefs(
         val lightStyle = MapStyle.lightStyleFromKey(lightStyleKey)
         val darkStyle = MapStyle.darkStyleFromKey(darkStyleKey)
 
-        val default = if (hasGoogleMaps) {
-            MapsSDKProvider.GOOGLE
-        } else if (isPremiumPlan && !mapTilerToken.isNullOrBlank()) {
-            MapsSDKProvider.MAPLIBRE.MAPLIBRE_PREMIUM(mapTilerToken = mapTilerToken)
-        } else {
-            MapsSDKProvider.MAPLIBRE.MAPLIBRE_FREE()
+        val default = when {
+            hasGoogleMaps -> MapsSDKProvider.GOOGLE
+            canUseMapLibre && isPremiumPlan && !mapTilerToken.isNullOrBlank() -> {
+                MapsSDKProvider.MAPLIBRE.MAPLIBRE_PREMIUM(mapTilerToken = mapTilerToken)
+            }
+            canUseMapLibre -> MapsSDKProvider.MAPLIBRE.MAPLIBRE_FREE()
+            else -> MapsSDKProvider.NONE
         }
 
         val setting = MapsSDKProvider.fromKey(
@@ -680,17 +682,29 @@ class AppPrefs(
             darkStyle = darkStyle
         ) ?: default
 
-        return if (!isPremiumPlan && setting.isPremium) {
-            MapsSDKProvider.MAPLIBRE.MAPLIBRE_FREE(
-                lightStyle = lightStyle,
-                darkStyle = darkStyle
-            )
+        return if (setting is MapsSDKProvider.MAPLIBRE && !canUseMapLibre) {
+            default
+        } else if (!isPremiumPlan && setting.isPremium) {
+            if (canUseMapLibre) {
+                MapsSDKProvider.MAPLIBRE.MAPLIBRE_FREE(
+                    lightStyle = lightStyle,
+                    darkStyle = darkStyle
+                )
+            } else {
+                default
+            }
         } else if (setting is MapsSDKProvider.MAPLIBRE.MAPLIBRE_PREMIUM && mapTilerToken.isNullOrBlank()) {
-            MapsSDKProvider.MAPLIBRE.MAPLIBRE_FREE(
-                lightStyle = lightStyle,
-                darkStyle = darkStyle
-            )
+            if (canUseMapLibre) {
+                MapsSDKProvider.MAPLIBRE.MAPLIBRE_FREE(
+                    lightStyle = lightStyle,
+                    darkStyle = darkStyle
+                )
+            } else {
+                default
+            }
         } else if (!hasGoogleMaps && setting == MapsSDKProvider.GOOGLE) {
+            default
+        } else if (setting is MapsSDKProvider.NONE) {
             default
         } else {
             setting

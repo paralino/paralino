@@ -299,6 +299,8 @@
     <string name="setting_placeSearch_location_info">При включенной опции приблизительное местоположение текущей выбранной области карты будет отправлено на сервер для предоставления локализованных результатов поиска.</string>
     <string name="setting_mapsProvider_title">Поставщик карт</string>
     <string name="setting_mapsProvider_info">Выберите предпочитаемого поставщика услуг для карт, используемых в приложении. Стиль карт, анимации и производительность будут различаться у разных поставщиков.</string>
+    <string name="setting_mapsProvider_none_title">Нет</string>
+    <string name="setting_mapsProvider_none_info">Карты недоступны на этом устройстве.</string>
     <string name="setting_mapsProvider_googleMaps_title">Google Карт</string>
     <string name="setting_mapsProvider_googleMaps_info">Стандартный SDK Google Карт с уличными и спутниковыми картами.</string>
     <string name="setting_mapsProvider_mapLibreFree_title">MapLibre Free</string>
