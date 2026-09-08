@@ -310,6 +310,7 @@ fun MapHomeSheetContent(
 
                 MapSheetSelectedContentType.MEMBERS -> {
                     membersList(
+                        isPersonalSpace = readyState.isPersonalSpace,
                         canStopTracking = readyState.personalSpaceSharingContract != null && readyState.isPersonalSpace,
                         canStopSharing = readyState.selectedGroupSharingContract != null && !readyState.isPersonalSpace,
                         canAddNewMember = !readyState.isPersonalSpace && readyState.isCurrentUserOwnerOfSelectedGroup,
@@ -402,6 +403,7 @@ private fun SheetTabs(
 }
 
 private fun LazyListScope.membersList(
+    isPersonalSpace: Boolean,
     canStopSharing: Boolean,
     canStopTracking: Boolean,
     canAddNewMember: Boolean,
@@ -524,7 +526,13 @@ private fun LazyListScope.membersList(
                 modifier = Modifier,
                 startIcon = CoreAppIcons.Settings.asPainterResource(),
                 endIcon = CoreAppIcons.ChevronRight.asPainterResource(),
-                text = stringResource(MR.strings.dashboard_groups_manage_button),
+                text = stringResource(
+                    if (isPersonalSpace) {
+                        MR.strings.button_manage
+                    } else {
+                        MR.strings.dashboard_groups_manage_button
+                    }
+                ),
                 onClick = onOpenSettings
             )
 
