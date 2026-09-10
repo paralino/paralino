@@ -20,6 +20,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.mapNotNull
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
@@ -31,10 +32,12 @@ class LocationFocusManager(
     private val realtimeManager: RealtimeSubscriptionManager,
     private val sharingManager: LocationSharingManager,
     private val deviceApiProvider: IDeviceApiProvider,
+    private val memberActionHandler: MemberActionHandler,
     private val coroutineScope: CoroutineScope,
     private val uiRefreshPingFlow: MutableStateFlow<Instant?>,
     private val uiFocusedStatus: MutableStateFlow<Boolean>,
-    private val groupIdData: MutableStateFlow<GroupOrSpaceId>
+    private val groupIdData: MutableStateFlow<GroupOrSpaceId>,
+    private val updateReadyState: ((MapHomeScreenState.Ready) -> MapHomeScreenState.Ready) -> Unit
 ) {
 
     private var uiRefreshPingSubscriptionJob: Job? = null
@@ -91,6 +94,14 @@ class LocationFocusManager(
             planConfig = lifecycleData.planConfig
         )
             .flowOn(Dispatchers.IO)
+            .onEach { wasHighPriorityRequest ->
+                if (wasHighPriorityRequest) {
+                    logg.v("location_performance", "Focus ping was a high priority request")
+                    memberActionHandler.applyHighPrioLocationRequests(
+                        updateReadyState = updateReadyState
+                    )
+                }
+            }
             .launchIn(coroutineScope)
     }
 

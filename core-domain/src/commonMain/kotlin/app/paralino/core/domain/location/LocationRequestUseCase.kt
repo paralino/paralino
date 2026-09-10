@@ -8,6 +8,7 @@ import app.paralino.core.models.location.LocationPerformanceType
 import app.paralino.core.models.map.MapHomeScreenFocusType
 import app.paralino.core.models.raw.FunctionExecutionRaw
 import app.paralino.core.models.raw.LocationFocusGroupPayload
+import app.paralino.core.models.raw.LocationFocusResponse
 import app.paralino.core.models.raw.LocationFocusSpacePayload
 import app.paralino.core.models.raw.LocationRequestGroupPayload
 import app.paralino.core.models.raw.LocationRequestSpacePayload
@@ -15,7 +16,6 @@ import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.api.IFunctionsApi
 import app.paralino.core.repo.api.ServerFunction
 import app.paralino.core.repo.api.runAndWait
-import app.paralino.core.repo.api.runAsync
 import app.paralino.core.repo.base.BaseRepository
 import app.paralino.core.repo.base.RemotePreference
 import app.paralino.core.repo.location.LocationPerformanceManager
@@ -60,14 +60,15 @@ class LocationRequestUseCase constructor(
         groupId: GroupOrSpaceId,
         focusType: MapHomeScreenFocusType,
         planConfig: PlanConfig
-    ): Flow<String> {
+    ): Flow<Boolean> {
         return flow {
             do {
-                emit("User is looking at map")
-                sendLocationFocusEvent(
-                    groupId = groupId,
-                    focusType = focusType,
-                    planConfig = planConfig
+                emit(
+                    sendLocationFocusEvent(
+                        groupId = groupId,
+                        focusType = focusType,
+                        planConfig = planConfig
+                    )
                 )
                 val delayDuration = when (focusType) {
                     is MapHomeScreenFocusType.MEMBER -> {
@@ -85,15 +86,15 @@ class LocationRequestUseCase constructor(
                 }
                 delay(delayDuration)
             } while (currentCoroutineContext().isActive)
-        }.catch { emit("Error while boosting location") }
+        }.catch { emit(false) }
     }
 
     private suspend fun sendLocationFocusEvent(
         groupId: GroupOrSpaceId,
         focusType: MapHomeScreenFocusType,
         planConfig: PlanConfig
-    ) {
-        triggerRemoteMaybe(
+    ): Boolean {
+        return triggerRemoteMaybe(
             remotePreference = RemotePreference.CACHE(
                 key = "location_performance_location_focus_${groupId}_${(focusType as? MapHomeScreenFocusType.MEMBER)?.memberUserId}",
                 timeMillis = when (focusType) {
@@ -113,79 +114,86 @@ class LocationRequestUseCase constructor(
                 failOnError = false
             )
         ) {
-            try {
-                when (focusType) {
-                    is MapHomeScreenFocusType.MEMBER -> {
-                        if (focusType.isIdleActive) {
-                            logg.tag("location_performance")
-                                .d("Map is active (${focusType::class.simpleName}), sending ping")
+            when (focusType) {
+                is MapHomeScreenFocusType.MEMBER -> {
+                    if (focusType.isIdleActive) {
+                        logg.tag("location_performance")
+                            .d("Map is active (${focusType::class.simpleName}), sending ping")
 
-                            if (groupId.isPersonalSpace) {
-                                val requestPayload = LocationFocusSpacePayload(
-                                    locationId = focusType.memberLocationId
-                                )
-
-                                functionsApi.runAndWait(
-                                    function = ServerFunction.LOCATION_FOCUS_DEVICE,
-                                    data = requestPayload
-                                )
-                            } else {
-                                val requestPayload = LocationFocusGroupPayload(
-                                    groupId = groupId.id,
-                                    userId = focusType.memberUserId,
-                                    locationId = focusType.memberLocationId
-                                )
-
-                                functionsApi.runAndWait(
-                                    function = ServerFunction.LOCATION_FOCUS_MEMBER,
-                                    data = requestPayload
-                                )
-                            }
-                        } else {
-                            logg.tag("location_performance")
-                                .v("User not sharing, skip ping")
-                        }
-                    }
-
-                    else -> {
                         if (groupId.isPersonalSpace) {
-                            if (personalSpaceLocal.personalSpaceState.value.data?.areOtherDevicesActive == true) {
-                                logg.tag("location_performance")
-                                    .v("Map is active (${focusType::class.simpleName}), sending ping")
-                                val requestPayload = LocationFocusSpacePayload(
-                                    locationId = null
-                                )
-
-                                functionsApi.runAndWait(
-                                    function = ServerFunction.LOCATION_FOCUS_SPACE,
-                                    data = requestPayload
-                                )
-                            } else {
-                                logg.tag("location_performance")
-                                    .v("No active devices in personal space, skip ping")
-                            }
-                        } else {
-                            logg.tag("location_performance")
-                                .v("Map is active (${focusType::class.simpleName}), sending ping")
-
-                            val requestPayload = LocationFocusGroupPayload(
-                                groupId = groupId.id,
-                                userId = null,
-                                locationId = null
+                            val requestPayload = LocationFocusSpacePayload(
+                                locationId = focusType.memberLocationId
                             )
 
-                            functionsApi.runAsync(
-                                function = ServerFunction.LOCATION_FOCUS_GROUP,
+                            functionsApi.runAndWait(
+                                function = ServerFunction.LOCATION_FOCUS_DEVICE,
+                                data = requestPayload
+                            )
+                        } else {
+                            val requestPayload = LocationFocusGroupPayload(
+                                groupId = groupId.id,
+                                userId = focusType.memberUserId,
+                                locationId = focusType.memberLocationId
+                            )
+
+                            functionsApi.runAndWait(
+                                function = ServerFunction.LOCATION_FOCUS_MEMBER,
                                 data = requestPayload
                             )
                         }
+                    } else {
+                        logg.tag("location_performance")
+                            .v("User not sharing, skip ping")
+                    }
+                    false
+                }
+
+                else -> {
+                    if (groupId.isPersonalSpace) {
+                        if (personalSpaceLocal.personalSpaceState.value.data?.areOtherDevicesActive == true) {
+                            logg.tag("location_performance")
+                                .v("Map is active (${focusType::class.simpleName}), sending ping")
+                            val requestPayload = LocationFocusSpacePayload(
+                                locationId = null
+                            )
+
+                            val response = functionsApi.runAndWait(
+                                function = ServerFunction.LOCATION_FOCUS_SPACE,
+                                data = requestPayload
+                            )
+                            parseWasHighPriorityRequest(response)
+                        } else {
+                            logg.tag("location_performance")
+                                .v("No active devices in personal space, skip ping")
+                            false
+                        }
+                    } else {
+                        logg.tag("location_performance")
+                            .v("Map is active (${focusType::class.simpleName}), sending ping")
+
+                        val requestPayload = LocationFocusGroupPayload(
+                            groupId = groupId.id,
+                            userId = null,
+                            locationId = null
+                        )
+
+                        val response = functionsApi.runAndWait(
+                            function = ServerFunction.LOCATION_FOCUS_GROUP,
+                            data = requestPayload
+                        )
+                        parseWasHighPriorityRequest(response)
                     }
                 }
-            } catch (e: Exception) {
-                throw e
             }
+        } ?: false
+    }
 
-            Unit
+    private fun parseWasHighPriorityRequest(execution: FunctionExecutionRaw): Boolean {
+        if (!execution.isSuccess) return false
+        return try {
+            execution.response<LocationFocusResponse>().data.wasHighPriorityRequest
+        } catch (e: Exception) {
+            false
         }
     }
 

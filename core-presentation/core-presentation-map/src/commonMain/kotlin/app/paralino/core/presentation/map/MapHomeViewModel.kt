@@ -171,10 +171,12 @@ class MapHomeViewModel constructor(
         realtimeManager = realtimeManager,
         sharingManager = sharingManager,
         deviceApiProvider = deviceApiProvider,
+        memberActionHandler = memberActionHandler,
         coroutineScope = coroutineScope,
         uiRefreshPingFlow = uiRefreshPingFlow,
         uiFocusedStatus = uiFocusedStatus,
-        groupIdData = groupIdData
+        groupIdData = groupIdData,
+        updateReadyState = ::updateReadyState
     )
     private val mapStateMapper = MapStateMapper(
         appPrefs = appPrefs,

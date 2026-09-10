@@ -336,6 +336,11 @@ data class LocationFocusSpacePayload constructor(
 )
 
 @Serializable
+data class LocationFocusResponse constructor(
+    val wasHighPriorityRequest: Boolean = false
+)
+
+@Serializable
 data class PromoCodeRedeemPayload(
     val code: String
 )
