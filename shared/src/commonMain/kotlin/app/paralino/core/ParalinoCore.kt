@@ -308,7 +308,7 @@ val dataSourceModule = module {
 val coreModule = module {
     single { CoreAppManager(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { GeofenceRegistrationMonitor(get(), get(), get(), get(), get()) }
-    single { ActiveSharingEngine(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+    single { ActiveSharingEngine(get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { RealtimeSubscriptionManager(get(), get()) }
 
     factory { LoginUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
@@ -346,7 +346,7 @@ val coreModule = module {
     single { GroupPreRefreshUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { GroupRemoveUseCase(get(), get(), get(), get(), get(), get()) }
     single { GroupCreateUseCase(get(), get(), get(), get(), get(), get(), get(), get()) }
-    single { RefreshEverythingUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+    single { RefreshEverythingUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { GetMemberWithLocationsUseCase(get(), get(), get(), get()) }
     single { GetLocationHistoryUseCase(get(), get()) }
     single { RefreshLocationHistoryUseCase(get(), get(), get(), get(), get(), get(), get()) }

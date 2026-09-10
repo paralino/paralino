@@ -1,8 +1,8 @@
 package app.paralino.core.repo.places
 
-import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.location.MemberDeviceStatusProcessor
 import app.paralino.core.domain.location.PrivacyZoneObfuscator
+import app.paralino.core.domain.user.RefreshEverythingUseCase
 import app.paralino.core.logg
 import app.paralino.core.models.base.DeviceType
 import app.paralino.core.models.base.GroupOrSpaceId
@@ -11,7 +11,6 @@ import app.paralino.core.models.location.LocationDataModel
 import app.paralino.core.models.location.LocationPerformanceRequest
 import app.paralino.core.models.location.LocationPerformanceType
 import app.paralino.core.models.location.MemberGroupId
-import app.paralino.core.models.location.MemberGroupIdForUpload
 import app.paralino.core.models.places.GroupPlace
 import app.paralino.core.models.places.GroupPlaceData
 import app.paralino.core.models.places.GroupPlaceGeofenceData
@@ -54,7 +53,7 @@ class PlacesActivityProcessor(
     private val scopeProvider: ICoroutineScopeProvider,
     private val locationSharingManager: LocationSharingManager,
     private val oneTimeLocation: IOneTimeLocationProvider,
-    private val appPrefs: AppPrefs,
+    private val refreshEverythingUseCase: RefreshEverythingUseCase,
     private val privacyZoneObfuscator: PrivacyZoneObfuscator,
 ) : IPlacesActivityProcessor() {
 
@@ -200,6 +199,8 @@ class PlacesActivityProcessor(
                     logg.w("place_activity", "Error notifying place enter: ${e.message}")
                 }
             }
+
+            refreshEverythingUseCase.refreshEverythingFallback()
         }
     }
 
@@ -239,6 +240,8 @@ class PlacesActivityProcessor(
                     logg.w("place_activity", "Error notifying place exit: ${e.message}")
                 }
             }
+
+            refreshEverythingUseCase.refreshEverythingFallback()
         }
     }
 

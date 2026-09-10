@@ -1,6 +1,7 @@
 package app.paralino.core.domain.location
 
 import app.paralino.core.domain.location.history.ILocationHistoryUploadEngine
+import app.paralino.core.domain.user.RefreshEverythingUseCase
 import app.paralino.core.logg
 import app.paralino.core.models.AppHost
 import app.paralino.core.models.data
@@ -38,7 +39,8 @@ class ActiveSharingEngine(
     private val locationUploadEngine: LocationUploadEngine,
     private val locationHistoryUploadEngine: ILocationHistoryUploadEngine,
     private val locationCache: LocationCacheRepository,
-    private val appConfig: AppConfigRepository
+    private val appConfig: AppConfigRepository,
+    private val refreshEverythingUseCase: RefreshEverythingUseCase,
 ): BaseRepository() {
 
     private var activePingJob: Job? = null
@@ -60,7 +62,7 @@ class ActiveSharingEngine(
                 ) { deviceStatus, locationPerformance ->
                     if (locationSharingManager.isSharingActive()) {
                         logg.v("location_service", "Sending location status due to device status change")
-                        updateStatus()
+                        updateStatusAndRefresh()
                     }
                 }
                     .launchIn(scopeProvider.defaultIOScope)
@@ -100,7 +102,7 @@ class ActiveSharingEngine(
                     delay(20.minutes)
                     if (deviceApiProvider.batteryLevel?.takeIf { it < BatteryNotificationsSettingsData.LOW_BATTERY_LEVEL } != null) {
                         logg.d("location_service", "Sending location status for low battery")
-                        updateStatus()
+                        updateStatusAndRefresh()
                     } else {
                         logg.v("location_service", "Skip sending location status for low battery")
                     }
@@ -111,7 +113,7 @@ class ActiveSharingEngine(
                     delay(2.hours)
                     if (locationCache.lastLocation?.isOlderThan(3.hours) != false) {
                         logg.d("location_service", "Sending location status after inactivity")
-                        updateStatus()
+                        updateStatusAndRefresh()
                     } else {
                         logg.v("location_service", "Skip sending location status after inactivity")
                     }
@@ -122,7 +124,7 @@ class ActiveSharingEngine(
         }
     }
 
-    private fun updateStatus() {
+    private fun updateStatusAndRefresh() {
         scopeProvider.userSessionIOScope.launch {
             try {
                 locationUploadEngine.updateDeviceStatusOnly(
@@ -131,6 +133,10 @@ class ActiveSharingEngine(
             } catch (e: Exception) {
                 logg.w("Error updating device status: ${e.message}")
             }
+        }
+
+        scopeProvider.userSessionIOScope.launch {
+            refreshEverythingUseCase.refreshEverythingFallback()
         }
     }
 }

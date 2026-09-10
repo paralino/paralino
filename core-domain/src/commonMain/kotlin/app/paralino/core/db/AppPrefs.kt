@@ -77,6 +77,7 @@ class AppPrefs(
         const val keyTrackingBoost = "prefs.device.trackingBoostEndTimeUTC"
         const val keyWasUserLoggedIn = "prefs.device.hadUser"
         const val keyDidEverFullyRefreshed = "prefs.device.everRefreshedData"
+        const val keyLastFullRefreshTime = "prefs.device.lastFullRefreshTime"
         const val keyDidStartedGroupOnboarding = "prefs.group.onboardingStarted"
         const val keyErrorReporting = "prefs.user.errorReporting"
         const val keyErrorReportingID = "prefs.user.errorReporting.ID"
@@ -375,6 +376,16 @@ class AppPrefs(
         get() = provider.userSettings.getBoolean(keyDidEverFullyRefreshed, false)
         set(value) {
             provider.userSettings.putBoolean(keyDidEverFullyRefreshed, value)
+        }
+
+    var lastFullRefreshTime: Instant?
+        get() = provider.userSettings.getString(keyLastFullRefreshTime, "").isoWithOffsetToInstant()
+        set(value) {
+            if (value != null) {
+                provider.userSettings.putString(keyLastFullRefreshTime, value.toString())
+            } else {
+                provider.userSettings.remove(keyLastFullRefreshTime)
+            }
         }
 
     var errorReporting: Boolean
