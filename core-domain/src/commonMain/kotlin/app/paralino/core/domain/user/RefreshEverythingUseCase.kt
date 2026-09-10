@@ -77,9 +77,9 @@ class RefreshEverythingUseCase(
                 ),
                 remote = {
                     logg.tag("full_refresh").d("Start full refresh")
+                    configRepo.refreshConfig()
                     userRepository.refreshUserMaybe(timeDelayMillis = 0).getOrThrow()
                     personalCodesRepo.refreshPersonalCodes()
-                    configRepo.refreshConfig()
                     try {
                         userConfigRepo.refreshMaybeAndGetConfig(cacheTime = null)
                     } catch (e: Exception) {
