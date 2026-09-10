@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -110,6 +111,7 @@ fun GenericMapLibreMapWrapper(
                         start = mapData.contentPadding.calculateStartPadding(LayoutDirection.Ltr),
                         end = mapData.contentPadding.calculateEndPadding(LayoutDirection.Ltr),
                     ),
+                    isCompact = mapData.isCompactAttribution,
                     onMapAttributionExpanded = onMapAttributionExpanded
                 )
             }
@@ -144,6 +146,7 @@ fun GenericMapLibreMapWrapper(
 @Composable
 private fun MapOverlayScope.MapLibreMapOverlayContent(
     overlayPadding: PaddingValues,
+    isCompact: Boolean,
     onMapAttributionExpanded: (Boolean) -> Unit
 ) {
     Box(
@@ -183,7 +186,7 @@ private fun MapOverlayScope.MapLibreMapOverlayContent(
                 toggleButton = {
                     Box(
                         Modifier
-                            .size(40.dp)
+                            .size(if (isCompact) 30.dp else 36.dp)
                             .clip(RoundedCornerShape(percent = 50))
                             .clickable(
                                 onClick = {
@@ -197,14 +200,16 @@ private fun MapOverlayScope.MapLibreMapOverlayContent(
                         Image(
                             painter = AttributionDefaults.icon(),
                             contentDescription = contentDescription(),
-                            modifier = Modifier.size(24.dp),
+                            modifier = Modifier.size(if (isCompact) 18.dp else 22.dp),
                             colorFilter = ColorFilter.tint(MaterialTheme.colors.onSurface.copy(alpha = 0.55f)),
                         )
                     }
                 }
             )
 
-            MaplibreLogo()
+            MaplibreLogo(
+                modifier = Modifier.height(height = if (isCompact) 18.dp else 22.dp),
+            )
         }
     }
 }
@@ -215,5 +220,6 @@ class MapLibreMapUiControlledData(
     val cameraState: CameraState,
     val isSatelliteMode: Boolean,
     val contentPadding: PaddingValues,
-    val mapsSDKProvider: MapsSDKProvider?
+    val mapsSDKProvider: MapsSDKProvider?,
+    val isCompactAttribution: Boolean
 )

@@ -70,25 +70,23 @@ fun CreatePlaceScreen(
                     state = state,
                     onMapCameraSettled = {
                         vm.onEvent(
-                            CreatePlaceScreenUiEvent.OnMapPositionChanged(
-                                it
-                            )
+                            CreatePlaceScreenUiEvent.OnMapPositionChanged(it)
                         )
                     },
                     onMapInteraction = { },
                     onMapTap = { lat, lng ->
                         vm.onEvent(
                             CreatePlaceScreenUiEvent.OnMapTap(
-                                lat,
-                                lng
+                                lat = lat,
+                                lng = lng
                             )
                         )
                     },
                     onMapLongPress = { lat, lng ->
                         vm.onEvent(
                             CreatePlaceScreenUiEvent.OnMapTap(
-                                lat,
-                                lng
+                                lat = lat,
+                                lng = lng
                             )
                         )
                     }

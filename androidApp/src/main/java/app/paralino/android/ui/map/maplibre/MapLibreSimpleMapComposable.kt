@@ -239,7 +239,8 @@ private fun rememberMapLibreSimpleMapController(
                 isSatelliteMode = isSatelliteMode,
                 cameraState = cameraState,
                 contentPadding = mapContentPadding,
-                mapsSDKProvider = mapsSDKProvider
+                mapsSDKProvider = mapsSDKProvider,
+                isCompactAttribution = true
             )
         }
     }.value
