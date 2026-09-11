@@ -291,10 +291,9 @@ class RawCryptoPresentation constructor(
                         if (it?.second?.isGuestUser == false) {
                             add(ContentIdItem(text = "Email:\n**${it.second.email}**", separateWithPadding = true))
                         }
-                        add(ContentIdItem(text = "User ID:\n**${appPrefs.userId}**", separateWithPadding = true, canCopy = true))
-                        add(ContentIdItem(text = "Billing User ID:\n**${userConfigRepo.configState.value.billingCustomerId}**", separateWithPadding = true, canCopy = true))
-                        add(ContentIdItem(text = "Device ID:\n**${appPrefs.deviceId}**", separateWithPadding = true, canCopy = true))
-                        add(ContentIdItem(text = "Diagnostics ID:\n**${appPrefs.errorReportingID}**", separateWithPadding = true, canCopy = true))
+                        add(ContentIdItem(text = "User ID:\n**${appPrefs.userId}**", separateWithPadding = true))
+                        add(ContentIdItem(text = "Device ID:\n**${appPrefs.deviceId}**", separateWithPadding = true))
+                        add(ContentIdItem(text = "Diagnostics ID:\n**${appPrefs.errorReportingID}**", separateWithPadding = true))
 
                         if (appConfig.isInAppDevMode) {
                             val pushConfig = PushProviderEndpointConfig.get(
@@ -310,7 +309,7 @@ class RawCryptoPresentation constructor(
                                 providerInfo,
                                 pushConfig?.let { it.id ?: it.url } ?: appPrefs.pushTokenSynced
                             ).joinToString(separator = "\n")
-                            add(ContentIdItem(text = "Push token:\n**${info}**", separateWithPadding = true, canCopy = true))
+                            add(ContentIdItem(text = "Push token:\n**${info}**", separateWithPadding = true))
                         }
                     },
                     rawData = it?.first?.data?.let {

@@ -187,6 +187,13 @@
     <string name="settings_account_delete_alert_cancel_button2">Never mind</string>
     <string name="settings_account_delete_alert_cancel_button3">Abort</string>
     <string name="settings_account_delete_alert_cancel_button4">Close</string>
+    <string name="settings_account_info_email">Email:\n**%s**</string>
+    <string name="settings_account_info_user_id">User ID:\n**%s**</string>
+    <string name="settings_account_info_billing_id">Billing User ID:\n**%s**</string>
+    <string name="settings_account_info_device_id">Device ID:\n**%s**</string>
+    <string name="settings_account_info_diagnostics_id">Diagnostics ID:\n**%s**</string>
+    <string name="settings_account_info_push_token">Push token:\n**%s**</string>
+    <string name="settings_account_info_member_since">Member since **%s**</string>
     <string name="settings_profile_name_placeholder">Your name*</string>
     <string name="settings_section_general_title">Info &amp; support</string>
     <string name="setting_title_share">Share with friends</string>

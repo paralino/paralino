@@ -15,10 +15,14 @@ import app.paralino.core.models.Resource
 import app.paralino.core.models.base.BackendResourceIDs
 import app.paralino.core.models.base.ConfigData
 import app.paralino.core.models.base.DeviceType
+import app.paralino.core.models.base.PushProvider
 import app.paralino.core.models.data
 import app.paralino.core.models.exception
 import app.paralino.core.models.location.LocationPerformanceType
+import app.paralino.core.models.location.UserPersonalSpaceModel
 import app.paralino.core.models.mapSuccess
+import app.paralino.core.models.user.PushProviderEndpointConfig
+import app.paralino.core.models.user.UserConfigModel
 import app.paralino.core.models.user.UserMe
 import app.paralino.core.models.user.UserPersonalCode
 import app.paralino.core.models.user.UserPlans
@@ -27,15 +31,21 @@ import app.paralino.core.presentation.common.MainAlertDialog
 import app.paralino.core.provider.DeviceStatusData
 import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.provider.IValueFormatter
+import app.paralino.core.provider.NotificationSocketServiceManager
 import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.base.AppConfigRepository
 import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.location.LocationPerformanceManager
 import app.paralino.core.repo.personal_code.PersonalCodesRepository
+import app.paralino.core.repo.user.UserConfigRepository
+import app.paralino.core.repo.user.UserPersonalSpaceLocalDataSource
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.ConditionErrorType
 import app.paralino.core.utils.exceptions.UnauthorizedException
+import app.paralino.core.utils.extensions.combine
 import app.paralino.core.utils.extensions.errorString
+import app.paralino.core.utils.extensions.isoToLocalDateTime
+import app.paralino.core.utils.extensions.isoWithOffsetToInstant
 import app.paralino.core.utils.extensions.mapToPayload
 import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.coroutines.Dispatchers
@@ -45,7 +55,6 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
@@ -74,6 +83,9 @@ class SettingsViewModel(
     private val appRatingManager: AppRatingManager,
     private val appUpdateManager: IAppUpdateManager,
     private val accountStateMonitor: AppAccountStateMonitor,
+    private val userConfigRepo: UserConfigRepository,
+    private val personalSpaceLocal: UserPersonalSpaceLocalDataSource,
+    private val notificationServiceManager: NotificationSocketServiceManager,
 ) : CoreViewModel() {
 
     private val _accountState = MutableStateFlow<Payload<AccountScreenState>>(
@@ -83,6 +95,8 @@ class SettingsViewModel(
             personalCode = personalCodeRepo.activePersonalCodeState.value,
             userPlans = userRepo.userPlans.value,
             deviceStatus = deviceApiProvider.currentDeviceStatus(),
+            userConfig = userConfigRepo.configState.value,
+            personalSpace = personalSpaceLocal.personalSpaceState.value.data,
             previousState = null,
         )
     )
@@ -113,14 +127,18 @@ class SettingsViewModel(
             remoteConfigRepository.getConfigLocally(),
             personalCodeRepo.activePersonalCodeState,
             userRepo.userPlans,
-            deviceApiProvider.deviceStatus
-        ) { userState, appConfig, personalCode, userPlans, deviceStatus ->
+            deviceApiProvider.deviceStatus,
+            userConfigRepo.configState,
+            personalSpaceLocal.personalSpaceState,
+        ) { userState, appConfig, personalCode, userPlans, deviceStatus, userConfig, personalSpace ->
             mapUserState(
                 userState = userState,
                 remoteConfig = appConfig,
                 personalCode = personalCode,
                 userPlans = userPlans,
                 deviceStatus = deviceStatus,
+                userConfig = userConfig,
+                personalSpace = personalSpace.data,
                 previousState = _accountState.value.data
             )
         }.onEach { value ->
@@ -137,6 +155,8 @@ class SettingsViewModel(
         personalCode: UserPersonalCode?,
         userPlans: UserPlans,
         deviceStatus: DeviceStatusData,
+        userConfig: UserConfigModel,
+        personalSpace: UserPersonalSpaceModel?,
         previousState: AccountScreenState?,
     ): Payload<AccountScreenState> {
         return when (userState) {
@@ -171,6 +191,15 @@ class SettingsViewModel(
                                 AppFlavor.ANDROID_GOOGLE -> !appPrefs.wasAppReviewOpened
                                 AppFlavor.ANDROID_DIRECT -> false
                             },
+                            email = userStateData.email.takeIf { !userStateData.isGuestUser },
+                            userId = userStateData.id.ifBlank { appPrefs.userId },
+                            billingId = userConfig.billingCustomerId.orEmpty(),
+                                deviceId = appPrefs.deviceId,
+                                diagnosticsId = appPrefs.errorReportingID,
+                            pushToken = formatPushTokenInfo(
+                                pushProviderConfig = personalSpace?.currentDevice?.pushProviderConfig
+                            ),
+                            memberSinceDateFormatted = formatMemberSinceDate(userStateData.registration),
                             errors = buildList {
                                 if (userStateData.canVerifyEmail) {
                                     add(
@@ -200,6 +229,33 @@ class SettingsViewModel(
                 }
             }
         }
+    }
+
+    private fun formatPushTokenInfo(pushProviderConfig: String?): String? {
+        if (!appConfig.isInAppDevMode) return null
+
+        val pushConfig = PushProviderEndpointConfig.get(pushProviderConfig)
+        val providerInfo = when (notificationServiceManager.adjustedPushProvider()) {
+            PushProvider.NOT_SET -> "not_set"
+            PushProvider.DEVICE_NATIVE -> "Native"
+            PushProvider.PARALINO -> "Paralino"
+            PushProvider.UNIFIED_PUSH -> pushConfig?.distributor ?: "UnifiedPush"
+        }
+        return listOf(
+            providerInfo,
+            pushConfig?.let { it.id ?: it.url } ?: appPrefs.pushTokenSynced
+        ).joinToString(separator = "\n")
+    }
+
+    private fun formatMemberSinceDate(registration: String): String {
+        val dateTimeUTC = registration.isoWithOffsetToInstant()?.toLocalDateTime(TimeZone.UTC)
+            ?: registration.isoToLocalDateTime()
+            ?: return ""
+
+        return valueFormatter.formatBestPattern(
+            timeUTC = dateTimeUTC,
+            pattern = "MMMMdyyyy"
+        )
     }
 
     private fun sendEmailVerification() {
