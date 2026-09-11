@@ -66,13 +66,20 @@ class PlacesActivityProcessor(
             return
         }
 
-        for (place in local.getAllPlacesOnce()) {
-            if (!shouldProcessPlaceForLocation(place)) continue
-            processLocationForPlace(
-                place = place,
-                mappedLocations = mappedLocations
-            )
-        }
+        local.getAllPlacesForGroupsOnce(groupIds = mappedLocations.map { it.groupId })
+            .filter { shouldProcessPlaceForLocation(it) }
+            .forEach { place ->
+                val locationForGroup = mappedLocations
+                    .firstOrNull { it.groupId == place.groupOrSpaceId }
+                    ?.locationData
+
+                if (locationForGroup != null) {
+                    processLocationForPlace(
+                        place = place,
+                        mappedLocation = locationForGroup
+                    )
+                }
+            }
     }
 
     private suspend fun shouldProcessPlaceForLocation(place: GroupPlace): Boolean {
@@ -107,15 +114,12 @@ class PlacesActivityProcessor(
 
     private suspend fun processLocationForPlace(
         place: GroupPlace,
-        mappedLocations: List<MemberGroupId>
+        mappedLocation: LocationDataModel
     ) {
         val placeData = place.data.data ?: return
-        val locationForGroup = mappedLocations.firstOrNull { it.groupId == place.groupOrSpaceId }
-            ?.locationData
-            ?: return
 
         val movementType = getMovementType(
-            location = locationForGroup,
+            location = mappedLocation,
             place = place,
             placeData = placeData
         )
