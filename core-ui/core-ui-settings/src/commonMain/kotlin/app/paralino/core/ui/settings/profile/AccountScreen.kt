@@ -30,6 +30,8 @@ import app.paralino.core.presentation.settings.SettingsViewModel
 import app.paralino.core.resources.CoreAppIcons
 import app.paralino.core.resources.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.CoreUiState
+import app.paralino.core.ui.components.ComponentInfoBox
+import app.paralino.core.ui.components.ComponentInfoPoint
 import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.components.SettingsActionItem
 import app.paralino.core.ui.components.SettingsSectionHeader

@@ -1,5 +1,6 @@
-package app.paralino.core.ui.settings.profile
+package app.paralino.core.ui.components
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -17,6 +18,11 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -26,6 +32,8 @@ import androidx.compose.ui.unit.sp
 import app.paralino.core.resources.CoreAppIcons
 import app.paralino.core.resources.CoreAppIcons.asPainterResource
 import app.paralino.core.utils.extensions.annotatedBoldCompose
+import kotlinx.coroutines.delay
+import kotlin.time.Duration.Companion.seconds
 
 data class ComponentInfoPoint(
     val title: String? = null,
@@ -91,23 +99,41 @@ private fun ComponentInfoPointRow(
     item: ComponentInfoPoint,
     onContentCopy: ((String) -> Unit)?
 ) {
+    var copyIconConfirmation by remember { mutableStateOf(false) }
+    LaunchedEffect(copyIconConfirmation) {
+        if (copyIconConfirmation) {
+            delay(1.seconds)
+            copyIconConfirmation = false
+        }
+    }
+
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Start
     ) {
         if (onContentCopy != null) {
-            Icon(
-                modifier = Modifier
-                    .size(32.dp)
-                    .clickable {
-                        onContentCopy(item.content)
-                    }
-                    .padding(vertical = 4.dp)
-                    .padding(end = 8.dp),
-                painter = CoreAppIcons.ContentCopy.asPainterResource(),
-                contentDescription = null,
-                tint = MaterialTheme.colors.onBackground.copy(alpha = 0.8f)
+            AnimatedContent(
+                targetState = if (copyIconConfirmation) {
+                    CoreAppIcons.Check
+                } else {
+                    CoreAppIcons.ContentCopy
+                },
+                content = { icon ->
+                    Icon(
+                        modifier = Modifier
+                            .padding(end = 4.dp)
+                            .size(32.dp)
+                            .clickable {
+                                onContentCopy(item.content)
+                                copyIconConfirmation = true
+                            }
+                            .padding(vertical = 4.dp),
+                        painter = icon.asPainterResource(),
+                        contentDescription = null,
+                        tint = MaterialTheme.colors.onBackground.copy(alpha = 0.8f)
+                    )
+                }
             )
         }
         CompositionLocalProvider(LocalContentAlpha provides 0.6f) {
