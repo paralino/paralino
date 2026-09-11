@@ -673,6 +673,11 @@
     <string name="group_settings_low_battery_alerts_title">Low battery alerts</string>
     <string name="group_settings_battery_notifications_info">Decide if you want to be notified when a group member\'s battery level is low.</string>
     <string name="group_settings_battery_notifications_notice">Notifications will only be sent if members choose to share their battery data and their device detects a battery level below **15%**.</string>
+    <string name="group_settings_info_group_id">Group ID:\n**%s**</string>
+    <string name="group_settings_info_member_id">Member ID:\n**%s**</string>
+    <string name="group_settings_info_location_id">Device Location ID:\n**%s**</string>
+    <string name="group_settings_info_created_at">Created at: **%s**</string>
+    <string name="group_settings_info_member_since">Member since: **%s**</string>
     <string name="personalSpace_settings_battery_notifications_info">Decide if you want to be notified on this device if any of your devices have a low battery level.</string>
     <string name="personalSpace_settings_battery_notifications_notice">Notifications will only be sent if location tracking is activated on target device and if that device detects a battery level below **15%**.</string>
     <string name="group_create_start_title">Connect</string>

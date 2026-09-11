@@ -7,6 +7,8 @@ import kotlin.time.Instant
 data class GroupDocumentRaw constructor(
     @SerialName("\$id")
     val id: String,
+    @SerialName("\$createdAt")
+    val createdAt: Instant?,
     val ownerUserId: String,
     val groupKeyVersion: Long,
     val data: String,
@@ -25,6 +27,7 @@ data class GroupDocumentRaw constructor(
         fun from(map: Map<String, Any>): GroupDocumentRaw {
             return GroupDocumentRaw(
                 id = map["\$id"] as String,
+                createdAt = (map["\$createdAt"] as? String)?.isoWithOffsetToInstant(),
                 ownerUserId = map["ownerUserId"] as String,
                 groupKeyVersion = (map["groupKeyVersion"] as Number).toLong(),
                 data = (map["resourceData"] as? String?) ?: "",

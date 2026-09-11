@@ -1,12 +1,16 @@
 package app.paralino.core.models.raw
 
+import app.paralino.core.utils.extensions.isoWithOffsetToInstant
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlin.time.Instant
 
 @Serializable
 data class MemberDocumentRaw constructor(
     @SerialName("\$id")
     val id: String,
+    @SerialName("\$createdAt")
+    val createdAt: Instant?,
     val ownerUserId: String,
     val groupId: String,
 
@@ -25,6 +29,7 @@ data class MemberDocumentRaw constructor(
         fun from(map: Map<String, Any>): MemberDocumentRaw {
             return MemberDocumentRaw(
                 id = map["\$id"] as String,
+                createdAt = (map["\$createdAt"] as? String)?.isoWithOffsetToInstant(),
                 ownerUserId = map["ownerUserId"] as String,
                 groupId = map["groupId"] as String,
                 groupKeyVersion = (map["groupKeyVersion"] as Number).toLong(),

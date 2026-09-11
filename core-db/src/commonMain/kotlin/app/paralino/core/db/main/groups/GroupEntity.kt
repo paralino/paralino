@@ -7,6 +7,7 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "groupEntity")
 data class GroupEntity(
     @PrimaryKey val id: String,
+    @ColumnInfo(name = "createdAt") val createdAt: String?,
     @ColumnInfo(name = "ownerUserId") val ownerUserId: String,
     @ColumnInfo(name = "groupKeyVersion") val groupKeyVersion: Long,
     @ColumnInfo(name = "data") val data: String,

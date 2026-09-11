@@ -54,6 +54,7 @@ interface GroupRelatedEntitiesDao {
         val mappedMembers = members.map { member ->
             val currentMember = getMemberByIdOnce(memberId = member.id)
             member.copy(
+                createdAt = member.createdAt ?: currentMember?.createdAt,
                 settingsId = currentMember?.settingsId,
                 settingsGroupId = currentMember?.settingsGroupId,
                 settingsOwnerUserId = currentMember?.settingsOwnerUserId,

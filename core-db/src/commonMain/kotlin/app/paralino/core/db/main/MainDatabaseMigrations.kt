@@ -250,6 +250,13 @@ object MainDatabaseMigrations {
         }
     }
 
+    private val MIGRATION_24_25 = object : Migration(24, 25) {
+        override fun migrate(connection: SQLiteConnection) {
+            connection.execSQL("ALTER TABLE groupEntity ADD COLUMN createdAt TEXT DEFAULT NULL")
+            connection.execSQL("ALTER TABLE memberEntity ADD COLUMN createdAt TEXT DEFAULT NULL")
+        }
+    }
+
     val migrations: List<Migration> = listOf(
         MIGRATION_1_2,
         MIGRATION_2_3,
@@ -274,5 +281,6 @@ object MainDatabaseMigrations {
         MIGRATION_21_22,
         MIGRATION_22_23,
         MIGRATION_23_24,
+        MIGRATION_24_25,
     )
 }

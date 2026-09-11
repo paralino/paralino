@@ -17,6 +17,7 @@ class GroupsMapperLocal(
     fun local2Remote(model: GroupEntity): GroupDocumentRaw {
         return GroupDocumentRaw(
             id = model.id,
+            createdAt = model.createdAt?.isoWithOffsetToInstant(),
             ownerUserId = model.ownerUserId,
             groupKeyVersion = model.groupKeyVersion,
             data = model.data,
@@ -35,6 +36,7 @@ class GroupsMapperLocal(
     fun remote2Local(model: GroupDocumentRaw): GroupEntity {
         return GroupEntity(
             id = model.id,
+            createdAt = model.createdAt?.toString(),
             ownerUserId = model.ownerUserId,
             groupKeyVersion = model.groupKeyVersion,
             data = model.data,

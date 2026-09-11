@@ -349,7 +349,8 @@ class MemberMapperCore constructor(
             memberData = memberData,
             paralinoId = paralinoIdData,
             verificationResult = verification,
-            enforceMemberAuthentication = group.enforceMemberAuthentication
+            enforceMemberAuthentication = group.enforceMemberAuthentication,
+            createdAt = model.member.createdAt
         )
 
         return MemberModelWithLocations(
