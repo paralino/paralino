@@ -28,8 +28,6 @@ class LocationUploadEventProcessingEngine(
     private val locationPayloadRequest: HandleGetLocationPayloadRequest,
     private val saveLocationUseCase: SaveLocationUseCase,
     private val savePendingLocationUseCase: SavePendingLocationUseCase,
-    private val placesActivityProcessor: IPlacesActivityProcessor,
-    private val batteryAlertUploadEngine: IBatteryAlertUploadEngine,
     private val sharingContractFilter: LocationSharingContractFilter,
     private val deviceApiProvider: IDeviceApiProvider
 ) : ILocationEventProcessingEngine(scope = scopeProvider.userSessionIOScope) {
@@ -123,12 +121,6 @@ class LocationUploadEventProcessingEngine(
             null
         } catch (e: Exception) {
             e
-        }
-
-        // extra processing
-        triggerRemoteOnly {
-            placesActivityProcessor.processLocation(payloads)
-            batteryAlertUploadEngine.sendBatteryAlert(payloads = payloads)
         }
 
         if (uploadError != null) {
