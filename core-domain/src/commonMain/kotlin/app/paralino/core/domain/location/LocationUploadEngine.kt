@@ -88,6 +88,7 @@ class LocationUploadEngine constructor(
             } else {
                 null
             },
+            bypassFilter = true,
             saveLocally = true
         )
     }
