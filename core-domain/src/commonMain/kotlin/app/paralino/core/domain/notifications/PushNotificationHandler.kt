@@ -122,7 +122,7 @@ class PushNotificationHandler constructor(
             databaseType = BackendDatabaseType.DATA,
             collectionId = BackendResourceIDs.collectionLocationFocusID,
             queries = listOf(
-                BackendQuery.UpdatedAfter(nowUTC().minus(10.minutes).toString())
+                BackendQuery.UpdatedAfter(nowUTC().minus(3.minutes).toString())
             )
         )
             .also {
