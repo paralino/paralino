@@ -122,6 +122,8 @@ class DocumentsApi constructor(
                 }
 
                 is BackendQuery.IsNull -> Query.isNull(attribute = query.key)
+                is BackendQuery.GreaterThan -> Query.greaterThan(attribute = query.key, value = query.value)
+                is BackendQuery.UpdatedAfter -> Query.updatedAfter(value = query.value)
             }
         }
     }

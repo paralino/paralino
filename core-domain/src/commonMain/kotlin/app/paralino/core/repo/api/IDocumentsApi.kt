@@ -54,4 +54,6 @@ sealed interface BackendQuery {
     data class OR(val queries: List<BackendQuery>): BackendQuery
     data class Equals(val key: String, val value: Any): BackendQuery
     data class IsNull(val key: String): BackendQuery
+    data class GreaterThan(val key: String, val value: Any): BackendQuery
+    data class UpdatedAfter(val value: String): BackendQuery
 }

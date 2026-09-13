@@ -26,7 +26,9 @@ import app.paralino.core.models.raw.PushNotificationType
 import app.paralino.core.repo.api.BackendQuery
 import app.paralino.core.repo.api.IDocumentsApi
 import app.paralino.core.repo.base.RemotePreference
+import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.coroutines.delay
+import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
 class PushNotificationHandler constructor(
@@ -118,7 +120,10 @@ class PushNotificationHandler constructor(
 
         val locationFocusDocuments = docApi.listAllDocuments(
             databaseType = BackendDatabaseType.DATA,
-            collectionId = BackendResourceIDs.collectionLocationFocusID
+            collectionId = BackendResourceIDs.collectionLocationFocusID,
+            queries = listOf(
+                BackendQuery.UpdatedAfter(nowUTC().minus(10.minutes).toString())
+            )
         )
             .also {
                 logg.tag("push_notifications").v("Got ${it.size} location focus documents")
@@ -175,7 +180,11 @@ class PushNotificationHandler constructor(
                     .v("Processing ${it.size} location focus documents")
             }
             .forEach {
-                processNotification(push = it, notify = true)
+                processNotification(
+                    push = it,
+                    notify = true,
+                    onDelete = null
+                )
             }
 
         logg.tag("push_notifications").v("Processing notifications done")
