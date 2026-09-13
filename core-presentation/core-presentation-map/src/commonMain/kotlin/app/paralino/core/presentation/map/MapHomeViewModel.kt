@@ -218,6 +218,14 @@ class MapHomeViewModel constructor(
         updateReadyState = ::updateReadyState,
         coroutineScope = coroutineScope
     )
+    private val mapOvertakeController = MapHomeScreenOvertakeController(
+        uiState = uiState,
+        eventChannel = _eventChannel,
+        uiFocusedStatus = uiFocusedStatus,
+        appPrefs = appPrefs,
+        remoteConfig = remoteConfig,
+        coroutineScope = coroutineScope
+    )
 
     private val locationHistoryController = MutableStateFlow<LocationHistoryViewModelController?>(null)
     val historyUiState: StateFlow<LocationHistoryScreenUiState?> = locationHistoryController
@@ -238,7 +246,7 @@ class MapHomeViewModel constructor(
         setupLocationFocusManagement()
         setupStateBuilding()
         setupHistorySubscription()
-        setupFreePlanPromoPaywall()
+        mapOvertakeController.startMapHomeViewOvertakeSub()
     }
 
     private fun setupHistorySubscription() {
@@ -518,39 +526,6 @@ class MapHomeViewModel constructor(
                 }
             }
             .flowOn(Dispatchers.IO)
-    }
-
-    private fun setupFreePlanPromoPaywall() {
-        combine(
-            uiState.mapNotNull { it.asReady() },
-            uiFocusedStatus
-        ) { state, isUiFocused ->
-            state to isUiFocused
-        }
-            .distinctUntilChanged()
-            .onEach { (state, isUiFocused) ->
-                if (!isUiFocused) return@onEach
-                tryShowFreePlanPromoPaywall(state)
-            }
-            .launchIn(coroutineScope)
-    }
-
-    private fun tryShowFreePlanPromoPaywall(state: MapHomeScreenState.Ready) {
-        if (state.isPersonalSpace) return
-        if (!state.isCurrentUserOwnerOfSelectedGroup) return
-        if (state.groupPlanConfig.isPremium) return
-
-        val appReadyTime = appPrefs.detectedAppReadyTime
-        if (appReadyTime == null || !appReadyTime.isOlderThan(2.days)) return
-
-        val promoBillingId = remoteConfig.getCachedConfigOnce().freePlanPromoBillingId
-            ?.takeIf { it.isNotBlank() }
-            ?: return
-
-        if (promoBillingId == appPrefs.dismissedFreePlanPromoBillingId) return
-
-        appPrefs.dismissedFreePlanPromoBillingId = promoBillingId
-        _eventChannel.trySend(MapHomeScreenEvent.OpenPaywall(type = BillingScreenSourceType.UPGRADE_BILLING_PROMO))
     }
 
     fun onEvent(event: MapHomeScreenUiEvent) {
