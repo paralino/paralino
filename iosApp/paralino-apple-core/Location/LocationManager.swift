@@ -78,7 +78,7 @@ public class LocationManager: NSObject, ObservableObject, CoreLocationManagerDel
                 let settings = model.batterySaverPerformanceSettings
                 self?.manager.pausesLocationUpdatesAutomatically = true
                 self?.manager.desiredAccuracy = kCLLocationAccuracyThreeKilometers
-                self?.manager.distanceFilter = CLLocationDistance(settings.minUpdateDistanceMeters)
+                self?.manager.distanceFilter = CLLocationDistance(settings.config.minUpdateDistanceMeters)
             case .balanced:
                 let settings = model.balancedPerformanceSettings
                 self?.manager.pausesLocationUpdatesAutomatically = model.pausesLocationAutomatically
@@ -90,10 +90,10 @@ public class LocationManager: NSObject, ObservableObject, CoreLocationManagerDel
                 
                 // In best performance balanced mode, even in minUpdateDistance is set to 1 meter, iOS puts the app to sleep after few updates even when traveling
                 // Only when set to 0 app can have high resolution updates when traveling
-                if settings.minUpdateDistanceMeters == 0 && !settings.useHighPerformanceLocation {
+                if settings.config.minUpdateDistanceMeters == 0 && !settings.useHighPerformanceLocation {
                     self?.manager.distanceFilter = 10
                 } else {
-                    self?.manager.distanceFilter = CLLocationDistance(settings.minUpdateDistanceMeters)
+                    self?.manager.distanceFilter = CLLocationDistance(settings.config.minUpdateDistanceMeters)
                 }
             case .mediumHigh:
                 self?.manager.pausesLocationUpdatesAutomatically = false
