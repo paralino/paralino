@@ -30,7 +30,7 @@ interface IDocumentsApi {
             databaseType = databaseType,
             collectionId = collectionId,
             queries = queries,
-            limit = 50,
+            pageSize = 50,
             onNewValues = {
                 result.addAll(it)
                 true
@@ -43,7 +43,7 @@ interface IDocumentsApi {
         databaseType: BackendDatabaseType,
         collectionId: String,
         queries: List<BackendQuery> = emptyList(),
-        limit: Int = 50,
+        pageSize: Int = 50,
         onNewValues: (List<Map<String, Any>>) -> Boolean,
     )
 

@@ -61,7 +61,7 @@ class DocumentsApi constructor(
         databaseType: BackendDatabaseType,
         collectionId: String,
         queries: List<BackendQuery>,
-        limit: Int,
+        pageSize: Int,
         onNewValues: (List<Map<String, Any>>) -> Boolean,
     ) {
         remoteModule.execute {
@@ -73,14 +73,14 @@ class DocumentsApi constructor(
                     total = false,
                     queries = buildList {
                         addAll(buildQuery(queries))
-                        add(Query.limit(limit))
+                        add(Query.limit(pageSize))
                         if(cursor.isNotBlank())
                             add(Query.cursorAfter(cursor))
                     }
                 )
 
                 val shouldLoadMore = onNewValues(results.parseListOfDocuments())
-                if(shouldLoadMore && results.rows.size >= limit) {
+                if(shouldLoadMore && results.rows.size >= pageSize) {
                     cursor = results.rows.lastOrNull()?.id ?: ""
                 } else {
                     cursor = ""

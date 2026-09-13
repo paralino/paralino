@@ -38,10 +38,10 @@ class DocumentApiWrapper(
         databaseType: BackendDatabaseType,
         collectionId: String,
         queries: List<BackendQuery>,
-        limit: Int,
+        pageSize: Int,
         onNewValues: (List<Map<String, Any>>) -> Boolean
     ) {
-        api.listDocuments(databaseType, collectionId, queries, limit, onNewValues).getOrThrow()
+        api.listDocuments(databaseType, collectionId, queries, pageSize, onNewValues).getOrThrow()
     }
 
     override suspend fun deleteDocument(
@@ -78,7 +78,7 @@ interface IDocumentApiIOS {
         databaseType: BackendDatabaseType,
         collectionId: String,
         queries: List<BackendQuery>,
-        limit: Int,
+        pageSize: Int,
         onNewValues: (List<Map<String, Any>>) -> Boolean
     ): Payload<Unit>
 
