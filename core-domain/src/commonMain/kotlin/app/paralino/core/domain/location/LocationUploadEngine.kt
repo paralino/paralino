@@ -68,7 +68,12 @@ class LocationUploadEngine constructor(
         }
 
         _pendingLocation.update { current ->
-            LocationDataModel.getBetter(current, data)
+            val potentialUpdate = LocationDataModel.getBetter(current, data)
+            if (current != null && potentialUpdate != null) {
+                current.takeMostRelevantLocation(potentialUpdate)
+            } else {
+                potentialUpdate
+            }
         }
 
         locationPerformanceManager.checkPerformanceResetState()

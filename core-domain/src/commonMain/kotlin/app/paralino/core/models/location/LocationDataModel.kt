@@ -8,6 +8,7 @@ import kotlin.time.Instant
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 import kotlin.math.absoluteValue
+import kotlin.math.cos
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
@@ -40,6 +41,66 @@ data class LocationDataModel constructor(
     fun isOlderThan(duration: Duration): Boolean {
         val pinTime = timeUTCInstant ?: return false
         return pinTime.plus(duration) < nowUTC()
+    }
+
+    fun takeMostRelevantLocation(second: LocationDataModel): LocationDataModel {
+        val firstTime = timeUTCInstant
+        val secondTime = second.timeUTCInstant
+        if (firstTime == null || secondTime == null) {
+            return second
+        }
+
+        val timeValid = (firstTime - secondTime).absoluteValue <= 6.seconds
+        val distanceValid = isWithinRange(other = second, thresholdMeters = 10)
+        val accuracyValid = (accuracy - second.accuracy).absoluteValue <= 3f
+
+        val speedThresholdMs = 3f / 3.6f // ~3 km/h
+        val speedValid = if (speed != null && second.speed != null) {
+            (speed - second.speed).absoluteValue < speedThresholdMs
+        } else {
+            speed == second.speed
+        }
+
+        val altitudeValid = if (altitude != null && second.altitude != null) {
+            (altitude - second.altitude).absoluteValue < 10f
+        } else {
+            altitude == second.altitude
+        }
+
+        val areOtherFieldsSame = endTimeUTC == second.endTimeUTC
+                && isMasked == second.isMasked
+                && isApproximate == second.isApproximate
+                && isInPrivacyZone == second.isInPrivacyZone
+                && privacyZoneMessage == second.privacyZoneMessage
+
+        return if (
+            timeValid
+            && distanceValid
+            && accuracyValid
+            && speedValid
+            && altitudeValid
+            && areOtherFieldsSame
+        ) {
+            this
+        } else {
+            second
+        }
+    }
+
+    // flat-earth approximation - use for only short distance check
+    private fun isWithinRange(
+        other: LocationDataModel,
+        thresholdMeters: Int = 10
+    ): Boolean {
+        val avgLat = (lat + other.lat) / 2
+        val metersPerDegreeLat = 111320.0
+        val metersPerDegreeLng = 111320.0 * cos(avgLat * 0.01745329252)
+
+        val deltaLat = (other.lat - lat) * metersPerDegreeLat
+        val deltaLng = (other.lng - lng) * metersPerDegreeLng
+
+        val distanceSquared = deltaLat * deltaLat + deltaLng * deltaLng
+        return distanceSquared <= (thresholdMeters * thresholdMeters)
     }
 
     companion object {
