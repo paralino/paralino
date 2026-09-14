@@ -71,7 +71,7 @@ class LocationPayloadProvider(
         when (result) {
             is LocationPayloadStatus.Success -> {
                 val status = memberDeviceStatusProvider.getStatus(groupId = groupId, contract = contract)
-                val locationData = safeLet(data, contract) { data, contract ->
+                val adjustedLocationData = safeLet(data, contract) { data, contract ->
                     val zoneResult = if (!groupId.isPersonalSpace) {
                         privacyZoneObfuscator.obfuscateIfInsideZone(
                             groupId = groupId,
@@ -128,13 +128,13 @@ class LocationPayloadProvider(
                         endTimeUTC = contract.endTimeUTC?.takeIf { contract.shareDeviceStatus },
                         lat = (adjustedCoordinates?.location?.lat ?: zoneResult?.lat ?: data.lat).roundToPrecision(decimalPlaces = 6),
                         lng = (adjustedCoordinates?.location?.lng ?: zoneResult?.lng ?: data.lng).roundToPrecision(decimalPlaces = 6),
-                        accuracy = adjustedAccuracy,
+                        accuracy = adjustedAccuracy.roundToPrecision(decimalPlaces = 0),
                         speed = data.speed?.takeIf {
                             contract.shareSpeed && it != 0f && !isApproximate
                         },
                         altitude = data.altitude?.takeIf {
                             contract.shareElevation && it != 0f && !isApproximate
-                        },
+                        }?.roundToPrecision(0),
                         isMasked = false,
                         isApproximate = isApproximate,
                         isInPrivacyZone = isSharingInPrivacyZone,
@@ -147,22 +147,22 @@ class LocationPayloadProvider(
                 }
 
                 val locationHistory = safeLet(
-                    locationData,
+                    adjustedLocationData,
                     contract?.takeIf { it.saveToHistory }
-                ) { data, contract ->
-                    if (data.timeUTC != null && status.timeUTC != null) {
+                ) { adjustedLocationData, contract ->
+                    if (adjustedLocationData.timeUTC != null && status.timeUTC != null) {
                         LocationHistoryPointModel(
                             id = cryptoCore.randomId(length = 8, alphabet = AlphabetType.EXTENDED),
                             loc = LocationHistoryPointLocationModel(
-                                tA = data.timeUTC,
+                                tA = adjustedLocationData.timeUTC,
                                 tB = null,
-                                lat = data.lat.roundToPrecision(decimalPlaces = 5),
-                                lng = data.lng.roundToPrecision(decimalPlaces = 5),
+                                lat = adjustedLocationData.lat.roundToPrecision(decimalPlaces = 5),
+                                lng = adjustedLocationData.lng.roundToPrecision(decimalPlaces = 5),
                                 // we only need partial decimal places for accuracy, speed and elevation
                                 // that is already more than enough
-                                acc = data.accuracy.roundToPrecision(decimalPlaces = -1),
-                                spd = data.speed?.roundToPrecision(decimalPlaces = 1),
-                                alt = data.altitude?.roundToPrecision(decimalPlaces = -1)
+                                acc = adjustedLocationData.accuracy.roundToPrecision(decimalPlaces = -1),
+                                spd = adjustedLocationData.speed?.roundToPrecision(decimalPlaces = 1),
+                                alt = adjustedLocationData.altitude?.roundToPrecision(decimalPlaces = -1)
                             ),
                             status = LocationHistoryPointStatusModel(
                                 tA = status.timeUTC,
@@ -182,7 +182,7 @@ class LocationPayloadProvider(
 
                 return result.copy(
                     payload = result.payload.copy(
-                        locationData = locationData,
+                        locationData = adjustedLocationData,
                         deviceStatus = status,
                         locationHistory = locationHistory
                     )
