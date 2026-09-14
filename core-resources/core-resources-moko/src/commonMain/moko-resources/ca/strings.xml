@@ -706,11 +706,11 @@
     <string name="place_create_suggestion_coffee">Millor cafè</string>
     <string name="place_list_menu_delete">Esborrar lloc</string>
     <string name="place_list_delete_place_alert_title">Esteu segurs que voleu eliminar aquest lloc?</string>
-    <string name="place_detail_setting_button_notify_enter">Entrar</string>
-    <string name="place_detail_setting_button_notify_exit">Sortir</string>
+    <string name="place_detail_setting_button_notify_enter">Arriba</string>
+    <string name="place_detail_setting_button_notify_exit">Surt</string>
     <string name="place_detail_notification_settings_title">Alertes de lloc</string>
-    <string name="place_detail_notification_settings_info_group">Trieu si voleu rebre notificacions quan cada membre del grup entri o surti d\'aquest lloc.</string>
-    <string name="place_detail_notification_settings_info_personal">Trieu si voleu rebre notificacions quan un dels vostres dispositius entri o surti d\'aquest lloc.</string>
+    <string name="place_detail_notification_settings_info_group">Trieu si voleu rebre notificacions quan cada membre del grup arribi a aquest lloc o en surti.</string>
+    <string name="place_detail_notification_settings_info_personal">Trieu si voleu rebre notificacions quan un dels vostres dispositius arribi a aquest lloc o en surti.</string>
     <string name="place_sensitivity_screen_title">Sensibilitat de la ubicació</string>
     <string name="place_sensitivity_info_member">Si les alertes de lloc són inexactes, ajusteu aquestes configuracions per millorar-les.</string>
     <string name="place_sensitivity_info_owner">Si les alertes de lloc són inexactes, ajusteu aquestes configuracions per millorar-les. Podeu aplicar canvis per a tots els membres o només per a aquest dispositiu.</string>

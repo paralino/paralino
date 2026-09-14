@@ -706,11 +706,11 @@
     <string name="place_create_suggestion_coffee">Καλύτερος Καφές</string>
     <string name="place_list_menu_delete">Διαγραφή τοποθεσίας</string>
     <string name="place_list_delete_place_alert_title">Είστε σίγουροι ότι θέλετε να διαγράψετε αυτό το μέρος;</string>
-    <string name="place_detail_setting_button_notify_enter">Είσοδος</string>
-    <string name="place_detail_setting_button_notify_exit">Έξοδος</string>
+    <string name="place_detail_setting_button_notify_enter">Φτάνει</string>
+    <string name="place_detail_setting_button_notify_exit">Φεύγει</string>
     <string name="place_detail_notification_settings_title">Ειδοποιήσεις τοποθεσίας</string>
-    <string name="place_detail_notification_settings_info_group">Επιλέξτε αν θέλετε να λαμβάνετε ειδοποιήσεις όταν κάθε μέλος της ομάδας εισέρχεται ή εξέρχεται από αυτήν την τοποθεσία.</string>
-    <string name="place_detail_notification_settings_info_personal">Επιλέξτε αν θέλετε να λαμβάνετε ειδοποιήσεις όταν μία από τις συσκευές σας εισέρχεται ή εξέρχεται από αυτήν την τοποθεσία.</string>
+    <string name="place_detail_notification_settings_info_group">Επιλέξτε αν θέλετε να λαμβάνετε ειδοποιήσεις όταν κάθε μέλος της ομάδας φτάνει σε αυτήν την τοποθεσία ή φεύγει από αυτήν.</string>
+    <string name="place_detail_notification_settings_info_personal">Επιλέξτε αν θέλετε να λαμβάνετε ειδοποιήσεις όταν μία από τις συσκευές σας φτάνει σε αυτήν την τοποθεσία ή φεύγει από αυτήν.</string>
     <string name="place_sensitivity_screen_title">Ευαισθησία Τοποθεσίας</string>
     <string name="place_sensitivity_info_member">Εάν οι ειδοποιήσεις τοποθεσίας είναι ανακριβείς, προσαρμόστε αυτές τις ρυθμίσεις για να τις βελτιώσετε.</string>
     <string name="place_sensitivity_info_owner">Εάν οι ειδοποιήσεις τοποθεσίας είναι ανακριβείς, προσαρμόστε αυτές τις ρυθμίσεις για να τις βελτιώσετε. Μπορείτε να εφαρμόσετε αλλαγές για όλα τα μέλη ή μόνο για αυτή τη συσκευή.</string>

@@ -706,11 +706,11 @@
     <string name="place_create_suggestion_coffee">Bästa kaffe</string>
     <string name="place_list_menu_delete">Ta bort plats</string>
     <string name="place_list_delete_place_alert_title">Är du säker på att du vill radera den här platsen?</string>
-    <string name="place_detail_setting_button_notify_enter">Ange</string>
-    <string name="place_detail_setting_button_notify_exit">Avsluta</string>
+    <string name="place_detail_setting_button_notify_enter">Anländer</string>
+    <string name="place_detail_setting_button_notify_exit">Lämnar</string>
     <string name="place_detail_notification_settings_title">Platsaviseringar</string>
-    <string name="place_detail_notification_settings_info_group">Välj om du vill ta emot meddelanden när varje gruppmedlem går in eller ut ur denna plats.</string>
-    <string name="place_detail_notification_settings_info_personal">Välj om du vill ta emot meddelanden när en av dina enheter går in eller ut ur denna plats.</string>
+    <string name="place_detail_notification_settings_info_group">Välj om du vill ta emot meddelanden när varje gruppmedlem anländer till eller lämnar den här platsen.</string>
+    <string name="place_detail_notification_settings_info_personal">Välj om du vill ta emot meddelanden när en av dina enheter anländer till eller lämnar den här platsen.</string>
     <string name="place_sensitivity_screen_title">Platskänslighet</string>
     <string name="place_sensitivity_info_member">Om platsaviseringar är felaktiga, justera dessa inställningar för att förbättra dem.</string>
     <string name="place_sensitivity_info_owner">Om platsaviseringar är felaktiga, justera dessa inställningar för att förbättra dem. Du kan tillämpa ändringar för alla medlemmar eller bara denna enhet.</string>

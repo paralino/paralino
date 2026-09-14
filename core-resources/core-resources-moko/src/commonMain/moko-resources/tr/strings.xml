@@ -706,11 +706,11 @@
     <string name="place_create_suggestion_coffee">En iyi kahve</string>
     <string name="place_list_menu_delete">Yeri sil</string>
     <string name="place_list_delete_place_alert_title">Bu yeri silmek istediğinize emin misiniz?</string>
-    <string name="place_detail_setting_button_notify_enter">Giriş</string>
-    <string name="place_detail_setting_button_notify_exit">Çıkış</string>
+    <string name="place_detail_setting_button_notify_enter">Varır</string>
+    <string name="place_detail_setting_button_notify_exit">Ayrılır</string>
     <string name="place_detail_notification_settings_title">Yer bildirimleri</string>
-    <string name="place_detail_notification_settings_info_group">Her grup üyesinin bu yere girdiğinde veya çıktığında bildirim alıp almayacağını seçin.</string>
-    <string name="place_detail_notification_settings_info_personal">Cihazlarınızdan birinin bu yere girdiğinde veya çıktığında bildirim alıp almayacağınızı seçin.</string>
+    <string name="place_detail_notification_settings_info_group">Her grup üyesinin bu yere vardığında veya buradan ayrıldığında bildirim alıp almayacağını seçin.</string>
+    <string name="place_detail_notification_settings_info_personal">Cihazlarınızdan birinin bu yere vardığında veya buradan ayrıldığında bildirim alıp almayacağınızı seçin.</string>
     <string name="place_sensitivity_screen_title">Konum Hassasiyeti</string>
     <string name="place_sensitivity_info_member">Yer bildirimleri yanlışsa, bunları iyileştirmek için bu ayarları düzenleyin.</string>
     <string name="place_sensitivity_info_owner">Yer bildirimleri yanlışsa, bunları iyileştirmek için bu ayarları düzenleyin. Değişiklikleri tüm üyeler için veya sadece bu cihaz için uygulayabilirsiniz.</string>

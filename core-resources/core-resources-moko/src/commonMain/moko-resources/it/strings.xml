@@ -706,11 +706,11 @@
     <string name="place_create_suggestion_coffee">Miglior caffè</string>
     <string name="place_list_menu_delete">Elimina luogo</string>
     <string name="place_list_delete_place_alert_title">Sei sicuro di voler eliminare questo luogo?</string>
-    <string name="place_detail_setting_button_notify_enter">Entra</string>
-    <string name="place_detail_setting_button_notify_exit">Esci</string>
+    <string name="place_detail_setting_button_notify_enter">Arriva</string>
+    <string name="place_detail_setting_button_notify_exit">Lascia</string>
     <string name="place_detail_notification_settings_title">Avvisi sui luoghi</string>
-    <string name="place_detail_notification_settings_info_group">Scegli se ricevere notifiche quando ciascun membro del gruppo entra o esce da questo luogo.</string>
-    <string name="place_detail_notification_settings_info_personal">Scegli se ricevere notifiche quando uno dei tuoi dispositivi entra o esce da questo luogo.</string>
+    <string name="place_detail_notification_settings_info_group">Scegli se ricevere notifiche quando ciascun membro del gruppo arriva in questo luogo o lo lascia.</string>
+    <string name="place_detail_notification_settings_info_personal">Scegli se ricevere notifiche quando uno dei tuoi dispositivi arriva in questo luogo o lo lascia.</string>
     <string name="place_sensitivity_screen_title">Sensibilità della posizione</string>
     <string name="place_sensitivity_info_member">Se gli avvisi sui luoghi sono imprecisi, regola queste impostazioni per migliorarli.</string>
     <string name="place_sensitivity_info_owner">Se gli avvisi sui luoghi sono imprecisi, regola queste impostazioni per migliorarli. Puoi applicare le modifiche a tutti i membri o solo a questo dispositivo.</string>

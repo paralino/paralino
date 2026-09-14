@@ -706,11 +706,11 @@
     <string name="place_create_suggestion_coffee">Beste Koffie</string>
     <string name="place_list_menu_delete">Verwijder plaats</string>
     <string name="place_list_delete_place_alert_title">Weet u zeker dat u deze plaats wilt verwijderen?</string>
-    <string name="place_detail_setting_button_notify_enter">Voer in</string>
-    <string name="place_detail_setting_button_notify_exit">Verlaat</string>
+    <string name="place_detail_setting_button_notify_enter">Komt aan</string>
+    <string name="place_detail_setting_button_notify_exit">Vertrekt</string>
     <string name="place_detail_notification_settings_title">Plaatswaarschuwingen</string>
-    <string name="place_detail_notification_settings_info_group">Kies of u meldingen wilt ontvangen wanneer elk groepslid deze locatie binnenkomt of verlaat.</string>
-    <string name="place_detail_notification_settings_info_personal">Kies of u meldingen wilt ontvangen wanneer een van uw apparaten deze locatie binnenkomt of verlaat.</string>
+    <string name="place_detail_notification_settings_info_group">Kies of u meldingen wilt ontvangen wanneer elk groepslid op deze locatie aankomt of vertrekt.</string>
+    <string name="place_detail_notification_settings_info_personal">Kies of u meldingen wilt ontvangen wanneer een van uw apparaten op deze locatie aankomt of vertrekt.</string>
     <string name="place_sensitivity_screen_title">Locatiegevoeligheid</string>
     <string name="place_sensitivity_info_member">Als plaatsmeldingen onnauwkeurig zijn, pas dan deze instellingen aan om ze te verbeteren.</string>
     <string name="place_sensitivity_info_owner">Als plaatsmeldingen onnauwkeurig zijn, pas dan deze instellingen aan om ze te verbeteren. U kunt wijzigingen toepassen voor alle leden of alleen voor dit apparaat.</string>

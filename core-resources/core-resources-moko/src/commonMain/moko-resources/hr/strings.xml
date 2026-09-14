@@ -709,8 +709,8 @@
     <string name="place_detail_setting_button_notify_enter">Dolazak</string>
     <string name="place_detail_setting_button_notify_exit">Odlazak</string>
     <string name="place_detail_notification_settings_title">Postavke obavijesti</string>
-    <string name="place_detail_notification_settings_info_group">Odaberite želite li primati obavijesti kada svaki član grupe uđe ili izađe iz ovog mjesta.</string>
-    <string name="place_detail_notification_settings_info_personal">Odaberite želite li primati obavijesti kada jedan od vaših uređaja uđe ili izađe iz ovog mjesta.</string>
+    <string name="place_detail_notification_settings_info_group">Odaberite želite li primati obavijesti kada svaki član grupe stigne na ovo mjesto ili ga napusti.</string>
+    <string name="place_detail_notification_settings_info_personal">Odaberite želite li primati obavijesti kada jedan od vaših uređaja stigne na ovo mjesto ili ga napusti.</string>
     <string name="place_sensitivity_screen_title">Osjetljivost lokacije</string>
     <string name="place_sensitivity_info_member">Ako su upozorenja o mjestima netočna, prilagodite ove postavke kako biste ih poboljšali.</string>
     <string name="place_sensitivity_info_owner">Ako su upozorenja o mjestima netočna, prilagodite ove postavke kako biste ih poboljšali. Možete primijeniti promjene za sve članove ili samo za ovaj uređaj.</string>

@@ -706,11 +706,11 @@
     <string name="place_create_suggestion_coffee">Bedste kaffe</string>
     <string name="place_list_menu_delete">Slet sted</string>
     <string name="place_list_delete_place_alert_title">Er du sikker på, at du vil slette dette sted?</string>
-    <string name="place_detail_setting_button_notify_enter">Indtast</string>
-    <string name="place_detail_setting_button_notify_exit">Forlad</string>
+    <string name="place_detail_setting_button_notify_enter">Ankommer</string>
+    <string name="place_detail_setting_button_notify_exit">Forlader</string>
     <string name="place_detail_notification_settings_title">Stedalarmer</string>
-    <string name="place_detail_notification_settings_info_group">Vælg, om du vil modtage meddelelser, når hvert gruppemedlem træder ind eller forlader dette sted.</string>
-    <string name="place_detail_notification_settings_info_personal">Vælg, om du vil modtage meddelelser, når en af dine enheder træder ind eller forlader dette sted.</string>
+    <string name="place_detail_notification_settings_info_group">Vælg, om du vil modtage meddelelser, når hvert gruppemedlem ankommer til eller forlader dette sted.</string>
+    <string name="place_detail_notification_settings_info_personal">Vælg, om du vil modtage meddelelser, når en af dine enheder ankommer til eller forlader dette sted.</string>
     <string name="place_sensitivity_screen_title">Placeringens følsomhed</string>
     <string name="place_sensitivity_info_member">Hvis stedvarsler er unøjagtige, juster disse indstillinger for at forbedre dem.</string>
     <string name="place_sensitivity_info_owner">Hvis stedvarsler er unøjagtige, juster disse indstillinger for at forbedre dem. Du kan anvende ændringer for alle medlemmer eller kun denne enhed.</string>

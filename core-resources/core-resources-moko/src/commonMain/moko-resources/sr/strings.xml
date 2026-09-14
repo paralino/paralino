@@ -706,11 +706,11 @@
     <string name="place_create_suggestion_coffee">Најбоља кафа</string>
     <string name="place_list_menu_delete">Избриши локацију</string>
     <string name="place_list_delete_place_alert_title">Да ли сте сигурни да желите да избришете ово место?</string>
-    <string name="place_detail_setting_button_notify_enter">Улаз</string>
-    <string name="place_detail_setting_button_notify_exit">Излаз</string>
+    <string name="place_detail_setting_button_notify_enter">Долазак</string>
+    <string name="place_detail_setting_button_notify_exit">Одлазак</string>
     <string name="place_detail_notification_settings_title">Упозорења о местима</string>
-    <string name="place_detail_notification_settings_info_group">Изаберите да ли желите да примате обавештења када сваки члан групе уђе у ову локацију или је напусти.</string>
-    <string name="place_detail_notification_settings_info_personal">Изаберите да ли желите да примате обавештења када један од ваших уређаја уђе у ову локацију или је напусти.</string>
+    <string name="place_detail_notification_settings_info_group">Изаберите да ли желите да примате обавештења када сваки члан групе стигне на ово место или га напусти.</string>
+    <string name="place_detail_notification_settings_info_personal">Изаберите да ли желите да примате обавештења када један од ваших уређаја стигне на ово место или га напусти.</string>
     <string name="place_sensitivity_screen_title">Осетљивост локације</string>
     <string name="place_sensitivity_info_member">Ако су обавештења о локацији нетачна, прилагодите ова подешавања да бисте их побољшали.</string>
     <string name="place_sensitivity_info_owner">Ако су обавештења о локацији нетачна, прилагодите ова подешавања да бисте их побољшали. Промене можете применити за све чланове или само за овај уређај.</string>

@@ -762,11 +762,11 @@
     <string name="place_list_menu_delete">Delete place</string>
     <string name="place_list_delete_place_alert_title">Are you sure you want to delete this place?</string>
     <string name="place_detail_change_location">Change location</string>
-    <string name="place_detail_setting_button_notify_enter">Enter</string>
-    <string name="place_detail_setting_button_notify_exit">Exit</string>
+    <string name="place_detail_setting_button_notify_enter">Arrives</string>
+    <string name="place_detail_setting_button_notify_exit">Leaves</string>
     <string name="place_detail_notification_settings_title">Place alerts</string>
-    <string name="place_detail_notification_settings_info_group">Choose whether to receive notifications when each group member enters or exits this place.</string>
-    <string name="place_detail_notification_settings_info_personal">Choose whether to receive notifications when one of your devices enters or exits this place.</string>
+    <string name="place_detail_notification_settings_info_group">Choose whether to receive notifications when each group member arrives at or leaves this place.</string>
+    <string name="place_detail_notification_settings_info_personal">Choose whether to receive notifications when one of your devices arrives at or leaves this place.</string>
     <string name="place_sensitivity_screen_title">Location Sensitivity</string>
     <string name="place_sensitivity_info_member">If place alerts are inaccurate, adjust these settings to improve them.</string>
     <string name="place_sensitivity_info_owner">If place alerts are inaccurate, adjust these settings to improve them. You can apply changes for all members or just this device.</string>

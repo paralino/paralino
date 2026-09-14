@@ -706,11 +706,11 @@
     <string name="place_create_suggestion_coffee">Melhor Café</string>
     <string name="place_list_menu_delete">Excluir lugar</string>
     <string name="place_list_delete_place_alert_title">Você tem certeza de que deseja excluir este local?</string>
-    <string name="place_detail_setting_button_notify_enter">Entrada</string>
-    <string name="place_detail_setting_button_notify_exit">Saída</string>
+    <string name="place_detail_setting_button_notify_enter">Chega</string>
+    <string name="place_detail_setting_button_notify_exit">Sai</string>
     <string name="place_detail_notification_settings_title">Alertas de lugares</string>
-    <string name="place_detail_notification_settings_info_group">Escolha se deseja receber notificações quando cada membro do grupo entrar ou sair deste local.</string>
-    <string name="place_detail_notification_settings_info_personal">Escolha se deseja receber notificações quando um de seus dispositivos entrar ou sair deste local.</string>
+    <string name="place_detail_notification_settings_info_group">Escolha se deseja receber notificações quando cada membro do grupo chegar a este local ou sair dele.</string>
+    <string name="place_detail_notification_settings_info_personal">Escolha se deseja receber notificações quando um de seus dispositivos chegar a este local ou sair dele.</string>
     <string name="place_sensitivity_screen_title">Sensibilidade de Localização</string>
     <string name="place_sensitivity_info_member">Se os alertas de local forem imprecisos, ajuste essas configurações para melhorá-los.</string>
     <string name="place_sensitivity_info_owner">Se os alertas de local são imprecisos, ajuste estas configurações para melhorá-los. Você pode aplicar as mudanças para todos os membros ou apenas para este dispositivo.</string>
