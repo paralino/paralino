@@ -9,17 +9,26 @@ import app.paralino.core.domain.crypto.group.GetMemberSenderKeyUseCase
 import app.paralino.core.domain.crypto.user.CryptoUserKeysLocalSource
 import app.paralino.core.models.AppHost
 import app.paralino.core.models.location.LocationHistoryModel
+import app.paralino.core.models.location.LocationPerformanceType
 import app.paralino.core.models.location.MemberGroupIdForUpload
 import app.paralino.core.models.mappers.PendingLocationHistoryMapper
 import app.paralino.core.repo.base.AppConfigRepository
+import app.paralino.core.repo.location.LocationPerformanceManager
+import app.paralino.core.repo.location.LocationPerformanceSettingsType
 import app.paralino.core.utils.BaseRemoteModule
 import app.paralino.core.utils.exceptions.CryptoException
 import app.paralino.core.utils.exceptions.MissingCryptoKeyException
 import app.paralino.core.utils.exceptions.MissingMemberKeyException
 import app.paralino.core.utils.extensions.fromUTCtoInstant
 import app.paralino.core.utils.extensions.isOlderThan
+import app.paralino.core.utils.extensions.nowUTC
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.update
 import kotlin.coroutines.cancellation.CancellationException
+import kotlin.time.Duration
 import kotlin.time.Duration.Companion.days
+import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Duration.Companion.seconds
 import kotlin.time.Instant
 
 /**
@@ -73,8 +82,10 @@ class LocationUploadPayloadFactory(
     private val getMemberSenderKey: GetMemberSenderKeyUseCase,
     private val userKeyRepo: CryptoUserKeysLocalSource,
     private val historyMapper: PendingLocationHistoryMapper,
-    private val appPrefs: AppPrefs
+    private val appPrefs: AppPrefs,
+    private val locationPerformanceManager: LocationPerformanceManager
 ) {
+    private val lastEmbeddedHistoryUpload = MutableStateFlow<Map<String, Instant>>(emptyMap())
 
     /**
      * Resolves the sender key and encrypts location data, status and pending history for one location.
@@ -171,6 +182,10 @@ class LocationUploadPayloadFactory(
     ): LocationHistoryPreparePayload {
         when (appConfig.appHost) {
             AppHost.MAIN_APP -> {
+                if (!shouldAttachEmbeddedHistory(data)) {
+                    return skippedEmbeddedHistory
+                }
+
                 val allPendingEntries = if (data.groupId.isPersonalSpace) {
                     database.pendingLocationHistoryDao.getAllEntriesForGroupOnce(groupOrSpaceId = data.groupId.id)
                 } else {
@@ -201,6 +216,8 @@ class LocationUploadPayloadFactory(
                     ""
                 }
 
+                lastEmbeddedHistoryUpload.update { it + (data.groupId.id to nowUTC()) }
+
                 return LocationHistoryPreparePayload(
                     locationHistory = locationHistory,
                     pendingHistoryCount = allPendingEntries.size,
@@ -210,12 +227,57 @@ class LocationUploadPayloadFactory(
 
             AppHost.IOS_NOTIFICATION_EXTENSION,
             AppHost.IOS_LOCATION_EXTENSION -> {
-                return LocationHistoryPreparePayload(
-                    locationHistory = null,
-                    pendingHistoryCount = 0,
-                    oldestEntryTimestamp = null
-                )
+                return skippedEmbeddedHistory
             }
         }
+    }
+
+    private fun shouldAttachEmbeddedHistory(data: MemberGroupIdForUpload): Boolean {
+        val isHistoryOnlyUpload = data.uploadPendingHistory
+                && data.locationData == null
+                && data.deviceStatus == null
+        if (isHistoryOnlyUpload) {
+            return true
+        }
+
+        val lastUpload = lastEmbeddedHistoryUpload.value[data.groupId.id] ?: return true
+        return lastUpload.isOlderThan(embeddedHistoryMinInterval())
+    }
+
+    private fun embeddedHistoryMinInterval(): Duration {
+        return when (locationPerformanceManager.locationPerformanceType.value.current) {
+            LocationPerformanceType.HIGH_BATTERY_SAVER,
+            LocationPerformanceType.BATTERY_SAVER,
+            LocationPerformanceType.BALANCED -> 1.minutes
+            LocationPerformanceType.MEDIUM_HIGH -> 30.seconds
+            LocationPerformanceType.HIGH -> {
+                when (locationPerformanceManager.locationPerformanceType.value.balancedPerformanceSettings.config) {
+                    LocationPerformanceSettingsType.Balanced.Level1 -> 30.seconds
+                    LocationPerformanceSettingsType.Balanced.Level2 -> 25.seconds
+                    LocationPerformanceSettingsType.Balanced.Level3 -> 20.seconds
+                    LocationPerformanceSettingsType.Balanced.Level4 -> 15.seconds
+                    LocationPerformanceSettingsType.Balanced.Level5 -> 10.seconds
+                }
+            }
+            LocationPerformanceType.HIGHER_FOCUS,
+            LocationPerformanceType.VERY_HIGH,
+            LocationPerformanceType.MANUAL_BOOST -> {
+                when (locationPerformanceManager.locationPerformanceType.value.balancedPerformanceSettings.config) {
+                    LocationPerformanceSettingsType.Balanced.Level1 -> 25.seconds
+                    LocationPerformanceSettingsType.Balanced.Level2 -> 20.seconds
+                    LocationPerformanceSettingsType.Balanced.Level3 -> 15.seconds
+                    LocationPerformanceSettingsType.Balanced.Level4 -> 10.seconds
+                    LocationPerformanceSettingsType.Balanced.Level5 -> 5.seconds
+                }
+            }
+        }
+    }
+
+    companion object {
+        private val skippedEmbeddedHistory = LocationHistoryPreparePayload(
+            locationHistory = null,
+            pendingHistoryCount = 0,
+            oldestEntryTimestamp = null
+        )
     }
 }
