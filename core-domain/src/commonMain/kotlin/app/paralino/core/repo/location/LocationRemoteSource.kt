@@ -140,11 +140,20 @@ class LocationRemoteSource constructor(
                 null
             }
 
-            val locations = documentApi.listAllDocuments(
-                databaseType = BackendDatabaseType.DATA,
-                collectionId = appConfig.resourceIds.collectionMemberLocationsID,
-                queries = listOf(BackendQuery.Equals(key = "groupId", value = member.groupId))
-            ).map { MemberLocationRaw.from(it) }
+            val locations = if (member.locationIds.isNotEmpty()) {
+                documentApi.listAllDocuments(
+                    databaseType = BackendDatabaseType.DATA,
+                    collectionId = appConfig.resourceIds.collectionMemberLocationsID,
+                    queries = listOf(
+                        BackendQuery.Equals(
+                            key = "\$id",
+                            value = member.locationIds
+                        )
+                    )
+                ).map { MemberLocationRaw.from(it) }
+            } else {
+                emptyList()
+            }
 
             MemberWithLocationsRaw(
                 member = member.copy(settingsRaw = settings),
