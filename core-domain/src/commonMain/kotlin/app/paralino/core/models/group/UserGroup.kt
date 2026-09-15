@@ -38,7 +38,8 @@ data class UserGroup constructor(
     val provider: String?,
     val membersLimitOverride: Long?,
     val devicesLimitOverride: Long?,
-    val placesLimitOverride: Long?
+    val placesLimitOverride: Long?,
+    val createdAt: Instant?
 ) {
 
     val name: String get() = nameOrNull ?: "---"

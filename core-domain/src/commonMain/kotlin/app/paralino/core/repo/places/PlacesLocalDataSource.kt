@@ -75,9 +75,9 @@ class PlacesLocalDataSource(
             }
     }
 
-    suspend fun getAllPlacesOnce(): List<GroupPlace> {
+    suspend fun getAllPlacesForGroupsOnce(groupIds: List<GroupOrSpaceId>): List<GroupPlace> {
         return database.groupRelatedDao
-            .getAllPlacesOnce()
+            .getAllPlacesForGroupsOnce(groupIds = groupIds.map { it.id })
             .map { mapper.local2Core(it) }
     }
 

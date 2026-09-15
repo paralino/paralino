@@ -73,7 +73,7 @@ abstract class ILocationEventProcessingEngine(
         }
     }
 
-    fun stop() {
+    open fun stop() {
         eventMonitoringJob?.cancel()
         eventMonitoringJob = null
         lastEventTime.update { null }

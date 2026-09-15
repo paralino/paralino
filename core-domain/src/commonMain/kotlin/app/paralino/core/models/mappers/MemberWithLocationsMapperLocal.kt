@@ -8,6 +8,7 @@ import app.paralino.core.models.raw.GroupSettingsRaw
 import app.paralino.core.models.raw.MemberDocumentRaw
 import app.paralino.core.models.raw.MemberLocationRaw
 import app.paralino.core.models.raw.MemberWithLocationsRaw
+import app.paralino.core.utils.extensions.isoWithOffsetToInstant
 import app.paralino.core.utils.extensions.safeLet
 
 class MemberWithLocationsMapperLocal(
@@ -29,6 +30,7 @@ class MemberWithLocationsMapperLocal(
 
         val member = MemberDocumentRaw(
             id = model.id,
+            createdAt = model.createdAt?.isoWithOffsetToInstant(),
             ownerUserId = model.userId,
             groupId = model.groupId,
             groupKeyVersion = model.groupKeyVersion,
@@ -98,6 +100,7 @@ class MemberWithLocationsMapperLocal(
     fun remote2Local(model: MemberDocumentRaw): MemberEntity {
         return MemberEntity(
             id = model.id,
+            createdAt = model.createdAt?.toString(),
             userId = model.ownerUserId,
             groupId = model.groupId,
             groupKeyVersion = model.groupKeyVersion,

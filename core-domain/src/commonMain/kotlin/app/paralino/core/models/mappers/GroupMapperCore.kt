@@ -42,6 +42,7 @@ class GroupMapperCore constructor(
 
         return GroupDocumentRaw(
             id = model.id,
+            createdAt = model.createdAt,
             ownerUserId = model.ownerUserId,
             groupKeyVersion = model.groupKeyVersion,
             data = groupData,
@@ -87,6 +88,7 @@ class GroupMapperCore constructor(
 
         return UserGroup(
             id = model.id,
+            createdAt = model.createdAt,
             ownerUserId = model.ownerUserId,
             groupKeyVersion = model.groupKeyVersion,
             data = groupData,

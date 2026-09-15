@@ -706,11 +706,11 @@
     <string name="place_create_suggestion_coffee">Paras kahvi</string>
     <string name="place_list_menu_delete">Poista paikka</string>
     <string name="place_list_delete_place_alert_title">Oletko varma, että haluat poistaa tämän paikan?</string>
-    <string name="place_detail_setting_button_notify_enter">Syötä</string>
-    <string name="place_detail_setting_button_notify_exit">Poistu</string>
+    <string name="place_detail_setting_button_notify_enter">Saapuu</string>
+    <string name="place_detail_setting_button_notify_exit">Lähtee</string>
     <string name="place_detail_notification_settings_title">Paikkailmoitukset</string>
-    <string name="place_detail_notification_settings_info_group">Valitse, haluatko vastaanottaa ilmoituksia, kun jokainen ryhmän jäsen saapuu tai poistuu tästä paikasta.</string>
-    <string name="place_detail_notification_settings_info_personal">Valitse, haluatko vastaanottaa ilmoituksia, kun jokin laitteistasi saapuu tai poistuu tästä paikasta.</string>
+    <string name="place_detail_notification_settings_info_group">Valitse, haluatko vastaanottaa ilmoituksia, kun jokainen ryhmän jäsen saapuu tähän paikkaan tai lähtee täältä.</string>
+    <string name="place_detail_notification_settings_info_personal">Valitse, haluatko vastaanottaa ilmoituksia, kun jokin laitteistasi saapuu tähän paikkaan tai lähtee täältä.</string>
     <string name="place_sensitivity_screen_title">Sijaintitarkkuus</string>
     <string name="place_sensitivity_info_member">Jos paikkailmoitukset ovat epätarkkoja, säädä näitä asetuksia parantaaksesi niitä.</string>
     <string name="place_sensitivity_info_owner">Jos paikkailmoitukset ovat epätarkkoja, säädä näitä asetuksia parantaaksesi niitä. Voit soveltaa muutoksia kaikille jäsenille tai vain tälle laitteelle.</string>

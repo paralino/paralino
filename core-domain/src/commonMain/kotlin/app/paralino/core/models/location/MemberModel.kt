@@ -11,6 +11,7 @@ import app.paralino.core.models.user.UserPersonalCode
 import app.paralino.core.utils.Emojis
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
+import kotlin.time.Instant
 
 @Serializable
 data class MemberModel constructor(
@@ -25,7 +26,8 @@ data class MemberModel constructor(
     val paralinoId: CryptoResource<MemberModelParalinoIdData>,
     val settings: GroupSettings?,
     val verificationResult: VerificationResult,
-    val enforceMemberAuthentication: Boolean
+    val enforceMemberAuthentication: Boolean,
+    val createdAt: Instant?
 ) {
 
     val name: String get() = memberData.data?.name ?: "---"

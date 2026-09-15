@@ -217,7 +217,8 @@ fun rememberMapLibreLocationHistoryMapController(
                 isSatelliteMode = isSatelliteMode,
                 cameraState = cameraState,
                 contentPadding = mapContentPadding,
-                mapsSDKProvider = mapsSDKProvider
+                mapsSDKProvider = mapsSDKProvider,
+                isCompactAttribution = false
             )
         }
     }.value

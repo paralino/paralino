@@ -706,11 +706,11 @@
     <string name="place_create_suggestion_coffee">Bester Kaffee</string>
     <string name="place_list_menu_delete">Ort löschen</string>
     <string name="place_list_delete_place_alert_title">Sind Sie sicher, dass Sie diesen Ort löschen möchten?</string>
-    <string name="place_detail_setting_button_notify_enter">Betreten</string>
-    <string name="place_detail_setting_button_notify_exit">Verlassen</string>
+    <string name="place_detail_setting_button_notify_enter">Kommt an</string>
+    <string name="place_detail_setting_button_notify_exit">Verlässt</string>
     <string name="place_detail_notification_settings_title">Ortswarnungen</string>
-    <string name="place_detail_notification_settings_info_group">Wählen Sie, ob Sie Benachrichtigungen erhalten möchten, wenn jedes Gruppenmitglied diesen Ort betritt oder verlässt.</string>
-    <string name="place_detail_notification_settings_info_personal">Wählen Sie, ob Sie Benachrichtigungen erhalten möchten, wenn eines Ihrer Geräte diesen Ort betritt oder verlässt.</string>
+    <string name="place_detail_notification_settings_info_group">Wählen Sie, ob Sie Benachrichtigungen erhalten möchten, wenn jedes Gruppenmitglied an diesem Ort ankommt oder ihn verlässt.</string>
+    <string name="place_detail_notification_settings_info_personal">Wählen Sie, ob Sie Benachrichtigungen erhalten möchten, wenn eines Ihrer Geräte an diesem Ort ankommt oder ihn verlässt.</string>
     <string name="place_sensitivity_screen_title">Standortempfindlichkeit</string>
     <string name="place_sensitivity_info_member">Wenn die Ortungswarnungen ungenau sind, passen Sie diese Einstellungen an, um sie zu verbessern.</string>
     <string name="place_sensitivity_info_owner">Wenn Standortbenachrichtigungen ungenau sind, passen Sie diese Einstellungen an, um sie zu verbessern. Sie können Änderungen für alle Mitglieder oder nur für dieses Gerät anwenden.</string>

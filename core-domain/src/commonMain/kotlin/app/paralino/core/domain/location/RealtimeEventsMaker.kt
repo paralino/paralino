@@ -28,7 +28,6 @@ class RealtimeEventsMaker constructor(
             realtimeEventsProcessor.personalDevicesChannel,
             realtimeEventsProcessor.placesChannel,
             realtimeEventsProcessor.privacyZonesChannel,
-            realtimeEventsProcessor.locationFocusChannel,
         ),
         listOf(
             realtimeEventsProcessor.membersChannel,
@@ -37,7 +36,6 @@ class RealtimeEventsMaker constructor(
             realtimeEventsProcessor.personalDevicesChannel,
             "${realtimeEventsProcessor.placesChannel}.upsert",
             "${realtimeEventsProcessor.privacyZonesChannel}.upsert",
-            "${realtimeEventsProcessor.locationFocusChannel}.upsert",
         )
     )
 

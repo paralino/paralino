@@ -1,7 +1,6 @@
 package app.paralino.android.tracking
 
 import androidx.core.location.LocationRequestCompat
-import app.paralino.core.db.AppPrefs
 import app.paralino.core.models.location.LocationPerformanceType
 import app.paralino.core.repo.location.LocationPerformanceManager
 import app.paralino.core.repo.location.LocationPerformanceSettingsType
@@ -10,8 +9,8 @@ object LocationRequestModels {
 
     fun getRequest(
         type: LocationPerformanceType,
-        balancedSettings: LocationPerformanceManager.LocationPerformanceSettings,
-        batterySaverSettings: LocationPerformanceManager.LocationPerformanceSettings,
+        balancedSettings: LocationPerformanceManager.LocationPerformanceSettingsBalanced,
+        batterySaverSettings: LocationPerformanceManager.LocationPerformanceSettingsBatterySaver,
     ): LocationRequestCompat {
         return when (type) {
             LocationPerformanceType.HIGHER_FOCUS,
@@ -39,20 +38,20 @@ object LocationRequestModels {
 
             LocationPerformanceType.BALANCED -> {
                 LocationRequestCompat.Builder(
-                    balancedSettings.updateIntervalMillis
+                    balancedSettings.config.updateInterval.inWholeMilliseconds
                 )
-                    .setMinUpdateIntervalMillis(balancedSettings.minUpdateIntervalMillis)
-                    .setMinUpdateDistanceMeters(balancedSettings.minUpdateDistanceMeters.toFloat())
+                    .setMinUpdateIntervalMillis(balancedSettings.config.minUpdateInterval.inWholeMilliseconds)
+                    .setMinUpdateDistanceMeters(balancedSettings.config.minUpdateDistanceMeters.toFloat())
                     .setQuality(if (balancedSettings.useHighPerformanceLocation) LocationRequestCompat.QUALITY_HIGH_ACCURACY else LocationRequestCompat.QUALITY_BALANCED_POWER_ACCURACY)
                     .build()
             }
 
             LocationPerformanceType.BATTERY_SAVER -> {
                 LocationRequestCompat.Builder(
-                    batterySaverSettings.updateIntervalMillis
+                    batterySaverSettings.config.updateInterval.inWholeMilliseconds
                 )
-                    .setMinUpdateIntervalMillis(batterySaverSettings.minUpdateIntervalMillis)
-                    .setMinUpdateDistanceMeters(batterySaverSettings.minUpdateDistanceMeters.toFloat())
+                    .setMinUpdateIntervalMillis(batterySaverSettings.config.minUpdateInterval.inWholeMilliseconds)
+                    .setMinUpdateDistanceMeters(batterySaverSettings.config.minUpdateDistanceMeters.toFloat())
                     .setQuality(LocationRequestCompat.QUALITY_BALANCED_POWER_ACCURACY)
                     .build()
             }
@@ -68,22 +67,5 @@ object LocationRequestModels {
                     .build()
             }
         }
-    }
-
-    fun getRequest(
-        type: LocationPerformanceType,
-        appPrefs: AppPrefs
-    ): LocationRequestCompat {
-        return getRequest(
-            type = type,
-            balancedSettings = LocationPerformanceManager.LocationPerformanceSettings(
-                settingsType = LocationPerformanceSettingsType.Balanced.fromKey(appPrefs.locationSettingsBalancedPerformanceType),
-                useHighPerformanceLocation = appPrefs.locationSettingsBalancedHighAccuracy
-            ),
-            batterySaverSettings = LocationPerformanceManager.LocationPerformanceSettings(
-                settingsType = LocationPerformanceSettingsType.BatterySaver.fromKey(appPrefs.locationSettingsBatterySaverPerformanceType),
-                useHighPerformanceLocation = false
-            )
-        )
     }
 }

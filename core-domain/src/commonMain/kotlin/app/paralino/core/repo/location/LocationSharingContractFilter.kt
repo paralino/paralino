@@ -20,14 +20,14 @@ class LocationSharingContractFilter {
         }.keys
     }
 
-    fun filter(contract: LocationSharingContract): LocationSharingContract? {
-        return contract.takeIf { contract ->
-            val allowedIds = getAllowedIds()
-            if (allowedIds.isEmpty()) {
-                true
-            } else {
-                allowedIds.any { it == contract.groupOrSpaceId }
-            }
+    fun contractFilterResult(contract: LocationSharingContract): Result {
+        val allowedIds = getAllowedIds()
+        return if (allowedIds.isEmpty()) {
+            Result.NO_FILTER
+        } else if (allowedIds.any { it == contract.groupOrSpaceId }) {
+            Result.ALLOWED
+        } else {
+            Result.NOT_FOUND
         }
     }
 
@@ -43,5 +43,12 @@ class LocationSharingContractFilter {
 
     fun clearFilter() {
         allowList.update { emptyMap() }
+    }
+
+    enum class Result {
+        NO_FILTER, ALLOWED, NOT_FOUND;
+        val isEmpty: Boolean get() = this == Result.NO_FILTER
+        val isExplicitlyAllowed: Boolean get() = this == Result.ALLOWED
+        val isEmptyOrAllowed: Boolean get() = isEmpty || isExplicitlyAllowed
     }
 }

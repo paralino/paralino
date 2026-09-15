@@ -706,11 +706,11 @@
     <string name="place_create_suggestion_coffee">Найкраща кава</string>
     <string name="place_list_menu_delete">Видалити місце</string>
     <string name="place_list_delete_place_alert_title">Ви впевнені, що хочете видалити це місце?</string>
-    <string name="place_detail_setting_button_notify_enter">Ввести</string>
-    <string name="place_detail_setting_button_notify_exit">Вихід</string>
+    <string name="place_detail_setting_button_notify_enter">Прибуває</string>
+    <string name="place_detail_setting_button_notify_exit">Покидає</string>
     <string name="place_detail_notification_settings_title">Сповіщення про місцезнаходження</string>
-    <string name="place_detail_notification_settings_info_group">Виберіть, чи хочете отримувати сповіщення, коли кожен учасник групи входить або виходить з цього місця.</string>
-    <string name="place_detail_notification_settings_info_personal">Виберіть, чи хочете отримувати сповіщення, коли один з ваших пристроїв входить або виходить з цього місця.</string>
+    <string name="place_detail_notification_settings_info_group">Виберіть, чи хочете отримувати сповіщення, коли кожен учасник групи прибуває до цього місця або покидає його.</string>
+    <string name="place_detail_notification_settings_info_personal">Виберіть, чи хочете отримувати сповіщення, коли один з ваших пристроїв прибуває до цього місця або покидає його.</string>
     <string name="place_sensitivity_screen_title">Чутливість до місцезнаходження</string>
     <string name="place_sensitivity_info_member">Якщо сповіщення про місця неточні, відкоригуйте ці налаштування, щоб покращити їх.</string>
     <string name="place_sensitivity_info_owner">Якщо сповіщення про місця неточні, відкоригуйте ці налаштування, щоб покращити їх. Ви можете застосувати зміни для всіх учасників або лише для цього пристрою.</string>

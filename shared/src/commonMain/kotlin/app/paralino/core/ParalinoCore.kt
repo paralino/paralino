@@ -308,7 +308,7 @@ val dataSourceModule = module {
 val coreModule = module {
     single { CoreAppManager(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { GeofenceRegistrationMonitor(get(), get(), get(), get(), get()) }
-    single { ActiveSharingEngine(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+    single { ActiveSharingEngine(get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { RealtimeSubscriptionManager(get(), get()) }
 
     factory { LoginUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
@@ -338,7 +338,7 @@ val coreModule = module {
     single { ExpiredSessionHandler(get(), get(), get()) }
     single { LogoutUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { RegisterDeviceForSharingUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
-    single { RealtimeEventsProcessor(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+    single { RealtimeEventsProcessor(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { GroupCryptoKeyRotation(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { GroupMemberRemoveUseCase(get(), get(), get(), get(), get(), get(), get(), get()) }
     single { GroupMemberAddUseCase(get(), get(), get(), get(), get(), get(), get()) }
@@ -346,7 +346,7 @@ val coreModule = module {
     single { GroupPreRefreshUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { GroupRemoveUseCase(get(), get(), get(), get(), get(), get()) }
     single { GroupCreateUseCase(get(), get(), get(), get(), get(), get(), get(), get()) }
-    single { RefreshEverythingUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+    single { RefreshEverythingUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { GetMemberWithLocationsUseCase(get(), get(), get(), get()) }
     single { GetLocationHistoryUseCase(get(), get()) }
     single { RefreshLocationHistoryUseCase(get(), get(), get(), get(), get(), get(), get()) }
@@ -366,8 +366,8 @@ val coreModule = module {
     single { PersonalCodesRepository(get(), get(), get(), get(), get(), get(), get()) }
     single { UserRepository(get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { LocationUploadEngine(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
-    single { LocationSaveEventProcessingEngine(get(), get(), get(), get(), get(), get(), get()) }
-    single { LocationUploadEventProcessingEngine(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+    single { LocationSaveEventProcessingEngine(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+    single { LocationUploadEventProcessingEngine(get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { LocationSharingContractFilter() }
     single { HandleGetLocationPayloadRequest(get(), get(), get(), get()) }
     single { LocationCacheRepository() }
@@ -417,7 +417,7 @@ val coreModule = module {
     factory { GroupMemberAddedNotificationProcessor(get(), get(), get(), get()) }
     factory { GroupMemberDeletedNotificationProcessor(get()) }
     factory { LocationSharingStartedNotificationsProcessor(get(), get(), get(), get(), get()) }
-    factory { LocationRequestNotificationProcessor(get(), get(), get(), get(), get(), get()) }
+    factory { LocationRequestNotificationProcessor(get(), get(), get(), get(), get(), get(), get()) }
     factory { LowBatteryNotificationProcessor(get(), get(), get(), get()) }
 
     single { LocationPerformanceManager(get(), get(), get()) }

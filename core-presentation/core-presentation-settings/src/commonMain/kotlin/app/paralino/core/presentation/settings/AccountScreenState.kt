@@ -21,7 +21,14 @@ data class AccountScreenState constructor(
     val appReviewUrl: String,
     val isAppReviewExpanded: Boolean,
     val isAppReviewVisible: Boolean,
-    val errors: List<ConditionErrorType>
+    val errors: List<ConditionErrorType>,
+    val email: String?,
+    val userId: String,
+    val billingId: String,
+    val deviceId: String,
+    val diagnosticsId: String,
+    val pushToken: String?,
+    val memberSinceDateFormatted: String,
 ) {
     val loadingAction get() = logoutState is Payload.Loading || deleteAccountState is Payload.Loading
 }

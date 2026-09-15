@@ -11,8 +11,8 @@ object LocationRequestModels {
 
     fun getRequest(
         type: LocationPerformanceType,
-        balancedSettings: LocationPerformanceManager.LocationPerformanceSettings,
-        batterySaverSettings: LocationPerformanceManager.LocationPerformanceSettings,
+        balancedSettings: LocationPerformanceManager.LocationPerformanceSettingsBalanced,
+        batterySaverSettings: LocationPerformanceManager.LocationPerformanceSettingsBatterySaver,
     ): LocationRequest {
         return when (type) {
             LocationPerformanceType.HIGHER_FOCUS,
@@ -38,20 +38,20 @@ object LocationRequestModels {
             LocationPerformanceType.BALANCED -> {
                 LocationRequest.Builder(
                     if (balancedSettings.useHighPerformanceLocation) Priority.PRIORITY_HIGH_ACCURACY else Priority.PRIORITY_BALANCED_POWER_ACCURACY,
-                    balancedSettings.updateIntervalMillis
+                    balancedSettings.config.updateInterval.inWholeMilliseconds
                 )
-                    .setMinUpdateIntervalMillis(balancedSettings.minUpdateIntervalMillis)
-                    .setMinUpdateDistanceMeters(balancedSettings.minUpdateDistanceMeters.toFloat())
+                    .setMinUpdateIntervalMillis(balancedSettings.config.minUpdateInterval.inWholeMilliseconds)
+                    .setMinUpdateDistanceMeters(balancedSettings.config.minUpdateDistanceMeters.toFloat())
                     .build()
             }
 
             LocationPerformanceType.BATTERY_SAVER -> {
                 LocationRequest.Builder(
                     Priority.PRIORITY_BALANCED_POWER_ACCURACY,
-                    batterySaverSettings.updateIntervalMillis
+                    batterySaverSettings.config.updateInterval.inWholeMilliseconds
                 )
-                    .setMinUpdateIntervalMillis(batterySaverSettings.minUpdateIntervalMillis)
-                    .setMinUpdateDistanceMeters(batterySaverSettings.minUpdateDistanceMeters.toFloat())
+                    .setMinUpdateIntervalMillis(batterySaverSettings.config.minUpdateInterval.inWholeMilliseconds)
+                    .setMinUpdateDistanceMeters(batterySaverSettings.config.minUpdateDistanceMeters.toFloat())
                     .build()
             }
 
@@ -74,13 +74,12 @@ object LocationRequestModels {
     ): LocationRequest {
         return getRequest(
             type = type,
-            balancedSettings = LocationPerformanceManager.LocationPerformanceSettings(
-                settingsType = LocationPerformanceSettingsType.Balanced.fromKey(appPrefs.locationSettingsBalancedPerformanceType),
+            balancedSettings = LocationPerformanceManager.LocationPerformanceSettingsBalanced(
+                config = LocationPerformanceSettingsType.Balanced.fromKey(appPrefs.locationSettingsBalancedPerformanceType),
                 useHighPerformanceLocation = appPrefs.locationSettingsBalancedHighAccuracy
             ),
-            batterySaverSettings = LocationPerformanceManager.LocationPerformanceSettings(
-                settingsType = LocationPerformanceSettingsType.BatterySaver.fromKey(appPrefs.locationSettingsBatterySaverPerformanceType),
-                useHighPerformanceLocation = false
+            batterySaverSettings = LocationPerformanceManager.LocationPerformanceSettingsBatterySaver(
+                config = LocationPerformanceSettingsType.BatterySaver.fromKey(appPrefs.locationSettingsBatterySaverPerformanceType)
             )
         )
     }

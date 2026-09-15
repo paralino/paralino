@@ -18,7 +18,11 @@ data class GroupSettingsScreenState(
     val image: ImageModel,
     val planName: String,
     val featureTableState: FeatureTableState,
-    val alertDialog: MainAlertDialog?
+    val alertDialog: MainAlertDialog?,
+    val memberId: String?,
+    val locationId: String?,
+    val createdAtDateFormatted: String?,
+    val memberSinceDateFormatted: String?,
 )
 
 sealed interface GroupSettingsScreenEvent {
@@ -32,4 +36,5 @@ sealed interface GroupSettingsUiEvent {
     data object ToggleMemberVerification : GroupSettingsUiEvent
     data class DialogAction(val action: AlertDialogAction) : GroupSettingsUiEvent
     data class OnCellItemClick(val table: FeatureTableItemState, val cellItem: FeatureTableItemValue) : GroupSettingsUiEvent
+    data class Copy(val content: String) : GroupSettingsUiEvent
 }

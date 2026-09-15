@@ -147,11 +147,19 @@ class PersonalCodesRemoteSource constructor(
         userId: String,
         personalCode: String
     ) {
-        val currentUnusedKeys = docApi.listAllDocuments(
+        val currentUnusedKeys = mutableListOf<PersonalPreKeyRaw>()
+        docApi.listDocuments(
             databaseType = BackendDatabaseType.KEYS,
             collectionId = appConfig.resourceIds.collectionPersonalIdKeysID,
-        ).map { it.parsePreKey() }
-            .filter { !it.encryptedCodeKeyData.isNullOrBlank() }
+            pageSize = 4,
+            onNewValues = {
+                val validItems = it
+                    .map { it.parsePreKey() }
+                    .filter { !it.encryptedCodeKeyData.isNullOrBlank() }
+                currentUnusedKeys.addAll(validItems)
+                validItems.size < 4
+            }
+        )
 
         if (currentUnusedKeys.size > 3) {
             logg.v("Found ${currentUnusedKeys.size} unused pre keys, skip restock")

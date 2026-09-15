@@ -11,20 +11,23 @@ import app.paralino.core.models.base.ConfigData
 import app.paralino.core.models.base.PlanConfig
 import app.paralino.core.models.data
 import app.paralino.core.models.group.UserGroup
+import app.paralino.core.models.group.UserGroupWithMembers
 import app.paralino.core.models.mapSuccess
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.presentation.billing.FeatureTableItemValue
 import app.paralino.core.presentation.billing.FeatureTableState
 import app.paralino.core.presentation.billing.PlanInfoState
+import app.paralino.core.presentation.common.AppSnackbarData
+import app.paralino.core.presentation.common.AppSnackbarPayload
+import app.paralino.core.presentation.common.MainAlertDialog
+import app.paralino.core.presentation.common.MainAlertDialog.ToggleMemberVerification
+import app.paralino.core.presentation.common.SnackbarDuration
+import app.paralino.core.provider.IDeviceApiProvider
+import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.base.AppConfigRepository
 import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.group.UserGroupLocalDataSource
-import app.paralino.core.presentation.common.AppSnackbarData
-import app.paralino.core.presentation.common.AppSnackbarPayload
-import app.paralino.core.presentation.common.SnackbarDuration
-import app.paralino.core.presentation.common.MainAlertDialog
-import app.paralino.core.presentation.common.MainAlertDialog.ToggleMemberVerification
 import app.paralino.core.utils.exceptions.DataStillLoadingException
 import app.paralino.core.utils.exceptions.NotFoundException
 import app.paralino.core.utils.exceptions.asRemoteException
@@ -34,12 +37,16 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
+import kotlin.time.Instant
 
 class GroupSettingsViewModel(
     val groupId: String,
@@ -48,11 +55,14 @@ class GroupSettingsViewModel(
     private val createGroup: GroupCreateUseCase,
     private val groupPreRefresh: GroupPreRefreshUseCase,
     private val remoteConfigRepo: RemoteConfigRepository,
-    private val appConfig: AppConfigRepository
+    private val appConfig: AppConfigRepository,
+    private val valueFormatter: IValueFormatter,
+    private val deviceApiProvider: IDeviceApiProvider
 ) : CoreViewModel() {
 
-    private val groupData = MutableStateFlow<UserGroup?>(null)
-    private val _uiState = MutableStateFlow<Resource<GroupSettingsScreenState>>(Resource.NotInitialized)
+    private val groupData = MutableStateFlow<UserGroupWithMembers?>(null)
+    private val _uiState =
+        MutableStateFlow<Resource<GroupSettingsScreenState>>(Resource.NotInitialized)
     val uiState: StateFlow<Resource<GroupSettingsScreenState>> = _uiState
     val groupNameState = uiState.map { it.data?.name }
 
@@ -60,14 +70,17 @@ class GroupSettingsViewModel(
     val events = _eventChannel.receiveAsFlow()
 
     init {
-        groupLocalDataSource.getGroupWithoutMembers(groupId)
+        groupLocalDataSource.getGroupWithMembers(groupId)
+            .filterNotNull()
             .mapToPayload { group ->
                 groupData.update { group }
-                val planConfig = group.planConfig(remoteConfigRepo.getConfigOnce())
+                val planConfig = group.group.planConfig(remoteConfigRepo.getConfigOnce())
+                val currentMember = group.currentUserMember
+                val isOwner = group.isCurrentUserOwner
 
                 GroupSettingsScreenState(
                     id = groupId,
-                    canEdit = group.isCurrentUserOwner,
+                    canEdit = isOwner,
                     hasDevFeatures = appConfig.isInAppDevMode,
                     isMemberVerificationEnabled = group.data.data?.enforceMemberAuthentication != null,
                     isMemberVerificationOn = group.data.data?.enforceMemberAuthentication == true,
@@ -77,10 +90,22 @@ class GroupSettingsViewModel(
                     planName = planConfig.adjustedPlanName,
                     featureTableState = constructFeatureTable(
                         planConfig = planConfig,
-                        group = group,
+                        group = group.group,
                         config = remoteConfigRepo.getConfigOnce()
                     ),
-                    alertDialog = _uiState.value.data?.alertDialog
+                    alertDialog = _uiState.value.data?.alertDialog,
+                    memberId = currentMember?.id,
+                    locationId = group.currentDeviceLocation?.id,
+                    createdAtDateFormatted = if (isOwner) {
+                        formatInfoDate(group.group.createdAt)
+                    } else {
+                        null
+                    },
+                    memberSinceDateFormatted = if (!isOwner) {
+                        formatInfoDate(currentMember?.createdAt)
+                    } else {
+                        null
+                    }
                 )
             }
             .onEach { result ->
@@ -163,14 +188,17 @@ class GroupSettingsViewModel(
                             )
                         )
                     }
+
                     else -> {}
                 }
             }
+
+            is GroupSettingsUiEvent.Copy -> deviceApiProvider.copyToClipboard(event.content)
         }
     }
 
     private fun toggleMembershipVerification() {
-        val group = groupData.value?.takeIf { group ->
+        val group = groupData.value?.group?.takeIf { group ->
             group.isCurrentUserOwner && group.data.data != null
         } ?: return
 
@@ -275,5 +303,13 @@ class GroupSettingsViewModel(
                 )
             )
         )
+    }
+
+    private fun formatInfoDate(instant: Instant?): String? {
+        val dateTimeUTC = instant?.toLocalDateTime(TimeZone.UTC) ?: return null
+        return valueFormatter.formatBestPattern(
+            timeUTC = dateTimeUTC,
+            pattern = "MMMMdyyyy"
+        ).takeIf { it.isNotBlank() }
     }
 }

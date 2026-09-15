@@ -1,5 +1,6 @@
 package app.paralino.core.domain.location.engine
 
+import app.paralino.core.domain.location.IBatteryAlertUploadEngine
 import app.paralino.core.domain.location.LocationCacheRepository
 import app.paralino.core.domain.location.history.SavePendingLocationUseCase
 import app.paralino.core.models.AppHost
@@ -9,6 +10,7 @@ import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.base.AppConfigRepository
 import app.paralino.core.repo.location.LocationPerformanceManager
+import app.paralino.core.repo.places.IPlacesActivityProcessor
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlin.time.Duration
@@ -22,6 +24,8 @@ class LocationSaveEventProcessingEngine(
     private val locationPayloadRequest: HandleGetLocationPayloadRequest,
     private val savePendingLocationUseCase: SavePendingLocationUseCase,
     private val locationCacheRepo: LocationCacheRepository,
+    private val placesActivityProcessor: IPlacesActivityProcessor,
+    private val batteryAlertUploadEngine: IBatteryAlertUploadEngine,
 ) : ILocationEventProcessingEngine(scope = scopeProvider.userSessionIOScope) {
     override val tag: String = "saving"
     override val processingRate: Duration
@@ -79,6 +83,12 @@ class LocationSaveEventProcessingEngine(
         try {
             savePendingLocationUseCase.saveNewLocations(payloads)
         } catch (e: Exception) {
+        }
+
+        // extra processing - not gonna run for iOS LSE
+        triggerRemoteOnly {
+            placesActivityProcessor.processLocation(payloads)
+            batteryAlertUploadEngine.sendBatteryAlert(payloads = payloads)
         }
     }
 }

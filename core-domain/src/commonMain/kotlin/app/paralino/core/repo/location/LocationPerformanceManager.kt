@@ -32,22 +32,17 @@ class LocationPerformanceManager constructor(
     private val _locationPerformanceType = MutableStateFlow(
         LocationPerformanceModel(
             isBoostedManually = appPrefs.trackingBoostEndTime?.let { it > nowUTC() } == true,
-            balancedPerformanceSettings = LocationPerformanceSettingsType.Balanced.fromKey(
-                appPrefs.locationSettingsBalancedPerformanceType
-            ).let {
-                LocationPerformanceSettings(
-                    settingsType = it,
-                    useHighPerformanceLocation = appPrefs.locationSettingsBalancedHighAccuracy
+            balancedPerformanceSettings = LocationPerformanceSettingsBalanced(
+                config = LocationPerformanceSettingsType.Balanced.fromKey(
+                    appPrefs.locationSettingsBalancedPerformanceType
+                ),
+                useHighPerformanceLocation = appPrefs.locationSettingsBalancedHighAccuracy
+            ),
+            batterySaverPerformanceSettings = LocationPerformanceSettingsBatterySaver(
+                config = LocationPerformanceSettingsType.BatterySaver.fromKey(
+                    appPrefs.locationSettingsBatterySaverPerformanceType
                 )
-            },
-            batterySaverPerformanceSettings = LocationPerformanceSettingsType.BatterySaver.fromKey(
-                appPrefs.locationSettingsBatterySaverPerformanceType
-            ).let {
-                LocationPerformanceSettings(
-                    settingsType = it,
-                    useHighPerformanceLocation = false
-                )
-            },
+            ),
             showLocationIndicator = appPrefs.locationSettingsShowIndicatorIOS,
             pausesLocationAutomatically = appPrefs.locationSettingsAutoPauseIOS
         )
@@ -103,18 +98,17 @@ class LocationPerformanceManager constructor(
 
     fun updateLocationSettings(
         useHighPerformanceLocation: Boolean,
-        balancedPerformanceSettings: LocationPerformanceSettingsType,
-        batterySaverPerformanceSettings: LocationPerformanceSettingsType
+        balancedPerformanceSettings: LocationPerformanceSettingsType.Balanced,
+        batterySaverPerformanceSettings: LocationPerformanceSettingsType.BatterySaver
     ) {
         _locationPerformanceType.update {
             it.copy(
-                balancedPerformanceSettings = LocationPerformanceSettings(
-                    settingsType = balancedPerformanceSettings,
+                balancedPerformanceSettings = LocationPerformanceSettingsBalanced(
+                    config = balancedPerformanceSettings,
                     useHighPerformanceLocation = useHighPerformanceLocation
                 ),
-                batterySaverPerformanceSettings = LocationPerformanceSettings(
-                    settingsType = batterySaverPerformanceSettings,
-                    useHighPerformanceLocation = false
+                batterySaverPerformanceSettings = LocationPerformanceSettingsBatterySaver(
+                    config = batterySaverPerformanceSettings
                 )
             )
         }
@@ -403,14 +397,14 @@ class LocationPerformanceManager constructor(
         val current: LocationPerformanceType = LocationPerformanceType.BALANCED,
         val showLocationIndicator: Boolean = false,
         val pausesLocationAutomatically: Boolean = true,
-        val balancedPerformanceSettings: LocationPerformanceSettings,
-        val batterySaverPerformanceSettings: LocationPerformanceSettings
+        val balancedPerformanceSettings: LocationPerformanceSettingsBalanced,
+        val batterySaverPerformanceSettings: LocationPerformanceSettingsBatterySaver
     ) {
 
         constructor(
             isBoostedManually: Boolean,
-            balancedPerformanceSettings: LocationPerformanceSettings,
-            batterySaverPerformanceSettings: LocationPerformanceSettings,
+            balancedPerformanceSettings: LocationPerformanceSettingsBalanced,
+            batterySaverPerformanceSettings: LocationPerformanceSettingsBatterySaver,
             showLocationIndicator: Boolean,
             pausesLocationAutomatically: Boolean,
         ) : this(
@@ -441,20 +435,12 @@ class LocationPerformanceManager constructor(
         val isBatterySaverOn get() = current <= LocationPerformanceType.BATTERY_SAVER
     }
 
-    data class LocationPerformanceSettings(
-        val updateIntervalMillis: Long,
-        val minUpdateIntervalMillis: Long,
-        val minUpdateDistanceMeters: Int,
+    data class LocationPerformanceSettingsBalanced(
+        val config: LocationPerformanceSettingsType.Balanced,
         val useHighPerformanceLocation: Boolean
-    ) {
-        constructor(
-            settingsType: LocationPerformanceSettingsType,
-            useHighPerformanceLocation: Boolean
-        ) : this(
-            updateIntervalMillis = settingsType.updateInterval.inWholeMilliseconds,
-            minUpdateIntervalMillis = settingsType.minUpdateInterval.inWholeMilliseconds,
-            minUpdateDistanceMeters = settingsType.minUpdateDistanceMeters,
-            useHighPerformanceLocation = useHighPerformanceLocation
-        )
-    }
+    )
+
+    data class LocationPerformanceSettingsBatterySaver(
+        val config: LocationPerformanceSettingsType.BatterySaver
+    )
 }

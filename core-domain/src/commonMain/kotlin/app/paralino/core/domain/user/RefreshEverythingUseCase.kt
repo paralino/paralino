@@ -1,5 +1,6 @@
 package app.paralino.core.domain.user
 
+import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.LimitedExecutionParentManager
 import app.paralino.core.domain.LimitedExecutionRepository
 import app.paralino.core.domain.crypto.group.CryptoKEKRefreshUseCase
@@ -22,6 +23,11 @@ import app.paralino.core.repo.user.IPushProviderManager
 import app.paralino.core.repo.user.UserConfigRepository
 import app.paralino.core.repo.user.UserPersonalSpaceLocalDataSource
 import app.paralino.core.repo.user.UserRepository
+import app.paralino.core.utils.extensions.isOlderThan
+import app.paralino.core.utils.extensions.nowUTC
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
+import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
 
@@ -46,10 +52,12 @@ class RefreshEverythingUseCase(
     private val sessionRenewalHandler: SessionRenewalHandler,
     private val deleteObsoleteLocationHistoryUseCase: DeleteObsoleteLocationHistoryUseCase,
     private val parentManager: LimitedExecutionParentManager,
+    private val appPrefs: AppPrefs,
 ) : LimitedExecutionRepository() {
 
     private val executionKey = "full_refresh"
     private val groupRefreshExecutionKey = "full_refresh_groups_refresh"
+    private val fallbackMutex = Mutex()
 
 
     override fun isProcessing(key: String): Boolean {
@@ -77,9 +85,9 @@ class RefreshEverythingUseCase(
                 ),
                 remote = {
                     logg.tag("full_refresh").d("Start full refresh")
+                    configRepo.refreshConfig()
                     userRepository.refreshUserMaybe(timeDelayMillis = 0).getOrThrow()
                     personalCodesRepo.refreshPersonalCodes()
-                    configRepo.refreshConfig()
                     try {
                         userConfigRepo.refreshMaybeAndGetConfig(cacheTime = null)
                     } catch (e: Exception) {
@@ -96,6 +104,7 @@ class RefreshEverythingUseCase(
                     deleteObsoleteLocationHistoryUseCase.deleteObsoleteHistory()
                     locationHistoryUploadEngine.syncPendingEntriesInBackground(cacheTime = 2.hours)
                     sessionRenewalHandler.processSessionRenewal()
+                    appPrefs.lastFullRefreshTime = nowUTC()
                 }
             )
         } catch (e: Exception) {
@@ -104,6 +113,27 @@ class RefreshEverythingUseCase(
             logg.tag("full_refresh").v("Full refresh done")
             stopProcessing(executionKey)
         }
+    }
+
+    /**
+     * Called from many places to make sure we hit full refresh more often if app is in background
+     */
+    suspend fun refreshEverythingFallback() {
+        if (!shouldRunFallbackRefresh()) {
+            logg.tag("full_refresh").v("Fallback skipped, refreshed within 1 day")
+            return
+        }
+
+        fallbackMutex.withLock {
+            if (shouldRunFallbackRefresh()) {
+                refreshEverything()
+                return
+            }
+        }
+    }
+
+    private fun shouldRunFallbackRefresh(): Boolean {
+        return appPrefs.lastFullRefreshTime?.isOlderThan(1.days) ?: false
     }
 
     suspend fun scheduleRefreshAllGroupsWithPlaces(

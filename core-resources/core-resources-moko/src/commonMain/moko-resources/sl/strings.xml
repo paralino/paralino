@@ -706,11 +706,11 @@
     <string name="place_create_suggestion_coffee">Najboljša kava</string>
     <string name="place_list_menu_delete">Izbriši mesto</string>
     <string name="place_list_delete_place_alert_title">Ali ste prepričani, da želite izbrisati to mesto?</string>
-    <string name="place_detail_setting_button_notify_enter">Vstopite</string>
-    <string name="place_detail_setting_button_notify_exit">Izhod</string>
+    <string name="place_detail_setting_button_notify_enter">Prispe</string>
+    <string name="place_detail_setting_button_notify_exit">Zapusti</string>
     <string name="place_detail_notification_settings_title">Opozorila o mestih</string>
-    <string name="place_detail_notification_settings_info_group">Izberite, ali želite prejemati obvestila, ko vsak član skupine vstopi ali izstopi iz tega mesta.</string>
-    <string name="place_detail_notification_settings_info_personal">Izberite, ali želite prejemati obvestila, ko eden od vaših naprav vstopi ali izstopi iz tega mesta.</string>
+    <string name="place_detail_notification_settings_info_group">Izberite, ali želite prejemati obvestila, ko vsak član skupine prispe na to mesto ali ga zapusti.</string>
+    <string name="place_detail_notification_settings_info_personal">Izberite, ali želite prejemati obvestila, ko ena od vaših naprav prispe na to mesto ali ga zapusti.</string>
     <string name="place_sensitivity_screen_title">Občutljivost lokacije</string>
     <string name="place_sensitivity_info_member">Če so obvestila o mestih netočna, prilagodite te nastavitve, da jih izboljšate.</string>
     <string name="place_sensitivity_info_owner">Če so obvestila o mestih netočna, prilagodite te nastavitve, da jih izboljšate. Spremembe lahko uporabite za vse člane ali samo za to napravo.</string>

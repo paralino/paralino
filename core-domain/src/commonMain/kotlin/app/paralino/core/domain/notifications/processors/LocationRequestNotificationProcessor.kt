@@ -14,6 +14,7 @@ import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.base.AccessLogDataSource
 import app.paralino.core.repo.location.LocationPerformanceManager
+import app.paralino.core.repo.location.LocationSharingContractFilter
 import app.paralino.core.utils.extensions.tryParseFromJson
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
@@ -23,6 +24,7 @@ import kotlin.time.Duration.Companion.seconds
 class LocationRequestNotificationProcessor(
     private val locationPerformanceManager: LocationPerformanceManager,
     private val sharingManager: LocationSharingManager,
+    private val sharingContractFilter: LocationSharingContractFilter,
     private val deviceStatusProcessor: MemberDeviceStatusProcessor,
     private val memberIdUseCase: UserMemberIdUseCase,
     private val coroutineScopeProvider: ICoroutineScopeProvider,
@@ -96,6 +98,31 @@ class LocationRequestNotificationProcessor(
             groupId = groupId,
             from = "location request notification"
         )
+
+        when (performanceType) {
+            LocationPerformanceType.HIGH_BATTERY_SAVER,
+            LocationPerformanceType.BATTERY_SAVER,
+            LocationPerformanceType.BALANCED,
+            LocationPerformanceType.HIGH,
+            LocationPerformanceType.MANUAL_BOOST -> {
+                // do nothing
+            }
+
+            LocationPerformanceType.MEDIUM_HIGH,
+            LocationPerformanceType.HIGHER_FOCUS -> {
+                sharingContractFilter.setAsAllowedForDuration(
+                    groupOrSpaceId = groupId,
+                    duration = performanceType.defaultDuration
+                )
+            }
+
+            LocationPerformanceType.VERY_HIGH -> {
+                sharingContractFilter.setAsAllowedForDuration(
+                    groupOrSpaceId = groupId,
+                    duration = performanceType.defaultDuration + performanceType.stepDown.defaultDuration
+                )
+            }
+        }
 
         try {
             deviceStatusProcessor.pushDeviceStatus(groupId = groupId)

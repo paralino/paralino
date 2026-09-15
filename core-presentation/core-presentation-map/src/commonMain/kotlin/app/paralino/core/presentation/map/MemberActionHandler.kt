@@ -6,20 +6,21 @@ import app.paralino.core.domain.location.ClearUserLocationUseCase
 import app.paralino.core.domain.location.LocationRequestUseCase
 import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.presentation.billing.BillingScreenSourceType
-import app.paralino.core.presentation.common.ICoreMessageDispatcher
-import app.paralino.core.presentation.common.GroupItemState
-import app.paralino.core.provider.localizedString
-import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.presentation.common.AppSnackbarData
+import app.paralino.core.presentation.common.GroupItemState
 import app.paralino.core.presentation.common.GroupMemberItemState
+import app.paralino.core.presentation.common.ICoreMessageDispatcher
 import app.paralino.core.presentation.common.LocationRequestItemState
 import app.paralino.core.presentation.common.MemberActionType
 import app.paralino.core.presentation.common.SnackbarDuration
 import app.paralino.core.presentation.common.onAction
+import app.paralino.core.provider.localizedString
+import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.utils.exceptions.asRemoteException
 import app.paralino.core.utils.extensions.errorString
 import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
@@ -28,6 +29,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
+import kotlin.time.Duration
 
 class MemberActionHandler(
     private val uiState: StateFlow<MapHomeScreenState>,
@@ -37,8 +39,8 @@ class MemberActionHandler(
     private val appPrefs: AppPrefs,
     private val messageDispatcher: ICoreMessageDispatcher,
     private val coroutineScope: CoroutineScope,
-    private val eventChannel: kotlinx.coroutines.channels.Channel<MapHomeScreenEvent?>,
-    private val locationRequestDuration: kotlin.time.Duration,
+    private val eventChannel: Channel<MapHomeScreenEvent?>,
+    private val locationRequestDuration: Duration,
 ) {
 
     fun memberAction(
@@ -270,26 +272,96 @@ class MemberActionHandler(
                         else -> {}
                     }
                 } else {
-                    scheduleDeviceResponseCheck()
+                    scheduleDeviceResponseCheck(updateReadyState)
                 }
             }
             .catch { /* errors are handled in onCompletion */ }
             .launchIn(coroutineScope)
     }
 
-    private fun scheduleDeviceResponseCheck() {
+    fun applyHighPrioLocationRequests(
+        updateReadyState: ((MapHomeScreenState.Ready) -> MapHomeScreenState.Ready) -> Unit
+    ) {
+        val matchingKeyIds = uiState.value.asReady()?.allMembersOrDevices
+            ?.filter { member ->
+                member.singleLocation != null
+                        && member.actions.locationRequest?.takeIf { it.isEnabled && it.canInteract } != null
+            }
+            ?.map { it.keyId }
+
+        if (matchingKeyIds.isNullOrEmpty()) return
+
+        updateReadyState { readyState ->
+            readyState.copy(
+                allMembersOrDevices = readyState.allMembersOrDevices.map { member ->
+                    if (matchingKeyIds.any { it == member.keyId }) {
+                        member.copy(
+                            actions = member.actions.copy(
+                                locationRequest = member.actions.locationRequest?.copy(
+                                    isLoading = true,
+                                    isEnabled = true,
+                                    isWaitingForUser = true,
+                                    requestError = null,
+                                    lastLocationRequest = nowUTC(),
+                                    isPremiumFeatureEnabled = readyState.groupPlanConfig.hasLocationRequests
+                                )
+                            )
+                        )
+                    } else {
+                        member
+                    }
+                }
+            )
+        }
+
+        scheduleDeviceResponseCheck(updateReadyState, notifyIfUnresponsive = false)
+    }
+
+    private fun scheduleDeviceResponseCheck(
+        updateReadyState: ((MapHomeScreenState.Ready) -> MapHomeScreenState.Ready) -> Unit,
+        notifyIfUnresponsive: Boolean = true
+    ) {
         coroutineScope.launch {
             delay(locationRequestDuration)
-            val anyObsoleteRequests = uiState.value.asReady()?.allMembersOrDevices?.any { member ->
-                member.actions.locationRequest?.let { request ->
-                    val isWaiting = request.isWaitingForUser
-                    val isObsolete = request.lastLocationRequest?.plus(locationRequestDuration)
-                        ?.let { it < nowUTC() } ?: true
-                    isWaiting && isObsolete
-                } ?: false
-            } ?: false
+            val obsoleteKeyIds = uiState.value.asReady()?.allMembersOrDevices
+                ?.filter { member ->
+                    member.actions.locationRequest?.let { request ->
+                        val isWaiting = request.isWaitingForUser
+                        val isObsolete = request.lastLocationRequest?.plus(locationRequestDuration)
+                            ?.let { it < nowUTC() } ?: true
+                        isWaiting && isObsolete
+                    } ?: false
+                }
+                ?.map { it.keyId }
 
-            if (anyObsoleteRequests) {
+            if (obsoleteKeyIds.isNullOrEmpty()) return@launch
+
+            updateReadyState { readyState ->
+                readyState.copy(
+                    allMembersOrDevices = readyState.allMembersOrDevices.map { member ->
+                        if (obsoleteKeyIds.all { it == member.keyId }) {
+                            member.copy(
+                                actions = member.actions.copy(
+                                    locationRequest = member.actions.locationRequest?.copy(
+                                        isLoading = false,
+                                        isWaitingForUser = false,
+                                        // reset request time so it doesn't go disabled for a second on group focus event
+                                        lastLocationRequest = if (notifyIfUnresponsive) {
+                                            member.actions.locationRequest?.lastLocationRequest
+                                        } else {
+                                            null
+                                        }
+                                    )
+                                )
+                            )
+                        } else {
+                            member
+                        }
+                    }
+                )
+            }
+
+            if (notifyIfUnresponsive) {
                 messageDispatcher.showSnackbar(
                     text = MR.strings.group_member_device_not_responding_message.localizedString(),
                     duration = SnackbarDuration.Long

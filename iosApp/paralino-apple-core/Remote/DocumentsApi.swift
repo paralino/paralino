@@ -55,7 +55,7 @@ class DocumentsApi: IDocumentApiIOS {
         databaseType: BackendDatabaseType,
         collectionId: String,
         queries: [any BackendQuery],
-        limit: Int32,
+        pageSize: Int32,
         onNewValues: @escaping ([[String : Any]]) -> KotlinBoolean
     ) async throws -> Payload<KotlinUnit> {
         await remoteModule.execute { module in
@@ -64,7 +64,7 @@ class DocumentsApi: IDocumentApiIOS {
                 var mappedQueries: [String] = []
                 
                 mappedQueries.append(contentsOf: self.buildQueries(queries: queries))
-                mappedQueries.append(Query.limit(Int(limit)))
+                mappedQueries.append(Query.limit(Int(pageSize)))
                 if !cursor.isEmpty {
                     mappedQueries.append(Query.cursorAfter(cursor))
                 }
@@ -77,7 +77,7 @@ class DocumentsApi: IDocumentApiIOS {
                 )
                 
                 let shouldLoadMore = onNewValues(results.rows.map { try! $0.parseRow() }) == true
-                if shouldLoadMore && results.rows.count >= Int(limit) {
+                if shouldLoadMore && results.rows.count >= Int(pageSize) {
                     cursor = results.rows.last?.id ?? ""
                 } else {
                     cursor = ""

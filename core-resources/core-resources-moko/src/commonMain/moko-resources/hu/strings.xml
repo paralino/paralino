@@ -706,11 +706,11 @@
     <string name="place_create_suggestion_coffee">Legjobb Kávé</string>
     <string name="place_list_menu_delete">Hely törlése</string>
     <string name="place_list_delete_place_alert_title">Biztos benne, hogy el akarja távolítani ezt a helyet?</string>
-    <string name="place_detail_setting_button_notify_enter">Belépés</string>
-    <string name="place_detail_setting_button_notify_exit">Kilépés</string>
+    <string name="place_detail_setting_button_notify_enter">Érkezik</string>
+    <string name="place_detail_setting_button_notify_exit">Távozik</string>
     <string name="place_detail_notification_settings_title">Helyértesítések</string>
-    <string name="place_detail_notification_settings_info_group">Válassza ki, hogy szeretne-e értesítéseket kapni, amikor a csoport minden tagja belép vagy kilép ebből a helyből.</string>
-    <string name="place_detail_notification_settings_info_personal">Válassza ki, hogy szeretne-e értesítéseket kapni, amikor az egyik eszköze belép vagy kilép ebből a helyből.</string>
+    <string name="place_detail_notification_settings_info_group">Válassza ki, hogy szeretne-e értesítéseket kapni, amikor a csoport minden tagja megérkezik erre a helyre vagy elhagyja azt.</string>
+    <string name="place_detail_notification_settings_info_personal">Válassza ki, hogy szeretne-e értesítéseket kapni, amikor az egyik eszköze megérkezik erre a helyre vagy elhagyja azt.</string>
     <string name="place_sensitivity_screen_title">Helyérzékenység</string>
     <string name="place_sensitivity_info_member">Ha a helyi értesítések pontatlanok, állítsa be ezeket a beállításokat a javításuk érdekében.</string>
     <string name="place_sensitivity_info_owner">Ha a helyi értesítések pontatlanok, állítsa be ezeket a beállításokat a javításuk érdekében. A változtatásokat alkalmazhatja minden tagra vagy csak erre az eszközre.</string>

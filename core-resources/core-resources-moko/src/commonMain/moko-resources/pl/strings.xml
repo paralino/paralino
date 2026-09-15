@@ -706,11 +706,11 @@
     <string name="place_create_suggestion_coffee">Najlepsza kawa</string>
     <string name="place_list_menu_delete">Usuń miejsce</string>
     <string name="place_list_delete_place_alert_title">Czy na pewno chcesz usunąć to miejsce?</string>
-    <string name="place_detail_setting_button_notify_enter">Wprowadź</string>
-    <string name="place_detail_setting_button_notify_exit">Wyjdź</string>
+    <string name="place_detail_setting_button_notify_enter">Przybywa</string>
+    <string name="place_detail_setting_button_notify_exit">Opuszcza</string>
     <string name="place_detail_notification_settings_title">Powiadomienia o miejscach</string>
-    <string name="place_detail_notification_settings_info_group">Wybierz, czy chcesz otrzymywać powiadomienia, gdy każdy członek grupy wchodzi lub wychodzi z tego miejsca.</string>
-    <string name="place_detail_notification_settings_info_personal">Wybierz, czy chcesz otrzymywać powiadomienia, gdy jedno z twoich urządzeń wchodzi lub wychodzi z tego miejsca.</string>
+    <string name="place_detail_notification_settings_info_group">Wybierz, czy chcesz otrzymywać powiadomienia, gdy każdy członek grupy przybywa do tego miejsca lub je opuszcza.</string>
+    <string name="place_detail_notification_settings_info_personal">Wybierz, czy chcesz otrzymywać powiadomienia, gdy jedno z twoich urządzeń przybywa do tego miejsca lub je opuszcza.</string>
     <string name="place_sensitivity_screen_title">Czułość lokalizacji</string>
     <string name="place_sensitivity_info_member">Jeśli powiadomienia o miejscach są niedokładne, dostosuj te ustawienia, aby je poprawić.</string>
     <string name="place_sensitivity_info_owner">Jeśli powiadomienia o miejscach są niedokładne, dostosuj te ustawienia, aby je poprawić. Możesz zastosować zmiany dla wszystkich członków lub tylko dla tego urządzenia.</string>

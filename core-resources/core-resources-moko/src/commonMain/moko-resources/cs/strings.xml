@@ -706,11 +706,11 @@
     <string name="place_create_suggestion_coffee">Nejlepší káva</string>
     <string name="place_list_menu_delete">Smazat místo</string>
     <string name="place_list_delete_place_alert_title">Opravdu si jist, že chceš toto místo smazat?</string>
-    <string name="place_detail_setting_button_notify_enter">Zadat</string>
-    <string name="place_detail_setting_button_notify_exit">Ukončit</string>
+    <string name="place_detail_setting_button_notify_enter">Dorazí</string>
+    <string name="place_detail_setting_button_notify_exit">Opustí</string>
     <string name="place_detail_notification_settings_title">Upozornění na místa</string>
-    <string name="place_detail_notification_settings_info_group">Vyberte, zda chcete dostávat oznámení, když každý člen skupiny vstoupí nebo opustí toto místo.</string>
-    <string name="place_detail_notification_settings_info_personal">Vyberte, zda chcete dostávat oznámení, když jedno z vašich zařízení vstoupí nebo opustí toto místo.</string>
+    <string name="place_detail_notification_settings_info_group">Vyberte, zda chcete dostávat oznámení, když každý člen skupiny dorazí do tohoto místa nebo ho opustí.</string>
+    <string name="place_detail_notification_settings_info_personal">Vyberte, zda chcete dostávat oznámení, když jedno z vašich zařízení dorazí do tohoto místa nebo ho opustí.</string>
     <string name="place_sensitivity_screen_title">Citlivost umístění</string>
     <string name="place_sensitivity_info_member">Pokud jsou upozornění na místa nepřesná, upravte tato nastavení, abyste je zlepšili.</string>
     <string name="place_sensitivity_info_owner">Pokud jsou upozornění na místa nepřesná, upravte tato nastavení, abyste je zlepšili. Změny můžete aplikovat pro všechny členy nebo pouze pro toto zařízení.</string>

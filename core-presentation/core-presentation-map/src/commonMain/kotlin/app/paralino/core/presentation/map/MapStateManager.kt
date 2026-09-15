@@ -62,7 +62,7 @@ class MapStateManager(
             )
         }
 
-        if (marker == null || (markerData.type == MapPinType.MEMBER && memberStateForMarker?.singleLocation == null)) {
+        if (markerData.type == MapPinType.MEMBER && (marker == null || memberStateForMarker?.singleLocation == null)) {
             messageDispatcher.showSnackbar(MR.strings.group_member_no_location_info_message.localizedString())
         }
     }

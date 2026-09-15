@@ -24,7 +24,7 @@ import kotlinx.coroutines.launch
 class CoreAppManager(
     private val scopeProvider: ICoroutineScopeProvider,
     private val configRepo: RemoteConfigRepository,
-    private val refreshManager: RefreshEverythingUseCase,
+    private val refreshEverythingUseCase: RefreshEverythingUseCase,
     private val sessionMonitor: UserSessionMonitor,
     private val logoutUseCase: LogoutUseCase,
     private val activeSharingEngine: ActiveSharingEngine,
@@ -69,6 +69,8 @@ class CoreAppManager(
 
                     if (state.comingFromBackground) {
                         updateGroups()
+                    } else {
+                        doFullRefresh()
                     }
                 }
                     .launchIn(scopeProvider.defaultIOScope)
@@ -131,7 +133,7 @@ class CoreAppManager(
         logg.tag("app_state").v("App is active but was in background, refresh user, groups and session")
         scopeProvider.userSessionIOScope.launch {
             userRepo.refreshUserMaybe(timeDelayMillis = 30_000)
-            refreshManager.scheduleRefreshAllGroupsWithPlaces(cacheTimeMillis = 60_000)
+            refreshEverythingUseCase.scheduleRefreshAllGroupsWithPlaces(cacheTimeMillis = 60_000)
             sessionRenewalHandler.processSessionRenewal()
         }
     }
@@ -143,6 +145,17 @@ class CoreAppManager(
             } catch (e: Exception) {
                 logg.e("Error updating config", e)
             }
+        }
+    }
+
+    private fun doFullRefresh() {
+        if (!appPrefs.isTokenValid) {
+            logg.tag("app_state").v("Skip full refresh, token is invalid")
+            return
+        }
+
+        scopeProvider.userSessionIOScope.launch {
+            refreshEverythingUseCase.refreshEverythingFallback()
         }
     }
 }

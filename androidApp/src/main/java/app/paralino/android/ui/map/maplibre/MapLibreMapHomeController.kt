@@ -103,7 +103,8 @@ fun rememberMapLibreHomeMapController(
                 isSatelliteMode = uiState.isSatelliteModeActive,
                 cameraState = cameraState,
                 contentPadding = mapContentPadding,
-                mapsSDKProvider = uiState.androidMapSDKProvider
+                mapsSDKProvider = uiState.androidMapSDKProvider,
+                isCompactAttribution = false
             )
         }
     }.value

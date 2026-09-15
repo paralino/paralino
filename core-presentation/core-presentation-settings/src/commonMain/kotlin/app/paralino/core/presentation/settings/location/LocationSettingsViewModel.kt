@@ -214,8 +214,8 @@ class LocationSettingsViewModel(
         }
         locationPerformanceManager.updateLocationSettings(
             useHighPerformanceLocation = newSettings.useHighPerformanceLocation,
-            balancedPerformanceSettings = newSettings.selectedItem.key as LocationPerformanceSettingsType,
-            batterySaverPerformanceSettings = uiState.value.batterySaverSettings.selectedItem.key as LocationPerformanceSettingsType
+            balancedPerformanceSettings = newSettings.selectedItem.key as LocationPerformanceSettingsType.Balanced,
+            batterySaverPerformanceSettings = uiState.value.batterySaverSettings.selectedItem.key as LocationPerformanceSettingsType.BatterySaver
         )
     }
 
@@ -264,8 +264,8 @@ class LocationSettingsViewModel(
                 }
                 locationPerformanceManager.updateLocationSettings(
                     useHighPerformanceLocation = uiState.value.balancedSettings.useHighPerformanceLocation,
-                    balancedPerformanceSettings = newSettings.selectedItem.key as LocationPerformanceSettingsType,
-                    batterySaverPerformanceSettings = uiState.value.batterySaverSettings.selectedItem.key as LocationPerformanceSettingsType
+                    balancedPerformanceSettings = newSettings.selectedItem.key as LocationPerformanceSettingsType.Balanced,
+                    batterySaverPerformanceSettings = uiState.value.batterySaverSettings.selectedItem.key as LocationPerformanceSettingsType.BatterySaver
                 )
             }
 
@@ -281,8 +281,8 @@ class LocationSettingsViewModel(
                 }
                 locationPerformanceManager.updateLocationSettings(
                     useHighPerformanceLocation = uiState.value.balancedSettings.useHighPerformanceLocation,
-                    balancedPerformanceSettings = uiState.value.balancedSettings.selectedItem.key as LocationPerformanceSettingsType,
-                    batterySaverPerformanceSettings = newSettings.selectedItem.key as LocationPerformanceSettingsType
+                    balancedPerformanceSettings = uiState.value.balancedSettings.selectedItem.key as LocationPerformanceSettingsType.Balanced,
+                    batterySaverPerformanceSettings = newSettings.selectedItem.key as LocationPerformanceSettingsType.BatterySaver
                 )
             }
 

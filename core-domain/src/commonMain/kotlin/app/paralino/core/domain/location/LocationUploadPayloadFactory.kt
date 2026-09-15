@@ -16,7 +16,11 @@ import app.paralino.core.utils.BaseRemoteModule
 import app.paralino.core.utils.exceptions.CryptoException
 import app.paralino.core.utils.exceptions.MissingCryptoKeyException
 import app.paralino.core.utils.exceptions.MissingMemberKeyException
+import app.paralino.core.utils.extensions.fromUTCtoInstant
+import app.paralino.core.utils.extensions.isOlderThan
 import kotlin.coroutines.cancellation.CancellationException
+import kotlin.time.Duration.Companion.days
+import kotlin.time.Instant
 
 /**
  * A `null` field means do not send / do not touch locally.
@@ -27,18 +31,22 @@ sealed class PreparedLocationUpload {
     abstract val status: String?
     abstract val locationHistory: String?
     abstract val pendingHistoryCount: Int
+    abstract val oldestEntryTimestamp: Instant?
 
     val locationId: String get() = item.locationId
 
     val shouldTriggerHistorySync: Boolean
-        get() = (locationHistory?.length ?: 0) >= 50_000 || pendingHistoryCount > 150
+        get() = (locationHistory?.length ?: 0) >= 50_000
+            || pendingHistoryCount > 150
+            || oldestEntryTimestamp?.isOlderThan(1.days) == true
 
     data class Personal(
         override val item: MemberGroupIdForUpload,
         override val locationData: String?,
         override val status: String?,
         override val locationHistory: String?,
-        override val pendingHistoryCount: Int
+        override val pendingHistoryCount: Int,
+        override val oldestEntryTimestamp: Instant?
     ) : PreparedLocationUpload()
 
     data class Group(
@@ -47,9 +55,16 @@ sealed class PreparedLocationUpload {
         override val status: String?,
         override val locationHistory: String?,
         override val pendingHistoryCount: Int,
+        override val oldestEntryTimestamp: Instant?,
         val deviceKeyVersion: Long
     ) : PreparedLocationUpload()
 }
+
+private data class LocationHistoryPreparePayload(
+    val locationHistory: String?,
+    val pendingHistoryCount: Int,
+    val oldestEntryTimestamp: Instant?
+)
 
 class LocationUploadPayloadFactory(
     private val database: MainDatabaseHelper,
@@ -120,7 +135,7 @@ class LocationUploadPayloadFactory(
             key = key
         )
 
-        if (locationData == null && status == null && historyPayload.first == null) {
+        if (locationData == null && status == null && historyPayload.locationHistory == null) {
             return null
         }
 
@@ -129,8 +144,9 @@ class LocationUploadPayloadFactory(
                 item = data,
                 locationData = locationData,
                 status = status,
-                locationHistory = historyPayload.first,
-                pendingHistoryCount = historyPayload.second
+                locationHistory = historyPayload.locationHistory,
+                pendingHistoryCount = historyPayload.pendingHistoryCount,
+                oldestEntryTimestamp = historyPayload.oldestEntryTimestamp
             )
         } else {
             if (deviceKeyVersion != null) {
@@ -138,8 +154,9 @@ class LocationUploadPayloadFactory(
                     item = data,
                     locationData = locationData,
                     status = status,
-                    locationHistory = historyPayload.first,
-                    pendingHistoryCount = historyPayload.second,
+                    locationHistory = historyPayload.locationHistory,
+                    pendingHistoryCount = historyPayload.pendingHistoryCount,
+                    oldestEntryTimestamp = historyPayload.oldestEntryTimestamp,
                     deviceKeyVersion = deviceKeyVersion
                 )
             } else {
@@ -151,7 +168,7 @@ class LocationUploadPayloadFactory(
     private suspend fun getLocationHistoryPayload(
         data: MemberGroupIdForUpload,
         key: String
-    ): Pair<String?, Int> {
+    ): LocationHistoryPreparePayload {
         when (appConfig.appHost) {
             AppHost.MAIN_APP -> {
                 val allPendingEntries = if (data.groupId.isPersonalSpace) {
@@ -168,6 +185,10 @@ class LocationUploadPayloadFactory(
                     .take(100)
                     .let { historyMapper.pendingLocationToCore(it) }
 
+                val oldestEntryTimestamp = historyEntries
+                    .mapNotNull { it.history.status.startTime.fromUTCtoInstant() }
+                    .minOrNull()
+
                 val locationHistory = if (historyEntries.isNotEmpty()) {
                     val historyModel = LocationHistoryModel(
                         history = historyEntries.map { it.history }
@@ -180,12 +201,20 @@ class LocationUploadPayloadFactory(
                     ""
                 }
 
-                return locationHistory to allPendingEntries.size
+                return LocationHistoryPreparePayload(
+                    locationHistory = locationHistory,
+                    pendingHistoryCount = allPendingEntries.size,
+                    oldestEntryTimestamp = oldestEntryTimestamp
+                )
             }
 
             AppHost.IOS_NOTIFICATION_EXTENSION,
             AppHost.IOS_LOCATION_EXTENSION -> {
-                return null to 0
+                return LocationHistoryPreparePayload(
+                    locationHistory = null,
+                    pendingHistoryCount = 0,
+                    oldestEntryTimestamp = null
+                )
             }
         }
     }

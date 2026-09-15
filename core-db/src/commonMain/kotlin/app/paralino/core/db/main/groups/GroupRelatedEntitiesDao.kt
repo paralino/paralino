@@ -54,6 +54,7 @@ interface GroupRelatedEntitiesDao {
         val mappedMembers = members.map { member ->
             val currentMember = getMemberByIdOnce(memberId = member.id)
             member.copy(
+                createdAt = member.createdAt ?: currentMember?.createdAt,
                 settingsId = currentMember?.settingsId,
                 settingsGroupId = currentMember?.settingsGroupId,
                 settingsOwnerUserId = currentMember?.settingsOwnerUserId,
@@ -153,6 +154,9 @@ interface GroupRelatedEntitiesDao {
 
     @Query("SELECT * FROM placeEntity WHERE groupId = :groupId")
     fun getAllPlacesForGroup(groupId: String): Flow<List<PlaceEntity>>
+
+    @Query("SELECT * FROM placeEntity WHERE groupId IN (:groupIds)")
+    suspend fun getAllPlacesForGroupsOnce(groupIds: List<String>): List<PlaceEntity>
 
     @Query("SELECT COUNT(id) FROM placeEntity WHERE groupId = :groupId")
     suspend fun getPlacesCountForGroupOnce(groupId: String): Int?

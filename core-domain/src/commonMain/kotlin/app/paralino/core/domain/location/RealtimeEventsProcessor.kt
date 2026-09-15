@@ -13,18 +13,14 @@ import app.paralino.core.logg
 import app.paralino.core.models.base.BackendDatabaseType
 import app.paralino.core.models.base.BackendResourceIDs
 import app.paralino.core.models.base.RealtimeResponse
-import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.models.group.UserGroup
-import app.paralino.core.models.location.LocationPerformanceType
 import app.paralino.core.models.raw.GroupPlaceRaw
 import app.paralino.core.models.raw.GroupPrivacyZoneRaw
 import app.paralino.core.models.raw.MemberDocumentRaw
 import app.paralino.core.models.raw.MemberLocationRaw
 import app.paralino.core.models.raw.UserDeviceLocationRaw
 import app.paralino.core.models.raw.UserDeviceRaw
-import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.location.LocationLocalDataSource
-import app.paralino.core.repo.location.LocationPerformanceManager
 import app.paralino.core.repo.places.PlacesRepository
 import app.paralino.core.repo.user.IPushProviderManager
 import app.paralino.core.repo.user.PersonalDevicesLocalDataSource
@@ -42,14 +38,10 @@ class RealtimeEventsProcessor constructor(
     private val userKeyRepo: CryptoUserKeysLocalSource,
     private val memberLocal: LocationLocalDataSource,
     private val saveLocationUseCase: SaveLocationUseCase,
-    private val locationSharingManager: LocationSharingManager,
-    private val locationPerformanceManager: LocationPerformanceManager,
     private val refreshUserKey: UserCryptoKeyRefreshUseCase,
     private val pushProvider: IPushProviderManager
 ) {
 
-    val locationFocusChannel =
-        "tablesdb.${BackendDatabaseType.DATA.id}.tables.${BackendResourceIDs.collectionLocationFocusID}.rows"
     val placesChannel =
         "tablesdb.${BackendDatabaseType.DATA.id}.tables.${BackendResourceIDs.collectionPlacesID}.rows"
     val privacyZonesChannel =
@@ -69,10 +61,6 @@ class RealtimeEventsProcessor constructor(
 
     suspend fun processEvent(response: RealtimeResponse<Map<String, Any>>) {
         when {
-            response.channels.contains(locationFocusChannel) -> {
-                processLocationFocusChannelEvent(response)
-            }
-
             response.channels.contains(placesChannel) -> {
                 processPlaceChannelEvent(response)
             }
@@ -100,22 +88,6 @@ class RealtimeEventsProcessor constructor(
             response.channels.contains(personalLocationsChannel) -> {
                 processUserDeviceLocationChannelEvent(response)
             }
-        }
-    }
-
-    private suspend fun processLocationFocusChannelEvent(response: RealtimeResponse<Map<String, Any>>) {
-        logg.tag("realtime_events").v("Got location focus create/update event")
-        val groupId = response.payload["groupId"] as String
-
-        if (isPaused(groupId)) return
-
-        if (locationSharingManager.isSharingActiveForGroup(groupId.asGroupOrSpaceId())) {
-            logg.tag("location_performance").v("Boosting location from location focus realtime event")
-            locationPerformanceManager.locationBoostRequested(
-                performanceType = LocationPerformanceType.MEDIUM_HIGH,
-                groupId = groupId.asGroupOrSpaceId(),
-                from = "realtime location focus event"
-            )
         }
     }
 

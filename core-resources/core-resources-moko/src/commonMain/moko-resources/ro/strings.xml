@@ -706,11 +706,11 @@
     <string name="place_create_suggestion_coffee">Cea mai bună cafea</string>
     <string name="place_list_menu_delete">Șterge locul</string>
     <string name="place_list_delete_place_alert_title">Sunteți sigur că doriți să ștergeți acest loc?</string>
-    <string name="place_detail_setting_button_notify_enter">Intră</string>
-    <string name="place_detail_setting_button_notify_exit">Ieși</string>
+    <string name="place_detail_setting_button_notify_enter">Sosește</string>
+    <string name="place_detail_setting_button_notify_exit">Pleacă</string>
     <string name="place_detail_notification_settings_title">Alerte de locație</string>
-    <string name="place_detail_notification_settings_info_group">Alege dacă dorești să primești notificări atunci când fiecare membru al grupului intră sau iese din acest loc.</string>
-    <string name="place_detail_notification_settings_info_personal">Alege dacă dorești să primești notificări atunci când unul dintre dispozitivele tale intră sau iese din acest loc.</string>
+    <string name="place_detail_notification_settings_info_group">Alege dacă dorești să primești notificări atunci când fiecare membru al grupului sosește la acest loc sau pleacă din el.</string>
+    <string name="place_detail_notification_settings_info_personal">Alege dacă dorești să primești notificări atunci când unul dintre dispozitivele tale sosește la acest loc sau pleacă din el.</string>
     <string name="place_sensitivity_screen_title">Sensibilitate la locație</string>
     <string name="place_sensitivity_info_member">Dacă alertele de loc sunt inexacte, ajustează aceste setări pentru a le îmbunătăți.</string>
     <string name="place_sensitivity_info_owner">Dacă alertele de loc sunt inexacte, ajustează aceste setări pentru a le îmbunătăți. Poți aplica modificările pentru toți membrii sau doar pentru acest dispozitiv.</string>

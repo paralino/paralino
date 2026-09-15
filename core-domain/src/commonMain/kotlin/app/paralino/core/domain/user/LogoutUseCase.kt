@@ -1,19 +1,19 @@
 package app.paralino.core.domain.user
 
-import app.paralino.core.domain.crypto.group.CryptoKEKLocalRepository
-import app.paralino.core.domain.crypto.user.CryptoUserKeysLocalSource
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.db.MainDatabaseHelper
 import app.paralino.core.domain.LimitedExecution
 import app.paralino.core.domain.LimitedExecutionParentManager
+import app.paralino.core.domain.crypto.group.CryptoKEKLocalRepository
+import app.paralino.core.domain.crypto.user.CryptoUserKeysLocalSource
 import app.paralino.core.domain.location.LocationUploadEngine
 import app.paralino.core.logg
 import app.paralino.core.models.raw.UserCryptoKeyRaw
 import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.provider.IDeviceApiProvider
-import app.paralino.core.provider.NotificationSocketServiceManager
 import app.paralino.core.repo.base.AccessLogDataSource
 import app.paralino.core.repo.location.IGeofenceManager
+import app.paralino.core.repo.location.LocationSharingContractFilter
 import app.paralino.core.repo.places.PlaceActivityDataSource
 import app.paralino.core.repo.user.IPushProviderManager
 import app.paralino.core.repo.user.UserRepository
@@ -34,7 +34,7 @@ class LogoutUseCase(
     private val limitedExecutionParentManager: LimitedExecutionParentManager,
     private val accessLogs: AccessLogDataSource,
     private val appPrefs: AppPrefs,
-    private val notificationServiceManager: NotificationSocketServiceManager,
+    private val sharingContractFilter: LocationSharingContractFilter,
     private val appMainDatabase: MainDatabaseHelper
 ) : LimitedExecution(scope = limitedExecutionParentManager) {
 
@@ -114,6 +114,7 @@ class LogoutUseCase(
         placeActivityRepo.clearCache()
         geofenceManager.deleteAllGeofences()
         accessLogs.clearAll()
+        sharingContractFilter.clearFilter()
         logg.i("account_state", "Cleared all data on logout")
     }
 }
