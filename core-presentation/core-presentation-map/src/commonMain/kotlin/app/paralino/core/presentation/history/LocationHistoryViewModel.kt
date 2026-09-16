@@ -640,7 +640,14 @@ class LocationHistoryViewModelController(
 
             LocationHistoryUiEvent.ToggleShowInaccurateLocation -> {
                 _uiState.update {
-                    it.copy(showInaccurateLocations = !it.showInaccurateLocations)
+                    val newState = it.copy(showInaccurateLocations = !it.showInaccurateLocations)
+                    newState.copy(
+                        stats = LocationHistoryStats.calculateStats(
+                            state = newState,
+                            valueFormatter = valueFormatter,
+                            geofenceManager = geofenceManager
+                        )
+                    )
                 }
             }
 
