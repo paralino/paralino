@@ -18,6 +18,8 @@ import app.paralino.core.db.main.groups.GroupEntity
 import app.paralino.core.db.main.groups.GroupRelatedEntitiesDao
 import app.paralino.core.db.main.groups.MemberEntity
 import app.paralino.core.db.main.groups.MemberLocationEntity
+import app.paralino.core.db.main.groups.PendingGroupJoinWelcomeDao
+import app.paralino.core.db.main.groups.PendingGroupJoinWelcomeEntity
 import app.paralino.core.db.main.keys.GroupDeviceIntegrityEntity
 import app.paralino.core.db.main.keys.GroupDeviceKeysEntity
 import app.paralino.core.db.main.keys.GroupHistoryKeyEntity
@@ -89,6 +91,7 @@ import kotlinx.coroutines.IO
         PlaceSettingsEntity::class,
         PendingPlaceEventsEntity::class,
         BatteryAlertEventEntity::class,
+        PendingGroupJoinWelcomeEntity::class,
         PendingLocationHistoryEntity::class,
         PersonalHistoryKeyEntity::class,
         PersonalHistoryEntity::class,
@@ -102,7 +105,7 @@ import kotlinx.coroutines.IO
         PrivacyZoneEntity::class,
         PrivacyZoneSharedLocationEntity::class,
     ],
-    version = 25,
+    version = 26,
     exportSchema = true
 )
 @ConstructedBy(AppMainDatabaseConstructor::class)
@@ -127,6 +130,7 @@ abstract class AppMainDatabase : RoomDatabase() {
     abstract fun logoutDao(): LogoutDao
     abstract fun approximateSharedLocationDao(): ApproximateSharedLocationDao
     abstract fun privacyZoneSharedLocationDao(): PrivacyZoneSharedLocationDao
+    abstract fun pendingGroupJoinWelcomeDao(): PendingGroupJoinWelcomeDao
 
     companion object {
         fun create(builder: SqlDriverFactory): AppMainDatabase {

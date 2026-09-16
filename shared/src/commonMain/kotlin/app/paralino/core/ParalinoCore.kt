@@ -29,6 +29,7 @@ import app.paralino.core.domain.group.GroupMemberRemoveUseCase
 import app.paralino.core.domain.group.GroupPreRefreshUseCase
 import app.paralino.core.domain.group.GroupRefreshUseCase
 import app.paralino.core.domain.group.GroupRemoveUseCase
+import app.paralino.core.domain.group.PendingGroupJoinWelcomeUseCase
 import app.paralino.core.domain.group.PlaceAddressSearchUseCase
 import app.paralino.core.domain.privacyzone.CreatePrivacyZoneUseCase
 import app.paralino.core.domain.privacyzone.DeletePrivacyZoneUseCase
@@ -140,6 +141,7 @@ import app.paralino.core.repo.base.AccessLogDataSource
 import app.paralino.core.repo.base.AppConfigRepository
 import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.group.GroupsRemoteSource
+import app.paralino.core.repo.group.PendingGroupJoinWelcomeLocalDataSource
 import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.location.LocationLocalDataSource
 import app.paralino.core.repo.location.LocationPerformanceManager
@@ -285,6 +287,7 @@ val dataSourceModule = module {
     single { PersonalDevicesLocalDataSource(get(), get()) }
     single { CryptoKeyLocalDataSource(get(), get(), get(), get()) }
     single { UserGroupLocalDataSource(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+    single { PendingGroupJoinWelcomeLocalDataSource(get()) }
     single { PersonalCodeLocalDataSource(get(), get()) }
     single { PlacesLocalDataSource(get(), get()) }
     single { PrivacyZonesLocalDataSource(get(), get(), get()) }
@@ -344,8 +347,9 @@ val coreModule = module {
     single { GroupMemberAddUseCase(get(), get(), get(), get(), get(), get(), get()) }
     single { GroupRefreshUseCase(get(), get(), get(), get(), get(), get(), get()) }
     single { GroupPreRefreshUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
-    single { GroupRemoveUseCase(get(), get(), get(), get(), get(), get()) }
+    single { GroupRemoveUseCase(get(), get(), get(), get(), get(), get(), get()) }
     single { GroupCreateUseCase(get(), get(), get(), get(), get(), get(), get(), get()) }
+    single { PendingGroupJoinWelcomeUseCase(get()) }
     single { RefreshEverythingUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { GetMemberWithLocationsUseCase(get(), get(), get(), get()) }
     single { GetLocationHistoryUseCase(get(), get()) }
@@ -414,7 +418,7 @@ val coreModule = module {
     factory { PlaceUpdatedNotificationProcessor(get()) }
     factory { PrivacyZoneCreatedNotificationProcessor(get(), get(), get(), get(), get()) }
     factory { PrivacyZoneSyncNotificationProcessor(get(), get(), get()) }
-    factory { GroupMemberAddedNotificationProcessor(get(), get(), get(), get()) }
+    factory { GroupMemberAddedNotificationProcessor(get(), get(), get(), get(), get()) }
     factory { GroupMemberDeletedNotificationProcessor(get()) }
     factory { LocationSharingStartedNotificationsProcessor(get(), get(), get(), get(), get()) }
     factory { LocationRequestNotificationProcessor(get(), get(), get(), get(), get(), get(), get()) }

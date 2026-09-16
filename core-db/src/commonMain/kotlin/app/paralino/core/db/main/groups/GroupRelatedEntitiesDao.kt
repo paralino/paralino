@@ -425,6 +425,12 @@ interface GroupRelatedEntitiesDao {
         createPlaces(places)
         createPlaceSettings(placeSettings)
         createPrivacyZones(privacyZones)
+
+        if (groups.isEmpty()) {
+            clearAllPendingGroupJoinWelcome()
+        } else {
+            deletePendingGroupJoinWelcomeNotIn(groups.map { it.id })
+        }
     }
 
     @Transaction
@@ -466,7 +472,17 @@ interface GroupRelatedEntitiesDao {
         clearAllUnsyncedHistoryKeysForGroup(groupId = groupId)
         deleteApproximateSharedLocationForGroup(groupId = groupId)
         deletePrivacyZoneSharedLocationsForGroup(groupId = groupId)
+        deletePendingGroupJoinWelcome(groupId = groupId)
     }
+
+    @Query("DELETE FROM pendingGroupJoinWelcomeEntity WHERE groupId = :groupId")
+    suspend fun deletePendingGroupJoinWelcome(groupId: String)
+
+    @Query("DELETE FROM pendingGroupJoinWelcomeEntity")
+    suspend fun clearAllPendingGroupJoinWelcome()
+
+    @Query("DELETE FROM pendingGroupJoinWelcomeEntity WHERE groupId NOT IN (:groupIds)")
+    suspend fun deletePendingGroupJoinWelcomeNotIn(groupIds: List<String>)
 
     @Query("DELETE FROM privacyZoneSharedLocationEntity WHERE groupId = :groupId")
     suspend fun deletePrivacyZoneSharedLocationsForGroup(groupId: String)

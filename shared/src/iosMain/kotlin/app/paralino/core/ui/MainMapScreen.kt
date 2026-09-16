@@ -155,6 +155,7 @@ object MainMapScreen {
                             MapHomeScreenEvent.AskBackgroundLocationPermission -> askBackgroundLocationPermission()
                             MapHomeScreenEvent.OpenPersonalCodes -> openPersonalCodes()
                             is MapHomeScreenEvent.SharePersonalCode -> onSharePersonalCode(event.content)
+                            is MapHomeScreenEvent.OpenGroupJoinWelcome -> {}
                         }
                     }
                 }

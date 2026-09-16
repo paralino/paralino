@@ -242,6 +242,7 @@ sealed class MapHomeScreenEvent {
     data class OpenPrivacyZones(val groupId: String) : MapHomeScreenEvent()
     data class OpenCreatePrivacyZone(val groupId: String, val location: LatLng?) : MapHomeScreenEvent()
     data class OpenPrivacyZoneDetails(val groupId: String, val zoneId: String) : MapHomeScreenEvent()
+    data class OpenGroupJoinWelcome(val groupId: String) : MapHomeScreenEvent()
     data class OpenExternalNavigation(
         val lat: Double,
         val lng: Double,
