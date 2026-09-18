@@ -191,6 +191,13 @@
     <string name="settings_account_delete_alert_cancel_button2">No importa</string>
     <string name="settings_account_delete_alert_cancel_button3">Abortar</string>
     <string name="settings_account_delete_alert_cancel_button4">Cerrar</string>
+    <string name="settings_account_info_email">Correo:\n**%s**</string>
+    <string name="settings_account_info_user_id">ID de usuario:\n**%s**</string>
+    <string name="settings_account_info_billing_id">ID de usuario de facturación:\n**%s**</string>
+    <string name="settings_account_info_device_id">ID del dispositivo:\n**%s**</string>
+    <string name="settings_account_info_diagnostics_id">ID de diagnóstico:\n**%s**</string>
+    <string name="settings_account_info_push_token">Token push:\n**%s**</string>
+    <string name="settings_account_info_member_since">Miembro desde **%s**</string>
     <string name="settings_profile_name_placeholder">Tu nombre*</string>
     <string name="settings_section_general_title">Info y soporte</string>
     <string name="setting_title_share">Compartir con amigos</string>
@@ -641,6 +648,11 @@
     <string name="group_settings_low_battery_alerts_title">Alertas de batería baja</string>
     <string name="group_settings_battery_notifications_info">Decide si quieres recibir notificaciones cuando el nivel de batería de un miembro del grupo esté bajo.</string>
     <string name="group_settings_battery_notifications_notice">Las notificaciones solo se enviarán si los miembros eligen compartir sus datos de batería y su dispositivo detecta un nivel de batería por debajo del **15%**.</string>
+    <string name="group_settings_info_group_id">ID del grupo:\n**%s**</string>
+    <string name="group_settings_info_member_id">ID del miembro:\n**%s**</string>
+    <string name="group_settings_info_location_id">ID de ubicación del dispositivo:\n**%s**</string>
+    <string name="group_settings_info_created_at">Creado el: **%s**</string>
+    <string name="group_settings_info_member_since">Miembro desde: **%s**</string>
     <string name="personalSpace_settings_battery_notifications_info">Decida si desea ser notificado en este dispositivo si alguno de sus dispositivos tiene un nivel de batería bajo.</string>
     <string name="personalSpace_settings_battery_notifications_notice">Las notificaciones solo se enviarán si el seguimiento de ubicación está activado en el dispositivo objetivo y si ese dispositivo detecta un nivel de batería por debajo del **15%**.</string>
     <string name="group_create_start_title">Conectar</string>

@@ -191,6 +191,13 @@
     <string name="settings_account_delete_alert_cancel_button2">Неважно</string>
     <string name="settings_account_delete_alert_cancel_button3">Отменить</string>
     <string name="settings_account_delete_alert_cancel_button4">Закрыть</string>
+    <string name="settings_account_info_email">Электронная почта:\n**%s**</string>
+    <string name="settings_account_info_user_id">ID пользователя:\n**%s**</string>
+    <string name="settings_account_info_billing_id">Платёжный ID пользователя:\n**%s**</string>
+    <string name="settings_account_info_device_id">ID устройства:\n**%s**</string>
+    <string name="settings_account_info_diagnostics_id">ID диагностики:\n**%s**</string>
+    <string name="settings_account_info_push_token">Push-токен:\n**%s**</string>
+    <string name="settings_account_info_member_since">Участник с **%s**</string>
     <string name="settings_profile_name_placeholder">Ваше имя*</string>
     <string name="settings_section_general_title">Информация и поддержка</string>
     <string name="setting_title_share">Поделиться с друзьями</string>
@@ -641,6 +648,11 @@
     <string name="group_settings_low_battery_alerts_title">Оповещения о низком заряде батареи</string>
     <string name="group_settings_battery_notifications_info">Решите, хотите ли вы получать уведомления, когда уровень заряда батареи участника группы низкий.</string>
     <string name="group_settings_battery_notifications_notice">Уведомления будут отправляться только в том случае, если участники выберут возможность делиться данными о батарее, и если их устройство обнаружит уровень заряда ниже **15%**.</string>
+    <string name="group_settings_info_group_id">ID группы:\n**%s**</string>
+    <string name="group_settings_info_member_id">ID участника:\n**%s**</string>
+    <string name="group_settings_info_location_id">ID местоположения устройства:\n**%s**</string>
+    <string name="group_settings_info_created_at">Создано: **%s**</string>
+    <string name="group_settings_info_member_since">Участник с: **%s**</string>
     <string name="personalSpace_settings_battery_notifications_info">Решите, хотите ли вы получать уведомления на этом устройстве, если у любого из ваших устройств низкий уровень заряда батареи.</string>
     <string name="personalSpace_settings_battery_notifications_notice">Уведомления будут отправляться только в том случае, если отслеживание местоположения активировано на целевом устройстве и если это устройство обнаружит уровень заряда ниже **15%**.</string>
     <string name="group_create_start_title">Подключить</string>

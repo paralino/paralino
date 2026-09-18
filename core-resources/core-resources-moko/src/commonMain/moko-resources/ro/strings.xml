@@ -191,6 +191,13 @@
     <string name="settings_account_delete_alert_cancel_button2">Nu contează</string>
     <string name="settings_account_delete_alert_cancel_button3">Anulează</string>
     <string name="settings_account_delete_alert_cancel_button4">Închide</string>
+    <string name="settings_account_info_email">Email:\n**%s**</string>
+    <string name="settings_account_info_user_id">ID utilizator:\n**%s**</string>
+    <string name="settings_account_info_billing_id">ID utilizator de facturare:\n**%s**</string>
+    <string name="settings_account_info_device_id">ID dispozitiv:\n**%s**</string>
+    <string name="settings_account_info_diagnostics_id">ID diagnostic:\n**%s**</string>
+    <string name="settings_account_info_push_token">Token push:\n**%s**</string>
+    <string name="settings_account_info_member_since">Membru din **%s**</string>
     <string name="settings_profile_name_placeholder">Numele tău*</string>
     <string name="settings_section_general_title">Informații și suport</string>
     <string name="setting_title_share">Împărtășește cu prietenii</string>
@@ -641,6 +648,11 @@
     <string name="group_settings_low_battery_alerts_title">Alerte pentru baterie descărcată</string>
     <string name="group_settings_battery_notifications_info">Decide dacă dorești să fii notificat atunci când nivelul bateriei unui membru al grupului este scăzut.</string>
     <string name="group_settings_battery_notifications_notice">Notificările vor fi trimise doar dacă membrii aleg să împărtășească datele despre bateria lor și dispozitivul lor detectează un nivel al bateriei sub **15%**.</string>
+    <string name="group_settings_info_group_id">ID grup:\n**%s**</string>
+    <string name="group_settings_info_member_id">ID membru:\n**%s**</string>
+    <string name="group_settings_info_location_id">ID locație dispozitiv:\n**%s**</string>
+    <string name="group_settings_info_created_at">Creat la: **%s**</string>
+    <string name="group_settings_info_member_since">Membru din: **%s**</string>
     <string name="personalSpace_settings_battery_notifications_info">Decide dacă dorești să fii notificat pe acest dispozitiv dacă oricare dintre dispozitivele tale are un nivel scăzut al bateriei.</string>
     <string name="personalSpace_settings_battery_notifications_notice">Notificările vor fi trimise doar dacă urmărirea locației este activată pe dispozitivul țintă și dacă acel dispozitiv detectează un nivel al bateriei sub **15%**.</string>
     <string name="group_create_start_title">Conectare</string>

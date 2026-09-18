@@ -191,6 +191,13 @@
     <string name="settings_account_delete_alert_cancel_button2">Glem det</string>
     <string name="settings_account_delete_alert_cancel_button3">Afbryd</string>
     <string name="settings_account_delete_alert_cancel_button4">Luk</string>
+    <string name="settings_account_info_email">E-mail:\n**%s**</string>
+    <string name="settings_account_info_user_id">Bruger-ID:\n**%s**</string>
+    <string name="settings_account_info_billing_id">Faktureringsbruger-ID:\n**%s**</string>
+    <string name="settings_account_info_device_id">Enheds-ID:\n**%s**</string>
+    <string name="settings_account_info_diagnostics_id">Diagnostik-ID:\n**%s**</string>
+    <string name="settings_account_info_push_token">Push-token:\n**%s**</string>
+    <string name="settings_account_info_member_since">Medlem siden **%s**</string>
     <string name="settings_profile_name_placeholder">Dit navn*</string>
     <string name="settings_section_general_title">Info &amp; support</string>
     <string name="setting_title_share">Del med venner</string>
@@ -641,6 +648,11 @@
     <string name="group_settings_low_battery_alerts_title">Lav batteri-alarm</string>
     <string name="group_settings_battery_notifications_info">Beslut, om du vil have besked, når et gruppemedlems batteriniveau er lavt.</string>
     <string name="group_settings_battery_notifications_notice">Underretninger vil kun blive sendt, hvis medlemmer vælger at dele deres batteridata, og deres enhed registrerer et batteriniveau under **15%**.</string>
+    <string name="group_settings_info_group_id">Gruppe-ID:\n**%s**</string>
+    <string name="group_settings_info_member_id">Medlems-ID:\n**%s**</string>
+    <string name="group_settings_info_location_id">Enhedsplacerings-ID:\n**%s**</string>
+    <string name="group_settings_info_created_at">Oprettet: **%s**</string>
+    <string name="group_settings_info_member_since">Medlem siden: **%s**</string>
     <string name="personalSpace_settings_battery_notifications_info">Beslut, om du vil have besked på denne enhed, hvis nogen af dine enheder har et lavt batteriniveau.</string>
     <string name="personalSpace_settings_battery_notifications_notice">Underretninger vil kun blive sendt, hvis lokationssporing er aktiveret på den målrettede enhed, og hvis den enhed registrerer et batteriniveau under **15%**.</string>
     <string name="group_create_start_title">Forbind</string>

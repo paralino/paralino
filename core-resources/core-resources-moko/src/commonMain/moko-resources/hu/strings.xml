@@ -191,6 +191,13 @@
     <string name="settings_account_delete_alert_cancel_button2">Ne törődj vele</string>
     <string name="settings_account_delete_alert_cancel_button3">Megszakítás</string>
     <string name="settings_account_delete_alert_cancel_button4">Bezárás</string>
+    <string name="settings_account_info_email">E-mail:\n**%s**</string>
+    <string name="settings_account_info_user_id">Felhasználói ID:\n**%s**</string>
+    <string name="settings_account_info_billing_id">Számlázási felhasználói ID:\n**%s**</string>
+    <string name="settings_account_info_device_id">Eszköz-ID:\n**%s**</string>
+    <string name="settings_account_info_diagnostics_id">Diagnosztikai ID:\n**%s**</string>
+    <string name="settings_account_info_push_token">Push token:\n**%s**</string>
+    <string name="settings_account_info_member_since">Tagság kezdete **%s**</string>
     <string name="settings_profile_name_placeholder">A neved*</string>
     <string name="settings_section_general_title">Információ &amp; támogatás</string>
     <string name="setting_title_share">Megosztás barátokkal</string>
@@ -641,6 +648,11 @@
     <string name="group_settings_low_battery_alerts_title">Alacsony akkumulátor értesítések</string>
     <string name="group_settings_battery_notifications_info">Döntsd el, hogy szeretnél-e értesítést kapni, amikor egy csoporttag akkumulátor szintje alacsony.</string>
     <string name="group_settings_battery_notifications_notice">"Értesítések csak akkor fognak érkezni, ha a tagok úgy döntenek, hogy megosztják akkumulátor adataikat, és az eszközük  **15%** alatti akkumulátor szintet észlel."</string>
+    <string name="group_settings_info_group_id">Csoport-ID:\n**%s**</string>
+    <string name="group_settings_info_member_id">Tag-ID:\n**%s**</string>
+    <string name="group_settings_info_location_id">Eszközhely-ID:\n**%s**</string>
+    <string name="group_settings_info_created_at">Létrehozva: **%s**</string>
+    <string name="group_settings_info_member_since">Tagság kezdete: **%s**</string>
     <string name="personalSpace_settings_battery_notifications_info">Döntsd el, hogy szeretnél-e értesítést kapni ezen az eszközön, ha bármelyik eszközöd akkumulátor szintje alacsony.</string>
     <string name="personalSpace_settings_battery_notifications_notice">"Értesítések csak akkor fognak érkezni, ha a helymeghatározás aktiválva van a céleszközön, és ha az eszköz  **15%** alatti akkumulátor szintet észlel."</string>
     <string name="group_create_start_title">Csatlakozás</string>

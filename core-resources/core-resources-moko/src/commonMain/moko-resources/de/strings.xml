@@ -191,6 +191,13 @@
     <string name="settings_account_delete_alert_cancel_button2">Egal</string>
     <string name="settings_account_delete_alert_cancel_button3">Abbrechen</string>
     <string name="settings_account_delete_alert_cancel_button4">Schließen</string>
+    <string name="settings_account_info_email">E-Mail:\n**%s**</string>
+    <string name="settings_account_info_user_id">Benutzer-ID:\n**%s**</string>
+    <string name="settings_account_info_billing_id">Abrechnungs-Benutzer-ID:\n**%s**</string>
+    <string name="settings_account_info_device_id">Geräte-ID:\n**%s**</string>
+    <string name="settings_account_info_diagnostics_id">Diagnose-ID:\n**%s**</string>
+    <string name="settings_account_info_push_token">Push-Token:\n**%s**</string>
+    <string name="settings_account_info_member_since">Mitglied seit **%s**</string>
     <string name="settings_profile_name_placeholder">Ihr Name*</string>
     <string name="settings_section_general_title">Info &amp; Support</string>
     <string name="setting_title_share">Mit Freunden teilen</string>
@@ -641,6 +648,11 @@
     <string name="group_settings_low_battery_alerts_title">Niedrige Batteriewarnungen</string>
     <string name="group_settings_battery_notifications_info">Entscheiden Sie, ob Sie benachrichtigt werden möchten, wenn der Akkustand eines Gruppenmitglieds niedrig ist.</string>
     <string name="group_settings_battery_notifications_notice">Benachrichtigungen werden nur gesendet, wenn Mitglieder ihren Akkustand teilen und ihr Gerät einen Akkustand unter **15%** erkennt.</string>
+    <string name="group_settings_info_group_id">Gruppen-ID:\n**%s**</string>
+    <string name="group_settings_info_member_id">Mitglieder-ID:\n**%s**</string>
+    <string name="group_settings_info_location_id">Gerätestandort-ID:\n**%s**</string>
+    <string name="group_settings_info_created_at">Erstellt am: **%s**</string>
+    <string name="group_settings_info_member_since">Mitglied seit: **%s**</string>
     <string name="personalSpace_settings_battery_notifications_info">Entscheiden Sie, ob Sie auf diesem Gerät benachrichtigt werden möchten, wenn eines Ihrer Geräte einen niedrigen Batteriestand hat.</string>
     <string name="personalSpace_settings_battery_notifications_notice">Benachrichtigungen werden nur gesendet, wenn das Standorttracking auf dem Zielgerät aktiviert ist und wenn dieses Gerät einen Batteriestand unter **15%** erkennt.</string>
     <string name="group_create_start_title">Verbinden</string>

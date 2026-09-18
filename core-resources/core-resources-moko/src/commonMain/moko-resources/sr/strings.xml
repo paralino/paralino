@@ -191,6 +191,13 @@
     <string name="settings_account_delete_alert_cancel_button2">Заборавите</string>
     <string name="settings_account_delete_alert_cancel_button3">Прекините</string>
     <string name="settings_account_delete_alert_cancel_button4">Затворите</string>
+    <string name="settings_account_info_email">Е-пошта:\n**%s**</string>
+    <string name="settings_account_info_user_id">ID корисника:\n**%s**</string>
+    <string name="settings_account_info_billing_id">ID корисника за наплату:\n**%s**</string>
+    <string name="settings_account_info_device_id">ID уређаја:\n**%s**</string>
+    <string name="settings_account_info_diagnostics_id">ID дијагностике:\n**%s**</string>
+    <string name="settings_account_info_push_token">Push токен:\n**%s**</string>
+    <string name="settings_account_info_member_since">Члан од **%s**</string>
     <string name="settings_profile_name_placeholder">Ваше име*</string>
     <string name="settings_section_general_title">Информације и подршка</string>
     <string name="setting_title_share">Поделите са пријатељима</string>
@@ -641,6 +648,11 @@
     <string name="group_settings_low_battery_alerts_title">Упозорења на низак ниво батерије</string>
     <string name="group_settings_battery_notifications_info">Одлучите да ли желите да будете обавештени када је ниво батерије члана групе низак.</string>
     <string name="group_settings_battery_notifications_notice">Обавештења ће бити послата само ако чланови одлуче да деле податке о батерији и ако њихов уређај открије ниво батерије испод **15%**.</string>
+    <string name="group_settings_info_group_id">ID групе:\n**%s**</string>
+    <string name="group_settings_info_member_id">ID члана:\n**%s**</string>
+    <string name="group_settings_info_location_id">ID локације уређаја:\n**%s**</string>
+    <string name="group_settings_info_created_at">Креирано: **%s**</string>
+    <string name="group_settings_info_member_since">Члан од: **%s**</string>
     <string name="personalSpace_settings_battery_notifications_info">Одлучите да ли желите да будете обавештени на овом уређају ако било који од ваших уређаја има низак ниво батерије.</string>
     <string name="personalSpace_settings_battery_notifications_notice">Обавештења ће бити послана само ако је праћење локације активирано на циљном уређају и ако тај уређај открије ниво батерије испод **15%**.</string>
     <string name="group_create_start_title">Повежите</string>

@@ -191,6 +191,13 @@
     <string name="settings_account_delete_alert_cancel_button2">Μην ανησυχείτε</string>
     <string name="settings_account_delete_alert_cancel_button3">Ακύρωση</string>
     <string name="settings_account_delete_alert_cancel_button4">Κλείσιμο</string>
+    <string name="settings_account_info_email">Email:\n**%s**</string>
+    <string name="settings_account_info_user_id">ID χρήστη:\n**%s**</string>
+    <string name="settings_account_info_billing_id">ID χρήστη χρέωσης:\n**%s**</string>
+    <string name="settings_account_info_device_id">ID συσκευής:\n**%s**</string>
+    <string name="settings_account_info_diagnostics_id">ID διαγνωστικών:\n**%s**</string>
+    <string name="settings_account_info_push_token">Push token:\n**%s**</string>
+    <string name="settings_account_info_member_since">Μέλος από **%s**</string>
     <string name="settings_profile_name_placeholder">Το όνομά σας*</string>
     <string name="settings_section_general_title">Πληροφορίες &amp; υποστήριξη</string>
     <string name="setting_title_share">Μοιραστείτε με φίλους</string>
@@ -641,6 +648,11 @@
     <string name="group_settings_low_battery_alerts_title">Ειδοποιήσεις χαμηλής μπαταρίας</string>
     <string name="group_settings_battery_notifications_info">Αποφασίστε αν θέλετε να ειδοποιείστε όταν το επίπεδο μπαταρίας ενός μέλους της ομάδας είναι χαμηλό.</string>
     <string name="group_settings_battery_notifications_notice">Ειδοποιήσεις θα αποστέλλονται μόνο αν τα μέλη επιλέξουν να μοιραστούν τα δεδομένα της μπαταρίας τους και η συσκευή τους ανιχνεύει επίπεδο μπαταρίας κάτω από **15%**.</string>
+    <string name="group_settings_info_group_id">ID ομάδας:\n**%s**</string>
+    <string name="group_settings_info_member_id">ID μέλους:\n**%s**</string>
+    <string name="group_settings_info_location_id">ID τοποθεσίας συσκευής:\n**%s**</string>
+    <string name="group_settings_info_created_at">Δημιουργήθηκε: **%s**</string>
+    <string name="group_settings_info_member_since">Μέλος από: **%s**</string>
     <string name="personalSpace_settings_battery_notifications_info">Αποφασίστε αν θέλετε να ειδοποιείστε σε αυτή τη συσκευή αν οποιαδήποτε από τις συσκευές σας έχει χαμηλό επίπεδο μπαταρίας.</string>
     <string name="personalSpace_settings_battery_notifications_notice">Ειδοποιήσεις θα αποστέλλονται μόνο αν η παρακολούθηση τοποθεσίας είναι ενεργοποιημένη στη συσκευή στόχο και αν αυτή η συσκευή ανιχνεύει επίπεδο μπαταρίας κάτω από **15%**.</string>
     <string name="group_create_start_title">Σύνδεση</string>

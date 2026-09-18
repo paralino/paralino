@@ -191,6 +191,13 @@
     <string name="settings_account_delete_alert_cancel_button2">Nerobte si starosti</string>
     <string name="settings_account_delete_alert_cancel_button3">Zrušiť</string>
     <string name="settings_account_delete_alert_cancel_button4">Zavrieť</string>
+    <string name="settings_account_info_email">E-mail:\n**%s**</string>
+    <string name="settings_account_info_user_id">ID používateľa:\n**%s**</string>
+    <string name="settings_account_info_billing_id">Fakturačné ID používateľa:\n**%s**</string>
+    <string name="settings_account_info_device_id">ID zariadenia:\n**%s**</string>
+    <string name="settings_account_info_diagnostics_id">ID diagnostiky:\n**%s**</string>
+    <string name="settings_account_info_push_token">Push token:\n**%s**</string>
+    <string name="settings_account_info_member_since">Člen od **%s**</string>
     <string name="settings_profile_name_placeholder">Vaše meno*</string>
     <string name="settings_section_general_title">Informácie a podpora</string>
     <string name="setting_title_share">Zdieľať s priateľmi</string>
@@ -641,6 +648,11 @@
     <string name="group_settings_low_battery_alerts_title">Upozornenia na nízku batériu</string>
     <string name="group_settings_battery_notifications_info">Rozhodnite sa, či chcete byť informovaní, keď je úroveň batérie člena skupiny nízka.</string>
     <string name="group_settings_battery_notifications_notice">Oznámenia budú zasielané iba v prípade, že členovia sa rozhodnú zdieľať svoje údaje o batérii a ich zariadenie zistí úroveň batérie pod **15%**.</string>
+    <string name="group_settings_info_group_id">ID skupiny:\n**%s**</string>
+    <string name="group_settings_info_member_id">ID člena:\n**%s**</string>
+    <string name="group_settings_info_location_id">ID polohy zariadenia:\n**%s**</string>
+    <string name="group_settings_info_created_at">Vytvorené: **%s**</string>
+    <string name="group_settings_info_member_since">Člen od: **%s**</string>
     <string name="personalSpace_settings_battery_notifications_info">Rozhodnite sa, či chcete byť informovaní na tomto zariadení, ak má niektoré z vašich zariadení nízku úroveň batérie.</string>
     <string name="personalSpace_settings_battery_notifications_notice">Oznámenia budú zasielané iba v prípade, že je aktivované sledovanie polohy na cieľovom zariadení a ak to zariadenie zistí úroveň batérie pod **15%**.</string>
     <string name="group_create_start_title">Pripojiť</string>

@@ -191,6 +191,13 @@
     <string name="settings_account_delete_alert_cancel_button2">Önemli değil</string>
     <string name="settings_account_delete_alert_cancel_button3">İptal et</string>
     <string name="settings_account_delete_alert_cancel_button4">Kapat</string>
+    <string name="settings_account_info_email">E-posta:\n**%s**</string>
+    <string name="settings_account_info_user_id">Kullanıcı ID:\n**%s**</string>
+    <string name="settings_account_info_billing_id">Faturalama kullanıcı ID:\n**%s**</string>
+    <string name="settings_account_info_device_id">Cihaz ID:\n**%s**</string>
+    <string name="settings_account_info_diagnostics_id">Tanılama ID:\n**%s**</string>
+    <string name="settings_account_info_push_token">Push jetonu:\n**%s**</string>
+    <string name="settings_account_info_member_since">Üyelik tarihi **%s**</string>
     <string name="settings_profile_name_placeholder">Adınız*</string>
     <string name="settings_section_general_title">Bilgi ve destek</string>
     <string name="setting_title_share">Arkadaşlarla paylaş</string>
@@ -641,6 +648,11 @@
     <string name="group_settings_low_battery_alerts_title">Düşük pil uyarıları</string>
     <string name="group_settings_battery_notifications_info">Bir grup üyesinin pil seviyesi düşük olduğunda bildirim almak isteyip istemediğinizi belirleyin.</string>
     <string name="group_settings_battery_notifications_notice">Bildirimler yalnızca üyeler pil verilerini paylaşmayı seçerse ve cihazları **%15**\'in altında bir pil seviyesi tespit ederse gönderilecektir.</string>
+    <string name="group_settings_info_group_id">Grup ID:\n**%s**</string>
+    <string name="group_settings_info_member_id">Üye ID:\n**%s**</string>
+    <string name="group_settings_info_location_id">Cihaz konum ID:\n**%s**</string>
+    <string name="group_settings_info_created_at">Oluşturulma: **%s**</string>
+    <string name="group_settings_info_member_since">Üyelik tarihi: **%s**</string>
     <string name="personalSpace_settings_battery_notifications_info">Cihazlarınızdan herhangi birinin pil seviyesi düşük olduğunda bu cihazda bildirim almak isteyip istemediğinizi belirleyin.</string>
     <string name="personalSpace_settings_battery_notifications_notice">Bildirimler yalnızca hedef cihazda konum takibi etkinleştirildiğinde ve o cihaz **%15**\'in altında bir pil seviyesi tespit ettiğinde gönderilecektir.</string>
     <string name="group_create_start_title">Bağlan</string>

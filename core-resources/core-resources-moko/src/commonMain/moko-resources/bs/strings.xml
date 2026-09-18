@@ -191,6 +191,13 @@
     <string name="settings_account_delete_alert_cancel_button2">Zaboravite</string>
     <string name="settings_account_delete_alert_cancel_button3">Prekinite</string>
     <string name="settings_account_delete_alert_cancel_button4">Zatvorite</string>
+    <string name="settings_account_info_email">E-mail:\n**%s**</string>
+    <string name="settings_account_info_user_id">ID korisnika:\n**%s**</string>
+    <string name="settings_account_info_billing_id">ID korisnika za naplatu:\n**%s**</string>
+    <string name="settings_account_info_device_id">ID uređaja:\n**%s**</string>
+    <string name="settings_account_info_diagnostics_id">ID dijagnostike:\n**%s**</string>
+    <string name="settings_account_info_push_token">Push token:\n**%s**</string>
+    <string name="settings_account_info_member_since">Član od **%s**</string>
     <string name="settings_profile_name_placeholder">Vaše ime*</string>
     <string name="settings_section_general_title">Informacije i podrška</string>
     <string name="setting_title_share">Podijelite s prijateljima</string>
@@ -641,6 +648,11 @@
     <string name="group_settings_low_battery_alerts_title">Upozorenja na nisku bateriju</string>
     <string name="group_settings_battery_notifications_info">Odlučite želite li primati obavijesti kada razina baterije člana grupe bude niska.</string>
     <string name="group_settings_battery_notifications_notice">Obavijesti će biti poslane samo ako članovi odluče dijeliti podatke o bateriji i njihov uređaj otkrije razinu baterije ispod 15%.</string>
+    <string name="group_settings_info_group_id">ID grupe:\n**%s**</string>
+    <string name="group_settings_info_member_id">ID člana:\n**%s**</string>
+    <string name="group_settings_info_location_id">ID lokacije uređaja:\n**%s**</string>
+    <string name="group_settings_info_created_at">Kreirano: **%s**</string>
+    <string name="group_settings_info_member_since">Član od: **%s**</string>
     <string name="personalSpace_settings_battery_notifications_info">Odlučite da li želite da budete obavešteni na ovom uređaju ako neki od vaših uređaja ima nizak nivo baterije.</string>
     <string name="personalSpace_settings_battery_notifications_notice">Obaveštenja će biti poslata samo ako je praćenje lokacije aktivirano na ciljanom uređaju i ako taj uređaj detektuje nivo baterije ispod **15%**.</string>
     <string name="group_create_start_title">Povežite se</string>

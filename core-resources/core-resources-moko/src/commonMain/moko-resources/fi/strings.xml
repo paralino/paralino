@@ -191,6 +191,13 @@
     <string name="settings_account_delete_alert_cancel_button2">Älä välitä</string>
     <string name="settings_account_delete_alert_cancel_button3">Keskeytä</string>
     <string name="settings_account_delete_alert_cancel_button4">Sulje</string>
+    <string name="settings_account_info_email">Sähköposti:\n**%s**</string>
+    <string name="settings_account_info_user_id">Käyttäjä-ID:\n**%s**</string>
+    <string name="settings_account_info_billing_id">Laskutuksen käyttäjä-ID:\n**%s**</string>
+    <string name="settings_account_info_device_id">Laite-ID:\n**%s**</string>
+    <string name="settings_account_info_diagnostics_id">Diagnostiikka-ID:\n**%s**</string>
+    <string name="settings_account_info_push_token">Push-tunnus:\n**%s**</string>
+    <string name="settings_account_info_member_since">Jäsen alkaen **%s**</string>
     <string name="settings_profile_name_placeholder">Nimesi*</string>
     <string name="settings_section_general_title">Tietoa ja tukea</string>
     <string name="setting_title_share">Jaa ystäville</string>
@@ -641,6 +648,11 @@
     <string name="group_settings_low_battery_alerts_title">Alhaisen akun hälytykset</string>
     <string name="group_settings_battery_notifications_info">Päätä, haluatko saada ilmoituksen, kun ryhmän jäsenen akun taso on alhainen.</string>
     <string name="group_settings_battery_notifications_notice">Ilmoituksia lähetetään vain, jos jäsenet valitsevat jakaa akkutietonsa ja heidän laitteensa havaitsee akun tason olevan alle **15%**.</string>
+    <string name="group_settings_info_group_id">Ryhmä-ID:\n**%s**</string>
+    <string name="group_settings_info_member_id">Jäsen-ID:\n**%s**</string>
+    <string name="group_settings_info_location_id">Laitteen sijainti-ID:\n**%s**</string>
+    <string name="group_settings_info_created_at">Luotu: **%s**</string>
+    <string name="group_settings_info_member_since">Jäsen alkaen: **%s**</string>
     <string name="personalSpace_settings_battery_notifications_info">Päätä, haluatko saada ilmoituksen tällä laitteella, jos jokin laitteistasi on alhaisen akun tasolla.</string>
     <string name="personalSpace_settings_battery_notifications_notice">Ilmoituksia lähetetään vain, jos sijaintiseuranta on aktivoitu kohdelaitteessa ja jos kyseinen laite havaitsee akun tason olevan alle **15%**.</string>
     <string name="group_create_start_title">Yhdistä</string>

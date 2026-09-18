@@ -191,6 +191,13 @@
     <string name="settings_account_delete_alert_cancel_button2">Laat maar</string>
     <string name="settings_account_delete_alert_cancel_button3">Afbreken</string>
     <string name="settings_account_delete_alert_cancel_button4">Sluiten</string>
+    <string name="settings_account_info_email">E-mail:\n**%s**</string>
+    <string name="settings_account_info_user_id">Gebruikers-ID:\n**%s**</string>
+    <string name="settings_account_info_billing_id">Factureringsgebruikers-ID:\n**%s**</string>
+    <string name="settings_account_info_device_id">Apparaat-ID:\n**%s**</string>
+    <string name="settings_account_info_diagnostics_id">Diagnose-ID:\n**%s**</string>
+    <string name="settings_account_info_push_token">Push-token:\n**%s**</string>
+    <string name="settings_account_info_member_since">Lid sinds **%s**</string>
     <string name="settings_profile_name_placeholder">Uw naam*</string>
     <string name="settings_section_general_title">Informatie &amp; ondersteuning</string>
     <string name="setting_title_share">Deel met vrienden</string>
@@ -641,6 +648,11 @@
     <string name="group_settings_low_battery_alerts_title">Laag batterijmeldingen</string>
     <string name="group_settings_battery_notifications_info">Bepaal of u een melding wilt ontvangen wanneer het batterijniveau van een groepslid laag is.</string>
     <string name="group_settings_battery_notifications_notice">Meldingen worden alleen verzonden als leden ervoor kiezen om hun batterijgegevens te delen en hun apparaat een batterijniveau onder de **15%** detecteert.</string>
+    <string name="group_settings_info_group_id">Groeps-ID:\n**%s**</string>
+    <string name="group_settings_info_member_id">Leden-ID:\n**%s**</string>
+    <string name="group_settings_info_location_id">Apparaatlocatie-ID:\n**%s**</string>
+    <string name="group_settings_info_created_at">Aangemaakt op: **%s**</string>
+    <string name="group_settings_info_member_since">Lid sinds: **%s**</string>
     <string name="personalSpace_settings_battery_notifications_info">Bepaal of u op dit apparaat een melding wilt ontvangen als een van uw apparaten een laag batterij-niveau heeft.</string>
     <string name="personalSpace_settings_battery_notifications_notice">Meldingen worden alleen verzonden als locatie-tracking is geactiveerd op het doelapparaat en als dat apparaat een batterijpercentage onder de **15%** detecteert.</string>
     <string name="group_create_start_title">Verbinden</string>
