@@ -257,6 +257,21 @@ object MainDatabaseMigrations {
         }
     }
 
+    private val MIGRATION_25_26 = object : Migration(25, 26) {
+        override fun migrate(connection: SQLiteConnection) {
+            connection.execSQL(
+                """
+                CREATE TABLE IF NOT EXISTS `pendingGroupJoinWelcomeEntity` (
+                    `groupId` TEXT NOT NULL,
+                    `didShowWelcome` INTEGER NOT NULL,
+                    `createdAtMillis` INTEGER NOT NULL,
+                    PRIMARY KEY(`groupId`)
+                )
+                """.trimIndent()
+            )
+        }
+    }
+
     val migrations: List<Migration> = listOf(
         MIGRATION_1_2,
         MIGRATION_2_3,
@@ -282,5 +297,6 @@ object MainDatabaseMigrations {
         MIGRATION_22_23,
         MIGRATION_23_24,
         MIGRATION_24_25,
+        MIGRATION_25_26,
     )
 }

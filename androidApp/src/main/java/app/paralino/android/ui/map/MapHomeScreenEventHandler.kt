@@ -10,12 +10,12 @@ import app.paralino.android.tracking.rememberLocationPermissionHandler
 import app.paralino.android.ui.main.MainAppState
 import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.android.utils.extensions.share
+import app.paralino.core.presentation.common.BottomSheetPickerType
+import app.paralino.core.presentation.map.BottomSheetPosition
 import app.paralino.core.presentation.map.MapHomeScreenEvent
 import app.paralino.core.presentation.map.MapHomeScreenState
 import app.paralino.core.presentation.map.MapHomeScreenUiEvent
 import app.paralino.core.presentation.map.MapHomeViewModel
-import app.paralino.core.presentation.common.BottomSheetPickerType
-import app.paralino.core.presentation.map.BottomSheetPosition
 import app.paralino.core.ui.map.SwipeableSheetState
 import app.paralino.core.ui.map.isFullyExpanded
 import app.paralino.core.utils.extensions.openNavigation
@@ -204,6 +204,12 @@ internal fun MapHomeScreenEventHandler(
 
                 MapHomeScreenEvent.OpenPersonalCodes -> {
                     appState.navController.navigate(AppScreen.Settings.PersonalCodes.routeSignature)
+                }
+
+                is MapHomeScreenEvent.OpenGroupJoinWelcome -> {
+                    appState.navController.navigate(
+                        AppScreen.MainHome.GroupJoinWelcome.route(event.groupId)
+                    )
                 }
 
                 null -> {}

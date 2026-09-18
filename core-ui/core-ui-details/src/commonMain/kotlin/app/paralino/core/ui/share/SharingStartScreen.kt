@@ -46,6 +46,7 @@ import app.paralino.core.models.Payload
 import app.paralino.core.models.data
 import app.paralino.core.presentation.common.AlertDialogAction
 import app.paralino.core.presentation.common.BottomSheetPickerType
+import app.paralino.core.presentation.share.SharingStartPresentationType
 import app.paralino.core.presentation.share.SharingStartScreenEvent
 import app.paralino.core.presentation.share.SharingStartScreenState
 import app.paralino.core.presentation.share.SharingStartScreenUiEvent
@@ -225,61 +226,87 @@ fun SharingStartScreenCore(
                 )
             }
         },
-        skipButton = if (vm.isOnboarding) {
-            @Composable {
-                Column {
-                    if (vm.isPersonalSpace && state.shouldUpgradePlan) {
+        skipButton = when (vm.presentationType) {
+            SharingStartPresentationType.GROUP_CREATE_ONBOARDING -> {
+                @Composable {
+                    Column {
+                        if (vm.isPersonalSpace && state.shouldUpgradePlan) {
+                            PlanLimitSmallUpgradeButton(
+                                modifier = Modifier.padding(vertical = 8.dp),
+                                text = stringResource(MR.strings.groups_sharing_plan_limit_chip_owner),
+                                onClick = { openSubscriptions() }
+                            )
+                        }
+
+                        OnboardingSkipButton(onSkip = onSkipOnboarding)
+                    }
+                }
+            }
+
+            SharingStartPresentationType.GROUP_JOIN -> {
+                @Composable {
+                    Column {
+                        when {
+                            !state.isNewContract -> {
+                                SharingStartStopSharingButton(
+                                    isPersonalSpace = state.isPersonalSpace,
+                                    onStopSharing = { vm.onEvent(SharingStartScreenUiEvent.StopSharing) }
+                                )
+                            }
+
+                            state.shouldUpgradePlan -> {
+                                PlanLimitSmallUpgradeButton(
+                                    modifier = Modifier.padding(top = 8.dp),
+                                    text = stringResource(MR.strings.groups_sharing_plan_limit_chip_owner),
+                                    onClick = openSubscriptions
+                                )
+                            }
+
+                            state.needsPlanUpgrade -> {
+                                PlanLimitSmallUpgradeButton(
+                                    modifier = Modifier.padding(top = 8.dp),
+                                    text = stringResource(MR.strings.groups_sharing_plan_limit_chip_member),
+                                    onClick = { vm.onEvent(SharingStartScreenUiEvent.StartSharing) }
+                                )
+                            }
+                        }
+
+                        OnboardingSkipButton(
+                            skipButtonText = stringResource(MR.strings.button_notNow),
+                            onSkip = onSkipOnboarding
+                        )
+                    }
+                }
+            }
+
+            SharingStartPresentationType.FULL -> {
+                if (!state.isNewContract) {
+                    @Composable {
+                        SharingStartStopSharingButton(
+                            isPersonalSpace = state.isPersonalSpace,
+                            onStopSharing = { vm.onEvent(SharingStartScreenUiEvent.StopSharing) }
+                        )
+                    }
+                } else if (state.shouldUpgradePlan) {
+                    @Composable {
                         PlanLimitSmallUpgradeButton(
-                            modifier = Modifier.padding(vertical = 8.dp),
+                            modifier = Modifier.padding(top = 8.dp),
                             text = stringResource(MR.strings.groups_sharing_plan_limit_chip_owner),
                             onClick = { openSubscriptions() }
                         )
                     }
-
-                    OnboardingSkipButton(onSkip = onSkipOnboarding)
+                } else if (state.needsPlanUpgrade) {
+                    @Composable {
+                        PlanLimitSmallUpgradeButton(
+                            modifier = Modifier.padding(top = 8.dp),
+                            text = stringResource(MR.strings.groups_sharing_plan_limit_chip_member),
+                            onClick = { vm.onEvent(SharingStartScreenUiEvent.StartSharing) }
+                        )
+                    }
+                } else {
+                    null
                 }
             }
-        } else if (!state.isNewContract) {
-            @Composable {
-                FilledButton(
-                    modifier = Modifier.padding(vertical = 8.dp),
-                    style = ButtonStyle.BIG,
-                    state = AppButtonState.CONTENT,
-                    enabled = true,
-                    icon = null,
-                    colors = ButtonDefaults.buttonColors(
-                        backgroundColor = AppColors.redMain,
-                        contentColor = AppColors.lightBackground
-                    ),
-                    onClick = { vm.onEvent(SharingStartScreenUiEvent.StopSharing) }
-                ) {
-                    Text(
-                        text = if (state.isPersonalSpace) {
-                            stringResource(MR.strings.location_sharing_button_stop_personal)
-                        } else {
-                            stringResource(MR.strings.location_sharing_button_stop_groups)
-                        }
-                    )
-                }
-            }
-        } else if (state.shouldUpgradePlan) {
-            @Composable {
-                PlanLimitSmallUpgradeButton(
-                    modifier = Modifier.padding(top = 8.dp),
-                    text = stringResource(MR.strings.groups_sharing_plan_limit_chip_owner),
-                    onClick = { openSubscriptions() }
-                )
-            }
-        } else if (state.needsPlanUpgrade) {
-            @Composable {
-                PlanLimitSmallUpgradeButton(
-                    modifier = Modifier.padding(top = 8.dp),
-                    text = stringResource(MR.strings.groups_sharing_plan_limit_chip_member),
-                    onClick = { vm.onEvent(SharingStartScreenUiEvent.StartSharing) }
-                )
-            }
-        } else {
-            null
         }
     ) {
         val focusManager = LocalFocusManager.current
@@ -353,7 +380,7 @@ fun SharingStartScreenCore(
                 )
             }
 
-            if (vm.isOnboarding) {
+            if (vm.isGroupCreateOnboarding) {
                 NoticeInfoChip(
                     modifier = Modifier.padding(top = 10.dp),
                     text = if (state.isPersonalSpace) {
@@ -614,8 +641,10 @@ fun SharingStartScreenCore(
                         )
                     }
 
-                    val showPremiumRealtime = !state.isRealtimeSharingEnabledInPlan && state.showRealtimeUpdatesStatus
-                    val showPremiumNotify = !state.isNotifyOtherEnabledInPlan && state.showNotifyOthers
+                    val showPremiumRealtime =
+                        !state.isRealtimeSharingEnabledInPlan && state.showRealtimeUpdatesStatus
+                    val showPremiumNotify =
+                        !state.isNotifyOtherEnabledInPlan && state.showNotifyOthers
 
                     if (showPremiumRealtime || showPremiumNotify) {
                         Spacer(modifier = Modifier.size(10.dp))
@@ -643,7 +672,7 @@ fun SharingStartScreenCore(
                 }
             }
 
-            if (!vm.isOnboarding) {
+            if (!vm.isGroupCreateOnboarding) {
                 Divider(
                     modifier = Modifier
                         .padding(top = 20.dp)
@@ -666,6 +695,33 @@ fun SharingStartScreenCore(
 
     if (state.loadingAction) {
         LoadingDialog(text = stringResource(MR.strings.login_step_generic_loading), progress = null)
+    }
+}
+
+@Composable
+private fun SharingStartStopSharingButton(
+    isPersonalSpace: Boolean,
+    onStopSharing: () -> Unit
+) {
+    FilledButton(
+        modifier = Modifier.padding(vertical = 8.dp),
+        style = ButtonStyle.BIG,
+        state = AppButtonState.CONTENT,
+        enabled = true,
+        icon = null,
+        colors = ButtonDefaults.buttonColors(
+            backgroundColor = AppColors.redMain,
+            contentColor = AppColors.lightBackground
+        ),
+        onClick = onStopSharing
+    ) {
+        Text(
+            text = if (isPersonalSpace) {
+                stringResource(MR.strings.location_sharing_button_stop_personal)
+            } else {
+                stringResource(MR.strings.location_sharing_button_stop_groups)
+            }
+        )
     }
 }
 

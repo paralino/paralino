@@ -122,6 +122,18 @@ data class SharingStartScreenState constructor(
     }
 }
 
+enum class SharingStartPresentationType {
+    FULL,
+    GROUP_CREATE_ONBOARDING,
+    GROUP_JOIN;
+
+    companion object {
+        fun fromRouteArgument(value: String?): SharingStartPresentationType {
+            return entries.firstOrNull { it.name == value } ?: FULL
+        }
+    }
+}
+
 sealed class SharingStartScreenEvent() {
     object Started : SharingStartScreenEvent()
     object Updated : SharingStartScreenEvent()

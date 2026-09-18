@@ -43,6 +43,7 @@ interface LogoutDao {
         clearAllApproximateSharedLocations()
         clearAllPrivacyZones()
         clearAllPrivacyZoneSharedLocations()
+        clearAllPendingGroupJoinWelcomes()
     }
 
     @Query("DELETE FROM userEntity")
@@ -146,4 +147,7 @@ interface LogoutDao {
 
     @Query("DELETE FROM privacyZoneSharedLocationEntity")
     suspend fun clearAllPrivacyZoneSharedLocations()
+
+    @Query("DELETE FROM pendingGroupJoinWelcomeEntity")
+    suspend fun clearAllPendingGroupJoinWelcomes()
 }

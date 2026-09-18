@@ -58,13 +58,18 @@ struct MapRootScreen: View {
                             case .groupDetail(let groupId): GroupDetailScreen(path: $mainAppState.userReadyGraph, appState: GroupDetailScreen.createState(groupId: groupId))
                             case .groupSettings(let groupId): GroupSettingsScreen(path: $mainAppState.userReadyGraph, appState: GroupSettingsScreen.createState(groupId: groupId))
                             case .batteryNotificationsSettings(let groupId): BatteryNotificationsSettingsScreen(path: $mainAppState.userReadyGraph, appState: BatteryNotificationsSettingsScreen.createState(groupId: groupId))
-                            case .sharingStart(let groupId, let isOnboarding):
+                            case .sharingStart(let groupId, let presentation):
                                 SharingStartScreen(
                                     path: $mainAppState.userReadyGraph,
-                                    appState: SharingStartScreen.createState(groupId: groupId, isOnboarding: isOnboarding)
+                                    appState: SharingStartScreen.createState(groupId: groupId, presentation: presentation)
                                 )
                             case .map: MapHomeScreen(path: $mainAppState.userReadyGraph)
                             case .groupInit: AccountOnboardingScreen(path: $mainAppState.userReadyGraph, appState: initState)
+                            case .groupJoinWelcome(let groupId):
+                                GroupJoinWelcomeScreen(
+                                    path: $mainAppState.userReadyGraph,
+                                    appState: GroupJoinWelcomeScreen.createState(groupId: groupId)
+                                )
                             case .memberInvite(let groupId, let code, let isOnboarding):
                                 MemberInviteScreen(
                                     path: $mainAppState.userReadyGraph,

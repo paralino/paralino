@@ -38,7 +38,7 @@ struct AccountOnboardingScreen: View {
                         shareText = ShareText(text: data)
                     },
                     openSharingScreen: { groupOrSpace in
-                        path.append(.home(.sharingStart(groupId: GroupOrSpaceIdHelper.shared.unwrap(id: groupOrSpace), isOnboarding: true)))
+                        path.append(.home(.sharingStart(groupId: GroupOrSpaceIdHelper.shared.unwrap(id: groupOrSpace), presentation: .groupCreateOnboarding)))
                     },
                     askNotificationPermission: {
                         appDelegate.notificationPermissionHandler.requestNotificationPermission(

@@ -2,6 +2,7 @@ package app.paralino.core.domain.notifications.processors
 
 import app.paralino.core.MR
 import app.paralino.core.db.AppPrefs
+import app.paralino.core.domain.group.PendingGroupJoinWelcomeUseCase
 import app.paralino.core.domain.notifications.IPushNotificationPresenter
 import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.models.data
@@ -20,7 +21,8 @@ class GroupMemberAddedNotificationProcessor(
     private val groupRepo: UserGroupLocalDataSource,
     private val memberRepo: LocationLocalDataSource,
     private val accessLogSource: AccessLogDataSource,
-    private val appPrefs: AppPrefs
+    private val appPrefs: AppPrefs,
+    private val pendingGroupJoinWelcome: PendingGroupJoinWelcomeUseCase
 ): BaseNotificationProcessor(accessLogSource) {
 
     override suspend fun constructPushPayload(
@@ -37,6 +39,10 @@ class GroupMemberAddedNotificationProcessor(
                 cacheTimeDuration = 10.seconds
             )
         )
+
+        if (payload.memberUserId == appPrefs.userId) {
+            pendingGroupJoinWelcome.saveIfAbsent(groupId = payload.groupId)
+        }
 
         val title = try {
             val group: UserGroup? = groupRepo.getGroupOnce(payload.groupId)

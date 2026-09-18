@@ -29,12 +29,13 @@ enum WelcomeGraph: Hashable {
 enum HomeGraph: Hashable {
     case map
     case groupInit
+    case groupJoinWelcome(groupId: String)
     case freePlanInfo
     case groupCreate(groupId: String?)
     case groupDetail(groupId: String)
     case groupSettings(groupId: String)
     case batteryNotificationsSettings(groupId: String)
-    case sharingStart(groupId: String?, isOnboarding: Bool)
+    case sharingStart(groupId: String?, presentation: SharingStartPresentationType)
     case memberInvite(groupId: String?, code: String?, isOnboarding: Bool)
     case places(groupId: String, isOnboarding: Bool)
     case placeDetail(groupId: String, placeId: String)
