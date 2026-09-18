@@ -206,7 +206,11 @@ internal fun MapHomeScreenEventHandler(
                     appState.navController.navigate(AppScreen.Settings.PersonalCodes.routeSignature)
                 }
 
-                is MapHomeScreenEvent.OpenGroupJoinWelcome -> {}
+                is MapHomeScreenEvent.OpenGroupJoinWelcome -> {
+                    appState.navController.navigate(
+                        AppScreen.MainHome.GroupJoinWelcome.route(event.groupId)
+                    )
+                }
 
                 null -> {}
             }

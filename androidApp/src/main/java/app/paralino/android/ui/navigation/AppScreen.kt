@@ -7,6 +7,7 @@ import app.paralino.core.presentation.billing.BillingScreenSourceType
 import app.paralino.core.presentation.places.create.CreatePlaceScreenStep
 import app.paralino.core.presentation.privacyzones.create.CreatePrivacyZoneScreenStep
 import app.paralino.core.utils.BaseRemoteModule
+import app.paralino.core.presentation.share.SharingStartPresentationType
 
 sealed class AppScreen {
 
@@ -92,12 +93,15 @@ sealed class AppScreen {
         }
 
         object SharingStart : AppScreen() {
-            val argumentOnboarding: String = "onboarding"
-            override val routeSignature: String = "home-share?$argumentGroupId={$argumentGroupId}&$argumentOnboarding={$argumentOnboarding}"
-            fun route(groupId: String? = null, isOnboarding: Boolean = false): String {
+            val argumentPresentation: String = "presentation"
+            override val routeSignature: String = "home-share?$argumentGroupId={$argumentGroupId}&$argumentPresentation={$argumentPresentation}"
+            fun route(
+                groupId: String? = null,
+                presentation: SharingStartPresentationType = SharingStartPresentationType.FULL
+            ): String {
                 val args = arrayOf(
                     groupId?.let { "$argumentGroupId=$groupId" },
-                    "${argumentOnboarding}=$isOnboarding",
+                    "$argumentPresentation=${presentation.name}",
                 )
                     .filterNotNull()
                     .joinToString(separator = "&")
@@ -149,6 +153,13 @@ sealed class AppScreen {
                 if (groupId == null)
                     return "group-create"
                 return "group-create?$argumentGroupId=$groupId"
+            }
+        }
+
+        object GroupJoinWelcome : AppScreen() {
+            override val routeSignature: String = "group-join-welcome/{$argumentGroupId}"
+            fun route(groupId: String): String {
+                return "group-join-welcome/$groupId"
             }
         }
 

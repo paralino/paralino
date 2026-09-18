@@ -61,7 +61,7 @@ import kotlinx.coroutines.launch
 
 class SharingStartViewModel(
     val initialGroupId: GroupOrSpaceId?,
-    val isOnboarding: Boolean,
+    val presentationType: SharingStartPresentationType = SharingStartPresentationType.FULL,
     private val remoteConfigRepo: RemoteConfigRepository,
     private val groupRepo: UserGroupLocalDataSource,
     private val sharingManager: LocationSharingManager,
@@ -98,6 +98,9 @@ class SharingStartViewModel(
 
     val isPersonalSpace: Boolean get() = currentGroup.value is GroupOrUserSpace.PersonalSpace
 
+    val isGroupCreateOnboarding: Boolean
+        get() = presentationType == SharingStartPresentationType.GROUP_CREATE_ONBOARDING
+
     private var didConfirmNotificationPermissionPrompt = false
 
     val shouldProceedToPaywall: Boolean
@@ -107,7 +110,7 @@ class SharingStartViewModel(
                 is GroupOrUserSpace.PersonalSpace -> true
                 null -> false
             }
-            return isOnboarding
+            return isGroupCreateOnboarding
                     && isOwner
                     && !userRepo.userPlans.value.highestValidPlanConfig.isPremium
         }

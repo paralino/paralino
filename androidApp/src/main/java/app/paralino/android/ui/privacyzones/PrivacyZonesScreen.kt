@@ -19,6 +19,7 @@ import app.paralino.android.ui.map.SimpleGenericMapComposable
 import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.core.MR
 import app.paralino.core.presentation.privacyzones.list.PrivacyZonesViewModel
+import app.paralino.core.presentation.share.SharingStartPresentationType
 import app.paralino.core.ui.components.DefaultToolbar
 import app.paralino.core.ui.components.ToolbarButtons
 import app.paralino.core.ui.privacyzones.PrivacyZonesScreenCore
@@ -66,7 +67,11 @@ fun PrivacyZonesScreen(
                 appState.navController.navigate(
                     AppScreen.MainHome.SharingStart.route(
                         groupId = groupId,
-                        isOnboarding = isOnboarding
+                        presentation = if (isOnboarding) {
+                            SharingStartPresentationType.GROUP_CREATE_ONBOARDING
+                        } else {
+                            SharingStartPresentationType.FULL
+                        }
                     )
                 )
             },

@@ -45,9 +45,9 @@ import app.paralino.core.db.logs.AppLogsDatabase
 import app.paralino.core.db.main.AppMainDatabase
 import app.paralino.core.domain.crypto.group.IMemberCryptoKeyRotation
 import app.paralino.core.domain.crypto.group.IMemberDeviceKeyRotation
-import app.paralino.core.domain.crypto.user.IPersonalDeviceCryptoKeyRotation
 import app.paralino.core.domain.crypto.group.MemberCryptoKeyRotation
 import app.paralino.core.domain.crypto.group.MemberDeviceKeyRotation
+import app.paralino.core.domain.crypto.user.IPersonalDeviceCryptoKeyRotation
 import app.paralino.core.domain.crypto.user.PersonalDeviceCryptoKeyRotation
 import app.paralino.core.domain.location.BatteryAlertUploadEngine
 import app.paralino.core.domain.location.IBatteryAlertUploadEngine
@@ -66,13 +66,14 @@ import app.paralino.core.models.AppFlavor
 import app.paralino.core.models.AppHost
 import app.paralino.core.models.base.BackendResourceIDs
 import app.paralino.core.models.base.asGroupOrSpaceId
+import app.paralino.core.models.settings.RawPresentationDataType
+import app.paralino.core.presentation.billing.BillingScreenSourceType
+import app.paralino.core.presentation.groups.add_member.MemberInviteViewModel
 import app.paralino.core.presentation.groups.detail.GroupDetailViewModel
 import app.paralino.core.presentation.groups.edit.CreateGroupViewModel
 import app.paralino.core.presentation.groups.settings.BatteryNotificationsViewModel
 import app.paralino.core.presentation.groups.settings.GroupSettingsViewModel
 import app.paralino.core.presentation.history.LocationHistoryDeleteViewModel
-import app.paralino.core.presentation.groups.add_member.MemberInviteViewModel
-import app.paralino.core.presentation.paralinoid.PersonalCodeViewModel
 import app.paralino.core.presentation.login.LoggedOutViewModel
 import app.paralino.core.presentation.login.LoginScreenUiType
 import app.paralino.core.presentation.login.LoginViewModel
@@ -83,17 +84,21 @@ import app.paralino.core.presentation.login.recover.RecoverKeysViewModel
 import app.paralino.core.presentation.main.MainViewModel
 import app.paralino.core.presentation.map.MapHomeViewModel
 import app.paralino.core.presentation.onboarding.AccountOnboardingViewModel
+import app.paralino.core.presentation.onboarding.GroupJoinWelcomeViewModel
 import app.paralino.core.presentation.onboarding.WelcomeOnboardingViewModel
+import app.paralino.core.presentation.paralinoid.PersonalCodeViewModel
 import app.paralino.core.presentation.personal_space.PersonalSpaceViewModel
 import app.paralino.core.presentation.personal_space.settings.PersonalSpaceSettingsViewModel
+import app.paralino.core.presentation.places.create.CreatePlaceScreenStep
 import app.paralino.core.presentation.places.create.CreatePlaceViewModel
 import app.paralino.core.presentation.places.detail.PlaceDetailViewModel
 import app.paralino.core.presentation.places.detail.PlaceSensitivityViewModel
 import app.paralino.core.presentation.places.list.PlacesViewModel
+import app.paralino.core.presentation.privacyzones.create.CreatePrivacyZoneScreenStep
+import app.paralino.core.presentation.privacyzones.create.CreatePrivacyZoneViewModel
 import app.paralino.core.presentation.privacyzones.detail.PrivacyZoneDetailViewModel
 import app.paralino.core.presentation.privacyzones.list.PrivacyZonesViewModel
 import app.paralino.core.presentation.rawdata.RawDataPresentationViewModel
-import app.paralino.core.models.settings.RawPresentationDataType
 import app.paralino.core.presentation.settings.SettingsViewModel
 import app.paralino.core.presentation.settings.appstatus.AppStatusDebugViewModel
 import app.paralino.core.presentation.settings.billing.PaywallViewModel
@@ -106,13 +111,14 @@ import app.paralino.core.presentation.settings.editprofile.EditProfileViewModel
 import app.paralino.core.presentation.settings.emailchange.ChangeEmailViewModel
 import app.paralino.core.presentation.settings.general.GeneralInfoViewModel
 import app.paralino.core.presentation.settings.generic.AppSettingsViewModel
-import app.paralino.core.presentation.settings.generic.maps.MapsProviderViewModel
-import app.paralino.core.presentation.settings.generic.maps.MapInteractionsViewModel
 import app.paralino.core.presentation.settings.generic.MeasurementSystemViewModel
 import app.paralino.core.presentation.settings.generic.NotificationsGroupingViewModel
 import app.paralino.core.presentation.settings.generic.PlaceSearchSettingsViewModel
+import app.paralino.core.presentation.settings.generic.maps.MapInteractionsViewModel
+import app.paralino.core.presentation.settings.generic.maps.MapsProviderViewModel
 import app.paralino.core.presentation.settings.location.LocationSettingsViewModel
 import app.paralino.core.presentation.settings.passwordchange.ChangePasswordViewModel
+import app.paralino.core.presentation.share.SharingStartPresentationType
 import app.paralino.core.presentation.share.SharingStartViewModel
 import app.paralino.core.provider.IBillingProvider
 import app.paralino.core.provider.IConnectionStatusProvider
@@ -135,10 +141,6 @@ import app.paralino.core.repo.places.PlacesActivityProcessor
 import app.paralino.core.repo.user.IExportPersonalLocationHistoryUseCase
 import app.paralino.core.repo.user.IImportPersonalLocationHistoryUseCase
 import app.paralino.core.repo.user.IPushProviderManager
-import app.paralino.core.presentation.billing.BillingScreenSourceType
-import app.paralino.core.presentation.places.create.CreatePlaceScreenStep
-import app.paralino.core.presentation.privacyzones.create.CreatePrivacyZoneScreenStep
-import app.paralino.core.presentation.privacyzones.create.CreatePrivacyZoneViewModel
 import org.koin.android.ext.koin.androidApplication
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.dsl.viewModel
@@ -247,8 +249,8 @@ object KoinSetup {
         viewModel { SettingsViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
         viewModel { (startScreenType: LoginScreenUiType) -> LoginViewModel(get(), get(), get(), get(), startScreenType, get(), get()) }
         viewModel { (groupID: String?) -> CreateGroupViewModel(groupID, get(), get(), get(), get(), get()) }
-        viewModel { (groupId: String?, isOnboarding: Boolean) ->
-            SharingStartViewModel(initialGroupId = groupId?.asGroupOrSpaceId(), isOnboarding, get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get())
+        viewModel { (groupId: String?, presentationType: SharingStartPresentationType) ->
+            SharingStartViewModel(initialGroupId = groupId?.asGroupOrSpaceId(), presentationType, get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get())
         }
         viewModel { LoggedOutViewModel(get(), get()) }
         viewModel { PersonalCodeViewModel(get(), get(), get(), get()) }
@@ -291,6 +293,7 @@ object KoinSetup {
         viewModel { GeneralInfoViewModel(get(), get()) }
         viewModel { LocationSettingsViewModel(get(), get(), get(), get(), get(), get(), get()) }
         viewModel { WelcomeOnboardingViewModel(get(), get()) }
+        viewModel { (groupID: String) -> GroupJoinWelcomeViewModel(groupID, get(), get(), get(), get(), get()) }
         viewModel { (groupID: String) -> BatteryNotificationsViewModel(groupID, get(), get(), get(), get(), get()) }
         viewModel { MeasurementSystemViewModel(get(), get()) }
         viewModel { NotificationsGroupingViewModel(get()) }

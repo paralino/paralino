@@ -20,6 +20,7 @@ import app.paralino.core.presentation.share.SharingStartViewModel
 import app.paralino.core.ui.components.DefaultToolbar
 import app.paralino.core.ui.components.ToolbarButtons
 import app.paralino.core.presentation.billing.BillingScreenSourceType
+import app.paralino.core.presentation.share.SharingStartPresentationType
 import app.paralino.core.ui.share.SharingStartScreenCore
 import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.launch
@@ -31,8 +32,8 @@ import org.koin.core.parameter.parametersOf
 fun SharingStartScreen(
     appState: MainAppState,
     groupId: String?,
-    isOnboarding: Boolean,
-    vm: SharingStartViewModel = koinViewModel { parametersOf(groupId, isOnboarding) },
+    presentationType: SharingStartPresentationType,
+    vm: SharingStartViewModel = koinViewModel { parametersOf(groupId, presentationType) },
 ) {
 
     val permissionHandler = rememberLocationPermissionHandler(
@@ -48,15 +49,16 @@ fun SharingStartScreen(
     )
 
     val pickerState = rememberGroupBottomSheetPickerState()
+    val isCreateOnboarding = presentationType == SharingStartPresentationType.GROUP_CREATE_ONBOARDING
 
     fun finishWithSharingScreen(
-        isOnboarding: Boolean
+        isCreateOnboarding: Boolean
     ) {
         if (vm.shouldProceedToPaywall) {
             appState.navController.navigate(
                 AppScreen.MainHome.BillingPaywall.route(
                     groupId = vm.currentGroupId,
-                    type = when (isOnboarding) {
+                    type = when (isCreateOnboarding) {
                         true -> {
                             if (vm.isPersonalSpace) {
                                 BillingScreenSourceType.PERSONAL_SPACE_ONBOARDING
@@ -72,7 +74,7 @@ fun SharingStartScreen(
                     this.inclusive = false
                 }
             }
-        } else if(isOnboarding) {
+        } else if(isCreateOnboarding) {
             if (vm.isPersonalSpace) {
                 appState.navController.popBackStack(
                     route = AppScreen.MainHome.MainMap.routeSignature,
@@ -101,7 +103,7 @@ fun SharingStartScreen(
                 } else {
                     stringResource(resource = MR.strings.groups_sharing_title)
                 },
-                navigationIcon = if (isOnboarding) {
+                navigationIcon = if (isCreateOnboarding) {
                     null
                 } else {
                     { ToolbarButtons.Back { appState.navController.popBackStack() } }
@@ -113,10 +115,14 @@ fun SharingStartScreen(
             appState = appState,
             vm = vm,
             onSharingStarted = {
-                finishWithSharingScreen(isOnboarding = isOnboarding)
+                finishWithSharingScreen(isCreateOnboarding = isCreateOnboarding)
             },
             onSkipOnboarding = {
-                finishWithSharingScreen(isOnboarding = true)
+                if (presentationType == SharingStartPresentationType.GROUP_JOIN) {
+                    appState.navController.popBackStack()
+                } else {
+                    finishWithSharingScreen(isCreateOnboarding = true)
+                }
             },
             onPickGroup = {
                 appState.uiScope.launch { pickerState.show(it) }
@@ -137,7 +143,7 @@ fun SharingStartScreen(
     }
 
 
-    BackHandler (enabled = isOnboarding) {
+    BackHandler (enabled = isCreateOnboarding) {
         // block back for onboarding
     }
 

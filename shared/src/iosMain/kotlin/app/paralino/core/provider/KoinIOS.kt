@@ -65,16 +65,17 @@ import app.paralino.core.presentation.login.recover.RecoverKeysViewModel
 import app.paralino.core.presentation.main.MainViewModel
 import app.paralino.core.presentation.map.MapHomeViewModel
 import app.paralino.core.presentation.onboarding.AccountOnboardingViewModel
+import app.paralino.core.presentation.onboarding.GroupJoinWelcomeViewModel
 import app.paralino.core.presentation.onboarding.WelcomeOnboardingViewModel
 import app.paralino.core.presentation.paralinoid.PersonalCodeViewModel
 import app.paralino.core.presentation.personal_space.PersonalSpaceViewModel
 import app.paralino.core.presentation.personal_space.settings.PersonalSpaceSettingsViewModel
 import app.paralino.core.presentation.places.create.CreatePlaceScreenStep
-import app.paralino.core.presentation.privacyzones.create.CreatePrivacyZoneScreenStep
 import app.paralino.core.presentation.places.create.CreatePlaceViewModel
 import app.paralino.core.presentation.places.detail.PlaceDetailViewModel
 import app.paralino.core.presentation.places.detail.PlaceSensitivityViewModel
 import app.paralino.core.presentation.places.list.PlacesViewModel
+import app.paralino.core.presentation.privacyzones.create.CreatePrivacyZoneScreenStep
 import app.paralino.core.presentation.privacyzones.create.CreatePrivacyZoneViewModel
 import app.paralino.core.presentation.privacyzones.detail.PrivacyZoneDetailViewModel
 import app.paralino.core.presentation.privacyzones.list.PrivacyZonesViewModel
@@ -98,6 +99,7 @@ import app.paralino.core.presentation.settings.generic.PlaceSearchSettingsViewMo
 import app.paralino.core.presentation.settings.generic.maps.MapInteractionsViewModel
 import app.paralino.core.presentation.settings.location.LocationSettingsViewModel
 import app.paralino.core.presentation.settings.passwordchange.ChangePasswordViewModel
+import app.paralino.core.presentation.share.SharingStartPresentationType
 import app.paralino.core.presentation.share.SharingStartViewModel
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.api.DocumentApiWrapper
@@ -243,8 +245,8 @@ object KoinIOS {
                 LoginViewModel(get(), get(), get(), get(), startScreenType, get(), get())
             }
             factory { (groupID: String?) -> CreateGroupViewModel(groupID, get(), get(), get(), get(), get()) }
-            factory { (groupID: String?, isOnboarding: Boolean) ->
-                SharingStartViewModel(groupID?.asGroupOrSpaceId(), isOnboarding, get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get())
+            factory { (groupID: String?, presentationType: SharingStartPresentationType) ->
+                SharingStartViewModel(groupID?.asGroupOrSpaceId(), presentationType, get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get())
             }
             factory { LoggedOutViewModel(get(), get()) }
             factory { PersonalCodeViewModel(get(), get(), get(), get()) }
@@ -368,6 +370,7 @@ object KoinIOS {
             factory { GeneralInfoViewModel(get(), get()) }
             factory { LocationSettingsViewModel(get(), get(), get(), get(), get(), get(), get()) }
             factory { WelcomeOnboardingViewModel(get(), get()) }
+            factory { (groupID: String) -> GroupJoinWelcomeViewModel(groupID, get(), get(), get(), get(), get()) }
             factory { (groupID: String) -> BatteryNotificationsViewModel(groupID, get(), get(), get(), get(), get()) }
             factory { MeasurementSystemViewModel(get(), get()) }
             factory { NotificationsGroupingViewModel(get()) }
@@ -436,7 +439,19 @@ object KoinIOS {
         fun memberInviteVM(groupId: String?, code: String?, isOnboarding: Boolean) =
             get<MemberInviteViewModel> { parametersOf(groupId, code, isOnboarding) }
 
-        fun sharingStartVM(groupId: String?, isOnboarding: Boolean) = get<SharingStartViewModel> { parametersOf(groupId, isOnboarding) }
+        fun sharingStartVM(
+            groupId: String?,
+            presentationType: SharingStartPresentationType = SharingStartPresentationType.FULL
+        ) = get<SharingStartViewModel> { parametersOf(groupId, presentationType) }
+
+        fun sharingStartVM(groupId: String?, isOnboarding: Boolean) = sharingStartVM(
+            groupId = groupId,
+            presentationType = if (isOnboarding) {
+                SharingStartPresentationType.GROUP_CREATE_ONBOARDING
+            } else {
+                SharingStartPresentationType.FULL
+            }
+        )
         fun placesVM(groupId: String, isOnboarding: Boolean) = get<PlacesViewModel> { parametersOf(groupId, isOnboarding) }
         fun placeDetailVM(groupId: String, placeId: String) =
             get<PlaceDetailViewModel> { parametersOf(groupId, placeId) }
@@ -467,6 +482,7 @@ object KoinIOS {
         val generalInfoVM get() = get<GeneralInfoViewModel>()
         val locationSettingsVM get() = get<LocationSettingsViewModel>()
         val welcomeOnboardingVM get() = get<WelcomeOnboardingViewModel>()
+        fun groupJoinWelcomeVM(groupId: String) = get<GroupJoinWelcomeViewModel> { parametersOf(groupId) }
         val verifyEmailVM get() = get<VerifyEmailViewModel>()
         val measurementSystemVM get() = get<MeasurementSystemViewModel>()
         val notificationGroupingVM get() = get<NotificationsGroupingViewModel>()

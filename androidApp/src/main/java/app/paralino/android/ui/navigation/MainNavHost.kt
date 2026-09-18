@@ -24,6 +24,7 @@ import app.paralino.android.ui.login.VerifyEmailScreen
 import app.paralino.android.ui.main.MainAppState
 import app.paralino.android.ui.map.MapHomeScreen
 import app.paralino.android.ui.onboarding.FreePlanInfoScreen
+import app.paralino.android.ui.onboarding.GroupJoinWelcomeScreen
 import app.paralino.android.ui.onboarding.WelcomeOnboardingScreen
 import app.paralino.android.ui.personal_space.PersonalSpaceScreen
 import app.paralino.android.ui.personal_space.PersonalSpaceSettingsScreen
@@ -66,6 +67,7 @@ import app.paralino.core.presentation.settings.generic.NotificationsGroupingView
 import app.paralino.core.presentation.settings.generic.PlaceSearchSettingsViewModel
 import app.paralino.android.presentation.settings.generic.NotificationSocketSettingsViewModel
 import app.paralino.core.presentation.billing.BillingScreenSourceType
+import app.paralino.core.presentation.share.SharingStartPresentationType
 import app.paralino.core.presentation.places.create.CreatePlaceScreenStep
 import app.paralino.core.presentation.privacyzones.create.CreatePrivacyZoneScreenStep
 import org.koin.androidx.compose.koinViewModel
@@ -125,6 +127,11 @@ fun NavGraphBuilder.homeGraph(
                 it.arguments?.getString(AppScreen.MainHome.GroupCreate.argumentGroupId)
             GroupCreateScreen(appState = appState, groupId = groupId)
         }
+        composable(AppScreen.MainHome.GroupJoinWelcome.routeSignature) {
+            val groupId =
+                it.arguments!!.getString(AppScreen.MainHome.GroupJoinWelcome.argumentGroupId)!!
+            GroupJoinWelcomeScreen(appState = appState, groupId = groupId)
+        }
         composable(AppScreen.MainHome.GroupMemberAdd.routeSignature) {
             val groupId =
                 it.arguments?.getString(AppScreen.MainHome.GroupMemberAdd.argumentGroupId)
@@ -137,9 +144,10 @@ fun NavGraphBuilder.homeGraph(
         composable(AppScreen.MainHome.SharingStart.routeSignature) {
             val groupId =
                 it.arguments?.getString(AppScreen.MainHome.SharingStart.argumentGroupId)
-            val onboarding =
-                it.arguments?.getString(AppScreen.MainHome.SharingStart.argumentOnboarding)?.toBoolean() ?: false
-            SharingStartScreen(appState = appState, groupId = groupId, isOnboarding = onboarding)
+            val presentation = SharingStartPresentationType.fromRouteArgument(
+                it.arguments?.getString(AppScreen.MainHome.SharingStart.argumentPresentation)
+            )
+            SharingStartScreen(appState = appState, groupId = groupId, presentationType = presentation)
         }
         composable(AppScreen.MainHome.PlacesList.routeSignature) {
             val groupId =
