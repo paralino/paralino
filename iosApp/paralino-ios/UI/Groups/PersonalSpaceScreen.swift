@@ -48,7 +48,7 @@ struct PersonalSpaceScreen: View {
                         path.append(.home(.placeDetail(groupId: GroupOrSpaceIdHelper.shared.unwrap(id: item.groupOrSpaceId)!, placeId: item.itemId)))
                     },
                     openSharing: {
-                        path.append(.home(.sharingStart(groupId: UserGroup.companion.groupPersonalDevicesId, isOnboarding: false)))
+                        path.append(.home(.sharingStart(groupId: UserGroup.companion.groupPersonalDevicesId, presentation: .full)))
                     },
                     openPaywall: {
                         path.append(.settings(.paywall(type: BillingScreenSourceType.upgradeDefault)))

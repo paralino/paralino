@@ -48,7 +48,10 @@ struct MapHomeScreen: View {
                         path.append(.home(.groupDetail(groupId: groupId)))
                     },
                     onSharingStartClick: { groupId in
-                        path.append(.home(.sharingStart(groupId: groupId, isOnboarding: false)))
+                        path.append(.home(.sharingStart(groupId: groupId, presentation: .full)))
+                    },
+                    onOpenGroupJoinWelcome: { groupId in
+                        path.append(.home(.groupJoinWelcome(groupId: groupId)))
                     },
                     onHistorySettingsClick: { groupId in
                         path.append(.home(.locationHistorySettings(groupId: GroupOrSpaceIdHelper.shared.unwrap(id: groupId)!)))

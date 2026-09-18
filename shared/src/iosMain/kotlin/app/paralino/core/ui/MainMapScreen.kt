@@ -57,6 +57,7 @@ object MainMapScreen {
         onGroupPickerClick: (Boolean) -> Unit,
         onGroupDetailsClick: (String) -> Unit,
         onSharingStartClick: (String) -> Unit,
+        onOpenGroupJoinWelcome: (String) -> Unit,
         onHistorySettingsClick: (String) -> Unit,
         onMemberInviteClick: (String) -> Unit,
         onSettingsClick: () -> Unit,
@@ -155,7 +156,7 @@ object MainMapScreen {
                             MapHomeScreenEvent.AskBackgroundLocationPermission -> askBackgroundLocationPermission()
                             MapHomeScreenEvent.OpenPersonalCodes -> openPersonalCodes()
                             is MapHomeScreenEvent.SharePersonalCode -> onSharePersonalCode(event.content)
-                            is MapHomeScreenEvent.OpenGroupJoinWelcome -> {}
+                            is MapHomeScreenEvent.OpenGroupJoinWelcome -> onOpenGroupJoinWelcome(event.groupId)
                         }
                     }
                 }

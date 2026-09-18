@@ -1,5 +1,6 @@
 package app.paralino.core.presentation.onboarding
 
+import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.group.GroupPreRefreshUseCase
 import app.paralino.core.domain.group.PendingGroupJoinWelcomeUseCase
 import app.paralino.core.models.base.ImageModel
@@ -30,7 +31,8 @@ class GroupJoinWelcomeViewModel(
     private val groupPreRefresh: GroupPreRefreshUseCase,
     private val pendingGroupJoinWelcome: PendingGroupJoinWelcomeUseCase,
     private val sharingManager: LocationSharingManager,
-    private val placesRepo: PlacesRepository
+    private val placesRepo: PlacesRepository,
+    private val appPrefs: AppPrefs,
 ) : CoreViewModel() {
 
     private val _uiState = MutableStateFlow(
@@ -131,6 +133,8 @@ class GroupJoinWelcomeViewModel(
 
             GroupJoinWelcomeStepContent.Done -> {
                 coroutineScope.launch {
+                    appPrefs.selectedGroupId = groupId
+                    appPrefs.isPersonalSpaceSelected = false
                     pendingGroupJoinWelcome.complete(groupId = groupId)
                     _eventChannel.trySend(GroupJoinWelcomeScreenEvent.OpenMap)
                 }
