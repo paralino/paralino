@@ -2,9 +2,9 @@ package app.paralino.core.models.location
 
 import app.paralino.core.provider.NetworkSignalStrength
 import app.paralino.core.provider.NetworkType
+import app.paralino.core.repo.location.LocationPerformanceSettingsType
 import app.paralino.core.utils.extensions.fromUTCtoInstant
 import app.paralino.core.utils.extensions.nowUTC
-import kotlin.time.Instant
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 import kotlin.math.absoluteValue
@@ -13,6 +13,7 @@ import kotlin.time.Duration
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
+import kotlin.time.Instant
 
 @Serializable
 data class LocationDataModel constructor(
@@ -43,18 +44,61 @@ data class LocationDataModel constructor(
         return pinTime.plus(duration) < nowUTC()
     }
 
-    fun takeMostRelevantLocation(second: LocationDataModel): LocationDataModel {
+    fun takeMostRelevantLocation(
+        second: LocationDataModel,
+        type: LocationPerformanceSettingsType.Balanced
+    ): LocationDataModel {
         val firstTime = timeUTCInstant
         val secondTime = second.timeUTCInstant
         if (firstTime == null || secondTime == null) {
             return second
         }
 
-        val timeValid = (firstTime - secondTime).absoluteValue <= 6.seconds
-        val distanceValid = isWithinRange(other = second, thresholdMeters = 10)
-        val accuracyValid = (accuracy - second.accuracy).absoluteValue <= 3f
+        val timeThreshold = when (type) {
+            LocationPerformanceSettingsType.Balanced.Level1,
+            LocationPerformanceSettingsType.Balanced.Level2 -> 12.seconds
+            LocationPerformanceSettingsType.Balanced.Level3 -> 8.seconds
+            LocationPerformanceSettingsType.Balanced.Level4,
+            LocationPerformanceSettingsType.Balanced.Level5 -> 6.seconds
+        }
 
-        val speedThresholdMs = 3f / 3.6f // ~3 km/h
+        val distanceThreshold = when (type) {
+            LocationPerformanceSettingsType.Balanced.Level1,
+            LocationPerformanceSettingsType.Balanced.Level2 -> 30
+            LocationPerformanceSettingsType.Balanced.Level3 -> 20
+            LocationPerformanceSettingsType.Balanced.Level4,
+            LocationPerformanceSettingsType.Balanced.Level5 -> 10
+        }
+
+        val accuracyThreshold = when (type) {
+            LocationPerformanceSettingsType.Balanced.Level1,
+            LocationPerformanceSettingsType.Balanced.Level2 -> 15f
+            LocationPerformanceSettingsType.Balanced.Level3 -> 10f
+            LocationPerformanceSettingsType.Balanced.Level4,
+            LocationPerformanceSettingsType.Balanced.Level5 -> 5f
+        }
+
+        val altitudeThreshold = when (type) {
+            LocationPerformanceSettingsType.Balanced.Level1,
+            LocationPerformanceSettingsType.Balanced.Level2 -> 30f
+            LocationPerformanceSettingsType.Balanced.Level3 -> 20f
+            LocationPerformanceSettingsType.Balanced.Level4,
+            LocationPerformanceSettingsType.Balanced.Level5 -> 10f
+        }
+
+        val speedThresholdKmh = when (type) {
+            LocationPerformanceSettingsType.Balanced.Level1,
+            LocationPerformanceSettingsType.Balanced.Level2 -> 8f
+            LocationPerformanceSettingsType.Balanced.Level3 -> 5f
+            LocationPerformanceSettingsType.Balanced.Level4,
+            LocationPerformanceSettingsType.Balanced.Level5 -> 3f
+        }
+
+        val timeValid = (firstTime - secondTime).absoluteValue <= timeThreshold
+        val distanceValid = isWithinRange(other = second, thresholdMeters = distanceThreshold)
+        val accuracyValid = (accuracy - second.accuracy).absoluteValue <= accuracyThreshold
+
+        val speedThresholdMs = speedThresholdKmh / 3.6f
         val speedValid = if (speed != null && second.speed != null) {
             (speed - second.speed).absoluteValue < speedThresholdMs
         } else {
@@ -62,7 +106,7 @@ data class LocationDataModel constructor(
         }
 
         val altitudeValid = if (altitude != null && second.altitude != null) {
-            (altitude - second.altitude).absoluteValue < 10f
+            (altitude - second.altitude).absoluteValue < altitudeThreshold
         } else {
             altitude == second.altitude
         }
