@@ -1,6 +1,5 @@
 package app.paralino.core.presentation.history
 
-import app.paralino.core.models.location.LocationHistoryPointState
 import app.paralino.core.provider.DistanceType
 import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.provider.NetworkType
@@ -28,13 +27,7 @@ data class LocationHistoryStats(
             valueFormatter: IValueFormatter,
             geofenceManager: IGeofenceManager
         ): LocationHistoryStats? {
-            val locations = state.selectedLocations
-                .flatMap {
-                    when (it) {
-                        is LocationHistoryPointState.Cluster -> it.points
-                        is LocationHistoryPointState.Point -> listOf(it)
-                    }
-                }
+            val locations = state.selectedPointsForStats
 
             if (locations.isEmpty()) {
                 return null

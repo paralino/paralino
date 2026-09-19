@@ -33,4 +33,5 @@ class MainDatabaseHelper(
     val userDeviceDao by lazy { roomDatabase.userDeviceDao() }
     val approximateSharedLocationDao by lazy { roomDatabase.approximateSharedLocationDao() }
     val privacyZoneSharedLocationDao by lazy { roomDatabase.privacyZoneSharedLocationDao() }
+    val pendingGroupJoinWelcomeDao by lazy { roomDatabase.pendingGroupJoinWelcomeDao() }
 }

@@ -18,6 +18,7 @@ class GroupRemoveUseCase(
     private val cryptoKEKRepo: CryptoKEKLocalRepository,
     private val locationSharingManager: LocationSharingManager,
     private val appPrefs: AppPrefs,
+    private val pendingGroupJoinWelcome: PendingGroupJoinWelcomeUseCase,
 ) : LimitedExecutionRepository() {
 
     fun deleteGroup(groupId: String): Flow<Unit> {
@@ -67,5 +68,6 @@ class GroupRemoveUseCase(
         local.deleteGroup(groupId = groupId)
         placeActivityRepo.clearForGroup(groupId = groupId.asGroupOrSpaceId())
         cryptoKEKRepo.deleteAllKeysForGroup(groupId = groupId)
+        pendingGroupJoinWelcome.delete(groupId = groupId)
     }
 }

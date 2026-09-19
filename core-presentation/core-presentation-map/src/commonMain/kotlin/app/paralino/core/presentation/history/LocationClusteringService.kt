@@ -26,14 +26,27 @@ class LocationClusteringService(
         rangeStart: LocalDate,
         rangeEnd: LocalDate,
     ): List<LocationHistoryPointState> {
-        return clusterLocations(
-            oldPoints = oldPoints,
-            newPoints = newPoints,
-            maxRadius = 100.0,
-            minDwellTime = 5.minutes,
-            rangeStart = rangeStart,
-            rangeEnd = rangeEnd
-        )
+        return newPoints
+            .groupBy { it.locationId }
+            .values
+            .flatMap { devicePoints ->
+                clusterLocations(
+                    oldPoints = oldPoints,
+                    newPoints = devicePoints,
+                    maxRadius = 100.0,
+                    minDwellTime = 5.minutes,
+                    rangeStart = rangeStart,
+                    rangeEnd = rangeEnd
+                )
+            }
+            .sortedBy { item ->
+                when (item) {
+                    is LocationHistoryPointState.Cluster ->
+                        item.points.first().point.status.startTime
+                    is LocationHistoryPointState.Point ->
+                        item.point.status.startTime
+                }
+            }
     }
 
     private fun clusterLocations(

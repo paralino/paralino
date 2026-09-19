@@ -86,9 +86,20 @@ class LocationSaveEventProcessingEngine(
         }
 
         // extra processing - not gonna run for iOS LSE
-        triggerRemoteOnly {
-            placesActivityProcessor.processLocation(payloads)
-            batteryAlertUploadEngine.sendBatteryAlert(payloads = payloads)
+        try {
+            triggerRemoteOnly {
+                placesActivityProcessor.processLocation(payloads)
+            }
+        } catch (e: Exception) {
+            // Ignore errors here
+        }
+
+        try {
+            triggerRemoteOnly {
+                batteryAlertUploadEngine.sendBatteryAlert(payloads = payloads)
+            }
+        } catch (e: Exception) {
+            // Ignore errors here
         }
     }
 }

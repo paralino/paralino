@@ -24,6 +24,7 @@ import app.paralino.core.repo.location.LocationLocalDataSource
 import app.paralino.core.repo.places.PlacesRepository
 import app.paralino.core.repo.user.IPushProviderManager
 import app.paralino.core.repo.user.PersonalDevicesLocalDataSource
+import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.seconds
 
 class RealtimeEventsProcessor constructor(
@@ -156,6 +157,8 @@ class RealtimeEventsProcessor constructor(
                     logg.tag("realtime_events")
                         .v("Refresh group - update member (${member.id}) event in group ${member.groupId}")
                     // this is either new member so we are missing keys, or keys are obsolete
+                    // we are delaying since realtime fires before notification arrives, and not all data is yet formed on remote
+                    delay(5.seconds)
                     groupPreRefreshUseCase.refreshGroupWithMembers(
                         groupId = member.groupId,
                         cacheTimeMillis = 10_000

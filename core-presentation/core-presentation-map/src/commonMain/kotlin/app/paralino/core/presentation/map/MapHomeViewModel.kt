@@ -4,6 +4,7 @@ import app.paralino.core.app_rating.AppRatingManager
 import app.paralino.core.app_rating.AppRatingSource
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.group.GroupPreRefreshUseCase
+import app.paralino.core.domain.group.PendingGroupJoinWelcomeUseCase
 import app.paralino.core.domain.location.ClearUserLocationUseCase
 import app.paralino.core.domain.location.LocationCacheRepository
 import app.paralino.core.domain.location.LocationRequestUseCase
@@ -98,6 +99,7 @@ class MapHomeViewModel constructor(
     private val appRatingManager: AppRatingManager,
     private val premiumStatusManager: PremiumStatusManager,
     private val accountStateMonitor: AppAccountStateMonitor,
+    private val pendingGroupJoinWelcome: PendingGroupJoinWelcomeUseCase,
 ) : CoreViewModel() {
 
     private val _uiState = MutableStateFlow<MapHomeScreenState>(
@@ -224,6 +226,7 @@ class MapHomeViewModel constructor(
         uiFocusedStatus = uiFocusedStatus,
         appPrefs = appPrefs,
         remoteConfig = remoteConfig,
+        pendingGroupJoinWelcome = pendingGroupJoinWelcome,
         coroutineScope = coroutineScope
     )
 

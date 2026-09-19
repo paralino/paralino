@@ -9,6 +9,7 @@ import app.paralino.android.ui.main.MainAppState
 import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.android.utils.extensions.share
 import app.paralino.core.presentation.onboarding.AccountOnboardingViewModel
+import app.paralino.core.presentation.share.SharingStartPresentationType
 import app.paralino.core.ui.onboarding.account.AccountOnboardingScreenCore
 
 
@@ -40,7 +41,10 @@ fun AccountOnboardingScreen(
         onSharePersonalCode = { context.share(it) },
         openSharingScreen = {
             appState.navController.navigate(
-                AppScreen.MainHome.SharingStart.route(groupId = it.id, isOnboarding = true)
+                AppScreen.MainHome.SharingStart.route(
+                    groupId = it.id,
+                    presentation = SharingStartPresentationType.GROUP_CREATE_ONBOARDING
+                )
             )
         },
         askNotificationPermission = { notificationPermissionHandler.askNotificationPermission() },

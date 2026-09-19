@@ -26,6 +26,7 @@ import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.presentation.common.PlaceListItemData
 import app.paralino.core.presentation.places.list.PlacesViewModel
+import app.paralino.core.presentation.share.SharingStartPresentationType
 import app.paralino.core.ui.components.DefaultToolbar
 import app.paralino.core.ui.components.ToolbarButtons
 import app.paralino.core.ui.places.PlaceListItem
@@ -88,7 +89,12 @@ fun PlacesScreen(
             onSkipOnboarding = {
                 appState.navController.navigate(
                     AppScreen.MainHome.SharingStart.route(
-                        groupId = groupId, isOnboarding = isOnboarding
+                        groupId = groupId,
+                        presentation = if (isOnboarding) {
+                            SharingStartPresentationType.GROUP_CREATE_ONBOARDING
+                        } else {
+                            SharingStartPresentationType.FULL
+                        }
                     )
                 )
             },

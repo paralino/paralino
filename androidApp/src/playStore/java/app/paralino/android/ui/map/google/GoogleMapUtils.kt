@@ -106,7 +106,11 @@ fun CameraPositionState.refocus(
         )
 
         var cameraUpdate = try {
-            CameraUpdateFactory.newLatLngBounds(bounds, padding)
+            if (result.first() < 500) {
+                CameraUpdateFactory.newLatLngZoom(bounds.center, 17f)
+            } else {
+                CameraUpdateFactory.newLatLngBounds(bounds, padding)
+            }
         } catch (e: Exception) {
             // can sometimes be not initialized for various ui config changes
             return@launch

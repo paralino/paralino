@@ -36,7 +36,7 @@ struct PlacesScreen: View {
                         path.append(.settings(.paywall(type: BillingScreenSourceType.upgradeDefault)))
                     },
                     onSkipOnboarding: {
-                        path.append(.home(.sharingStart(groupId: appState.groupId, isOnboarding: appState.isOnboarding)))
+                        path.append(.home(.sharingStart(groupId: appState.groupId, presentation: appState.isOnboarding ? .groupCreateOnboarding : .full)))
                     },
                     openPlaceDetailScreen: { place in
                         path.append(.home(.placeDetail(groupId: GroupOrSpaceIdHelper.shared.unwrap(id: place.groupOrSpaceId)!, placeId: place.id)))

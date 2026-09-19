@@ -106,38 +106,56 @@ data class LocationHistoryScreenState(
     }
 
     val selectedLocations: List<LocationHistoryPointState> = displayLocations.filter { entry ->
-        val matchesDevice = devices.any { device ->
+        when (entry) {
+            is LocationHistoryPointState.Cluster -> {
+                entry.points.any { it.matchesSelectedDevice() && it.matchesAccuracyFilter() }
+            }
+            is LocationHistoryPointState.Point -> {
+                entry.matchesSelectedDevice() && entry.matchesAccuracyFilter()
+            }
+        }
+    }
+
+    val selectedPointsForStats: List<LocationHistoryPointState.Point> = locations
+        .flatMap { location ->
+            when (location) {
+                is LocationHistoryPointState.Cluster -> location.points
+                is LocationHistoryPointState.Point -> listOf(location)
+            }
+        }
+        .filter { point ->
+            point.matchesSelectedDevice() && point.matchesAccuracyFilter()
+        }
+
+    private fun LocationHistoryPointState.Point.matchesSelectedDevice(): Boolean {
+        return devices.any { device ->
             when (device) {
                 is UserActiveLocationDeviceState.Known -> {
-                    device.isSelected && device.locationId == entry.locationId
+                    device.isSelected && device.locationId == locationId
                 }
 
                 is UserActiveLocationDeviceState.Unknown -> {
-                    device.isSelected && (device.ids.contains(entry.locationId) || entry.locationId == null)
+                    device.isSelected && (device.ids.contains(locationId) || locationId == null)
                 }
             }
         }
+    }
 
-        val matchesFilter = if (showInaccurateLocations) {
-            true
-        } else {
-            !entry.accuracy.isLocationInaccurate()
-        }
-
-        matchesDevice && matchesFilter
+    private fun LocationHistoryPointState.Point.matchesAccuracyFilter(): Boolean {
+        return showInaccurateLocations || !accuracy.isLocationInaccurate()
     }
 
     val activeDevices: List<UserActiveLocationDeviceState> = devices.map { device ->
         when (device) {
             is UserActiveLocationDeviceState.Known -> {
                 device.copy(
-                    hasLocations = displayLocations.any { it.locationId == device.locationId }
+                    hasLocations = selectedPointsForStats.any { it.locationId == device.locationId }
                 )
             }
 
             is UserActiveLocationDeviceState.Unknown -> {
                 device.copy(
-                    hasLocations = displayLocations.any {
+                    hasLocations = selectedPointsForStats.any {
                         device.ids.contains(it.locationId) || it.locationId == null
                     }
                 )

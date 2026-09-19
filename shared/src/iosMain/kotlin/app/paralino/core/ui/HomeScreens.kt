@@ -27,6 +27,7 @@ import app.paralino.core.presentation.groups.settings.BatteryNotificationsViewMo
 import app.paralino.core.presentation.groups.settings.GroupSettingsViewModel
 import app.paralino.core.presentation.history.LocationHistoryDeleteViewModel
 import app.paralino.core.presentation.onboarding.AccountOnboardingViewModel
+import app.paralino.core.presentation.onboarding.GroupJoinWelcomeViewModel
 import app.paralino.core.presentation.personal_space.PersonalSpaceViewModel
 import app.paralino.core.presentation.personal_space.settings.PersonalSpaceSettingsViewModel
 import app.paralino.core.presentation.places.create.CreatePlaceViewModel
@@ -48,6 +49,7 @@ import app.paralino.core.ui.groups.GroupSettingsScreenCore
 import app.paralino.core.ui.history.LocationHistoryDeleteScreenCore
 import app.paralino.core.ui.invite.MemberInviteScreenCore
 import app.paralino.core.ui.onboarding.FreePlanInfoScreenCore
+import app.paralino.core.ui.onboarding.GroupJoinWelcomeScreenCore
 import app.paralino.core.ui.onboarding.account.AccountOnboardingScreenCore
 import app.paralino.core.ui.personal_space.PersonalSpaceScreenCore
 import app.paralino.core.ui.personal_space.PersonalSpaceSettingsScreenCore
@@ -585,6 +587,23 @@ object HomeScreens {
                 vm = vm,
                 paddingValues = paddingValues.toComposePaddingValues(),
                 onContinue = onContinue,
+            )
+        }
+    }
+
+    fun GroupJoinWelcomeScreenVC(
+        vm: GroupJoinWelcomeViewModel,
+        paddingValues: AppleScreenPaddingValues,
+        openSharing: () -> Unit,
+        openMap: () -> Unit,
+    ) = ComposeUIViewController {
+        RootScreenIOS {
+            GroupJoinWelcomeScreenCore(
+                coreUiState = it,
+                vm = vm,
+                paddingValues = paddingValues.toComposePaddingValues(),
+                openSharing = openSharing,
+                openMap = openMap,
             )
         }
     }

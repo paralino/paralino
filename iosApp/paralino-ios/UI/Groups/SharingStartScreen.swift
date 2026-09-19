@@ -26,10 +26,14 @@ struct SharingStartScreen: View {
                     vm: appState.vm,
                     onPickGroup: { sheet in groupPicker = sheet },
                     onSharingStarted: {
-                        finishWithSharingScreen(isOnboarding: appState.isOnboarding)
+                        finishWithSharingScreen()
                     },
                     onSkipOnboarding: {
-                        finishWithSharingScreen(isOnboarding: appState.isOnboarding)
+                        if appState.isGroupJoin {
+                            path.removeLast()
+                        } else {
+                            finishWithSharingScreen()
+                        }
                     },
                     openSubscriptions: {
                         path.append(.settings(.paywall(groupId: appState.currentGroupId, type: .upgradeDefault)))
@@ -73,7 +77,7 @@ struct SharingStartScreen: View {
             ? MR.shared.strings.personalSpace_spaceTitle.localizedString()
             : MR.shared.strings.groups_sharing_title.localizedString()
         )
-        .navigationBarBackButtonHidden(appState.isOnboarding)
+        .navigationBarBackButtonHidden(appState.isCreateOnboarding)
         .groupPickerSheet(
             $groupPicker,
             onSelectGroup: { state in
@@ -87,7 +91,7 @@ struct SharingStartScreen: View {
         )
     }
     
-    private func finishWithSharingScreen(isOnboarding: Bool) {
+    private func finishWithSharingScreen() {
         if appState.vm.shouldProceedToPaywall {
             if let index = path.firstIndex(where: { $0 == .home(.map) }) {
                 path.removeSubrange(index+1..<path.count)
@@ -98,7 +102,7 @@ struct SharingStartScreen: View {
                     .settings(
                         .paywall(
                             groupId: appState.currentGroupId,
-                            type: isOnboarding ? BillingScreenSourceType.personalSpaceOnboarding : BillingScreenSourceType.upgradeDefault
+                            type: appState.isCreateOnboarding ? BillingScreenSourceType.personalSpaceOnboarding : BillingScreenSourceType.upgradeDefault
                         )
                     )
                 )
@@ -107,12 +111,12 @@ struct SharingStartScreen: View {
                     .settings(
                         .paywall(
                             groupId: appState.currentGroupId,
-                            type: isOnboarding ? BillingScreenSourceType.groupOnboarding : BillingScreenSourceType.upgradeDefault
+                            type: appState.isCreateOnboarding ? BillingScreenSourceType.groupOnboarding : BillingScreenSourceType.upgradeDefault
                         )
                     )
                 )
             }
-        } else if isOnboarding {
+        } else if appState.isCreateOnboarding {
             if let index = path.firstIndex(where: { $0 == .home(.map) }) {
                 path.removeSubrange(index+1..<path.count)
             }
@@ -128,25 +132,33 @@ struct SharingStartScreen: View {
     }
 
     
-    static func createState(groupId: String?, isOnboarding: Bool) -> SharingStartState {
-        SharingStartState(initialGroupId: groupId, isOnboarding: isOnboarding)
+    static func createState(groupId: String?, presentation: SharingStartPresentationType) -> SharingStartState {
+        SharingStartState(initialGroupId: groupId, presentation: presentation)
     }
 }
 
 class SharingStartState: ObservableObject {
     
     let initialGroupId: String?
-    let isOnboarding: Bool
+    let presentation: SharingStartPresentationType
     let vm: SharingStartViewModel
     
     var currentGroupId: String? {
         return vm.currentGroupId
     }
     
-    init (initialGroupId: String?, isOnboarding: Bool) {
+    var isCreateOnboarding: Bool {
+        presentation == SharingStartPresentationType.groupCreateOnboarding
+    }
+    
+    var isGroupJoin: Bool {
+        presentation == SharingStartPresentationType.groupJoin
+    }
+    
+    init (initialGroupId: String?, presentation: SharingStartPresentationType) {
         self.initialGroupId = initialGroupId
-        self.isOnboarding = isOnboarding
-        self.vm = KoinIOS.ViewModels.shared.sharingStartVM(groupId: initialGroupId, isOnboarding: isOnboarding)
+        self.presentation = presentation
+        self.vm = KoinIOS.ViewModels.shared.sharingStartVM(groupId: initialGroupId, presentationType: presentation)
     }
     
     deinit {
