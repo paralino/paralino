@@ -197,7 +197,7 @@ class SettingsViewModel(
                                 deviceId = appPrefs.deviceId,
                                 diagnosticsId = appPrefs.errorReportingID,
                             pushToken = formatPushTokenInfo(
-                                pushProviderConfig = personalSpace?.currentDevice?.pushProviderConfig
+                                pushProviderConfig = personalSpace?.currentDeviceMaybe?.pushProviderConfig
                             ),
                             memberSinceDateFormatted = formatMemberSinceDate(userStateData.registration),
                             errors = buildList {

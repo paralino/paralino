@@ -41,6 +41,7 @@ data class UserPersonalSpaceModel(
             .filter { it.location != null }
             .any { it.id != currentDevice?.id }
     }
+
     val currentDevice: UserDeviceModel? get() {
         val userId = appPrefs.userId
         val deviceId = appPrefs.deviceId
@@ -49,6 +50,12 @@ data class UserPersonalSpaceModel(
             throw IllegalArgumentException("Missing current user/device id from preferences")
         }
 
+        val device = devices.firstOrNull { it.deviceId == deviceId }
+        return device
+    }
+
+    val currentDeviceMaybe: UserDeviceModel? get() {
+        val deviceId = appPrefs.deviceId
         val device = devices.firstOrNull { it.deviceId == deviceId }
         return device
     }
