@@ -7,12 +7,13 @@ import app.paralino.core.domain.user.LogoutUseCase
 import app.paralino.core.models.Payload
 import app.paralino.core.models.data
 import app.paralino.core.models.exception
-import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.models.settings.FormValidation
+import app.paralino.core.presentation.CoreViewModel
+import app.paralino.core.presentation.common.MainAlertDialog
+import app.paralino.core.presentation.common.SnackbarDuration
+import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.user.UserRepository
-import app.paralino.core.presentation.common.SnackbarDuration
-import app.paralino.core.presentation.common.MainAlertDialog
 import app.paralino.core.utils.DeeplinkType
 import app.paralino.core.utils.extensions.errorString
 import app.paralino.core.utils.extensions.getFormValidationErrorText
@@ -24,6 +25,7 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -36,7 +38,8 @@ class VerifyEmailViewModel(
     private val userRepo: UserRepository,
     private val logoutUseCase: LogoutUseCase,
     private val accountStateMonitor: AppAccountStateMonitor,
-    private val appPrefs: AppPrefs
+    private val appPrefs: AppPrefs,
+    private val deviceApiProvider: IDeviceApiProvider
 ) : CoreViewModel() {
 
     private val _uiState = MutableStateFlow(
@@ -56,6 +59,16 @@ class VerifyEmailViewModel(
                     _uiState.update { it.copy(currentEmail = user.email) }
                 }
             }
+            .launchIn(coroutineScope)
+
+        deviceApiProvider.appLifecycleState
+            .onEach { state ->
+                if (state.comingFromBackground) {
+                    try { userRepo.refreshUserMaybe(timeDelayMillis = 10.seconds.inWholeMilliseconds) }
+                    catch (e: Exception) { }
+                }
+            }
+            .flowOn(Dispatchers.IO)
             .launchIn(coroutineScope)
     }
 

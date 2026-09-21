@@ -275,7 +275,7 @@ object KoinIOS {
             factory { EditProfileViewModel(get(), get()) }
             factory { RecoverKeysViewModel(get(), get(), get(), get()) }
             factory { PasswordConfirmationViewModel(get(), get(), get()) }
-            factory { VerifyEmailViewModel(get(), get(), get(), get()) }
+            factory { VerifyEmailViewModel(get(), get(), get(), get(), get()) }
             factory { (userId: String, secret: String) ->
                 ResetPasswordViewModel(
                     userId = userId,
