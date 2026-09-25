@@ -192,18 +192,8 @@ fun UserDeviceItem(
                     verticalArrangement = Arrangement.Center
                 ) {
                     Text(
-                        text = when {
-                            state.device?.isCurrentDevice == true -> {
-                                if (!state.device?.name.isNullOrBlank()) {
-                                    stringResource(MR.strings.personalSpace_current_device_withName, state.device?.name ?: "")
-                                } else {
-                                    stringResource(MR.strings.personalSpace_current_device)
-                                }
-                            }
-                            !state.device?.name.isNullOrBlank() -> state.device?.name ?: ""
-                            state.session != null -> state.session?.session?.deviceOrClientName ?: "-"
-                            else -> stringResource(MR.strings.group_members_device_name_default)
-                        }.annotatedBoldCompose(
+                        modifier = Modifier.fillMaxWidth(),
+                        text = state.displayName.annotatedBoldCompose(
                             textColor = MaterialTheme.colors.onSurface
                         ),
                         style = MaterialTheme.typography.subtitle1

@@ -165,6 +165,7 @@
     <string name="settings_section_personal_code_title">Paralino.ID</string>
     <string name="settings_section_personal_code_inactive_title">Inactive codes</string>
     <string name="settings_account_edit_profile">Edit profile</string>
+    <string name="settings_account_devices_screen_title">Device &amp; sessions</string>
     <string name="settings_account_edit_email">Change email</string>
     <string name="settings_account_edit_password">Change password</string>
     <string name="settings_account_edit_email_button">Change email</string>
@@ -985,6 +986,7 @@
     <string name="personalSpace_session_updatedAt">Updated at:</string>
     <string name="personalSpace_session_expiresAt">Expires at:</string>
     <string name="personalSpace_session_title">Session</string>
+    <string name="personalSpace_sessions_load_error">Failed to load sessions</string>
     <string name="personalSpace_tracking_title">Location tracking</string>
     <string name="personalSpace_tracking_activate">Activate</string>
     <string name="personalSpace_device_tag_loggedOut">Logged out</string>

@@ -337,6 +337,10 @@ sealed class AppScreen {
             override val routeSignature: String = "blocklist"
         }
 
+        object UserDevices : AppScreen() {
+            override val routeSignature: String = "user-devices"
+        }
+
         object Subscriptions : Common.Subscriptions("settings")
         object BillingPaywall : Common.BillingPaywall("settings")
 

@@ -87,6 +87,7 @@ import app.paralino.core.presentation.settings.billing.PlanInfoViewModel
 import app.paralino.core.presentation.settings.billing.SubscriptionViewModel
 import app.paralino.core.presentation.settings.billing.licence.LicenceCodeViewModel
 import app.paralino.core.presentation.settings.blocklist.BlocklistViewModel
+import app.paralino.core.presentation.settings.userdevices.UserDevicesViewModel
 import app.paralino.core.presentation.settings.convertaccount.ConvertAccountViewModel
 import app.paralino.core.presentation.settings.editprofile.EditProfileViewModel
 import app.paralino.core.presentation.settings.emailchange.ChangeEmailViewModel
@@ -363,6 +364,7 @@ object KoinIOS {
                 )
             }
             factory { BlocklistViewModel(get()) }
+            factory { UserDevicesViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(),) }
             factory { AppStatusDebugViewModel(get(), get(), get(), get(), get()) }
             factory { SubscriptionViewModel(get(), get(), get(), get(), get(), get()) }
             factory { (type: BillingScreenSourceType) -> PaywallViewModel(type, get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
@@ -429,6 +431,7 @@ object KoinIOS {
         val convertAccountVM get() = get<ConvertAccountViewModel>()
         val personalCodeVM get() = get<PersonalCodeViewModel>()
         val blocklistVM get() = get<BlocklistViewModel>()
+        val userDevicesVM get() = get<UserDevicesViewModel>()
         fun rawDataVM(type: RawPresentationDataType) =
             get<RawDataPresentationViewModel> { parametersOf(type) }
 

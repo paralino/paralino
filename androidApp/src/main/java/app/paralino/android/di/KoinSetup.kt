@@ -106,6 +106,7 @@ import app.paralino.core.presentation.settings.billing.PlanInfoViewModel
 import app.paralino.core.presentation.settings.billing.SubscriptionViewModel
 import app.paralino.core.presentation.settings.billing.licence.LicenceCodeViewModel
 import app.paralino.core.presentation.settings.blocklist.BlocklistViewModel
+import app.paralino.core.presentation.settings.userdevices.UserDevicesViewModel
 import app.paralino.core.presentation.settings.convertaccount.ConvertAccountViewModel
 import app.paralino.core.presentation.settings.editprofile.EditProfileViewModel
 import app.paralino.core.presentation.settings.emailchange.ChangeEmailViewModel
@@ -285,6 +286,7 @@ object KoinSetup {
         viewModel { (groupID: String, zoneId: String?, editStep: CreatePrivacyZoneScreenStep?, lat: Double?, lng: Double?) -> CreatePrivacyZoneViewModel(groupId = groupID, zoneId = zoneId, editStep = editStep, lat = lat, lng = lng, get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
         viewModel { (rawDataType: RawPresentationDataType) -> RawDataPresentationViewModel(rawDataType, get(), get()) }
         viewModel { BlocklistViewModel(get()) }
+        viewModel { UserDevicesViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(),) }
         viewModel { AppStatusDebugViewModel(get(), get(), get(), get(), get()) }
         viewModel { SubscriptionViewModel(get(), get(), get(), get(), get(), get()) }
         viewModel { (type: BillingScreenSourceType) -> PaywallViewModel(type, get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }

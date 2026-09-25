@@ -29,6 +29,7 @@ struct MapRootScreen: View {
                             case .changePassword: ChangePasswordScreen(path: $mainAppState.userReadyGraph)
                             case .convertAccount: ConvertAccountScreen(path: $mainAppState.userReadyGraph)
                             case .blocklist: BlockListScreen(path: $mainAppState.userReadyGraph)
+                            case .userDevices: UserDevicesScreen(path: $mainAppState.userReadyGraph)
                             case .rawData(let type):
                                 RawDataScreen(appState: RawDataScreen.createState(type: type))
                             case .editProfile: EditProfileScreen(path: $mainAppState.userReadyGraph)

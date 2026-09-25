@@ -59,6 +59,7 @@ enum SettingsGraph: Hashable {
     case changePassword
     case convertAccount
     case blocklist
+    case userDevices
     case subscriptions
     case paywall(groupId: String? = nil, type: BillingScreenSourceType)
     case rawData(type: RawPresentationDataType)
