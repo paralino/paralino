@@ -3,6 +3,7 @@ package app.paralino.core.presentation.settings.editprofile
 import app.paralino.core.domain.user.UpdateUserDataUseCase
 import app.paralino.core.models.Payload
 import app.paralino.core.models.base.ImageModel
+import app.paralino.core.models.data
 import app.paralino.core.models.settings.FormValidation
 import app.paralino.core.models.user.UserMeData
 import app.paralino.core.presentation.CoreViewModel
@@ -25,7 +26,7 @@ class EditProfileViewModel constructor(
 ) : CoreViewModel() {
 
     private val _uiState = MutableStateFlow<EditProfileScreenState>(
-        EditProfileScreenState.fromUser(userRepository.cachedUser?.data)
+        EditProfileScreenState.fromUser(userRepository.cachedUser?.data?.data)
     )
     val uiState: Flow<EditProfileScreenState> = _uiState
 

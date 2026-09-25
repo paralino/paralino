@@ -205,7 +205,7 @@ class AccountOnboardingViewModel(
             mode != PersonalSpaceOnboardingMode.FULL
 
         return AccountOnboardingScreenState(
-            userImage = user.data?.data?.userImage ?: ImageModel.emoji(Emojis.robot),
+            userImage = user.data?.data?.data?.userImage ?: ImageModel.emoji(Emojis.robot),
             personalCode = personalCode,
             onboardingStep = onboardingStep,
             groupCount = groupCount,

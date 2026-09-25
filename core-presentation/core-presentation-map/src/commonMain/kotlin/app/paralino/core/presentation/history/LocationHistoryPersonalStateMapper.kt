@@ -132,10 +132,10 @@ class LocationHistoryPersonalStateMapper(
             history = history,
             cachedHistory = cachedHistory,
             groupName = MR.strings.personalSpace_spaceTitle.localizedString(),
-            groupImage = user.data?.userImage,
+            groupImage = user.data.data?.userImage,
             isGroupOwner = true,
             userName = user.name,
-            userImage = user.data?.userImage,
+            userImage = user.data.data?.userImage,
             devices = devices,
             planConfig = space.plan
         )

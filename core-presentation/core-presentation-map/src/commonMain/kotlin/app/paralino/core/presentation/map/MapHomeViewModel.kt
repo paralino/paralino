@@ -111,7 +111,7 @@ class MapHomeViewModel constructor(
             selectedGroupImage = null,
             isPersonalSpace = appPrefs.isPersonalSpaceSelected,
             isNewAppUpdateAvailable = remoteConfig.getNewAppVersionUpdateType().isNewVersionAvailable,
-            currentUserImage = userRepository.localUser.value.data?.data?.userImage
+            currentUserImage = userRepository.localUser.value.data?.data?.data?.userImage
                 ?: ImageModel.emoji(Emojis.robot),
             androidMapSDKProvider = premiumStatusManager.defaultMapProvider()
         )
@@ -415,7 +415,7 @@ class MapHomeViewModel constructor(
                             selectedGroupImage = null,
                             isPersonalSpace = appPrefs.isPersonalSpaceSelected,
                             isNewAppUpdateAvailable = remoteConfig.getNewAppVersionUpdateType().isNewVersionAvailable,
-                            currentUserImage = userData?.userImage ?: ImageModel.emoji(Emojis.robot),
+                            currentUserImage = userData?.data?.userImage ?: ImageModel.emoji(Emojis.robot),
                             androidMapSDKProvider = mapProvider,
                             isSatelliteModeEnabled = false
                         )
@@ -438,7 +438,7 @@ class MapHomeViewModel constructor(
             personalSpaceRepo.personalSpaceState.map { it.data },
             placesRepo.getPlacesForGroupLocally(groupId = appPrefs.userId),
             locationFocusManager.getSharingContracts(),
-            userRepository.localUser.map { it.data?.data }.distinctUntilChanged(),
+            userRepository.localUser.map { it.data?.data?.data }.distinctUntilChanged(),
             locationCacheRepository.lastLocationFlow,
         ) { _, locationStatus, space, places, sharingContracts, userData, myLocation ->
 
@@ -484,7 +484,7 @@ class MapHomeViewModel constructor(
             placesRepo.getPlacesForGroupLocally(groupId = groupId),
             getPrivacyZones.getPrivacyZonesForGroupLocally(groupId = groupId),
             locationFocusManager.getSharingContracts(),
-            userRepository.localUser.map { it.data?.data }.distinctUntilChanged(),
+            userRepository.localUser.map { it.data?.data?.data }.distinctUntilChanged(),
             locationCacheRepository.lastLocationFlow,
         ) { _, locationStatus, group, places, privacyZones, sharingContracts, userData, myLocation ->
 

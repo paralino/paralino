@@ -92,7 +92,7 @@ class PersonalSpaceViewModel(
     private val _uiState = MutableStateFlow<PersonalSpaceScreenState>(
         PersonalSpaceScreenState(
             userName = userRepo.localUser.value.data?.name ?: "",
-            userImage = userRepo.localUser.value.data?.data?.userImage,
+            userImage = userRepo.localUser.value.data?.data?.data?.userImage,
             isLoadingData = true,
             loadingAction = false,
             sharingStatus = null,
@@ -229,7 +229,7 @@ class PersonalSpaceViewModel(
             _uiState.update { state ->
                 val newState = state.copy(
                     userName = user.name,
-                    userImage = user.data?.userImage,
+                    userImage = user.data.data?.userImage,
                     isLoadingData = false,
                     sharingStatus = sharingState,
                     devicesLimit = devicesLimit,

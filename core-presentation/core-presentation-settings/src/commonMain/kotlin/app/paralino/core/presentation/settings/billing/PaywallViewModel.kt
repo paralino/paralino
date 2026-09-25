@@ -18,6 +18,7 @@ import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.base.PlanBillingPeriod
 import app.paralino.core.models.base.PlanProvider
 import app.paralino.core.models.base.PlanType
+import app.paralino.core.models.data
 import app.paralino.core.models.user.UserPlans
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.presentation.common.AppSnackbarData
@@ -539,8 +540,8 @@ class PaywallViewModel(
             faq = currentState?.faq ?: getFaqSection(config),
             screenStep = screenStep,
             screenType = sourceType,
-            memberName = userRepo.cachedUser?.data?.userName ?: "Peter",
-            memberImageModel = userRepo.cachedUser?.data?.userImage
+            memberName = userRepo.cachedUser?.data?.data?.userName ?: "Peter",
+            memberImageModel = userRepo.cachedUser?.data?.data?.userImage
                 ?: ImageModel.emoji(Emojis.goat),
             memberDeviceName = deviceApiProvider.defaultDeviceName,
             locationHistoryStepMessage = locationHistoryMessage,

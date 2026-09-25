@@ -168,7 +168,7 @@ class SettingsViewModel(
                         AccountScreenState(
                             userState = UserState(
                                 name = userStateData.name,
-                                image = userStateData.data?.userImage,
+                                image = userStateData.data.data?.userImage,
                                 email = userStateData.email,
                                 personalCode = personalCode?.formattedCode,
                                 isGuestUser = userStateData.isGuestUser
