@@ -114,6 +114,7 @@ import app.paralino.core.presentation.settings.general.GeneralInfoViewModel
 import app.paralino.core.presentation.settings.generic.AppSettingsViewModel
 import app.paralino.core.presentation.settings.generic.MeasurementSystemViewModel
 import app.paralino.core.presentation.settings.generic.NotificationsGroupingViewModel
+import app.paralino.core.presentation.settings.generic.PersonalSpaceFeatureSettingsViewModel
 import app.paralino.core.presentation.settings.generic.PlaceSearchSettingsViewModel
 import app.paralino.core.presentation.settings.generic.maps.MapInteractionsViewModel
 import app.paralino.core.presentation.settings.generic.maps.MapsProviderViewModel
@@ -301,11 +302,12 @@ object KoinSetup {
         viewModel { NotificationsGroupingViewModel(get()) }
         viewModel { MapInteractionsViewModel(get()) }
         viewModel { PlaceSearchSettingsViewModel(get(), get()) }
+        viewModel { PersonalSpaceFeatureSettingsViewModel(get()) }
         viewModel { NotificationSocketSettingsViewModel(get(), get(), get(), get(), get(), get(), get()) }
         viewModel { MapsProviderViewModel(get(), get(), get(), get(), get()) }
         viewModel { (groupId: String) -> LocationHistoryDeleteViewModel(groupId = groupId.asGroupOrSpaceId(), get(), get(), get(), get(), get(), get()) }
         viewModel { PersonalSpaceViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
-        viewModel { PersonalSpaceSettingsViewModel(get()) }
+        viewModel { PersonalSpaceSettingsViewModel(get(), get()) }
         viewModel { (groupId: String, placeId: String) -> PlaceSensitivityViewModel(groupId = groupId, placeId = placeId, get(), get(), get(), get()) }
         viewModel { AppSettingsViewModel(get(), get()) }
     }

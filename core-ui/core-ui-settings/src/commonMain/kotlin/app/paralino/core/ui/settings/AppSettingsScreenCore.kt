@@ -30,6 +30,7 @@ fun AppSettingsScreenCore(
     onMapInteractionsClick: () -> Unit,
     onNavigationAppClick: () -> Unit,
     onPlaceSearchSettingsClick: () -> Unit,
+    onPersonalSpaceSettingsClick: () -> Unit,
     onNotificationSocketSettingsClick: () -> Unit,
     onMapSourceSettingsClick: () -> Unit,
 ) {
@@ -58,6 +59,11 @@ fun AppSettingsScreenCore(
             name = stringResource(MR.strings.setting_placeSearch_title),
             icon = CoreAppIcons.Search.asPainterResource(),
             onClick = onPlaceSearchSettingsClick
+        )
+        SettingsActionItem(
+            name = stringResource(MR.strings.setting_personalSpace_title),
+            icon = CoreAppIcons.PhoneAndroid.asPainterResource(),
+            onClick = onPersonalSpaceSettingsClick
         )
 
         if (uiState.showMapsProvider) {

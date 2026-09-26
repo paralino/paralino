@@ -352,6 +352,7 @@ object SettingsScreens {
         openMapInteractionsScreen: () -> Unit,
         openNavigationAppScreen: () -> Unit,
         openPlaceSearchSettings: () -> Unit,
+        openPersonalSpaceSettings: () -> Unit,
     ) = ComposeUIViewController {
         RootScreenIOS {
             AppSettingsScreenCore(
@@ -363,6 +364,7 @@ object SettingsScreens {
                 onMapInteractionsClick = openMapInteractionsScreen,
                 onNavigationAppClick = openNavigationAppScreen,
                 onPlaceSearchSettingsClick = openPlaceSearchSettings,
+                onPersonalSpaceSettingsClick = openPersonalSpaceSettings,
                 // not available in iOS
                 onMapSourceSettingsClick = {},
                 onNotificationSocketSettingsClick = {}

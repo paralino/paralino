@@ -65,6 +65,7 @@ import app.paralino.core.presentation.settings.generic.maps.MapsProviderViewMode
 import app.paralino.core.presentation.settings.generic.maps.MapInteractionsViewModel
 import app.paralino.core.presentation.settings.generic.MeasurementSystemViewModel
 import app.paralino.core.presentation.settings.generic.NotificationsGroupingViewModel
+import app.paralino.core.presentation.settings.generic.PersonalSpaceFeatureSettingsViewModel
 import app.paralino.core.presentation.settings.generic.PlaceSearchSettingsViewModel
 import app.paralino.android.presentation.settings.generic.NotificationSocketSettingsViewModel
 import app.paralino.core.presentation.billing.BillingScreenSourceType
@@ -372,6 +373,12 @@ fun NavGraphBuilder.settingsGraph(appState: MainAppState) {
             GenericSettingsScreen(
                 appState = appState,
                 vm = koinViewModel<PlaceSearchSettingsViewModel>()
+            )
+        }
+        composable(AppScreen.Settings.PersonalSpace.routeSignature) {
+            GenericSettingsScreen(
+                appState = appState,
+                vm = koinViewModel<PersonalSpaceFeatureSettingsViewModel>()
             )
         }
         composable(AppScreen.Settings.NotificationSocket.routeSignature) {

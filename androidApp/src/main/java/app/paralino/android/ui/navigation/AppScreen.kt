@@ -402,6 +402,10 @@ sealed class AppScreen {
             override val routeSignature: String = "settings-place-search"
         }
 
+        object PersonalSpace : AppScreen() {
+            override val routeSignature: String = "settings-personal-space"
+        }
+
         object NotificationSocket : AppScreen() {
             override val routeSignature: String = "settings-notification-socket"
         }

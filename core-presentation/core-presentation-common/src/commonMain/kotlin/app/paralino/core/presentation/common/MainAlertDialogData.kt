@@ -1181,6 +1181,27 @@ interface MainAlertDialog {
         )
     }
 
+    data object DisablePersonalSpaceOnDevice : MainAlertDialog {
+        override val key: String = this::class.simpleName ?: "dialog"
+
+        override val dialogData: AlertDialogData = AlertDialogData(
+            id = key,
+            title = stringResource(MR.strings.alert_title_confirm),
+            message = stringResource(MR.strings.setting_personalSpace_disable_dialog_message),
+            buttons = listOf(
+                AlertDialogButtonData(
+                    id = Buttons.buttonOk,
+                    text = stringResource(MR.strings.button_continue),
+                    color = AlertDialogButtonData.positiveColor
+                ),
+                AlertDialogButtonData(
+                    id = Buttons.buttonCancel,
+                    text = stringResource(resource = MR.strings.button_cancel)
+                )
+            )
+        )
+    }
+
     data class UnifiedPushRegistrationError(
         val reason: String
     ) : MainAlertDialog {

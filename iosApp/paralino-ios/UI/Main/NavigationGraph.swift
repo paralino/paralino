@@ -74,5 +74,6 @@ enum SettingsGraph: Hashable {
     case mapInteractionsSettings
     case navigationAppSettings
     case placeSearchSettings
+    case personalSpaceSettings
     case licenceCode
 }

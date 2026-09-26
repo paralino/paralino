@@ -51,6 +51,7 @@ struct MapRootScreen: View {
                             case .mapInteractionsSettings: GenericSettingsScreen(path: $mainAppState.userReadyGraph, appState: GenericSettingsScreenState(vm: KoinIOS.ViewModels.shared.mapInteractionsVM))
                             case .navigationAppSettings: GenericSettingsScreen(path: $mainAppState.userReadyGraph, appState: GenericSettingsScreenState(vm: KoinIOS.ViewModels.shared.navigationAppVM))
                             case .placeSearchSettings: GenericSettingsScreen(path: $mainAppState.userReadyGraph, appState: GenericSettingsScreenState(vm: KoinIOS.ViewModels.shared.placeSearchSettingsVM))
+                            case .personalSpaceSettings: GenericSettingsScreen(path: $mainAppState.userReadyGraph, appState: GenericSettingsScreenState(vm: KoinIOS.ViewModels.shared.personalSpaceFeatureSettingsVM))
                             case .licenceCode: LicenceCodeScreen(path: $mainAppState.userReadyGraph)
                             }
                         case let .home(homeGraph):

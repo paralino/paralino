@@ -68,6 +68,9 @@ class MapEventHandler(
 
             is MapHomeScreenUiEvent.UiLifecycleChange -> {
                 uiFocusedStatus.update { event.active }
+                if (event.active) {
+                    applyPersonalSpaceFeatureVisibility()
+                }
             }
 
             is MapHomeScreenUiEvent.SwitchViewSource -> {
@@ -393,6 +396,23 @@ class MapEventHandler(
                         MainAlertDialog.StopLocationSharing(groupOrSpaceId = event.groupOrSpaceId)
                     )
                 }
+            }
+        }
+    }
+
+    private fun applyPersonalSpaceFeatureVisibility() {
+        val enabled = appPrefs.isPersonalSpaceEnabled
+        updateUiState(
+            when (val currentState = uiState.value) {
+                is MapHomeScreenState.Empty -> currentState.copy(isPersonalSpaceEnabled = enabled)
+                is MapHomeScreenState.Ready -> currentState.copy(isPersonalSpaceEnabled = enabled)
+            }
+        )
+        if (!enabled && uiState.value.isPersonalSpace) {
+            coroutineScope.launch {
+                groupStateManager.switchGroup(
+                    DefaultGroup(appPrefs.selectedGroupId?.asGroupOrSpaceId())
+                )
             }
         }
     }

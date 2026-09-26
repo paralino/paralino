@@ -256,6 +256,7 @@ object HomeScreens {
         openRawDataScreen: () -> Unit,
         openBatteryNotificationsSettings: () -> Unit,
         openLocationHistorySettings: () -> Unit,
+        openMap: () -> Unit,
     ) = ComposeUIViewController {
         RootScreenIOS {
             PersonalSpaceSettingsScreenCore(
@@ -263,7 +264,8 @@ object HomeScreens {
                 vm = vm,
                 openRawDataScreen = openRawDataScreen,
                 openBatteryNotificationsSettings = openBatteryNotificationsSettings,
-                openLocationHistorySettings = openLocationHistorySettings
+                openLocationHistorySettings = openLocationHistorySettings,
+                openMap = openMap
             )
         }
     }

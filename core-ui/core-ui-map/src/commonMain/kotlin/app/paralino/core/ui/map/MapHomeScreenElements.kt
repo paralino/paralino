@@ -165,6 +165,7 @@ fun MapHomeScreenElements(
                             modifier = Modifier
                                 .padding(horizontal = 8.dp)
                                 .weight(1f, fill = false),
+                            isPersonalSpaceEnabled = state.isPersonalSpaceEnabled,
                             isPersonalSpace = state.isPersonalSpace,
                             groupImage = state.selectedGroupImage,
                             spaceImage = state.currentUserImage,
@@ -610,6 +611,7 @@ fun MapCardCloseIconButton(
 @Composable
 private fun MapGroupOrSpacePickerTabs(
     modifier: Modifier = Modifier,
+    isPersonalSpaceEnabled: Boolean,
     isPersonalSpace: Boolean,
     groupImage: ImageModel?,
     spaceImage: ImageModel,
@@ -617,6 +619,32 @@ private fun MapGroupOrSpacePickerTabs(
     onGroupPickerClick: () -> Unit,
     onSpaceItemClick: () -> Unit
 ) {
+    if (!isPersonalSpaceEnabled) {
+        Box(
+            modifier = modifier
+                .padding(6.dp)
+                .dropShadow(
+                    shape = RoundedCornerShape(100),
+                    shadow = Shadow(
+                        radius = 15.dp,
+                        color = MaterialTheme.colors.onBackground.copy(alpha = 0.2f),
+                    )
+                )
+                .clip(RoundedCornerShape(100))
+                .background(MaterialTheme.colors.background)
+        ) {
+            MapGroupPickerTab(
+                modifier = Modifier
+                    .height(56.dp)
+                    .clickable(onClick = onGroupItemClick),
+                image = groupImage,
+                isSelected = true,
+                onExpandClick = onGroupPickerClick
+            )
+        }
+        return
+    }
+
     val position by animateFloatAsState(
         if (isPersonalSpace) -1f else 1f
     )

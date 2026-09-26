@@ -33,6 +33,9 @@ struct AppSettingsScreen: View {
                     },
                     openPlaceSearchSettings: {
                         path.append(.settings(.placeSearchSettings))
+                    },
+                    openPersonalSpaceSettings: {
+                        path.append(.settings(.personalSpaceSettings))
                     }
                 )
             }

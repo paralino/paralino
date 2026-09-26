@@ -109,7 +109,8 @@ class MapHomeViewModel constructor(
             isCurrentUserOwnerOfSelectedGroup = false,
             selectedGroupOwnerId = null,
             selectedGroupImage = null,
-            isPersonalSpace = appPrefs.isPersonalSpaceSelected,
+            isPersonalSpace = appPrefs.isPersonalSpaceSelected && appPrefs.isPersonalSpaceEnabled,
+            isPersonalSpaceEnabled = appPrefs.isPersonalSpaceEnabled,
             isNewAppUpdateAvailable = remoteConfig.getNewAppVersionUpdateType().isNewVersionAvailable,
             currentUserImage = userRepository.localUser.value.data?.data?.data?.userImage
                 ?: ImageModel.emoji(Emojis.robot),
@@ -123,7 +124,7 @@ class MapHomeViewModel constructor(
 
     private val uiFocusedStatus = MutableStateFlow(false)
     private val groupIdData = MutableStateFlow(
-        if (appPrefs.isPersonalSpaceSelected) {
+        if (appPrefs.isPersonalSpaceSelected && appPrefs.isPersonalSpaceEnabled) {
             UserGroup.groupPersonalDevicesId.asGroupOrSpaceId()
         } else {
             (appPrefs.selectedGroupId ?: "").asGroupOrSpaceId()
@@ -292,7 +293,7 @@ class MapHomeViewModel constructor(
         allGroups.onEach { groupsData ->
             val selectedGroup = groupIdData.value.takeIf { it.id.isNotBlank() }
                 ?: let {
-                    if (appPrefs.isPersonalSpaceSelected) {
+                    if (appPrefs.isPersonalSpaceSelected && appPrefs.isPersonalSpaceEnabled) {
                         UserGroup.groupPersonalDevicesId.asGroupOrSpaceId()
                     } else {
                         appPrefs.selectedGroupId?.asGroupOrSpaceId()
@@ -399,7 +400,7 @@ class MapHomeViewModel constructor(
             .flatMapLatest {
                 if (it.id.isBlank()) {
                     combine(
-                        if (appPrefs.isPersonalSpaceSelected) {
+                        if (appPrefs.isPersonalSpaceSelected && appPrefs.isPersonalSpaceEnabled) {
                             flowOf(null)
                         } else {
                             groupsEmptyStateManager.getUiState()
@@ -413,7 +414,8 @@ class MapHomeViewModel constructor(
                             selectedGroupOwnerId = null,
                             isCurrentUserOwnerOfSelectedGroup = false,
                             selectedGroupImage = null,
-                            isPersonalSpace = appPrefs.isPersonalSpaceSelected,
+                            isPersonalSpace = appPrefs.isPersonalSpaceSelected && appPrefs.isPersonalSpaceEnabled,
+                            isPersonalSpaceEnabled = appPrefs.isPersonalSpaceEnabled,
                             isNewAppUpdateAvailable = remoteConfig.getNewAppVersionUpdateType().isNewVersionAvailable,
                             currentUserImage = userData?.data?.userImage ?: ImageModel.emoji(Emojis.robot),
                             androidMapSDKProvider = mapProvider,
@@ -451,6 +453,7 @@ class MapHomeViewModel constructor(
                     selectedGroupOwnerId = _uiState.value.selectedGroupOwnerId,
                     isCurrentUserOwnerOfSelectedGroup = _uiState.value.isCurrentUserOwnerOfSelectedGroup,
                     isPersonalSpace = true,
+                    isPersonalSpaceEnabled = appPrefs.isPersonalSpaceEnabled,
                     isNewAppUpdateAvailable = remoteConfig.getNewAppVersionUpdateType().isNewVersionAvailable,
                     currentUserImage = ImageModel.emoji(Emojis.robot),
                     androidMapSDKProvider = mapProvider,
@@ -497,6 +500,7 @@ class MapHomeViewModel constructor(
                     selectedGroupOwnerId = null,
                     isCurrentUserOwnerOfSelectedGroup = false,
                     isPersonalSpace = false,
+                    isPersonalSpaceEnabled = appPrefs.isPersonalSpaceEnabled,
                     isNewAppUpdateAvailable = remoteConfig.getNewAppVersionUpdateType().isNewVersionAvailable,
                     currentUserImage = ImageModel.emoji(Emojis.robot),
                     androidMapSDKProvider = mapProvider,

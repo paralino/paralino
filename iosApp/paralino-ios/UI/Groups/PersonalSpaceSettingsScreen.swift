@@ -27,6 +27,10 @@ struct PersonalSpaceSettingsScreen: View {
                     },
                     openLocationHistorySettings: {
                         path.append(.home(.locationHistorySettings(groupId: UserGroup.companion.groupPersonalDevicesId)))
+                    },
+                    openMap: {
+                        path.removeAll()
+                        path.append(.home(.map))
                     }
                 )
             }

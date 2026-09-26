@@ -266,6 +266,7 @@ class MapStateMapper(
                 }
             },
             isNewAppUpdateAvailable = remoteConfig.getNewAppVersionUpdateType().isNewVersionAvailable,
+            isPersonalSpaceEnabled = appPrefs.isPersonalSpaceEnabled,
         )
     }
 
