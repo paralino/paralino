@@ -23,6 +23,16 @@ class PersonalSpaceFeatureUseCase(
     }
 
     suspend fun disable() {
+        deactivateIfNeeded()
+        disableLocally()
+    }
+
+    fun disableLocally() {
+        appPrefs.isPersonalSpaceSelected = false
+        appPrefs.isPersonalSpaceEnabled = false
+    }
+
+    suspend fun deactivateIfNeeded() {
         val deactivated = tryDeactivateCurrentDevice()
         if (!deactivated) {
             try {
@@ -33,8 +43,6 @@ class PersonalSpaceFeatureUseCase(
                 logg.e("Failed to stop personal space sharing while disabling the feature", e)
             }
         }
-        appPrefs.isPersonalSpaceSelected = false
-        appPrefs.isPersonalSpaceEnabled = false
     }
 
     suspend fun isCurrentDeviceActivated(): Boolean {

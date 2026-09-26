@@ -291,7 +291,8 @@ sealed interface MapHomeScreenUiEvent {
     data object OnMapModeLongClick : MapHomeScreenUiEvent
     data object OnCloseFocusedItemClick : MapHomeScreenUiEvent
     data object OnBackClicked : MapHomeScreenUiEvent
-    data object ConfirmPersonalSpaceIntro : MapHomeScreenUiEvent
+    data object SetupPersonalSpaceIntro : MapHomeScreenUiEvent
+    data object DisablePersonalSpaceIntro : MapHomeScreenUiEvent
     data object CloseLocationHistory : MapHomeScreenUiEvent
     data object OnOverLimitsBannerTap : MapHomeScreenUiEvent
     data class StopLocationSharing(val groupOrSpaceId: GroupOrSpaceId) : MapHomeScreenUiEvent

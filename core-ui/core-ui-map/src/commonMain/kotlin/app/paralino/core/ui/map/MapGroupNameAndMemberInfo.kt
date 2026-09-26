@@ -52,6 +52,7 @@ fun MapGroupNameAndMemberInfo(
     idleUserCount: Int,
     inactiveUserCount: Int,
     hasWarning: Boolean,
+    showDetailButton: Boolean,
     interactionVisibilityFraction: Float,
     collapsedVisibilityFraction: Float,
     onGroupDetailButtonClick: () -> Unit,
@@ -74,7 +75,7 @@ fun MapGroupNameAndMemberInfo(
             modifier = Modifier
                 .alpha(collapsedVisibilityFraction)
                 .align(Alignment.CenterStart)
-                .padding(end = 52.dp)
+                .padding(end = if (showDetailButton) 52.dp else 0.dp)
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.End
@@ -199,38 +200,40 @@ fun MapGroupNameAndMemberInfo(
             }
         }
 
-        Box(
-            modifier = Modifier
-                .align(Alignment.CenterEnd)
-                .size(52.dp)
-                .alpha(collapsedVisibilityFraction)
-                .clickable(
-                    interactionSource = remember { MutableInteractionSource() },
-                    indication = if (interactionVisibilityFraction == 1f) LocalIndication.current else null
-                ) { onGroupDetailButtonClick() }
-                .clip(RoundedCornerShape(percent = 100))
-                .border(
-                    0.5.dp,
-                    MaterialTheme.colors.secondary.copy(alpha = ContentAlpha.disabled * interactionVisibilityFraction),
-                    RoundedCornerShape(percent = 100)
-                ),
-            contentAlignment = Alignment.Center
-        ) {
-            if (hasWarning) {
-                Icon(
-                    painter = CoreAppIcons.Warning.asPainterResource(),
-                    tint = MaterialTheme.colors.error,
-                    contentDescription = null,
-                    modifier = Modifier.size(20.dp)
-                )
-            } else {
-                Icon(
-                    painter = CoreAppIcons.ChevronRight.asPainterResource(),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .size(24.dp)
-                        .rotate((-90f) * (1f - interactionVisibilityFraction))
-                )
+        if (showDetailButton) {
+            Box(
+                modifier = Modifier
+                    .align(Alignment.CenterEnd)
+                    .size(52.dp)
+                    .alpha(collapsedVisibilityFraction)
+                    .clickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = if (interactionVisibilityFraction == 1f) LocalIndication.current else null
+                    ) { onGroupDetailButtonClick() }
+                    .clip(RoundedCornerShape(percent = 100))
+                    .border(
+                        0.5.dp,
+                        MaterialTheme.colors.secondary.copy(alpha = ContentAlpha.disabled * interactionVisibilityFraction),
+                        RoundedCornerShape(percent = 100)
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                if (hasWarning) {
+                    Icon(
+                        painter = CoreAppIcons.Warning.asPainterResource(),
+                        tint = MaterialTheme.colors.error,
+                        contentDescription = null,
+                        modifier = Modifier.size(20.dp)
+                    )
+                } else {
+                    Icon(
+                        painter = CoreAppIcons.ChevronRight.asPainterResource(),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(24.dp)
+                            .rotate((-90f) * (1f - interactionVisibilityFraction))
+                    )
+                }
             }
         }
     }

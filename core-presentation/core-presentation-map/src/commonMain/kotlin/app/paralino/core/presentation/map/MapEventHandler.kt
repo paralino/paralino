@@ -3,6 +3,7 @@ package app.paralino.core.presentation.map
 import app.paralino.core.MR
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.location.StopSharingLocationUseCase
+import app.paralino.core.domain.user.PersonalSpaceFeatureUseCase
 import app.paralino.core.models.base.DeviceType
 import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.models.data
@@ -53,6 +54,7 @@ class MapEventHandler(
     private val appPrefs: AppPrefs,
     private val groupLocal: UserGroupLocalDataSource,
     private val stopSharingLocationUseCase: StopSharingLocationUseCase,
+    private val personalSpaceFeature: PersonalSpaceFeatureUseCase,
     private val uiFocusedStatus: MutableStateFlow<Boolean>,
     private val messageDispatcher: ICoreMessageDispatcher,
     private val updateUiState: (MapHomeScreenState) -> Unit,
@@ -225,6 +227,7 @@ class MapEventHandler(
 
             MapHomeScreenUiEvent.OnGroupDetailsClick -> {
                 uiState.value.asReady()?.let {
+                    if (it.hasPersonalSpaceIntroBanner) return@let
                     if (it.groupOrSpaceId.isPersonalSpace) {
                         eventChannel.trySend(MapHomeScreenEvent.OpenPersonalSpace)
                     } else {
@@ -299,7 +302,9 @@ class MapEventHandler(
 
             is MapHomeScreenUiEvent.OpenGroupDetails -> {
                 if (event.groupId.isPersonalSpace) {
-                    eventChannel.trySend(MapHomeScreenEvent.OpenPersonalSpace)
+                    if (uiState.value.asReady()?.hasPersonalSpaceIntroBanner != true) {
+                        eventChannel.trySend(MapHomeScreenEvent.OpenPersonalSpace)
+                    }
                 } else {
                     eventChannel.trySend(OpenGroupDetails(groupId = event.groupId.id))
                 }
@@ -333,10 +338,19 @@ class MapEventHandler(
                 groupEmptyStateManager.onEvent(event.event)
             }
 
-            MapHomeScreenUiEvent.ConfirmPersonalSpaceIntro -> {
+            MapHomeScreenUiEvent.SetupPersonalSpaceIntro -> {
                 appPrefs.didHavePersonalSpaceIntroOnboarding = true
                 updateReadyState {
                     it.copy(isFirstTimeInPersonalSpace = false)
+                }
+                eventChannel.trySend(MapHomeScreenEvent.OpenPersonalSpace)
+            }
+
+            MapHomeScreenUiEvent.DisablePersonalSpaceIntro -> {
+                coroutineScope.launch {
+                    personalSpaceFeature.disableLocally()
+                    applyPersonalSpaceFeatureVisibility()
+                    personalSpaceFeature.deactivateIfNeeded()
                 }
             }
 

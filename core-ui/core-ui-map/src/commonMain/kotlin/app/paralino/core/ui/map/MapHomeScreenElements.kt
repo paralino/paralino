@@ -622,7 +622,6 @@ private fun MapGroupOrSpacePickerTabs(
     if (!isPersonalSpaceEnabled) {
         Box(
             modifier = modifier
-                .padding(6.dp)
                 .dropShadow(
                     shape = RoundedCornerShape(100),
                     shadow = Shadow(
@@ -633,14 +632,20 @@ private fun MapGroupOrSpacePickerTabs(
                 .clip(RoundedCornerShape(100))
                 .background(MaterialTheme.colors.background)
         ) {
-            MapGroupPickerTab(
+            Box(
                 modifier = Modifier
                     .height(56.dp)
-                    .clickable(onClick = onGroupItemClick),
-                image = groupImage,
-                isSelected = true,
-                onExpandClick = onGroupPickerClick
-            )
+                    .padding(horizontal = 6.dp)
+                    .clip(RoundedCornerShape(100)),
+            ) {
+                MapGroupPickerTab(
+                    modifier = Modifier
+                        .clickable(onClick = onGroupItemClick),
+                    image = groupImage,
+                    isSelected = true,
+                    onExpandClick = onGroupPickerClick
+                )
+            }
         }
         return
     }

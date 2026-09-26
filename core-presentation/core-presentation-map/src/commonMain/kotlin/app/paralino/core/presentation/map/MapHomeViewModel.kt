@@ -14,6 +14,7 @@ import app.paralino.core.domain.location.history.GetLocationHistoryUseCase
 import app.paralino.core.domain.location.history.RefreshLocationHistoryUseCase
 import app.paralino.core.domain.privacyzone.GetPrivacyZonesUseCase
 import app.paralino.core.domain.user.AppAccountStateMonitor
+import app.paralino.core.domain.user.PersonalSpaceFeatureUseCase
 import app.paralino.core.domain.user.PersonalSpaceRefreshUseCase
 import app.paralino.core.domain.user.PremiumStatusManager
 import app.paralino.core.logg
@@ -100,6 +101,7 @@ class MapHomeViewModel constructor(
     private val premiumStatusManager: PremiumStatusManager,
     private val accountStateMonitor: AppAccountStateMonitor,
     private val pendingGroupJoinWelcome: PendingGroupJoinWelcomeUseCase,
+    private val personalSpaceFeature: PersonalSpaceFeatureUseCase,
 ) : CoreViewModel() {
 
     private val _uiState = MutableStateFlow<MapHomeScreenState>(
@@ -215,6 +217,7 @@ class MapHomeViewModel constructor(
         appPrefs = appPrefs,
         groupLocal = groupRepo,
         stopSharingLocationUseCase = stopSharingLocationUseCase,
+        personalSpaceFeature = personalSpaceFeature,
         messageDispatcher = messageDispatcher,
         uiFocusedStatus = uiFocusedStatus,
         updateUiState = { state -> _uiState.value = state },

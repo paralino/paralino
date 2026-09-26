@@ -240,7 +240,7 @@ object KoinIOS {
         return module {
             factory { AccountOnboardingViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
             factory {
-                MapHomeViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get())
+                MapHomeViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get())
             }
             factory { SettingsViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
             factory { (startScreenType: LoginScreenUiType) ->
