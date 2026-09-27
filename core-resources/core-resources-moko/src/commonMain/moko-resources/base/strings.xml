@@ -165,7 +165,7 @@
     <string name="settings_section_personal_code_title">Paralino.ID</string>
     <string name="settings_section_personal_code_inactive_title">Inactive codes</string>
     <string name="settings_account_edit_profile">Edit profile</string>
-    <string name="settings_account_devices_screen_title">Device &amp; sessions</string>
+    <string name="settings_account_devices_screen_title">Devices &amp; sessions</string>
     <string name="settings_account_edit_email">Change email</string>
     <string name="settings_account_edit_password">Change password</string>
     <string name="settings_account_edit_email_button">Change email</string>
@@ -1016,7 +1016,6 @@
     <string name="personalSpace_sheet_introBanner_title">Your personal space</string>
     <string name="personalSpace_sheet_introBanner_message">This is a private area just for you and your devices.\n\n • View your own location history\n • Manage and keep track of your own devices\n • Create places that matter only to you</string>
     <string name="personalSpace_sheet_introBanner_setup_button">Continue with personal space</string>
-    <string name="personalSpace_sheet_introBanner_setup_message">I\'ll track my own devices</string>
     <string name="personalSpace_sheet_introBanner_groupsOnly_header">**Don\'t need this?**\nYou can hide this for now and only focus on your groups with family and friends.</string>
     <string name="personalSpace_sheet_introBanner_groupsOnly_button">Hide personal space</string>
     <string name="personalSpace_sheet_introBanner_groupsOnly_message">I only need family groups</string>
