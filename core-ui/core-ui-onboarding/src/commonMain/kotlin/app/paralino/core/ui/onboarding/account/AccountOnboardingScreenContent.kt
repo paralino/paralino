@@ -65,33 +65,12 @@ fun AccountOnboardingScreenContent(
                                 )
                             }
 
-                            is AccountOnboardingContent.AccountOnboardingStart -> {
-                                AccountOnboardingStartPage(
-                                    isGroupChecked = step.isGroupChecked,
-                                    isPersonalSpaceChecked = step.isPersonalSpaceChecked,
-                                    onGroupModeClick = {
-                                        onEvent(AccountOnboardingUiEvent.GoWithGroupMode)
-                                    },
-                                    onPersonalSpaceModeClick = {
-                                        onEvent(AccountOnboardingUiEvent.GoWithPersonalSpaceMode)
-                                    },
-                                )
-                            }
-
                             AccountOnboardingContent.PushNotifications -> {
                                 AccountOnboardingPushNotifications()
                             }
 
                             AccountOnboardingContent.GroupCreate -> {
                                 AccountOnboardingGroupCreate()
-                            }
-
-                            AccountOnboardingContent.PersonalSpaceCurrentUsersIntro -> {
-                                AccountOnboardingPersonalSpace()
-                            }
-
-                            AccountOnboardingContent.PersonalSpaceNewUsersIntro -> {
-                                AccountOnboardingPersonalSpace()
                             }
 
                             is AccountOnboardingContent.LocationHistoryIntro -> {

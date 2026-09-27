@@ -55,33 +55,6 @@ sealed class AccountOnboardingContent(
         }
     }
 
-    data class AccountOnboardingStart(
-        val isGroupChecked: Boolean,
-        val isPersonalSpaceChecked: Boolean
-    ) : AccountOnboardingContent(
-        parentKey = 150,
-        titleKey = 160,
-        titleTag = MR.strings.onboarding_step_accountStart_title_tag,
-        title = MR.strings.onboarding_step_accountStart_title_tag,
-        buttonText = if (isGroupChecked && isPersonalSpaceChecked) {
-            MR.strings.button_done
-        } else {
-            null
-        },
-        skipButtonText = if (listOf(isGroupChecked, isPersonalSpaceChecked).count { it } == 1) {
-            // only show skip if one step is checked
-            MR.strings.button_skip
-        } else {
-            null
-        },
-        contentSizeRatio = 0f
-    ) {
-        @Composable
-        override fun infoText(): String {
-            return ""
-        }
-    }
-
     data object GroupCreate : AccountOnboardingContent(
         parentKey = 200,
         titleKey = 200,
@@ -107,34 +80,6 @@ sealed class AccountOnboardingContent(
         @Composable
         override fun infoText(): String {
             return stringResource(MR.strings.onboarding_step_notifications_info)
-        }
-    }
-
-    data object PersonalSpaceCurrentUsersIntro : AccountOnboardingContent(
-        parentKey = 500,
-        titleKey = 500,
-        titleTag = MR.strings.personalSpace_spaceTitle,
-        title = MR.strings.onboarding_step_personalSpace_title_currentUsers,
-        buttonText = MR.strings.button_continue,
-        skipButtonText = null
-    ) {
-        @Composable
-        override fun infoText(): String {
-            return stringResource(MR.strings.onboarding_step_personalSpace_info_currentUsers)
-        }
-    }
-
-    data object PersonalSpaceNewUsersIntro : AccountOnboardingContent(
-        parentKey = 550,
-        titleKey = 550,
-        titleTag = MR.strings.personalSpace_spaceTitle,
-        title = MR.strings.onboarding_step_personalSpace_title_newUsers,
-        buttonText = MR.strings.button_continue,
-        skipButtonText = MR.strings.button_notNow
-    ) {
-        @Composable
-        override fun infoText(): String {
-            return stringResource(MR.strings.onboarding_step_personalSpace_info_newUsers)
         }
     }
 
