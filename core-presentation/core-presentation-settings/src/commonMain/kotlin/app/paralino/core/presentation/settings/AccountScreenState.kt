@@ -18,6 +18,7 @@ data class AccountScreenState constructor(
     val alertDialog: MainAlertDialog? = null,
     val boostTime: String? = null,
     val userPlan: PlanConfig,
+    val showUpgradeBanner: Boolean,
     val appReviewUrl: String,
     val isAppReviewExpanded: Boolean,
     val isAppReviewVisible: Boolean,
