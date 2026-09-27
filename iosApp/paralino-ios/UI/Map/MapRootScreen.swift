@@ -29,6 +29,7 @@ struct MapRootScreen: View {
                             case .changePassword: ChangePasswordScreen(path: $mainAppState.userReadyGraph)
                             case .convertAccount: ConvertAccountScreen(path: $mainAppState.userReadyGraph)
                             case .blocklist: BlockListScreen(path: $mainAppState.userReadyGraph)
+                            case .userDevices: UserDevicesScreen(path: $mainAppState.userReadyGraph)
                             case .rawData(let type):
                                 RawDataScreen(appState: RawDataScreen.createState(type: type))
                             case .editProfile: EditProfileScreen(path: $mainAppState.userReadyGraph)
@@ -50,6 +51,7 @@ struct MapRootScreen: View {
                             case .mapInteractionsSettings: GenericSettingsScreen(path: $mainAppState.userReadyGraph, appState: GenericSettingsScreenState(vm: KoinIOS.ViewModels.shared.mapInteractionsVM))
                             case .navigationAppSettings: GenericSettingsScreen(path: $mainAppState.userReadyGraph, appState: GenericSettingsScreenState(vm: KoinIOS.ViewModels.shared.navigationAppVM))
                             case .placeSearchSettings: GenericSettingsScreen(path: $mainAppState.userReadyGraph, appState: GenericSettingsScreenState(vm: KoinIOS.ViewModels.shared.placeSearchSettingsVM))
+                            case .personalSpaceSettings: GenericSettingsScreen(path: $mainAppState.userReadyGraph, appState: GenericSettingsScreenState(vm: KoinIOS.ViewModels.shared.personalSpaceFeatureSettingsVM))
                             case .licenceCode: LicenceCodeScreen(path: $mainAppState.userReadyGraph)
                             }
                         case let .home(homeGraph):

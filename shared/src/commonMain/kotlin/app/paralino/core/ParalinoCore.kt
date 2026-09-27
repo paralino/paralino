@@ -88,6 +88,7 @@ import app.paralino.core.domain.user.ChangeCredentialsUseCase
 import app.paralino.core.domain.user.ConvertAccountUseCase
 import app.paralino.core.domain.user.CreateAccountUseCase
 import app.paralino.core.domain.user.DeactivatePersonalDeviceUseCase
+import app.paralino.core.domain.user.PersonalSpaceFeatureUseCase
 import app.paralino.core.domain.user.DeletePersonalDeviceUseCase
 import app.paralino.core.domain.user.ExpiredSessionHandler
 import app.paralino.core.domain.user.ExpiredSessionRecovery
@@ -361,6 +362,7 @@ val coreModule = module {
     single { PersonalSpaceRefreshUseCase(get(), get(), get(), get(), get(), get()) }
     single { DeletePersonalDeviceUseCase(get(), get()) }
     single { DeactivatePersonalDeviceUseCase(get(), get(), get(), get()) }
+    single { PersonalSpaceFeatureUseCase(get(), get(), get(), get(), get()) }
     single { PlaceAddressSearchUseCase(get(), get()) }
     factory { CreatePrivacyZoneUseCase(get(), get()) }
     factory { UpdatePrivacyZoneUseCase(get(), get(), get()) }

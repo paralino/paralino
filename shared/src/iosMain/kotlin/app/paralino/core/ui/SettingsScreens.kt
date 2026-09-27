@@ -13,6 +13,7 @@ import app.paralino.core.presentation.settings.billing.PaywallViewModel
 import app.paralino.core.presentation.settings.billing.SubscriptionViewModel
 import app.paralino.core.presentation.settings.billing.licence.LicenceCodeViewModel
 import app.paralino.core.presentation.settings.blocklist.BlocklistViewModel
+import app.paralino.core.presentation.settings.userdevices.UserDevicesViewModel
 import app.paralino.core.presentation.settings.convertaccount.ConvertAccountViewModel
 import app.paralino.core.presentation.settings.editprofile.EditProfileViewModel
 import app.paralino.core.presentation.settings.emailchange.ChangeEmailViewModel
@@ -36,6 +37,7 @@ import app.paralino.core.ui.settings.billing.SubscriptionScreenCore
 import app.paralino.core.ui.settings.billing.licence.LicenceCodeScreenCore
 import app.paralino.core.ui.settings.location.LocationSettingsScreenCore
 import app.paralino.core.ui.settings.profile.AccountScreenCore
+import app.paralino.core.ui.settings.profile.UserDevicesScreenCore
 import app.paralino.core.ui.settings.profile.ChangeEmailScreenCore
 import app.paralino.core.ui.settings.profile.ChangePasswordScreenCore
 import app.paralino.core.ui.settings.profile.ConvertAccountScreenCore
@@ -87,6 +89,7 @@ object SettingsScreens {
         openChangePassword: () -> Unit,
         openProfileRawScreen: () -> Unit,
         openBlockList: () -> Unit,
+        openUserDevices: () -> Unit,
         onShare: (String) -> Unit,
         askNotificationPermission: () -> Unit,
     ) = ComposeUIViewController {
@@ -100,8 +103,21 @@ object SettingsScreens {
                 openChangeEmail = openChangeEmail,
                 openProfileRawScreen = openProfileRawScreen,
                 openBlockList = openBlockList,
+                openUserDevices = openUserDevices,
                 onShare = onShare,
                 askNotificationPermission = askNotificationPermission
+            )
+        }
+    }
+
+    fun UserDevicesScreenVC(
+        vm: UserDevicesViewModel,
+    ) = ComposeUIViewController {
+        RootScreenIOS {
+            UserDevicesScreenCore(
+                appState = it,
+                vm = vm,
+                contentPadding = PaddingValues()
             )
         }
     }
@@ -336,6 +352,7 @@ object SettingsScreens {
         openMapInteractionsScreen: () -> Unit,
         openNavigationAppScreen: () -> Unit,
         openPlaceSearchSettings: () -> Unit,
+        openPersonalSpaceSettings: () -> Unit,
     ) = ComposeUIViewController {
         RootScreenIOS {
             AppSettingsScreenCore(
@@ -347,6 +364,7 @@ object SettingsScreens {
                 onMapInteractionsClick = openMapInteractionsScreen,
                 onNavigationAppClick = openNavigationAppScreen,
                 onPlaceSearchSettingsClick = openPlaceSearchSettings,
+                onPersonalSpaceSettingsClick = openPersonalSpaceSettings,
                 // not available in iOS
                 onMapSourceSettingsClick = {},
                 onNotificationSocketSettingsClick = {}

@@ -52,6 +52,7 @@ fun AccountScreenCore(
     openChangeEmail: () -> Unit,
     openChangePassword: () -> Unit,
     openBlockList: () -> Unit,
+    openUserDevices: () -> Unit,
     askNotificationPermission: () -> Unit,
     onShare: (String) -> Unit,
 ) {
@@ -118,10 +119,10 @@ fun AccountScreenCore(
                 }
 
                 SettingsActionItem(
-                    name = stringResource(MR.strings.settings_account_edit_profile),
-                    icon = CoreAppIcons.Person.asPainterResource()
+                    name = stringResource(MR.strings.settings_account_devices_screen_title),
+                    icon = CoreAppIcons.PhoneAndroid.asPainterResource()
                 ) {
-                    openEditProfile()
+                    openUserDevices()
                 }
 
                 SettingsActionItem(
@@ -129,6 +130,13 @@ fun AccountScreenCore(
                     icon = CoreAppIcons.Block.asPainterResource()
                 ) {
                     openBlockList()
+                }
+
+                SettingsActionItem(
+                    name = stringResource(MR.strings.settings_account_edit_profile),
+                    icon = CoreAppIcons.Person.asPainterResource()
+                ) {
+                    openEditProfile()
                 }
 
                 if (state.data.userState.isGuestUser) {

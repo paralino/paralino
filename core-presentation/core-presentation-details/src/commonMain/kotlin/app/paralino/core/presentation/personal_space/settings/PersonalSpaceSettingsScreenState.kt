@@ -1,5 +1,6 @@
 package app.paralino.core.presentation.personal_space.settings
 
+import app.paralino.core.presentation.common.AlertDialogAction
 import app.paralino.core.presentation.common.MainAlertDialog
 
 data class PersonalSpaceSettingsScreenState(
@@ -9,6 +10,11 @@ data class PersonalSpaceSettingsScreenState(
 )
 
 sealed interface PersonalSpaceSettingsUiEvent {
-    data object None : PersonalSpaceSettingsUiEvent
+    data object DisablePersonalSpaceClick : PersonalSpaceSettingsUiEvent
+    data class DialogAction(val action: AlertDialogAction) : PersonalSpaceSettingsUiEvent
+}
+
+sealed interface PersonalSpaceSettingsEvent {
+    data object OpenMap : PersonalSpaceSettingsEvent
 }
 

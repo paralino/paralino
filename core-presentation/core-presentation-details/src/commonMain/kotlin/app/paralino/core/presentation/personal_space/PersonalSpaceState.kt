@@ -24,6 +24,7 @@ data class PersonalSpaceScreenState(
     val plan: PlanConfig,
     val alertDialog: MainAlertDialog?
 ) {
+    val isFabButtonActive: Boolean = plan.isPremium
     val activeDevices: List<UserDeviceOrSessionItemState> = devicesWithSessions
         .filter { it.device?.location != null }
 

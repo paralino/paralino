@@ -124,38 +124,40 @@ fun PersonalSpaceScreenCore(
         Scaffold(
             modifier = Modifier.fillMaxSize(),
             floatingActionButton = {
-                if (uiState.sharingStatus != null) {
-                    FilledButton(
-                        modifier = Modifier.padding(bottom = contentPadding.calculateBottomPadding()),
-                        style = ButtonStyle.SMALL(
-                            iconSize = 24.dp
-                        ),
-                        icon = CoreAppIcons.StopCircle.asPainterResource(),
-                        colors = ButtonDefaults.buttonColors(
-                            backgroundColor = MaterialTheme.colors.error,
-                            contentColor = MaterialTheme.colors.onError
-                        ),
-                        onClick = { vm.stopSharing() }
-                    ) {
-                        Text(text = stringResource(MR.strings.location_sharing_button_stop_personal))
-                    }
-                } else {
-                    FilledButton(
-                        modifier = Modifier.padding(bottom = contentPadding.calculateBottomPadding()),
-                        style = ButtonStyle.SMALL(
-                            iconSize = 24.dp
-                        ),
-                        icon = CoreAppIcons.ShareLocation.asPainterResource(),
-                        colors = ButtonDefaults.buttonColors(
-                            backgroundColor = MaterialTheme.colors.primary,
-                            contentColor = MaterialTheme.colors.onPrimary
-                        ),
-                        onClick = { vm.onEvent(PersonalSpaceScreenUiEvent.OpenSharingScreen) }
-                    ) {
-                        if (uiState.isCurrentDeviceActivated) {
-                            Text(text = stringResource(MR.strings.location_sharing_button_start_personal))
-                        } else {
-                            Text(text = stringResource(MR.strings.personalSpace_tracking_activate))
+                if (uiState.isFabButtonActive) {
+                    if (uiState.sharingStatus != null) {
+                        FilledButton(
+                            modifier = Modifier.padding(bottom = contentPadding.calculateBottomPadding()),
+                            style = ButtonStyle.SMALL(
+                                iconSize = 24.dp
+                            ),
+                            icon = CoreAppIcons.StopCircle.asPainterResource(),
+                            colors = ButtonDefaults.buttonColors(
+                                backgroundColor = MaterialTheme.colors.error,
+                                contentColor = MaterialTheme.colors.onError
+                            ),
+                            onClick = { vm.stopSharing() }
+                        ) {
+                            Text(text = stringResource(MR.strings.location_sharing_button_stop_personal))
+                        }
+                    } else {
+                        FilledButton(
+                            modifier = Modifier.padding(bottom = contentPadding.calculateBottomPadding()),
+                            style = ButtonStyle.SMALL(
+                                iconSize = 24.dp
+                            ),
+                            icon = CoreAppIcons.ShareLocation.asPainterResource(),
+                            colors = ButtonDefaults.buttonColors(
+                                backgroundColor = MaterialTheme.colors.primary,
+                                contentColor = MaterialTheme.colors.onPrimary
+                            ),
+                            onClick = { vm.onEvent(PersonalSpaceScreenUiEvent.OpenSharingScreen) }
+                        ) {
+                            if (uiState.isCurrentDeviceActivated) {
+                                Text(text = stringResource(MR.strings.location_sharing_button_start_personal))
+                            } else {
+                                Text(text = stringResource(MR.strings.personalSpace_tracking_activate))
+                            }
                         }
                     }
                 }

@@ -71,6 +71,7 @@ class AppPrefs(
         const val keyDeviceIDSeed = "prefs.device.ID.seed"
         const val keySelectedGroupID = "prefs.group.selectedGroupID"
         const val keyIsPersonalSpaceSelected = "prefs.device.isPersonalSpaceSelected"
+        const val keyIsPersonalSpaceEnabled = "prefs.device.isPersonalSpaceEnabled"
         const val keyDismissedAppVersionID = "prefs.device.dismissedAppVersion"
         const val keyDismissedFreePlanPromoBillingId = "prefs.device.dismissedFreePlanPromoBillingId"
         const val keyLastBillingPromoOnboardingNoHistoryTime = "prefs.user.billingPromo.onboardingNoHistoryTime"
@@ -338,6 +339,12 @@ class AppPrefs(
         get() = provider.userSettings.getBoolean(keyIsPersonalSpaceSelected, false)
         set(value) {
             provider.userSettings.putBoolean(keyIsPersonalSpaceSelected, value)
+        }
+
+    var isPersonalSpaceEnabled: Boolean
+        get() = provider.userSettings.getBoolean(keyIsPersonalSpaceEnabled, true)
+        set(value) {
+            provider.userSettings.putBoolean(keyIsPersonalSpaceEnabled, value)
         }
 
     var dismissedAppVersion: Long

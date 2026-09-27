@@ -46,6 +46,9 @@ fun AppSettingsScreen(
             onPlaceSearchSettingsClick = {
                 appState.navController.navigate(AppScreen.Settings.PlaceSearch.routeSignature)
             },
+            onPersonalSpaceSettingsClick = {
+                appState.navController.navigate(AppScreen.Settings.PersonalSpace.routeSignature)
+            },
             onNotificationSocketSettingsClick = {
                 appState.navController.navigate(AppScreen.Settings.NotificationSocket.routeSignature)
             },

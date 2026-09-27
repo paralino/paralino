@@ -53,6 +53,7 @@ import app.paralino.android.ui.settings.profile.ChangeEmailScreen
 import app.paralino.android.ui.settings.profile.ChangePasswordScreen
 import app.paralino.android.ui.settings.profile.ConvertAccountScreen
 import app.paralino.android.ui.settings.profile.EditProfileScreen
+import app.paralino.android.ui.settings.profile.UserDevicesScreen
 import app.paralino.android.ui.share.SharingStartScreen
 import app.paralino.core.MR
 import app.paralino.core.presentation.login.LoginScreenState
@@ -64,6 +65,7 @@ import app.paralino.core.presentation.settings.generic.maps.MapsProviderViewMode
 import app.paralino.core.presentation.settings.generic.maps.MapInteractionsViewModel
 import app.paralino.core.presentation.settings.generic.MeasurementSystemViewModel
 import app.paralino.core.presentation.settings.generic.NotificationsGroupingViewModel
+import app.paralino.core.presentation.settings.generic.PersonalSpaceFeatureSettingsViewModel
 import app.paralino.core.presentation.settings.generic.PlaceSearchSettingsViewModel
 import app.paralino.android.presentation.settings.generic.NotificationSocketSettingsViewModel
 import app.paralino.core.presentation.billing.BillingScreenSourceType
@@ -289,6 +291,9 @@ fun NavGraphBuilder.settingsGraph(appState: MainAppState) {
         composable(AppScreen.Settings.BlockList.routeSignature) {
             BlocklistScreen(appState)
         }
+        composable(AppScreen.Settings.UserDevices.routeSignature) {
+            UserDevicesScreen(appState)
+        }
         composable(AppScreen.Settings.ProfileDetails.EditProfile.routeSignature) {
             EditProfileScreen(appState)
         }
@@ -368,6 +373,12 @@ fun NavGraphBuilder.settingsGraph(appState: MainAppState) {
             GenericSettingsScreen(
                 appState = appState,
                 vm = koinViewModel<PlaceSearchSettingsViewModel>()
+            )
+        }
+        composable(AppScreen.Settings.PersonalSpace.routeSignature) {
+            GenericSettingsScreen(
+                appState = appState,
+                vm = koinViewModel<PersonalSpaceFeatureSettingsViewModel>()
             )
         }
         composable(AppScreen.Settings.NotificationSocket.routeSignature) {

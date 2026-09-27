@@ -32,6 +32,7 @@ sealed class MapHomeScreenState {
     abstract val selectedGroupId: String?
     abstract val selectedGroupImage: ImageModel?
     abstract val isPersonalSpace: Boolean
+    abstract val isPersonalSpaceEnabled: Boolean
     abstract val isCurrentUserOwnerOfSelectedGroup: Boolean
     abstract val selectedGroupOwnerId: String?
     abstract val isSheetEnabled: Boolean
@@ -89,7 +90,8 @@ sealed class MapHomeScreenState {
         override val isNewAppUpdateAvailable: Boolean,
         override val androidMapSDKProvider: MapsSDKProvider,
         override val alertDialog: MainAlertDialog?,
-        override val isSatelliteModeEnabled: Boolean = false
+        override val isSatelliteModeEnabled: Boolean = false,
+        override val isPersonalSpaceEnabled: Boolean = true,
     ) : MapHomeScreenState() {
         override val isPersonalSpace = groupOrSpaceId.isPersonalSpace
         val hasPersonalSpaceIntroBanner = isPersonalSpace && isFirstTimeInPersonalSpace
@@ -202,6 +204,7 @@ sealed class MapHomeScreenState {
         override val selectedGroupImage: ImageModel?,
         override val currentUserImage: ImageModel,
         override val isPersonalSpace: Boolean,
+        override val isPersonalSpaceEnabled: Boolean = true,
         override val isNewAppUpdateAvailable: Boolean,
         override val androidMapSDKProvider: MapsSDKProvider?,
         override val isSatelliteModeEnabled: Boolean = false,
@@ -288,7 +291,8 @@ sealed interface MapHomeScreenUiEvent {
     data object OnMapModeLongClick : MapHomeScreenUiEvent
     data object OnCloseFocusedItemClick : MapHomeScreenUiEvent
     data object OnBackClicked : MapHomeScreenUiEvent
-    data object ConfirmPersonalSpaceIntro : MapHomeScreenUiEvent
+    data object SetupPersonalSpaceIntro : MapHomeScreenUiEvent
+    data object DisablePersonalSpaceIntro : MapHomeScreenUiEvent
     data object CloseLocationHistory : MapHomeScreenUiEvent
     data object OnOverLimitsBannerTap : MapHomeScreenUiEvent
     data class StopLocationSharing(val groupOrSpaceId: GroupOrSpaceId) : MapHomeScreenUiEvent

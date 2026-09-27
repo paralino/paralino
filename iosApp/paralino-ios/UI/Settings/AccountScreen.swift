@@ -39,6 +39,9 @@ struct AccountScreen: View {
                     openBlockList: {
                         path.append(.settings(.blocklist))
                     },
+                    openUserDevices: {
+                        path.append(.settings(.userDevices))
+                    },
                     onShare: { data in
                         shareText = ShareText(text: data)
                     },
