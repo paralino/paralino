@@ -1,6 +1,7 @@
 package app.paralino.core.domain.user
 
 import app.paralino.core.db.AppPrefs
+import app.paralino.core.models.base.ConfigData
 import app.paralino.core.models.base.GroupOrSpaceId
 import app.paralino.core.models.base.PlanConfig
 import app.paralino.core.models.base.asGroupOrSpaceId
@@ -36,12 +37,23 @@ class PremiumStatusManager(
     private val _hasGroupOverLimits = MutableStateFlow(false)
     val hasGroupOverLimits: StateFlow<Boolean> = _hasGroupOverLimits.asStateFlow()
 
+    fun allGroupPlans(config: ConfigData): List<PlanConfig> {
+        return groupLocalDataSource.allGroupsState.value.data
+            ?.map { it.group.planConfig(config) }
+            ?: emptyList()
+    }
+
+    fun highestGroupPlan(config: ConfigData): PlanConfig {
+        val highestPlan = allGroupPlans(config)
+            .maxByOrNull { it.planOrder }
+            ?: config.defaultFreePlanConfig()
+        return highestPlan
+    }
+
     suspend fun adjustDeviceSettingsForPlan() {
         val config = remoteConfigRepo.getConfigOnce()
         val currentPlanConfig = userRepo.userPlans.value.highestValidPlanConfig.takeIf { config.plans.isNotEmpty() }
-        val hasBestPerformanceFromGroup = groupLocalDataSource.allGroupsState.value.data?.any {
-            it.group.planConfig(remoteConfigRepo.getConfigOnce()).hasBestLocationPerformance
-        } ?: false
+        val hasBestPerformanceFromGroup = allGroupPlans(config).any { it.hasBestLocationPerformance }
 
         if (currentPlanConfig?.hasBestLocationPerformance == false && !hasBestPerformanceFromGroup) {
             appPrefs.locationSettingsHighPerformanceDurationTypeFallback = null

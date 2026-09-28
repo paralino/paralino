@@ -151,7 +151,7 @@ class SettingsViewModel(
 
     private fun mapUserState(
         userState: Resource<UserMe?>,
-        remoteConfig: ConfigData?,
+        remoteConfig: ConfigData,
         personalCode: UserPersonalCode?,
         userPlans: UserPlans,
         deviceStatus: DeviceStatusData,
@@ -173,12 +173,13 @@ class SettingsViewModel(
                                 personalCode = personalCode?.formattedCode,
                                 isGuestUser = userStateData.isGuestUser
                             ),
-                            canUseEmail = remoteConfig?.isEmailEnabled ?: false,
+                            canUseEmail = remoteConfig.isEmailEnabled,
                             logoutState = null,
                             deleteAccountState = null,
                             versionName = deviceApiProvider.appVersionText,
                             boostTime = null,
                             userPlan = userPlans.highestValidPlanConfig,
+                            showUpgradeBanner = !userPlans.highestValidPlanConfig.isPremium && !premiumStatusManager.highestGroupPlan(remoteConfig).isPremium,
                             canBoostLocation = appConfig.isInAppDevMode,
                             canAccessDebugScreen = appConfig.isInAppDevMode,
                             appReviewUrl = when (deviceApiProvider.deviceType) {

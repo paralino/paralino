@@ -37,8 +37,8 @@ import app.paralino.core.utils.extensions.pulsate
 import kotlinx.coroutines.delay
 
 @Composable
-fun AccountOnboardingGroupCreate(
-    modifier: Modifier = Modifier
+fun AccountOnboardingGroupsIntro(
+    modifier: Modifier = Modifier.Companion
 ) {
     var animationProgress by remember { mutableFloatStateOf(0f) }
     LaunchedEffect(Unit) {
@@ -58,14 +58,14 @@ fun AccountOnboardingGroupCreate(
                     color = MaterialTheme.colors.onBackground.copy(alpha = 0.2f),
                 )
             )
-            .clip(RoundedCornerShape(20.dp))
+            .clip(androidx.compose.foundation.shape.RoundedCornerShape(20.dp))
             .background(MaterialTheme.colors.surface)
             .padding(6.dp)
-            .clip(RoundedCornerShape(14.dp))
+            .clip(androidx.compose.foundation.shape.RoundedCornerShape(14.dp))
             .background(AppColors.accentDark.copy(alpha = 0.2f)),
         contentAlignment = Alignment.TopCenter
     ) {
-        GroupContent1(
+        GroupOnboardingContent1(
             modifier = Modifier
                 .offset(
                     y = animateDpAsState(
@@ -78,7 +78,7 @@ fun AccountOnboardingGroupCreate(
                 .rotate(3f)
         )
 
-        GroupContent2(
+        GroupOnboardingContent2(
             modifier = Modifier
                 .offset(
                     y = animateDpAsState(
@@ -91,7 +91,7 @@ fun AccountOnboardingGroupCreate(
                 .rotate(-3f)
         )
 
-        GroupContent3(
+        GroupOnboardingContent3(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .offset(
@@ -108,7 +108,7 @@ fun AccountOnboardingGroupCreate(
 }
 
 @Composable
-private fun GroupContent1(modifier: Modifier = Modifier) {
+fun GroupOnboardingContent1(modifier: Modifier = Modifier) {
     val data = remember {
         GroupItemState(
             id = "".asGroupOrSpaceId(),
@@ -137,7 +137,7 @@ private fun GroupContent1(modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun GroupContent2(modifier: Modifier = Modifier) {
+private fun GroupOnboardingContent2(modifier: Modifier = Modifier) {
     val data = remember {
         GroupItemState(
             id = "".asGroupOrSpaceId(),
@@ -166,7 +166,7 @@ private fun GroupContent2(modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun GroupContent3(modifier: Modifier = Modifier) {
+private fun GroupOnboardingContent3(modifier: Modifier = Modifier) {
     val data = remember {
         GroupItemState(
             id = "".asGroupOrSpaceId(),
