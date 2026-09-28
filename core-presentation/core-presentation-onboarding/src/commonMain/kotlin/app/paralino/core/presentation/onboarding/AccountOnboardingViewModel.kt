@@ -2,7 +2,6 @@ package app.paralino.core.presentation.onboarding
 
 import app.paralino.core.MR
 import app.paralino.core.db.AppPrefs
-import app.paralino.core.domain.location.RegisterDeviceForSharingUseCase
 import app.paralino.core.models.Resource
 import app.paralino.core.models.Resource.NotInitialized.mapReady
 import app.paralino.core.models.base.ImageModel
@@ -22,8 +21,6 @@ import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.provider.NotificationPermissionResultEvent
 import app.paralino.core.provider.NotificationSocketServiceManager
 import app.paralino.core.provider.localizedString
-import app.paralino.core.repo.LocationSharingManager
-import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.personal_code.PersonalCodesRepository
 import app.paralino.core.repo.user.UserRepository
@@ -55,12 +52,9 @@ class AccountOnboardingViewModel(
     private val userRepo: UserRepository,
     private val personalCodesRepo: PersonalCodesRepository,
     private val groupLocalDataSource: UserGroupLocalDataSource,
-    private val locationSharingManager: LocationSharingManager,
-    private val registerDevice: RegisterDeviceForSharingUseCase,
     private val notificationServiceManager: NotificationSocketServiceManager,
     val deviceApiProvider: IDeviceApiProvider,
     private val appPrefs: AppPrefs,
-    private val remoteConfigRepository: RemoteConfigRepository,
 ) : CoreViewModel() {
 
     private val _uiState =
@@ -138,10 +132,22 @@ class AccountOnboardingViewModel(
         val personalCode = PersonalCodeScreenCodeData.viewOnlyCode(code)
 
         val onboardingStep = if (previousState != null) {
-            if (previousState.onboardingStep is AccountOnboardingContent.ParalinoID) {
-                previousState.onboardingStep.copy(personalCode = personalCode)
-            } else {
-                previousState.onboardingStep
+            val previousStep = previousState.onboardingStep
+            when {
+                // user was added to a group while still in group onboarding (e.g. waiting after
+                // sharing the Paralino.ID). Close onboarding so the map shows and
+                // MapHomeScreenOvertakeController opens the group join welcome.
+                previousStep.isBeforeGroupJoinOrCreate() && previousState.groupCount == 0 && groupCount > 0 -> {
+                    markOnboardingFinished()
+                    activatePushNotificationServiceIfNeeded()
+                    null
+                }
+
+                previousStep is AccountOnboardingContent.ParalinoID -> {
+                    previousStep.copy(personalCode = personalCode)
+                }
+
+                else -> previousStep
             }
         } else {
             when {
@@ -161,10 +167,7 @@ class AccountOnboardingViewModel(
                 }
 
                 groupCount == 0 -> {
-                    AccountOnboardingContent.ParalinoID(
-                        personalCode = personalCode,
-                        didShareCode = false
-                    )
+                    AccountOnboardingContent.GroupOnboardingIntro
                 }
 
                 else -> {
@@ -176,7 +179,7 @@ class AccountOnboardingViewModel(
         }
 
         val startsWithGroupOnboarding = previousState == null &&
-            onboardingStep is AccountOnboardingContent.ParalinoID
+            onboardingStep is AccountOnboardingContent.GroupOnboardingIntro
 
         return AccountOnboardingScreenState(
             userImage = user.data?.data?.data?.userImage ?: ImageModel.emoji(Emojis.robot),
@@ -198,6 +201,8 @@ class AccountOnboardingViewModel(
                     AccountOnboardingUiEvent.SkipOnboarding -> skipOnboarding()
                     AccountOnboardingUiEvent.CopyPersonalCode -> copyPersonalCodeToClipboard()
                     AccountOnboardingUiEvent.SharePersonalCode -> sharePersonalCode()
+                    AccountOnboardingUiEvent.SelectJoinGroup -> openParalinoIDStep()
+                    AccountOnboardingUiEvent.SelectCreateGroup -> openGroupCreateStep()
                 }
             }
         }
@@ -205,24 +210,31 @@ class AccountOnboardingViewModel(
 
     private fun confirmOnboarding() {
         when (val step = uiState.value.data?.onboardingStep) {
+            AccountOnboardingContent.GroupOnboardingIntro -> {
+                openGroupChoiceStep()
+            }
+
+            AccountOnboardingContent.GroupChoice -> {
+                // no-op, can't confirm this screen
+            }
+
             AccountOnboardingContent.GroupCreate -> {
                 openGroupCreate()
             }
 
             is AccountOnboardingContent.ParalinoID -> {
                 if (step.didShareCode) {
-                    skipParalinoIDOnboarding()
+                    // Final close button
+                    finishOnboarding()
+                } else if (uiState.value.data?.personalCode != null) {
+                    sharePersonalCode()
                 } else {
-                    confirmParalinoIDOnboarding()
+                    _eventChannel.trySend(AccountOnboardingScreenEvent.OpenPersonalCodes)
                 }
             }
 
             AccountOnboardingContent.PushNotifications -> {
                 _eventChannel.trySend(AccountOnboardingScreenEvent.AskNotificationPermission)
-            }
-
-            is AccountOnboardingContent.LocationHistoryIntro -> {
-                confirmLocationHistoryInit(step)
             }
 
             AccountOnboardingContent.PrivacyZonesIntro -> {
@@ -235,8 +247,13 @@ class AccountOnboardingViewModel(
     }
 
     private fun skipOnboarding() {
-        when (val step = uiState.value.data?.onboardingStep) {
-            AccountOnboardingContent.GroupCreate -> {
+        when (uiState.value.data?.onboardingStep) {
+            AccountOnboardingContent.GroupOnboardingIntro -> {
+                // no-op, no skip button
+            }
+
+            AccountOnboardingContent.GroupChoice -> {
+                // "I'll decide later"
                 if (uiState.value.data?.didShareParalinoID == true) {
                     finishOnboarding()
                 } else {
@@ -244,20 +261,18 @@ class AccountOnboardingViewModel(
                 }
             }
 
+            AccountOnboardingContent.GroupCreate -> {
+                // "Someone already invited me"
+                openParalinoIDStep()
+            }
+
             is AccountOnboardingContent.ParalinoID -> {
-                if (step.didShareCode) {
-                    confirmParalinoIDOnboarding()
-                } else {
-                    skipParalinoIDOnboarding()
-                }
+                // "I'm starting a group instead"
+                openGroupCreateStep()
             }
 
             AccountOnboardingContent.PushNotifications -> {
                 startAccountStartOnboarding()
-            }
-
-            is AccountOnboardingContent.LocationHistoryIntro -> {
-                openPrivacyZonesIntro()
             }
 
             AccountOnboardingContent.PrivacyZonesIntro -> {
@@ -268,83 +283,38 @@ class AccountOnboardingViewModel(
         }
     }
 
-    private fun confirmPersonalSpaceIntro() {
-        // only showing history intro to current users with groups
-        // if there are no groups, history onboarding should not be shown ever
-        // since if user creates or joins a groups, they will see history elsewhere
-        val groupCount = uiState.value.data?.groupCount ?: 0
+    private fun openGroupChoiceStep() {
+        _uiState.update {
+            it.mapReady {
+                it.copy(onboardingStep = AccountOnboardingContent.GroupChoice)
+            }
+        }
+    }
+
+    private fun openParalinoIDStep() {
         _uiState.update {
             it.mapReady {
                 it.copy(
-                    onboardingStep = AccountOnboardingContent.LocationHistoryIntro(
-                        isSharingActive = if (groupCount > 0) {
-                            locationSharingManager.isGroupSharingActiveMaybe()
-                        } else {
-                            false
-                        }
+                    onboardingStep = AccountOnboardingContent.ParalinoID(
+                        personalCode = it.personalCode,
+                        didShareCode = it.didShareParalinoID
                     )
                 )
             }
         }
     }
 
-    private fun confirmLocationHistoryInit(step: AccountOnboardingContent.LocationHistoryIntro) {
-        if (registerDevice.isProcessingAny() || uiState.value.data?.fullScreenLoading == true) {
-            return
-        }
-
-        if (!step.isSharingActive) {
-            openPrivacyZonesIntro()
-            return
-        }
-
-        _uiState.update { it.mapReady { it.copy(fullScreenLoading = true) } }
-        coroutineScope.launch {
-            val contracts = locationSharingManager.allValidContracts()
-                .filter { it.groupOrSpaceId.isGroup }
-                .map { it.copy(saveToHistory = true) }
-
-            contracts.forEach { contract ->
-                try {
-                    registerDevice.registerDevice(
-                        groupId = contract.groupOrSpaceId,
-                        contract = contract,
-                        deviceName = null,
-                        notifyOthers = false,
-                        isRetry = false
-                    )
-                    locationSharingManager.startSharing(contract)
-                } catch (e: Exception) {
-                    showSnackbar(e.errorString())
-                }
-            }
-            _uiState.update { it.mapReady { it.copy(fullScreenLoading = false) } }
-            openPrivacyZonesIntro()
-        }
-    }
-
-    private fun openPrivacyZonesIntro() {
-        _uiState.update {
-            it.mapReady {
-                it.copy(onboardingStep = AccountOnboardingContent.PrivacyZonesIntro)
-            }
-        }
-    }
-
-    private fun confirmParalinoIDOnboarding() {
-        if (uiState.value.data?.personalCode != null) {
-            sharePersonalCode()
-        } else {
-            _eventChannel.trySend(AccountOnboardingScreenEvent.OpenPersonalCodes)
-        }
-    }
-
-    private fun skipParalinoIDOnboarding() {
+    private fun openGroupCreateStep() {
         _uiState.update {
             it.mapReady {
                 it.copy(onboardingStep = AccountOnboardingContent.GroupCreate)
             }
         }
+    }
+
+    private fun AccountOnboardingContent?.isBeforeGroupJoinOrCreate(): Boolean {
+        return this is AccountOnboardingContent.GroupChoice ||
+            this is AccountOnboardingContent.ParalinoID
     }
 
     private fun finishOnboardingOrGoToPayment() {
@@ -375,25 +345,11 @@ class AccountOnboardingViewModel(
         if (appPrefs.didHaveAccountWelcomeOnboarding) {
             finishOnboarding()
         } else if (uiState.value.data?.groupCount == 0) {
-//            _uiState.update {
-//                it.mapReady {
-//                    it.copy(
-//                        onboardingStep = AccountOnboardingContent.AccountOnboardingStart(
-//                            isGroupChecked = it.isGroupModeChecked,
-//                            isPersonalSpaceChecked = it.isPersonalSpaceModeChecked
-//                        )
-//                    )
-//                }
-//            }
-
             _uiState.update {
                 it.mapReady {
                     it.copy(
                         isGroupModeChecked = true,
-                        onboardingStep = AccountOnboardingContent.ParalinoID(
-                            personalCode = it.personalCode,
-                            didShareCode = false
-                        )
+                        onboardingStep = AccountOnboardingContent.GroupOnboardingIntro
                     )
                 }
             }
@@ -405,19 +361,6 @@ class AccountOnboardingViewModel(
     private fun openGroupCreate() {
         _eventChannel.trySend(AccountOnboardingScreenEvent.OpenGroupCreate)
         appPrefs.isPersonalSpaceSelected = false
-        coroutineScope.launch {
-            delay(600)
-            finishOnboarding()
-        }
-    }
-
-    private fun openPersonalSpaceSetup() {
-        _eventChannel.trySend(
-            AccountOnboardingScreenEvent.OpenSharingStart(
-                groupId = UserGroup.groupPersonalDevicesId.asGroupOrSpaceId()
-            )
-        )
-        appPrefs.isPersonalSpaceSelected = true
         coroutineScope.launch {
             delay(600)
             finishOnboarding()
