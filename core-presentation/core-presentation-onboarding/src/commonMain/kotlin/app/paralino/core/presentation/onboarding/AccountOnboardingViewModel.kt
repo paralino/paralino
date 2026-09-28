@@ -2,13 +2,12 @@ package app.paralino.core.presentation.onboarding
 
 import app.paralino.core.MR
 import app.paralino.core.db.AppPrefs
+import app.paralino.core.domain.group.PendingGroupJoinWelcomeUseCase
 import app.paralino.core.models.Resource
 import app.paralino.core.models.Resource.NotInitialized.mapReady
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.base.PushProvider
-import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.models.data
-import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.user.UserMe
 import app.paralino.core.models.user.UserPersonalCode
 import app.paralino.core.presentation.CoreViewModel
@@ -38,6 +37,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
@@ -55,6 +55,7 @@ class AccountOnboardingViewModel(
     private val notificationServiceManager: NotificationSocketServiceManager,
     val deviceApiProvider: IDeviceApiProvider,
     private val appPrefs: AppPrefs,
+    private val pendingGroupJoinWelcome: PendingGroupJoinWelcomeUseCase,
 ) : CoreViewModel() {
 
     private val _uiState =
@@ -113,6 +114,28 @@ class AccountOnboardingViewModel(
             .flowOn(Dispatchers.IO)
             .launchIn(coroutineScope)
 
+        combine(
+            uiState
+                .map { it.data?.onboardingStep }
+                .distinctUntilChanged(),
+            pendingGroupJoinWelcome.observeFirstUnshownGroupId()
+        ) { onboardingStep, groupId ->
+            groupId?.takeIf {
+                when (onboardingStep) {
+                    AccountOnboardingContent.GroupChoice,
+                    is AccountOnboardingContent.ParalinoID -> true
+
+                    else -> false
+                }
+            }
+        }
+            .filterNotNull()
+            .distinctUntilChanged()
+            .onEach { groupId -> openGroupJoinWelcome(groupId) }
+            .catch { showSnackbar(it.errorString()) }
+            .flowOn(Dispatchers.IO)
+            .launchIn(coroutineScope)
+
         coroutineScope.launch {
             try {
                 personalCodesRepo.refreshPersonalCodesAndRestockKeys(cacheDelayMillis = 2.minutes)
@@ -133,21 +156,10 @@ class AccountOnboardingViewModel(
 
         val onboardingStep = if (previousState != null) {
             val previousStep = previousState.onboardingStep
-            when {
-                // user was added to a group while still in group onboarding (e.g. waiting after
-                // sharing the Paralino.ID). Close onboarding so the map shows and
-                // MapHomeScreenOvertakeController opens the group join welcome.
-                previousStep.isBeforeGroupJoinOrCreate() && previousState.groupCount == 0 && groupCount > 0 -> {
-                    markOnboardingFinished()
-                    activatePushNotificationServiceIfNeeded()
-                    null
-                }
-
-                previousStep is AccountOnboardingContent.ParalinoID -> {
-                    previousStep.copy(personalCode = personalCode)
-                }
-
-                else -> previousStep
+            if (previousStep is AccountOnboardingContent.ParalinoID) {
+                previousStep.copy(personalCode = personalCode)
+            } else {
+                previousStep
             }
         } else {
             when {
@@ -179,7 +191,7 @@ class AccountOnboardingViewModel(
         }
 
         val startsWithGroupOnboarding = previousState == null &&
-            onboardingStep is AccountOnboardingContent.GroupOnboardingIntro
+                onboardingStep is AccountOnboardingContent.GroupOnboardingIntro
 
         return AccountOnboardingScreenState(
             userImage = user.data?.data?.data?.userImage ?: ImageModel.emoji(Emojis.robot),
@@ -312,11 +324,6 @@ class AccountOnboardingViewModel(
         }
     }
 
-    private fun AccountOnboardingContent?.isBeforeGroupJoinOrCreate(): Boolean {
-        return this is AccountOnboardingContent.GroupChoice ||
-            this is AccountOnboardingContent.ParalinoID
-    }
-
     private fun finishOnboardingOrGoToPayment() {
         if (shouldProceedToPaywall) {
             _eventChannel.trySend(OpenPaywall(type = BillingScreenSourceType.SKIPPED_ONBOARDING))
@@ -365,6 +372,13 @@ class AccountOnboardingViewModel(
             delay(600)
             finishOnboarding()
         }
+    }
+
+    private suspend fun openGroupJoinWelcome(groupId: String) {
+        pendingGroupJoinWelcome.markShown(groupId = groupId)
+        _eventChannel.trySend(AccountOnboardingScreenEvent.OpenGroupJoinWelcome(groupId = groupId))
+        delay(600)
+        finishOnboarding()
     }
 
     private fun copyPersonalCodeToClipboard() {

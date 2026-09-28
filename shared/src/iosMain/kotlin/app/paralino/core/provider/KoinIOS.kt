@@ -238,7 +238,7 @@ object KoinIOS {
 
     private fun createViewModelModule(): Module {
         return module {
-            factory { AccountOnboardingViewModel(get(), get(), get(), get(), get(), get()) }
+            factory { AccountOnboardingViewModel(get(), get(), get(), get(), get(), get(), get()) }
             factory {
                 MapHomeViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get())
             }

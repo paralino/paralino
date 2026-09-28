@@ -30,7 +30,8 @@ fun AccountOnboardingScreenCore(
     openPaywall: (BillingScreenSourceType) -> Unit,
     onSharePersonalCode: (String) -> Unit,
     openSharingScreen: (GroupOrSpaceId) -> Unit,
-    askNotificationPermission: () -> Unit
+    askNotificationPermission: () -> Unit,
+    openGroupJoinWelcome: (groupId: String) -> Unit,
 ) {
 
     MessageDispatcherEffect(vm, appState)
@@ -43,6 +44,7 @@ fun AccountOnboardingScreenCore(
                 is AccountOnboardingScreenEvent.SharePersonalCode -> onSharePersonalCode(event.code)
                 AccountOnboardingScreenEvent.OpenPersonalCodes -> openPersonalCodes()
                 AccountOnboardingScreenEvent.OpenGroupCreate -> onCreateGroup()
+                is AccountOnboardingScreenEvent.OpenGroupJoinWelcome -> openGroupJoinWelcome(event.groupId)
                 is AccountOnboardingScreenEvent.OpenPaywall -> openPaywall(event.type)
                 is AccountOnboardingScreenEvent.OpenSharingStart -> openSharingScreen(event.groupId)
 

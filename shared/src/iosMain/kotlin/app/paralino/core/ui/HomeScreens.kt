@@ -74,6 +74,7 @@ object HomeScreens {
         onSharePersonalCode: (String) -> Unit,
         openSharingScreen: (GroupOrSpaceId) -> Unit,
         askNotificationPermission: () -> Unit,
+        openGroupJoinWelcome: (String) -> Unit,
     ) = ComposeUIViewController {
         RootScreenIOS {
             AccountOnboardingScreenCore(
@@ -86,6 +87,7 @@ object HomeScreens {
                 onSharePersonalCode = onSharePersonalCode,
                 openSharingScreen = openSharingScreen,
                 askNotificationPermission = askNotificationPermission,
+                openGroupJoinWelcome = openGroupJoinWelcome,
             )
         }
     }

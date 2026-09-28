@@ -48,5 +48,8 @@ fun AccountOnboardingScreen(
             )
         },
         askNotificationPermission = { notificationPermissionHandler.askNotificationPermission() },
+        openGroupJoinWelcome = { groupId ->
+            appState.navController.navigate(AppScreen.MainHome.GroupJoinWelcome.route(groupId))
+        },
     )
 }
