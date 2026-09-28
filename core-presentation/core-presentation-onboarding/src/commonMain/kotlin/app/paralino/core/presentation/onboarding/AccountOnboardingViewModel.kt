@@ -3,6 +3,7 @@ package app.paralino.core.presentation.onboarding
 import app.paralino.core.MR
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.group.PendingGroupJoinWelcomeUseCase
+import app.paralino.core.domain.notifications.PushNotificationHandler
 import app.paralino.core.models.Resource
 import app.paralino.core.models.Resource.NotInitialized.mapReady
 import app.paralino.core.models.base.ImageModel
@@ -27,8 +28,10 @@ import app.paralino.core.utils.DeeplinkType
 import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.extensions.errorString
 import app.paralino.core.utils.extensions.nowUTC
+import app.paralino.core.utils.poll
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -38,6 +41,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
@@ -47,6 +51,7 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Duration.Companion.seconds
 
 class AccountOnboardingViewModel(
     private val userRepo: UserRepository,
@@ -56,7 +61,10 @@ class AccountOnboardingViewModel(
     val deviceApiProvider: IDeviceApiProvider,
     private val appPrefs: AppPrefs,
     private val pendingGroupJoinWelcome: PendingGroupJoinWelcomeUseCase,
+    private val pushNotificationHandler: PushNotificationHandler,
 ) : CoreViewModel() {
+
+    private var waitingForGroupJob: Job? = null
 
     private val _uiState =
         MutableStateFlow<Resource<AccountOnboardingScreenState>>(Resource.NotInitialized)
@@ -134,6 +142,14 @@ class AccountOnboardingViewModel(
             .onEach { groupId -> openGroupJoinWelcome(groupId) }
             .catch { showSnackbar(it.errorString()) }
             .flowOn(Dispatchers.IO)
+            .launchIn(coroutineScope)
+
+        uiState
+            .map { (it.data?.onboardingStep as? AccountOnboardingContent.ParalinoID)?.didShareCode == true }
+            .distinctUntilChanged()
+            .onEach { isWaiting ->
+                if (isWaiting) startWaitingForGroup() else stopWaitingForGroup()
+            }
             .launchIn(coroutineScope)
 
         coroutineScope.launch {
@@ -309,7 +325,8 @@ class AccountOnboardingViewModel(
                 it.copy(
                     onboardingStep = AccountOnboardingContent.ParalinoID(
                         personalCode = it.personalCode,
-                        didShareCode = it.didShareParalinoID
+                        didShareCode = it.didShareParalinoID,
+                        canCloseWaiting = false
                     )
                 )
             }
@@ -345,6 +362,7 @@ class AccountOnboardingViewModel(
     private fun finishOnboarding() {
         markOnboardingFinished()
         activatePushNotificationServiceIfNeeded()
+        stopWaitingForGroup()
         _uiState.update { it.mapReady { it.copy(onboardingStep = null) } }
     }
 
@@ -372,6 +390,42 @@ class AccountOnboardingViewModel(
             delay(600)
             finishOnboarding()
         }
+    }
+
+    private fun startWaitingForGroup() {
+        waitingForGroupJob?.cancel()
+        waitingForGroupJob = coroutineScope.launch {
+            launch {
+                delay(20.seconds)
+                _uiState.update {
+                    it.mapReady { state ->
+                        val step = state.onboardingStep as? AccountOnboardingContent.ParalinoID
+                        if (step != null && step.didShareCode) {
+                            state.copy(onboardingStep = step.copy(canCloseWaiting = true))
+                        } else {
+                            state
+                        }
+                    }
+                }
+            }
+
+            try {
+                poll(
+                    firstDelayMillis = 10.seconds.inWholeMilliseconds,
+                    delay = 10.seconds.inWholeMilliseconds,
+                    timeout = 3.minutes.inWholeMilliseconds
+                ) {
+                    pushNotificationHandler.checkForPushNotifications()
+                    pendingGroupJoinWelcome.observeFirstUnshownGroupId().first()
+                }
+            } catch (e: Exception) {
+            }
+        }
+    }
+
+    private fun stopWaitingForGroup() {
+        waitingForGroupJob?.cancel()
+        waitingForGroupJob = null
     }
 
     private suspend fun openGroupJoinWelcome(groupId: String) {

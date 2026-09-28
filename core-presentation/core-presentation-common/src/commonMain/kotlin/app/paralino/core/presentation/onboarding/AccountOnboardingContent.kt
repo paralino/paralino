@@ -55,7 +55,8 @@ sealed class AccountOnboardingContent(
 
     data class ParalinoID(
         val personalCode: PersonalCodeScreenCodeData?,
-        val didShareCode: Boolean
+        val didShareCode: Boolean,
+        val canCloseWaiting: Boolean
     ) : AccountOnboardingContent(
         parentKey = 200,
         titleKey = 200,
@@ -65,10 +66,10 @@ sealed class AccountOnboardingContent(
         } else {
             MR.strings.invite_manage_description
         },
-        buttonText = if (didShareCode) {
-            MR.strings.onboarding_step_paralinoID_button_explore
-        } else {
-            MR.strings.onboarding_step_paralinoID_button_next
+        buttonText = when {
+            !didShareCode -> MR.strings.onboarding_step_paralinoID_button_next
+            canCloseWaiting -> MR.strings.onboarding_step_paralinoID_button_explore
+            else -> null
         },
         skipButtonText = MR.strings.onboarding_step_paralinoID_button_createInstead,
         // title and info are part of the header content
