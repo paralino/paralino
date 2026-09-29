@@ -464,6 +464,8 @@
     <string name="paywall_header_feature_list_screen_family">Don\'t let others track your family</string>
     <string name="paywall_header_feature_demo_screen">Discover the power of Paralino</string>
     <string name="paywall_header_feature_history_title">Track your travels</string>
+    <string name="paywall_purchase_confirmation_title">Your plan is ready</string>
+    <string name="paywall_purchase_confirmation_info">Enjoy using Paralino with your new plan.</string>
     <string name="paywall_header_feature_history_unlimited">Get unlimited personal location history with the **%1$s** plan!</string>
     <string name="paywall_header_feature_history_more">Unlock more days of location history</string>
     <string name="paywall_header_take_control">Take control of your privacy</string>

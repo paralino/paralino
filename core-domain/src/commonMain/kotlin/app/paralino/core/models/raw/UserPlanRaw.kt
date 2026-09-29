@@ -10,7 +10,7 @@ import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.Instant
 
-class UserPlanRaw constructor(
+data class UserPlanRaw constructor(
     @SerialName("\$id")
     val id: String,
     val planType: String,

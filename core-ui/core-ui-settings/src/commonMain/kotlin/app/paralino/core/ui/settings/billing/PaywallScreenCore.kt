@@ -154,9 +154,13 @@ fun PaywallScreenCore(
     }
 
     var isOfferDialogVisible by remember { mutableStateOf(false) }
-    LaunchedEffect(uiState.screenStep == PaywallScreenStep.PAYWALL) {
-        delay(1500)
-        isOfferDialogVisible = !uiState.hasActivePlanOnAnotherPlatform && uiState.screenStep == PaywallScreenStep.PAYWALL
+    LaunchedEffect(uiState.screenStep) {
+        if (uiState.screenStep == PaywallScreenStep.PAYWALL) {
+            delay(1500)
+            isOfferDialogVisible = !uiState.hasActivePlanOnAnotherPlatform && uiState.screenStep == PaywallScreenStep.PAYWALL
+        } else {
+            isOfferDialogVisible = false
+        }
     }
 
     if (isOfferDialogVisible) {
@@ -306,6 +310,21 @@ fun PaywallScreenCore(
                         bottom = 100.dp
                     ),
                     content = uiState.locationHistoryStepMessage
+                )
+            }
+
+            AnimatedVisibility(
+                modifier = Modifier.fillMaxSize(),
+                visible = uiState.screenStep == PaywallScreenStep.PURCHASE_CONFIRMATION,
+                enter = fadeIn() + slideInVertically { it / 2 },
+                exit = fadeOut() + slideOutVertically { -it / 2 }
+            ) {
+                PaywallScreenPurchaseConfirmation(
+                    modifier = Modifier.fillMaxSize(),
+                    paddingValues = PaddingValues(
+                        top = WindowInsets.statusBars.asPaddingValues().calculateTopPadding(),
+                        bottom = 100.dp
+                    )
                 )
             }
 

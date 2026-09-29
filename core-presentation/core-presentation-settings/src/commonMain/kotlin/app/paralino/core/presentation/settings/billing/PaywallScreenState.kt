@@ -175,7 +175,8 @@ enum class PaywallScreenStep {
     DEMO_TO_HISTORY,
     DEMO_TO_PAYWALL,
     PERSONAL_LOCATION_HISTORY,
-    PAYWALL
+    PAYWALL,
+    PURCHASE_CONFIRMATION
 }
 
 sealed interface PaywallContinueButtonType {
