@@ -81,21 +81,23 @@ fun MembershipPlanFeatureTable(
                     Color.Transparent
                 }
             )
+            .padding(animateDpAsState(if (isExpanded) 4.dp else 0.dp).value)
             .clip(RoundedCornerShape(10.dp))
     ) {
+        val density = LocalDensity.current
         val maxWidth = this.maxWidth
         val scrollState = rememberScrollState()
-        var containerWidth by remember { mutableStateOf(0f) }
+        var containerWidthDp by remember { mutableStateOf(0.dp) }
 
         Column(
-            modifier = Modifier.padding(animateDpAsState(if (isExpanded) 4.dp else 0.dp).value)
+            modifier = Modifier
         ) {
             Column(
                 modifier = Modifier
                     .animateContentSize()
                     .horizontalScroll(scrollState)
                     .onSizeChanged { size ->
-                        containerWidth = size.width.toFloat()
+                        containerWidthDp = with(density) { size.width.toDp() }
                     }
             ) {
                 table.features
@@ -117,8 +119,10 @@ fun MembershipPlanFeatureTable(
                             if (index > 1) {
                                 Divider(
                                     modifier = Modifier
-                                        .width(with(LocalDensity.current) { containerWidth.toDp() })
-                                        .padding(horizontal = 8.dp),
+                                        // having horizontal padding here for some reason breaks table width
+                                        // start padding + smaller width makes it render properly
+                                        .width(containerWidthDp - 8.dp)
+                                        .padding(start = 8.dp),
                                     color = Color.Gray.copy(alpha = 0.2f),
                                     thickness = 0.5.dp
                                 )
