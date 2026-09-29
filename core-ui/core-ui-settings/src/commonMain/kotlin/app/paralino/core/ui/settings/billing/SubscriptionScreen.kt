@@ -176,20 +176,22 @@ fun SubscriptionScreenCore(
 
             Spacer(Modifier.size(40.dp))
 
-            if (!uiState.hasPremiumPlan) {
-                Text(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 20.dp)
-                        .padding(bottom = 4.dp),
-                    text = stringResource(
+            Text(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp)
+                    .padding(bottom = 4.dp),
+                text = if (uiState.hasPremiumPlan) {
+                    stringResource(MR.strings.plans_management_activePlan_tag)
+                } else {
+                    stringResource(
                         MR.strings.paywall_current_plan_label,
                         uiState.currentPlanName
-                    ),
-                    textAlign = TextAlign.Center,
-                    style = MaterialTheme.typography.subtitle1.copy(fontWeight = FontWeight.Bold)
-                )
-            }
+                    )
+                },
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.subtitle1.copy(fontWeight = FontWeight.Bold)
+            )
 
             MembershipPlanFeatureTable(
                 modifier = Modifier,
