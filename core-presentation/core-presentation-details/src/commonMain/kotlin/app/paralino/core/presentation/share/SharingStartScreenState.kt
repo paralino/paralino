@@ -22,6 +22,7 @@ data class SharingStartScreenState constructor(
     val approximateLocationValue: ApproximateLocationDistancePair = ApproximateLocationDistancePair.default,
     val shareApproximateLocation: Boolean = false,
     val formattedApproximateLocation: String? = "",
+    val canHaveDuration: Boolean = false,
     val shareBattery: Boolean = true,
     val shareSpeed: Boolean = true,
     val shareElevation: Boolean = true,

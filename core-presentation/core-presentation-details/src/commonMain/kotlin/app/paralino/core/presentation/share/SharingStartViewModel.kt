@@ -374,6 +374,7 @@ class SharingStartViewModel(
                                 devicesLimit = group.group.group.devicesLimit(remoteConfigRepo.getConfigOnce()),
                                 isDeviceRegistered = isDeviceRegistered,
 
+                                canHaveDuration = true,
                                 showNotifyOthers = !isSharingActive && (groupPlanConfig.hasSharingAlerts || group.group.group.isCurrentUserOwner),
                                 showDeviceStatus = true,
                                 showRealtimeUpdatesStatus = groupPlanConfig.hasOngoingRealtime || group.group.group.isCurrentUserOwner,
@@ -417,6 +418,7 @@ class SharingStartViewModel(
                                     currentCount = deviceCountPlanStatus?.payload?.count ?: group.space.activeDeviceCount
                                 ),
                                 isDeviceRegistered = isDeviceRegistered,
+                                canHaveDuration = false,
                                 showNotifyOthers = false,
                                 showDeviceStatus = false,
                                 showRealtimeUpdatesStatus = false,
@@ -821,6 +823,7 @@ class SharingStartViewModel(
     }
 
     private fun enableSharingDurationEdit() {
+        if (!uiState.value.canHaveDuration) return
         val existingExpiresAt = uiState.value.currentContract?.endTimeUTC.orEmpty()
         sharingDurationChangedMillis(
             durationMillis = durationMillisForExpiresAt(existingExpiresAt)

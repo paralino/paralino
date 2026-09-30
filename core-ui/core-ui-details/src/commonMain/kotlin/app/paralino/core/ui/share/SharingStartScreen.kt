@@ -76,6 +76,7 @@ import app.paralino.core.ui.groups.components.GroupListItem
 import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.ui.theme.ButtonStyle
 import app.paralino.core.utils.ConditionErrorType
+import app.paralino.core.utils.extensions.conditional
 import dev.icerock.moko.resources.PluralsResource
 import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.delay
@@ -463,11 +464,13 @@ fun SharingStartScreenCore(
                     AnimatedVisibility(visible = state.formattedEndTime != null) {
                         ComponentWithDurationExpirationBanner(
                             modifier = Modifier
-                                .fillMaxWidth()
+                                .conditional(state.canHaveDuration) {
+                                    fillMaxWidth()
+                                }
                                 .clickable(onClick = { vm.onEvent(SharingStartScreenUiEvent.RequestSharingDurationEdit) }),
                             expirationTime = state.formattedEndTime.orEmpty(),
                             isExpired = false,
-                            canEdit = true
+                            canEdit = state.canHaveDuration
                         )
                     }
 
