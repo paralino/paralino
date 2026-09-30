@@ -180,7 +180,9 @@ class PersonalSpaceViewModel(
                 )
             }
 
-            val devicesLimit = personalSpaceData.plan.personalDevicesLimit
+            val devicesLimit = personalSpaceData.plan.personalDevicesLimitForDisplay(
+                currentCount = personalSpaceData.activeDeviceCount
+            )
 
             val placesData = places
                 .filter { it.data.data?.lat != null && it.data.data?.lng != null }

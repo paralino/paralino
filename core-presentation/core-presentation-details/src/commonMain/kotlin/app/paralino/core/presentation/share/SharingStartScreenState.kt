@@ -39,7 +39,7 @@ data class SharingStartScreenState constructor(
     val showMetadata: Boolean = false,
     val isNotifyOtherEnabledInPlan: Boolean = true,
     val isRealtimeSharingEnabledInPlan: Boolean = true,
-    val devicesLimit: Int = 0,
+    val devicesLimit: Int? = 0,
     val devicesCount: Int? = null,
     val premiumStatus: PremiumStatusLimitState? = null,
     val areLimitsExceeded: Boolean = false,

@@ -173,7 +173,7 @@ class PremiumStatusManager(
 
         if (maxPlaceLimit != null && payload.isOwner && payload.count >= maxPlaceLimit) {
             return PremiumStatusLimitState.ServiceLimitReached(payload)
-        } else if (payload.limit != null && payload.limit in 0..payload.count) {
+        } else if (isPersonalSpaceOnLimit(groupId, payload) || (payload.limit != null && payload.limit in 0..payload.count)) {
             return PremiumStatusLimitState.PlanLimitReached(payload)
         } else {
             return PremiumStatusLimitState.WithinLimits(payload)
@@ -242,11 +242,19 @@ class PremiumStatusManager(
 
         if (maxDeviceLimit != null && payload.isOwner && payload.count >= maxDeviceLimit) {
             return PremiumStatusLimitState.ServiceLimitReached(payload)
-        } else if (payload.limit in 0..payload.count) {
+        } else if (isPersonalSpaceOnLimit(groupId, payload) || payload.limit in 0..payload.count) {
             return PremiumStatusLimitState.PlanLimitReached(payload)
         } else {
             return PremiumStatusLimitState.WithinLimits(payload)
         }
+    }
+
+    private fun isPersonalSpaceOnLimit(
+        groupId: GroupOrSpaceId,
+        payload: PremiumStatusLimitPayload
+    ): Boolean {
+        // checking for == 0 since hasPersonalSpace does not affect created resources
+        return groupId.isPersonalSpace && !payload.plan.hasPersonalSpace && payload.count == 0
     }
 
     suspend fun checkMemberCountLimits(groupId: String): PremiumStatusLimitState? {

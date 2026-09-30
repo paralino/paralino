@@ -16,7 +16,7 @@ data class PersonalSpaceScreenState(
     val sharingStatus: LocationSharingState?,
     val devicesWithSessions: List<UserDeviceOrSessionItemState>,
     val placesFeatureItems: List<GroupSpaceFocusedFeatureChildItem>,
-    val devicesLimit: Int,
+    val devicesLimit: Int?,
     val shouldShowPlanBanner: Boolean,
     val arePlacesOverLimit: Boolean?,
     val isSpaceOverLimit: Boolean?,

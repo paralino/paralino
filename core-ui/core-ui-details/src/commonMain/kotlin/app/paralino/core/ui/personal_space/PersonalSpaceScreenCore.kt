@@ -283,7 +283,13 @@ fun PersonalSpaceScreenCore(
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             Text(
-                                text = stringResource(MR.strings.personalSpace_section_activated_empty),
+                                text = stringResource(
+                                    if (uiState.plan.hasPersonalSpace) {
+                                        MR.strings.personalSpace_section_activated_empty
+                                    } else {
+                                        MR.strings.personalSpace_section_activated_upgrade
+                                    }
+                                ),
                                 style = MaterialTheme.typography.body2,
                                 color = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.medium)
                             )

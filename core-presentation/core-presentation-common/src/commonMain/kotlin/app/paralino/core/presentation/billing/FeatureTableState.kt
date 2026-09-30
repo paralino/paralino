@@ -238,9 +238,8 @@ data class FeatureTableState(
                                 }
 
                                 if (!it.config.isPersonalHistoryEnabled) {
-                                    FeatureTableItemValue.MoreInfo(
-                                        title = it.config.adjustedPlanName,
-                                        content = MR.strings.paywall_feature_history_days_minimum_info.localizedString(),
+                                    FeatureTableItemValue.Emoji(
+                                        content = "❌",
                                         planType = it.type,
                                         highlightMode = highlightMode
                                     )
@@ -271,16 +270,25 @@ data class FeatureTableState(
                             content = MR.strings.paywall_feature_devices_personal.localizedString(),
                             visibilityMode = FeatureTableItemVisibilityMode.VISIBLE_EXPANDED,
                             values = plans.map {
-                                FeatureTableItemValue.Count(
-                                    content = it.config.personalDevicesLimit.toString(),
-                                    planType = it.type,
-                                    isPremium = it.config.isPremium,
-                                    highlightMode = if (it.isSelected) {
-                                        FeatureTableItemHighlightMode.FULL
-                                    } else {
-                                        FeatureTableItemHighlightMode.NONE
-                                    }
-                                )
+                                val highlightMode = if (it.isSelected) {
+                                    FeatureTableItemHighlightMode.FULL
+                                } else {
+                                    FeatureTableItemHighlightMode.NONE
+                                }
+                                if (!it.config.hasPersonalSpace) {
+                                    FeatureTableItemValue.Emoji(
+                                        content = "❌",
+                                        planType = it.type,
+                                        highlightMode = highlightMode
+                                    )
+                                } else {
+                                    FeatureTableItemValue.Count(
+                                        content = it.config.personalDevicesLimit.toString(),
+                                        planType = it.type,
+                                        isPremium = it.config.isPremium,
+                                        highlightMode = highlightMode
+                                    )
+                                }
                             }
                         )
                     )
@@ -295,7 +303,13 @@ data class FeatureTableState(
                                 } else {
                                     FeatureTableItemHighlightMode.NONE
                                 }
-                                if (it.config.personalPlacesLimit >= 0) {
+                                if (!it.config.hasPersonalSpace) {
+                                    FeatureTableItemValue.Emoji(
+                                        content = "❌",
+                                        planType = it.type,
+                                        highlightMode = highlightMode
+                                    )
+                                } else if (it.config.personalPlacesLimit >= 0) {
                                     FeatureTableItemValue.Count(
                                         content = it.config.personalPlacesLimit.toString(),
                                         planType = it.type,
@@ -542,22 +556,32 @@ data class FeatureTableState(
                                 features = buildList {
                                     add(
                                         FeatureTableItemValueDataPoint(
-                                            amount = it.config.personalDevicesLimit.toString(),
+                                            amount = if (!it.config.hasPersonalSpace) {
+                                                "❌"
+                                            } else {
+                                                it.config.personalDevicesLimit.toString()
+                                            },
                                             content = MR.plurals.paywall_feature_summary_devices.localizedString(
-                                                quantity = it.config.personalDevicesLimit
+                                                quantity = if (it.config.hasPersonalSpace) {
+                                                    it.config.personalDevicesLimit
+                                                } else {
+                                                    0
+                                                }
                                             ),
                                             isHighlighted = false
                                         )
                                     )
                                     add(
                                         FeatureTableItemValueDataPoint(
-                                            amount = if (it.config.personalPlacesLimit >= 0) {
+                                            amount = if (!it.config.hasPersonalSpace) {
+                                                "❌"
+                                            } else if (it.config.personalPlacesLimit >= 0) {
                                                 it.config.personalPlacesLimit.toString()
                                             } else {
                                                 MR.strings.paywall_feature_value_unlimited.localizedString()
                                             },
                                             content = MR.strings.paywall_feature_summary_places.localizedString(),
-                                            isHighlighted = it.config.personalPlacesLimit < 0
+                                            isHighlighted = it.config.hasPersonalSpace && it.config.personalPlacesLimit < 0
                                         )
                                     )
                                     add(

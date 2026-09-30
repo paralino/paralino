@@ -115,8 +115,9 @@ class PlacesViewModel(
                 null
             }
 
-            val placesLimit = space.plan.personalPlacesLimit
-                .takeIf { it >= 0 }
+            val placesLimit = space.plan.personalPlacesLimitForDisplay(
+                currentCount = places.size
+            )
             val canShowPlanBanner = !space.plan.isPremium
             val state = PlacesListScreenState(
                 groupId = UserGroup.groupPersonalDevicesId.asGroupOrSpaceId(),

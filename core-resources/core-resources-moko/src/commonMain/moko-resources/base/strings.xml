@@ -1046,6 +1046,7 @@
     <string name="personalSpace_current_device_withName">**This device** (%s)</string>
     <string name="personalSpace_section_activated">Activated devices</string>
     <string name="personalSpace_section_activated_empty">None of your devices are registered to actively share their location in personal space.</string>
+    <string name="personalSpace_section_activated_upgrade">To use personal space for your devices, upgrade your plan.</string>
     <string name="personalSpace_section_other">Other devices &amp; sessions</string>
     <string name="personalSpace_section_empty">No devices found</string>
     <string name="personalSpace_tracking_encryption_info">Your location and related data are always **end-to-end encrypted** and only accessible to you on your devices.</string>

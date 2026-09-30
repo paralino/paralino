@@ -487,15 +487,12 @@ class LocationHistoryViewModelController(
                                 data = AppSnackbarData(
                                     payload = AppSnackbarPayload(
                                         text = if (_uiState.value.isPersonalHistory) {
-                                            val days =
-                                                _uiState.value.planConfig?.personalHistoryDaysLimit
-                                                    ?: 0
-                                            if (days == 0) {
+                                            val plan = _uiState.value.planConfig
+                                            if (plan?.isPersonalHistoryEnabled != true) {
                                                 MR.strings.history_map_plan_limit_message_personal_free.localizedString()
                                             } else {
                                                 MR.strings.history_map_plan_limit_message_personal_count.localizedString(
-                                                    _uiState.value.planConfig?.personalHistoryDaysLimit
-                                                        ?: 1
+                                                    plan.personalHistoryDaysLimit
                                                 )
                                             }
                                         } else {

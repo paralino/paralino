@@ -202,7 +202,7 @@ class LocationHistoryDataFetchController(
             .flatMapLatest { memberData ->
                 // if history is not enabled, allow reading up 2 days of cached history
                 val isHistoryEnabled =
-                    memberData?.group?.planConfig(remoteConfig.getConfigOnce())?.isPersonalHistoryEnabled == true
+                    memberData?.group?.planConfig(remoteConfig.getConfigOnce())?.isGroupHistoryEnabled == true
                 val endDate = if (isHistoryEnabled) {
                     endDate
                 } else {

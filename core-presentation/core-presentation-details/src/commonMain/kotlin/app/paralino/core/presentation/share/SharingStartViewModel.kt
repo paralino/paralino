@@ -347,7 +347,7 @@ class SharingStartViewModel(
             }
         }
 
-        val premiumStatus = premiumStatusManager.checkDeviceCountLimits(groupId = group.id.asGroupOrSpaceId())
+        val deviceCountPlanStatus = premiumStatusManager.checkDeviceCountLimits(groupId = group.id.asGroupOrSpaceId())
         val isDeviceRegistered = registerDevice.isDeviceAlreadyRegistered(groupId = group.id.asGroupOrSpaceId())
 
         when (group) {
@@ -368,8 +368,8 @@ class SharingStartViewModel(
                                         config = remoteConfigRepo.getConfigOnce()
                                     )
                                 ),
-                                devicesCount = premiumStatus?.payload?.count,
-                                premiumStatus = premiumStatus,
+                                devicesCount = deviceCountPlanStatus?.payload?.count,
+                                premiumStatus = deviceCountPlanStatus,
                                 areLimitsExceeded = isGroupOverLimits,
                                 devicesLimit = group.group.group.devicesLimit(remoteConfigRepo.getConfigOnce()),
                                 isDeviceRegistered = isDeviceRegistered,
@@ -410,10 +410,12 @@ class SharingStartViewModel(
                                         config = remoteConfigRepo.getConfigOnce()
                                     )
                                 ),
-                                devicesCount = premiumStatus?.payload?.count,
-                                premiumStatus = premiumStatus,
+                                devicesCount = deviceCountPlanStatus?.payload?.count,
+                                premiumStatus = deviceCountPlanStatus,
                                 areLimitsExceeded = isOverLimits,
-                                devicesLimit = group.space.plan.personalDevicesLimit,
+                                devicesLimit = group.space.plan.personalDevicesLimitForDisplay(
+                                    currentCount = deviceCountPlanStatus?.payload?.count ?: group.space.activeDeviceCount
+                                ),
                                 isDeviceRegistered = isDeviceRegistered,
                                 showNotifyOthers = false,
                                 showDeviceStatus = false,

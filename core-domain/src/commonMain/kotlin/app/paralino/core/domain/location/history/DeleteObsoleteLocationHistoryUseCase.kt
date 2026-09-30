@@ -34,10 +34,11 @@ class DeleteObsoleteLocationHistoryUseCase(
                 
                 // Only delete if history is not unlimited and is enabled
                 if (!planConfig.hasUnlimitedPersonalHistory) {
-                    val cutoffDate = today.minus(DatePeriod(days = planConfig.personalHistoryDaysLimit + 2))
+                    val historyDays = planConfig.personalHistoryDaysLimit.takeIf { planConfig.isPersonalHistoryEnabled } ?: 0
+                    val cutoffDate = today.minus(DatePeriod(days = historyDays + 2))
                     val cutoffDateKey = cutoffDate.historyDateKeyForApi()
                     
-                    logg.tag("delete_obsolete_history").d("Deleting personal history older than $cutoffDateKey (limit: ${planConfig.personalHistoryDaysLimit} days)")
+                    logg.tag("delete_obsolete_history").d("Deleting personal history older than $cutoffDateKey (limit: $historyDays days)")
                     
                     database.locationHistoryDao.deletePersonalHistoryByDateRange(
                         locationIds = emptyList(), // not used when deleteForAllDevices is true
