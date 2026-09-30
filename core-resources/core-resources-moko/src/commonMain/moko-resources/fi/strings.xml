@@ -951,6 +951,7 @@
     <string name="personalSpace_current_device_withName">**Tämä laite** (%s)</string>
     <string name="personalSpace_section_activated">Aktivoidut laitteet</string>
     <string name="personalSpace_section_activated_empty">Yksikään laitteistasi ei ole rekisteröity jakamaan sijaintiaan aktiivisesti henkilökohtaisessa tilassa.</string>
+    <string name="personalSpace_section_activated_upgrade">Käytä henkilökohtaista tilaa laitteillasi päivittämällä suunnitelmasi.</string>
     <string name="personalSpace_section_other">Muut laitteet ja istunnot</string>
     <string name="personalSpace_section_empty">Laitteita ei löytynyt</string>
     <string name="personalSpace_tracking_encryption_info">Sijaintisi ja siihen liittyvät tiedot ovat aina **päästä päähän salattuja** ja vain sinun käytettävissäsi laitteillasi.</string>

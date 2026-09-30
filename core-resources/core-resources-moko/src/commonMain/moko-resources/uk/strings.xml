@@ -951,6 +951,7 @@
     <string name="personalSpace_current_device_withName">**Цей пристрій** (%s)</string>
     <string name="personalSpace_section_activated">Активовані пристрої</string>
     <string name="personalSpace_section_activated_empty">Жоден із ваших пристроїв не зареєстрований для активного обміну місцезнаходженням в особистому просторі.</string>
+    <string name="personalSpace_section_activated_upgrade">Щоб використовувати особистий простір для своїх пристроїв, оновіть свій план.</string>
     <string name="personalSpace_section_other">Інші пристрої та сесії</string>
     <string name="personalSpace_section_empty">Пристроїв не знайдено</string>
     <string name="personalSpace_tracking_encryption_info">Ваше місцезнаходження та пов\'язані дані завжди **шифруються з кінця в кінець** і доступні лише вам на ваших пристроях.</string>

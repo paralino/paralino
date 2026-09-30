@@ -951,6 +951,7 @@
     <string name="personalSpace_current_device_withName">**Ovaj uređaj** (%s)</string>
     <string name="personalSpace_section_activated">Aktivirani uređaji</string>
     <string name="personalSpace_section_activated_empty">Nijedan od vaših uređaja nije registrovan da aktivno dijeli lokaciju u ličnom prostoru.</string>
+    <string name="personalSpace_section_activated_upgrade">Da biste koristili lični prostor za svoje uređaje, nadogradite svoj plan.</string>
     <string name="personalSpace_section_other">Ostali uređaji i sesije</string>
     <string name="personalSpace_section_empty">Nema pronađenih uređaja</string>
     <string name="personalSpace_tracking_encryption_info">Vaša lokacija i povezani podaci su uvijek **šifrirani od kraja do kraja** i dostupni su samo vama na vašim uređajima.</string>

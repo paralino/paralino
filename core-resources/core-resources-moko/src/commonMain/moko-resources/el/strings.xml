@@ -951,6 +951,7 @@
     <string name="personalSpace_current_device_withName">**Αυτή η συσκευή** (%s)</string>
     <string name="personalSpace_section_activated">Ενεργοποιημένες συσκευές</string>
     <string name="personalSpace_section_activated_empty">Καμία από τις συσκευές σας δεν είναι εγγεγραμμένη για να μοιράζεται ενεργά την τοποθεσία της στον προσωπικό χώρο.</string>
+    <string name="personalSpace_section_activated_upgrade">Για να χρησιμοποιήσετε τον προσωπικό χώρο για τις συσκευές σας, αναβαθμίστε το σχέδιό σας.</string>
     <string name="personalSpace_section_other">Άλλες συσκευές &amp; συνεδρίες</string>
     <string name="personalSpace_section_empty">Δεν βρέθηκαν συσκευές</string>
     <string name="personalSpace_tracking_encryption_info">Η τοποθεσία σας και τα σχετικά δεδομένα είναι πάντα **κρυπτογραφημένα από άκρο σε άκρο** και προσβάσιμα μόνο από εσάς στις συσκευές σας.</string>

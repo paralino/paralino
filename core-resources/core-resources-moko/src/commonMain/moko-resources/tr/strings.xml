@@ -951,6 +951,7 @@
     <string name="personalSpace_current_device_withName">**Bu cihaz** (%s)</string>
     <string name="personalSpace_section_activated">Aktif cihazlar</string>
     <string name="personalSpace_section_activated_empty">Cihazlarınızdan hiçbiri, kişisel alanda konumunu etkin olarak paylaşmak üzere kayıtlı değil.</string>
+    <string name="personalSpace_section_activated_upgrade">Cihazlarınız için kişisel alanı kullanmak üzere planınızı yükseltin.</string>
     <string name="personalSpace_section_other">Diğer cihazlar ve oturumlar</string>
     <string name="personalSpace_section_empty">Cihaz bulunamadı</string>
     <string name="personalSpace_tracking_encryption_info">Konumunuz ve ilgili verileriniz her zaman **uçtan uca şifrelenmiş** olup yalnızca cihazlarınızda sizin erişiminize açıktır.</string>

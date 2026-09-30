@@ -951,6 +951,7 @@
     <string name="personalSpace_current_device_withName">**Ta naprava** (%s)</string>
     <string name="personalSpace_section_activated">Aktivirane naprave</string>
     <string name="personalSpace_section_activated_empty">Nobena od vaših naprav ni registrirana za aktivno deljenje lokacije v osebnem prostoru.</string>
+    <string name="personalSpace_section_activated_upgrade">Za uporabo osebnega prostora za vaše naprave nadgradite svoj načrt.</string>
     <string name="personalSpace_section_other">Druge naprave in seje</string>
     <string name="personalSpace_section_empty">Nobena naprava ni bila najdena</string>
     <string name="personalSpace_tracking_encryption_info">Vaša lokacija in povezani podatki so vedno **šifrirani od konca do konca** in dostopni le vam na vaših napravah.</string>

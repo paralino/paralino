@@ -951,6 +951,7 @@
     <string name="personalSpace_current_device_withName">**Toto zariadenie** (%s)</string>
     <string name="personalSpace_section_activated">Aktivované zariadenia</string>
     <string name="personalSpace_section_activated_empty">Žiadne z vašich zariadení nie je zaregistrované na aktívne zdieľanie polohy v osobnom priestore.</string>
+    <string name="personalSpace_section_activated_upgrade">Na používanie osobného priestoru pre vaše zariadenia, vylepšite svoj plán.</string>
     <string name="personalSpace_section_other">Iné zariadenia a relácie</string>
     <string name="personalSpace_section_empty">Žiadne zariadenia nenájdené</string>
     <string name="personalSpace_tracking_encryption_info">Vaša poloha a súvisiace údaje sú vždy **šifrované od konca po koniec** a sú prístupné iba vám na vašich zariadeniach.</string>

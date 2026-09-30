@@ -951,6 +951,7 @@
     <string name="personalSpace_current_device_withName">**Dit apparaat** (%s)</string>
     <string name="personalSpace_section_activated">Geactiveerde apparaten</string>
     <string name="personalSpace_section_activated_empty">Geen van uw apparaten is geregistreerd om actief de locatie te delen in de persoonlijke ruimte.</string>
+    <string name="personalSpace_section_activated_upgrade">Om de persoonlijke ruimte voor uw apparaten te gebruiken, upgrade uw plan.</string>
     <string name="personalSpace_section_other">Andere apparaten &amp; sessies</string>
     <string name="personalSpace_section_empty">Geen apparaten gevonden</string>
     <string name="personalSpace_tracking_encryption_info">Uw locatie en gerelateerde gegevens zijn altijd **eind-tot-eind versleuteld** en alleen toegankelijk voor u op uw apparaten.</string>

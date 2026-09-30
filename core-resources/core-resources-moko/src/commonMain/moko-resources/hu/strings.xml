@@ -951,6 +951,7 @@
     <string name="personalSpace_current_device_withName">**Ez a készülék** (%s)</string>
     <string name="personalSpace_section_activated">Aktivált eszközök</string>
     <string name="personalSpace_section_activated_empty">Egyik eszközöd sincs regisztrálva arra, hogy aktívan megossza a helyzetét a személyes térben.</string>
+    <string name="personalSpace_section_activated_upgrade">Eszközei személyes terének használatához frissítse a tervét.</string>
     <string name="personalSpace_section_other">Egyéb készülékek és munkamenetek</string>
     <string name="personalSpace_section_empty">Nincs található készülék</string>
     <string name="personalSpace_tracking_encryption_info">A helyed és a kapcsolódó adatok mindig **végponttól végpontig titkosítva** vannak, és csak a te készülékeiden érhetők el.</string>

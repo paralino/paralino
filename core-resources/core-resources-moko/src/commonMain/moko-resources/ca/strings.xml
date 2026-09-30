@@ -951,6 +951,7 @@
     <string name="personalSpace_current_device_withName">**Aquest dispositiu** (%s)</string>
     <string name="personalSpace_section_activated">Dispositius activats</string>
     <string name="personalSpace_section_activated_empty">Cap dels teus dispositius no està registrat per compartir activament la ubicació a l\'espai personal.</string>
+    <string name="personalSpace_section_activated_upgrade">Per utilitzar l\'espai personal per als vostres dispositius, actualitzeu el vostre pla.</string>
     <string name="personalSpace_section_other">Altres dispositius i sessions</string>
     <string name="personalSpace_section_empty">No s\'han trobat dispositius</string>
     <string name="personalSpace_tracking_encryption_info">La teva ubicació i les dades relacionades estan sempre **xifrades de punta a punta** i només accessibles per a tu als teus dispositius.</string>

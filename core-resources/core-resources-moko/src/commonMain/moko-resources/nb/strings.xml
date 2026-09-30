@@ -951,6 +951,7 @@
     <string name="personalSpace_current_device_withName">**Denne enheten** (%s)</string>
     <string name="personalSpace_section_activated">Aktiverte enheter</string>
     <string name="personalSpace_section_activated_empty">Ingen av enhetene dine er registrert for å aktivt dele posisjonen sin i den personlige plassen.</string>
+    <string name="personalSpace_section_activated_upgrade">For å bruke personlig plass for enhetene dine, oppgrader planen din.</string>
     <string name="personalSpace_section_other">Andre enheter og økter</string>
     <string name="personalSpace_section_empty">Ingen enheter funnet</string>
     <string name="personalSpace_tracking_encryption_info">Din plassering og relaterte data er alltid **ende-til-ende kryptert** og kun tilgjengelig for deg på dine enheter.</string>

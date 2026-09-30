@@ -951,6 +951,7 @@
     <string name="personalSpace_current_device_withName">**To urządzenie** (%s)</string>
     <string name="personalSpace_section_activated">Aktywowane urządzenia</string>
     <string name="personalSpace_section_activated_empty">Żadne z Twoich urządzeń nie jest zarejestrowane do aktywnego udostępniania lokalizacji w przestrzeni osobistej.</string>
+    <string name="personalSpace_section_activated_upgrade">Aby korzystać z przestrzeni osobistej dla swoich urządzeń, zaktualizuj swój plan.</string>
     <string name="personalSpace_section_other">Inne urządzenia i sesje</string>
     <string name="personalSpace_section_empty">Nie znaleziono urządzeń</string>
     <string name="personalSpace_tracking_encryption_info">Twoja lokalizacja i powiązane dane są zawsze **szyfrowane od końca do końca** i dostępne tylko dla Ciebie na Twoich urządzeniach.</string>

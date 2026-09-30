@@ -951,6 +951,7 @@
     <string name="personalSpace_current_device_withName">**Acest dispozitiv** (%s)</string>
     <string name="personalSpace_section_activated">Dispozitive activate</string>
     <string name="personalSpace_section_activated_empty">Niciunul dintre dispozitivele tale nu este înregistrat pentru a partaja activ locația în spațiul personal.</string>
+    <string name="personalSpace_section_activated_upgrade">Pentru a folosi spațiul personal pentru dispozitivele tale, îmbunătățește-ți planul.</string>
     <string name="personalSpace_section_other">Alte dispozitive și sesiuni</string>
     <string name="personalSpace_section_empty">Niciun dispozitiv găsit</string>
     <string name="personalSpace_tracking_encryption_info">Locația și datele aferente sunt întotdeauna **criptate de la un capăt la altul** și accesibile doar pentru tine pe dispozitivele tale.</string>
