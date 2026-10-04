@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.ui.uikit.OnFocusBehavior
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.ComposeUIViewController
+import app.paralino.core.models.settings.AppThemeType
 import app.paralino.core.presentation.paralinoid.PersonalCodeViewModel
 import app.paralino.core.presentation.rawdata.RawDataPresentationViewModel
 import app.paralino.core.presentation.settings.SettingsViewModel
@@ -347,6 +348,7 @@ object SettingsScreens {
 
     fun AppSettingsScreenVC(
         vm: AppSettingsViewModel,
+        openAppThemeScreen: () -> Unit,
         openMeasurementSystemScreen: () -> Unit,
         openNotificationGroupingScreen: () -> Unit,
         openMapInteractionsScreen: () -> Unit,
@@ -359,6 +361,7 @@ object SettingsScreens {
                 vm = vm,
                 appState = it,
                 paddingValues = PaddingValues(),
+                onAppThemeClick = openAppThemeScreen,
                 onMeasurementSystemClick = openMeasurementSystemScreen,
                 onNotificationGroupingClick = openNotificationGroupingScreen,
                 onMapInteractionsClick = openMapInteractionsScreen,
@@ -377,6 +380,7 @@ object SettingsScreens {
         openPaywall: () -> Unit,
         askNotificationPermission: () -> Unit,
         askBackgroundAccessPermission: () -> Unit,
+        applyAppTheme: (AppThemeType) -> Unit,
     ) = ComposeUIViewController {
         RootScreenIOS {
             GenericSettingsScreenCore(
@@ -389,6 +393,7 @@ object SettingsScreens {
                 openNotificationSocketChannelSettings = {},
                 askNotificationPermission = askNotificationPermission,
                 askBackgroundAccessPermission = askBackgroundAccessPermission,
+                applyAppTheme = applyAppTheme,
             )
         }
     }

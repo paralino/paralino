@@ -61,6 +61,7 @@
 		259AEFA42A3E19740083FF4B /* Sharing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 259AEFA32A3E19740083FF4B /* Sharing.swift */; };
 		259AEFA62A3E2EF30083FF4B /* MapHomeScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 259AEFA52A3E2EF30083FF4B /* MapHomeScreen.swift */; };
 		259AEFA82A3E2F960083FF4B /* MapHomeState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 259AEFA72A3E2F960083FF4B /* MapHomeState.swift */; };
+		25A1D0012F639001008E9FF1 /* UserDevicesScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25A1D0002F639001008E9FF1 /* UserDevicesScreen.swift */; };
 		25A228662CC7D3AE004577BE /* Number+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25A228652CC7D3A8004577BE /* Number+Extension.swift */; };
 		25A228682CC7F7D0004577BE /* MapComponentVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25A228672CC7F7BF004577BE /* MapComponentVC.swift */; };
 		25A2286A2CC809C8004577BE /* ValueAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25A228692CC809C4004577BE /* ValueAnimator.swift */; };
@@ -84,6 +85,7 @@
 		25C91A362A5890B400A49F06 /* MemberInviteScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25C91A352A5890B400A49F06 /* MemberInviteScreen.swift */; };
 		25C9E5672CCB75C200C3C58A /* LocationPermissionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25C9E5662CCB75BA00C3C58A /* LocationPermissionHandler.swift */; };
 		25C9E5692CD0300E00C3C58A /* LoadingOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25C9E5682CD0300E00C3C58A /* LoadingOverlay.swift */; };
+		25D783D830725EA300D5A536 /* AppThemeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25D783D730725E9C00D5A536 /* AppThemeManager.swift */; };
 		25D8A43529CE24A00023A0E5 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25D8A43429CE24A00023A0E5 /* AppDelegate.swift */; };
 		25DA00932D307BEE00F705FB /* BatteryNotificationsSettingsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25DA00922D307BEE00F705FB /* BatteryNotificationsSettingsScreen.swift */; };
 		25E943462D5E4948002B91D7 /* VerifyEmailScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25E943452D5E4948002B91D7 /* VerifyEmailScreen.swift */; };
@@ -109,7 +111,6 @@
 		25FC5CAA2A458D970006E796 /* NavigationGraph.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25FC5CA92A458D970006E796 /* NavigationGraph.swift */; };
 		25FC5CAC2A45F8CC0006E796 /* ConvertAccountScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25FC5CAB2A45F8CC0006E796 /* ConvertAccountScreen.swift */; };
 		25FC5CAE2A45FB320006E796 /* BlockListScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25FC5CAD2A45FB320006E796 /* BlockListScreen.swift */; };
-		25A1D0012F639001008E9FF1 /* UserDevicesScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25A1D0002F639001008E9FF1 /* UserDevicesScreen.swift */; };
 		25FC5CB02A460A510006E796 /* RawDataScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25FC5CAF2A460A510006E796 /* RawDataScreen.swift */; };
 		25FC5CB22A4612A40006E796 /* EditProfileScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25FC5CB12A4612A40006E796 /* EditProfileScreen.swift */; };
 /* End PBXBuildFile section */
@@ -252,6 +253,7 @@
 		259AEFA32A3E19740083FF4B /* Sharing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sharing.swift; sourceTree = "<group>"; };
 		259AEFA52A3E2EF30083FF4B /* MapHomeScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapHomeScreen.swift; sourceTree = "<group>"; };
 		259AEFA72A3E2F960083FF4B /* MapHomeState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapHomeState.swift; sourceTree = "<group>"; };
+		25A1D0002F639001008E9FF1 /* UserDevicesScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDevicesScreen.swift; sourceTree = "<group>"; };
 		25A228652CC7D3A8004577BE /* Number+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Number+Extension.swift"; sourceTree = "<group>"; };
 		25A228672CC7F7BF004577BE /* MapComponentVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapComponentVC.swift; sourceTree = "<group>"; };
 		25A228692CC809C4004577BE /* ValueAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValueAnimator.swift; sourceTree = "<group>"; };
@@ -276,6 +278,7 @@
 		25C91A352A5890B400A49F06 /* MemberInviteScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemberInviteScreen.swift; sourceTree = "<group>"; };
 		25C9E5662CCB75BA00C3C58A /* LocationPermissionHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationPermissionHandler.swift; sourceTree = "<group>"; };
 		25C9E5682CD0300E00C3C58A /* LoadingOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingOverlay.swift; sourceTree = "<group>"; };
+		25D783D730725E9C00D5A536 /* AppThemeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppThemeManager.swift; sourceTree = "<group>"; };
 		25D8A43429CE24A00023A0E5 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		25DA00922D307BEE00F705FB /* BatteryNotificationsSettingsScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BatteryNotificationsSettingsScreen.swift; sourceTree = "<group>"; };
 		25E943452D5E4948002B91D7 /* VerifyEmailScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifyEmailScreen.swift; sourceTree = "<group>"; };
@@ -307,7 +310,6 @@
 		25FC5CA92A458D970006E796 /* NavigationGraph.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationGraph.swift; sourceTree = "<group>"; };
 		25FC5CAB2A45F8CC0006E796 /* ConvertAccountScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConvertAccountScreen.swift; sourceTree = "<group>"; };
 		25FC5CAD2A45FB320006E796 /* BlockListScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockListScreen.swift; sourceTree = "<group>"; };
-		25A1D0002F639001008E9FF1 /* UserDevicesScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDevicesScreen.swift; sourceTree = "<group>"; };
 		25FC5CAF2A460A510006E796 /* RawDataScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RawDataScreen.swift; sourceTree = "<group>"; };
 		25FC5CB12A4612A40006E796 /* EditProfileScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditProfileScreen.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -477,6 +479,7 @@
 		25356A9829EAB8CD00CD32F5 /* Theme */ = {
 			isa = PBXGroup;
 			children = (
+				25D783D730725E9C00D5A536 /* AppThemeManager.swift */,
 				25356A9929EAB8E100CD32F5 /* Colors.swift */,
 			);
 			path = Theme;
@@ -1199,6 +1202,7 @@
 				25EF80312CAEAC0000DFC890 /* BillingProviderIOS.swift in Sources */,
 				259AEFA42A3E19740083FF4B /* Sharing.swift in Sources */,
 				254B6F2829EC7C50008B1458 /* Image+Extensions.swift in Sources */,
+				25D783D830725EA300D5A536 /* AppThemeManager.swift in Sources */,
 				254B6F2429EC7C1B008B1458 /* WelcomeScreen.swift in Sources */,
 				25EF802F2CAEABD000DFC890 /* FreePlanInfoScreen.swift in Sources */,
 				25592FB02D11E370003EECCB /* AppRatingPresenter.swift in Sources */,

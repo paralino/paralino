@@ -19,6 +19,7 @@ import app.paralino.android.di.KoinSetup
 import app.paralino.android.notification.NotificationSocketServiceLauncher
 import app.paralino.android.tracking.LocationService
 import app.paralino.android.tracking.LocationServiceLauncher
+import app.paralino.android.utils.extensions.applyAsNightMode
 import app.paralino.core.CoreAppManager
 import app.paralino.core.ParalinoCore
 import app.paralino.core.db.AppPrefs
@@ -82,6 +83,7 @@ class AppClass : CoreAppClass(), ICoroutineScopeProvider, DefaultLifecycleObserv
             { androidContext(this@AppClass) },
             KoinSetup.modules
         )
+        appPrefs.appTheme.applyAsNightMode(instance)
 
         ProcessLifecycleOwner.get().lifecycle.addObserver(this)
 

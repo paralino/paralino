@@ -14,6 +14,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import app.paralino.core.models.settings.AppThemeType
 import app.paralino.core.presentation.settings.generic.BaseGenericSettingViewModel
 import app.paralino.core.presentation.settings.generic.GenericSettingListItem
 import app.paralino.core.presentation.settings.generic.GenericSettingsScreenEvent
@@ -38,6 +39,7 @@ fun GenericSettingsScreenCore(
     openNotificationSocketChannelSettings: () -> Unit,
     askNotificationPermission: () -> Unit,
     askBackgroundAccessPermission: () -> Unit,
+    applyAppTheme: (AppThemeType) -> Unit,
 ) {
     MessageDispatcherEffect(vm, coreUiState)
     val uiState by vm.uiState.collectAsState()
@@ -49,6 +51,7 @@ fun GenericSettingsScreenCore(
                 GenericSettingsScreenEvent.OpenNotificationSocketChannelSettings -> openNotificationSocketChannelSettings()
                 GenericSettingsScreenEvent.AskForNotificationPermission -> askNotificationPermission()
                 GenericSettingsScreenEvent.AskForBackgroundAccessPermission -> askBackgroundAccessPermission()
+                is GenericSettingsScreenEvent.ApplyAppTheme -> applyAppTheme(event.theme)
                 null -> {
                     /* do nothing */
                 }

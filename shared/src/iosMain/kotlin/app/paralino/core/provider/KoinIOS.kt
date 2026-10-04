@@ -94,6 +94,7 @@ import app.paralino.core.presentation.settings.emailchange.ChangeEmailViewModel
 import app.paralino.core.presentation.settings.general.GeneralInfoViewModel
 import app.paralino.core.presentation.settings.generic.AppSettingsViewModel
 import app.paralino.core.presentation.settings.generic.DefaultNavigationAppViewModel
+import app.paralino.core.presentation.settings.generic.AppThemeViewModel
 import app.paralino.core.presentation.settings.generic.MeasurementSystemViewModel
 import app.paralino.core.presentation.settings.generic.NotificationsGroupingViewModel
 import app.paralino.core.presentation.settings.generic.PersonalSpaceFeatureSettingsViewModel
@@ -375,6 +376,7 @@ object KoinIOS {
             factory { WelcomeOnboardingViewModel(get(), get()) }
             factory { (groupID: String) -> GroupJoinWelcomeViewModel(groupID, get(), get(), get(), get(), get(), get()) }
             factory { (groupID: String) -> BatteryNotificationsViewModel(groupID, get(), get(), get(), get(), get()) }
+            factory { AppThemeViewModel(get()) }
             factory { MeasurementSystemViewModel(get(), get()) }
             factory { NotificationsGroupingViewModel(get()) }
             factory { MapInteractionsViewModel(get()) }
@@ -489,6 +491,7 @@ object KoinIOS {
         val welcomeOnboardingVM get() = get<WelcomeOnboardingViewModel>()
         fun groupJoinWelcomeVM(groupId: String) = get<GroupJoinWelcomeViewModel> { parametersOf(groupId) }
         val verifyEmailVM get() = get<VerifyEmailViewModel>()
+        val appThemeVM get() = get<AppThemeViewModel>()
         val measurementSystemVM get() = get<MeasurementSystemViewModel>()
         val notificationGroupingVM get() = get<NotificationsGroupingViewModel>()
         val mapInteractionsVM get() = get<MapInteractionsViewModel>()

@@ -63,6 +63,7 @@ import app.paralino.core.models.settings.RawPresentationDataType
 import dev.icerock.moko.resources.compose.stringResource
 import app.paralino.core.presentation.settings.generic.maps.MapsProviderViewModel
 import app.paralino.core.presentation.settings.generic.maps.MapInteractionsViewModel
+import app.paralino.core.presentation.settings.generic.AppThemeViewModel
 import app.paralino.core.presentation.settings.generic.MeasurementSystemViewModel
 import app.paralino.core.presentation.settings.generic.NotificationsGroupingViewModel
 import app.paralino.core.presentation.settings.generic.PersonalSpaceFeatureSettingsViewModel
@@ -350,6 +351,12 @@ fun NavGraphBuilder.settingsGraph(appState: MainAppState) {
         }
         composable(AppScreen.Settings.AppSettings.routeSignature) {
             AppSettingsScreen(appState)
+        }
+        composable(AppScreen.Settings.AppTheme.routeSignature) {
+            GenericSettingsScreen(
+                appState = appState,
+                vm = koinViewModel<AppThemeViewModel>()
+            )
         }
         composable(AppScreen.Settings.MeasurementSystem.routeSignature) {
             GenericSettingsScreen(

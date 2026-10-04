@@ -69,6 +69,7 @@ enum SettingsGraph: Hashable {
     case locationSettings
     case onboarding
     case appSettings
+    case appThemeSettings
     case measurementSystemSettings
     case notificationGroupingSettings
     case mapInteractionsSettings

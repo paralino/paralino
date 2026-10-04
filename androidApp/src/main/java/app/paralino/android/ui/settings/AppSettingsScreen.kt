@@ -33,6 +33,9 @@ fun AppSettingsScreen(
             vm = vm,
             appState = appState,
             paddingValues = it,
+            onAppThemeClick = {
+                appState.navController.navigate(AppScreen.Settings.AppTheme.routeSignature)
+            },
             onMeasurementSystemClick = {
                 appState.navController.navigate(AppScreen.Settings.MeasurementSystem.routeSignature)
             },

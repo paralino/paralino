@@ -394,6 +394,10 @@ sealed class AppScreen {
             override val routeSignature: String = "app-settings"
         }
 
+        object AppTheme : AppScreen() {
+            override val routeSignature: String = "settings-app-theme"
+        }
+
         object MeasurementSystem : AppScreen() {
             override val routeSignature: String = "settings-measurement-system"
         }

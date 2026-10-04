@@ -25,6 +25,7 @@ fun AppSettingsScreenCore(
     vm: AppSettingsViewModel,
     appState: CoreUiState,
     paddingValues: PaddingValues,
+    onAppThemeClick: () -> Unit,
     onMeasurementSystemClick: () -> Unit,
     onNotificationGroupingClick: () -> Unit,
     onMapInteractionsClick: () -> Unit,
@@ -45,6 +46,11 @@ fun AppSettingsScreenCore(
             .padding(horizontal = 20.dp)
             .padding(top = 20.dp, bottom = 60.dp)
     ) {
+        SettingsActionItem(
+            name = stringResource(MR.strings.setting_appTheme_title),
+            icon = CoreAppIcons.Contrast.asPainterResource(),
+            onClick = onAppThemeClick
+        )
         SettingsActionItem(
             name = stringResource(MR.strings.setting_measurementSystem_title),
             icon = CoreAppIcons.Ruler.asPainterResource(),

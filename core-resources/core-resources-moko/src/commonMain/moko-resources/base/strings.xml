@@ -328,6 +328,13 @@
     <string name="setting_description_placeActivityThrottle_enabled">Your device will create a place activity notification if you spend more time in or out of a certain place.</string>
     <string name="setting_description_placeActivityThrottle_disabled">Your device will react to place changes faster and might create multiple place activity notifications in a short time (for example: if you briefly drive by a certain place).</string>
     <string name="setting_appSettings_title">App settings</string>
+    <string name="setting_appTheme_title">Appearance</string>
+    <string name="setting_appTheme_system_title">Device default</string>
+    <string name="setting_appTheme_system_info">Follow your device\'s light or dark mode setting.</string>
+    <string name="setting_appTheme_light_title">Light</string>
+    <string name="setting_appTheme_light_info">Always use the light theme.</string>
+    <string name="setting_appTheme_dark_title">Dark</string>
+    <string name="setting_appTheme_dark_info">Always use the dark theme.</string>
     <string name="setting_measurementSystem_title">Measurement system</string>
     <string name="setting_measurementSystem_default_title">Device default</string>
     <string name="setting_measurementSystem_metric_title">Metric</string>

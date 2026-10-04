@@ -3,6 +3,7 @@ package app.paralino.core.db
 import app.paralino.core.models.base.ParalinoSocketConnectionType
 import app.paralino.core.models.base.PushProvider
 import app.paralino.core.models.places.GroupPlaceSensitivityData
+import app.paralino.core.models.settings.AppThemeType
 import app.paralino.core.models.settings.FormValidation
 import app.paralino.core.models.settings.IOSNavigationAppType
 import app.paralino.core.models.settings.MapInteractionsType
@@ -616,10 +617,12 @@ class AppPrefs(
         }
 
 
-    var deviceTheme: String
+    var appTheme: AppThemeType
         get() = provider.appSettings.getString(keyDeviceTheme, "")
+            .let { AppThemeType.fromKey(it) }
+            ?: AppThemeType.SYSTEM
         set(value) {
-            provider.appSettings.putString(keyDeviceTheme, value)
+            provider.appSettings.putString(keyDeviceTheme, value.key)
         }
 
     fun setPlaceSensitivityForPlace(placeId: String, sensitivity: GroupPlaceSensitivityData?) {

@@ -112,6 +112,7 @@ import app.paralino.core.presentation.settings.editprofile.EditProfileViewModel
 import app.paralino.core.presentation.settings.emailchange.ChangeEmailViewModel
 import app.paralino.core.presentation.settings.general.GeneralInfoViewModel
 import app.paralino.core.presentation.settings.generic.AppSettingsViewModel
+import app.paralino.core.presentation.settings.generic.AppThemeViewModel
 import app.paralino.core.presentation.settings.generic.MeasurementSystemViewModel
 import app.paralino.core.presentation.settings.generic.NotificationsGroupingViewModel
 import app.paralino.core.presentation.settings.generic.PersonalSpaceFeatureSettingsViewModel
@@ -298,6 +299,7 @@ object KoinSetup {
         viewModel { WelcomeOnboardingViewModel(get(), get()) }
         viewModel { (groupID: String) -> GroupJoinWelcomeViewModel(groupID, get(), get(), get(), get(), get(), get()) }
         viewModel { (groupID: String) -> BatteryNotificationsViewModel(groupID, get(), get(), get(), get(), get()) }
+        viewModel { AppThemeViewModel(get()) }
         viewModel { MeasurementSystemViewModel(get(), get()) }
         viewModel { NotificationsGroupingViewModel(get()) }
         viewModel { MapInteractionsViewModel(get()) }
