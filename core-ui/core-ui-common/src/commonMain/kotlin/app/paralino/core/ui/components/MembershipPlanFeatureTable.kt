@@ -15,13 +15,13 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.ContentAlpha
@@ -51,9 +51,9 @@ import app.paralino.core.MR
 import app.paralino.core.presentation.billing.FeatureTableItemHighlightMode
 import app.paralino.core.presentation.billing.FeatureTableItemState
 import app.paralino.core.presentation.billing.FeatureTableItemValue
-import app.paralino.core.presentation.billing.FeatureTableItemValueDataPoint
 import app.paralino.core.presentation.billing.FeatureTableItemVisibilityMode
 import app.paralino.core.presentation.billing.FeatureTableState
+import app.paralino.core.presentation.billing.FeatureTableSummary
 import app.paralino.core.resources.CoreAppIcons
 import app.paralino.core.resources.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.theme.AppColors
@@ -102,15 +102,17 @@ fun MembershipPlanFeatureTable(
             ) {
                 table.features
                     .filter { feature ->
-                        feature.visibilityMode == FeatureTableItemVisibilityMode.VISIBLE_ALWAYS
-                                || (isExpanded && feature.visibilityMode == FeatureTableItemVisibilityMode.VISIBLE_EXPANDED)
-                                || (!isExpanded && feature.visibilityMode == FeatureTableItemVisibilityMode.VISIBLE_COLLAPSED)
+                        when (feature.visibilityMode) {
+                            FeatureTableItemVisibilityMode.VISIBLE_ALWAYS -> true
+                            FeatureTableItemVisibilityMode.VISIBLE_EXPANDED -> isExpanded
+                        }
                     }
                     .forEachIndexed { index, feature ->
                         Box {
                             FeatureTableItem(
                                 modifier = Modifier,
                                 featureItem = feature,
+                                index = index,
                                 maxWidth = maxWidth,
                                 isExpanded = isExpanded,
                                 onCellClick = onCellClick
@@ -132,38 +134,13 @@ fun MembershipPlanFeatureTable(
             }
 
             AnimatedVisibility(visible = canExpand) {
-                FilledButton(
+                BenefitsExpandButton(
                     modifier = Modifier
-                        .padding(bottom = 14.dp, top = 16.dp)
-                        .padding(horizontal = 14.dp)
-                        .border(
-                            width = 1.dp,
-                            color = Color.Gray.copy(alpha = 0.2f),
-                            shape = RoundedCornerShape(10.dp)
-                        ),
-                    style = remember {
-                        ButtonStyle.BIG(
-                            paddingValues = PaddingValues(horizontal = 4.dp, vertical = 12.dp),
-                            shape = RoundedCornerShape(10.dp)
-                        )
-                    },
-                    state = AppButtonState.CONTENT,
-                    icon = null,
-                    colors = ButtonDefaults.buttonColors(
-                        backgroundColor = MaterialTheme.colors.surface,
-                        contentColor = MaterialTheme.colors.onBackground
-                    ),
-                    elevation = 0.dp,
+                        .padding(bottom = 8.dp, top = 16.dp)
+                        .padding(horizontal = 8.dp),
+                    text = stringResource(MR.strings.paywall_feature_table_expand_button),
                     onClick = onExpandPlans
-                ) {
-                    Text(text = stringResource(MR.strings.paywall_feature_table_expand_button))
-                    Icon(
-                        modifier = Modifier.padding(start = 4.dp).width(20.dp),
-                        painter = CoreAppIcons.ChevronRight.asPainterResource(),
-                        tint = MaterialTheme.colors.onSurface,
-                        contentDescription = null
-                    )
-                }
+                )
             }
         }
     }
@@ -173,6 +150,7 @@ fun MembershipPlanFeatureTable(
 private fun FeatureTableItem(
     modifier: Modifier = Modifier,
     featureItem: FeatureTableItemState,
+    index: Int,
     maxWidth: Dp,
     isExpanded: Boolean,
     onCellClick: (FeatureTableItemState, FeatureTableItemValue) -> Unit
@@ -180,7 +158,6 @@ private fun FeatureTableItem(
     var containerHeight by remember(featureItem) { mutableStateOf(0f) }
     val nameWidth = when (featureItem) {
         is FeatureTableItemState.Section -> maxWidth
-        is FeatureTableItemState.Summary -> maxWidth
         is FeatureTableItemState.Title,
         is FeatureTableItemState.Detail -> {
             if (featureItem.values.isEmpty()) {
@@ -201,7 +178,6 @@ private fun FeatureTableItem(
 
     val valueWidth = when (featureItem) {
         is FeatureTableItemState.Section -> 0.dp
-        is FeatureTableItemState.Summary -> 0.dp
         is FeatureTableItemState.Title,
         is FeatureTableItemState.Detail -> {
             if (featureItem.values.isEmpty()) {
@@ -225,12 +201,17 @@ private fun FeatureTableItem(
             .defaultMinSize(
                 minHeight = when (featureItem) {
                     is FeatureTableItemState.Detail,
-                    is FeatureTableItemState.Summary,
-                    is FeatureTableItemState.Title -> 40.dp
+                    is FeatureTableItemState.Title -> 34.dp
 
                     is FeatureTableItemState.Section -> 20.dp
                 }
             )
+//            .conditional(featureItem is FeatureTableItemState.Detail) {
+//                background(
+//                    color = AppColors.accentLight.copy(alpha = if (index % 2 == 0) 0.1f else 0f),
+//                    shape = RoundedCornerShape(8.dp)
+//                )
+//            }
             .onSizeChanged { size ->
                 containerHeight = size.height.toFloat()
             },
@@ -259,7 +240,7 @@ private fun FeatureTableItem(
                     Text(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(vertical = 4.dp),
+                            .padding(vertical = 3.dp),
                         text = featureItem.content.annotatedBoldCompose(),
                         textAlign = TextAlign.Start,
                         style = MaterialTheme.typography.caption.copy(
@@ -269,48 +250,13 @@ private fun FeatureTableItem(
                     )
                 }
 
-                is FeatureTableItemState.Summary -> {
-                    Text(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = featureItem.topSpacing, bottom = 2.dp),
-                        text = featureItem.title.annotatedBoldCompose(),
-                        textAlign = TextAlign.Start,
-                        style = MaterialTheme.typography.subtitle2.copy(fontWeight = FontWeight.SemiBold),
-                        color = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.disabled),
-                    )
-
-                    FlowRow(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = 12.dp),
-                        horizontalArrangement = Arrangement.spacedBy(
-                            space = 4.dp,
-                            alignment = Alignment.Start
-                        ),
-                        verticalArrangement = Arrangement.spacedBy(
-                            space = 4.dp,
-                            alignment = Alignment.CenterVertically
-                        ),
-                        maxItemsInEachRow = featureItem.itemsPerRow
-                    ) {
-                        featureItem.values.forEach { value ->
-                            value.features.forEach { feature ->
-                                FeatureSummaryChip(
-                                    state = feature
-                                )
-                            }
-                        }
-                    }
-                }
-
                 is FeatureTableItemState.Title -> {
                     Text(
                         modifier = Modifier
                             .fillMaxWidth(),
                         color = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.medium),
                         text = featureItem.content.annotatedBoldCompose(),
-                        textAlign = TextAlign.Start,
+                        textAlign = if (featureItem.values.isEmpty()) TextAlign.Center else TextAlign.Start,
                         style = MaterialTheme.typography.subtitle1.copy(fontWeight = FontWeight.Bold)
                     )
                 }
@@ -319,8 +265,6 @@ private fun FeatureTableItem(
 
         when (featureItem) {
             is FeatureTableItemState.Section -> {}
-            is FeatureTableItemState.Summary -> {}
-
             is FeatureTableItemState.Detail,
             is FeatureTableItemState.Title -> {
                 featureItem.values.forEach { value ->
@@ -437,57 +381,159 @@ private fun FeatureTableItem(
 }
 
 @Composable
-private fun FeatureSummaryChip(
+private fun BenefitsExpandButton(
     modifier: Modifier = Modifier,
-    state: FeatureTableItemValueDataPoint,
+    text: String,
+    onClick: () -> Unit
 ) {
-    Row(
+    FilledButton(
         modifier = modifier
-            .clip(RoundedCornerShape(100))
-            .background(MaterialTheme.colors.background)
-            .background(
-                if (state.isHighlighted) {
-                    AppColors.highlightGold.copy(alpha = 0.8f)
-                } else {
-                    AppColors.accentDark.copy(alpha = 0.2f)
-                }
-            )
-            .padding(vertical = 4.dp)
-            .padding(start = 4.dp, end = 8.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Text(
-            modifier = Modifier
-                .defaultMinSize(minWidth = 24.dp)
-                .background(
-                    color = if (isSystemInDarkTheme()) {
-                        if (state.isHighlighted) {
-                            MaterialTheme.colors.background
-                        } else {
-                            AppColors.accentDark.copy(alpha = 0.25f)
-                        }
-                    } else {
-                        MaterialTheme.colors.surface
-                    },
-                    shape = RoundedCornerShape(100)
-                )
-                .padding(horizontal = 6.dp, vertical = 2.dp),
-            text = state.amount,
-            textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.body2.copy(fontWeight = FontWeight.Bold),
-            color = MaterialTheme.colors.onSurface
-        )
-        Spacer(Modifier.size(4.dp))
-        Text(
-            text = state.content,
-            style = MaterialTheme.typography.caption.copy(
-                fontWeight = FontWeight.Medium
+            .fillMaxWidth()
+            .border(
+                width = 1.dp,
+                color = Color.Gray.copy(alpha = 0.2f),
+                shape = RoundedCornerShape(10.dp)
             ),
-            color = if (state.isHighlighted) {
-                AppColors.darkBackground.copy(alpha = 0.8f)
-            } else {
-                MaterialTheme.colors.onBackground.copy(alpha = 0.8f)
-            }
+        style = remember {
+            ButtonStyle.BIG(
+                paddingValues = PaddingValues(horizontal = 4.dp, vertical = 12.dp),
+                shape = RoundedCornerShape(10.dp)
+            )
+        },
+        state = AppButtonState.CONTENT,
+        icon = null,
+        colors = ButtonDefaults.buttonColors(
+            backgroundColor = MaterialTheme.colors.surface,
+            contentColor = MaterialTheme.colors.onBackground
+        ),
+        elevation = 0.dp,
+        onClick = onClick
+    ) {
+        Text(text = text)
+        Icon(
+            modifier = Modifier
+                .padding(start = 4.dp)
+                .width(20.dp),
+            painter = CoreAppIcons.ChevronRight.asPainterResource(),
+            tint = MaterialTheme.colors.onSurface,
+            contentDescription = null
         )
+    }
+}
+
+@Composable
+fun MembershipPlanSummaryTable(
+    modifier: Modifier = Modifier,
+    content: FeatureTableSummary,
+    onExpandClick: (() -> Unit)?
+) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(16.dp))
+            .background(MaterialTheme.colors.background)
+            .border(
+                width = 1.dp,
+                color = Color.Gray.copy(alpha = 0.2f),
+                shape = RoundedCornerShape(16.dp)
+            )
+            .padding(horizontal = 14.dp, vertical = 14.dp)
+    ) {
+        content.values.forEachIndexed { index, section ->
+            if (index > 0) {
+                Row(
+                    modifier = Modifier.padding(vertical = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Divider(
+                        modifier = Modifier.weight(1f),
+                        color = Color.Gray.copy(alpha = 0.15f),
+                        thickness = 0.5.dp
+                    )
+                    Icon(
+                        modifier = Modifier
+                            .size(14.dp)
+                            .clip(CircleShape)
+                            .background(MaterialTheme.colors.surface)
+                            .padding(2.dp),
+                        painter = CoreAppIcons.Add.asPainterResource(),
+                        tint = MaterialTheme.colors.onSurface,
+                        contentDescription = null
+                    )
+                    Divider(
+                        modifier = Modifier.weight(1f),
+                        color = Color.Gray.copy(alpha = 0.15f),
+                        thickness = 0.5.dp
+                    )
+                }
+            }
+
+            PlanSummarySection(
+                section = section
+            )
+        }
+
+        if (onExpandClick != null) {
+            Divider(
+                modifier = Modifier.padding(vertical = 12.dp),
+                color = Color.Gray.copy(alpha = 0.15f),
+                thickness = 0.5.dp
+            )
+            BenefitsExpandButton(
+                modifier = Modifier,
+                text = stringResource(MR.strings.paywall_feature_table_show_all_button),
+                onClick = onExpandClick
+            )
+        }
+    }
+}
+
+@Composable
+private fun PlanSummarySection(
+    section: FeatureTableItemValue.Summary
+) {
+    Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+        Icon(
+            modifier = Modifier
+                .padding(top = 2.dp)
+                .size(16.dp),
+            painter = section.icon.asPainterResource(),
+            contentDescription = null,
+            tint = MaterialTheme.colors.onBackground.copy(alpha = ContentAlpha.disabled)
+        )
+
+        Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+            Text(
+                text = section.title,
+                fontSize = 15.sp,
+                lineHeight = 20.sp,
+                fontWeight = FontWeight.ExtraBold
+            )
+
+            FlowRow(
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                verticalArrangement = Arrangement.Center
+            ) {
+                section.features.forEachIndexed { index, item ->
+                    Text(
+                        text = item.content,
+                        fontSize = 13.sp,
+                        lineHeight = 18.sp,
+                        color = MaterialTheme.colors.onBackground.copy(alpha = ContentAlpha.medium)
+                    )
+
+                    if (index < section.features.size - 1) {
+                        Text(
+                            text = "·",
+                            fontSize = 13.sp,
+                            lineHeight = 18.sp,
+                            fontWeight = FontWeight.ExtraBold,
+                            color = MaterialTheme.colors.onBackground.copy(alpha = ContentAlpha.medium)
+                        )
+                    }
+                }
+            }
+        }
     }
 }
