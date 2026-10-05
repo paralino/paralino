@@ -8,6 +8,7 @@ enum class BillingScreenSourceType(val key: String) {
     UPGRADE_MAP_SHEET("upgrade_map_sheet"),
     UPGRADE_BILLING_PROMO("upgrade_billing_promo"),
     UPGRADE_DEFAULT("upgrade_regular"),
+    UPGRADE_MORE_GROUPS("upgrade_more_groups"),
     NORMAL("normal");
 
     val isOnboarding get() = when (this) {
@@ -19,6 +20,7 @@ enum class BillingScreenSourceType(val key: String) {
         UPGRADE_MAP_SHEET,
         UPGRADE_BILLING_PROMO,
         UPGRADE_DEFAULT,
+        UPGRADE_MORE_GROUPS,
         NORMAL -> false
     }
 

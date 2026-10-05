@@ -103,6 +103,7 @@ class PaywallViewModel(
             BillingScreenSourceType.UPGRADE_DEFAULT,
             BillingScreenSourceType.UPGRADE_MAP_SHEET,
             BillingScreenSourceType.UPGRADE_BILLING_PROMO,
+            BillingScreenSourceType.UPGRADE_MORE_GROUPS,
             BillingScreenSourceType.NORMAL -> {
             }
         }
@@ -523,6 +524,7 @@ class PaywallViewModel(
                     }
                 }
                 BillingScreenSourceType.UPGRADE_DEFAULT,
+                BillingScreenSourceType.UPGRADE_MORE_GROUPS,
                 BillingScreenSourceType.NORMAL -> PaywallScreenStep.PAYWALL
             }
         }
@@ -538,6 +540,7 @@ class PaywallViewModel(
                     BillingScreenSourceType.SKIPPED_ONBOARDING,
                     BillingScreenSourceType.FREE_PLAN_NEW_GROUP_MEMBER,
                     BillingScreenSourceType.UPGRADE_DEFAULT,
+                    BillingScreenSourceType.UPGRADE_MORE_GROUPS,
                     BillingScreenSourceType.UPGRADE_MAP_SHEET,
                     BillingScreenSourceType.UPGRADE_BILLING_PROMO,
                     BillingScreenSourceType.NORMAL -> true

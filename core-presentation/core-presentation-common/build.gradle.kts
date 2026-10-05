@@ -36,6 +36,7 @@ kotlin {
             implementation(project(":core-base"))
             implementation(project(":core-db"))
             implementation(project(":core-domain"))
+            implementation(project(":core-resources-icons"))
             implementation(project(":core-resources-moko"))
         }
 
