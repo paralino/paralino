@@ -598,6 +598,9 @@
     <string name="info_email_confirm_verification_placeholder">Verificatie link</string>
     <string name="info_email_confirm_manual_verification_button">Handmatige verificatie</string>
     <string name="info_email_confirm_manual_verification_notice">Als u de verificatielink uit uw e-mail niet kunt openen, kopieer en plak deze hier om de verificatie handmatig te activeren.</string>
+    <string name="info_email_confirm_verification_error_invalid">De ingevoerde verificatielink is niet geldig</string>
+    <string name="info_email_confirm_verification_error_noLongerValid">De verificatielink is niet meer geldig</string>
+    <string name="info_email_confirm_verification_error_expired">Deze verificatie is verlopen</string>
     <string name="info_email_confirm_skip_button">Overslaan voor nu</string>
     <string name="info_email_confirm_skip_notice">U wordt later opnieuw gevraagd</string>
     <string name="info_email_confirm_alert_button_resend">Stuur verificatielink opnieuw verzenden</string>

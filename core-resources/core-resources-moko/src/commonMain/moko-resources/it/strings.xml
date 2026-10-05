@@ -598,6 +598,9 @@
     <string name="info_email_confirm_verification_placeholder">Link di verifica</string>
     <string name="info_email_confirm_manual_verification_button">Verifica manuale</string>
     <string name="info_email_confirm_manual_verification_notice">Se non riesci ad aprire il link di verifica dalla tua email, copialo e incollalo qui per attivare manualmente la verifica.</string>
+    <string name="info_email_confirm_verification_error_invalid">Il link di verifica inserito non è valido</string>
+    <string name="info_email_confirm_verification_error_noLongerValid">Il link di verifica non è più valido</string>
+    <string name="info_email_confirm_verification_error_expired">Questa verifica è scaduta</string>
     <string name="info_email_confirm_skip_button">Salta per ora</string>
     <string name="info_email_confirm_skip_notice">Ti verrà chiesto di nuovo più tardi</string>
     <string name="info_email_confirm_alert_button_resend">Reinvia il link di verifica</string>

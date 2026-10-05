@@ -598,6 +598,9 @@
     <string name="info_email_confirm_verification_placeholder">Σύνδεσμος επαλήθευσης</string>
     <string name="info_email_confirm_manual_verification_button">Χειροκίνητη επαλήθευση</string>
     <string name="info_email_confirm_manual_verification_notice">Εάν δεν μπορείτε να ανοίξετε τον σύνδεσμο επαλήθευσης από το email σας, αντιγράψτε τον και επικολλήστε τον εδώ για να ενεργοποιήσετε χειροκίνητα την επαλήθευση.</string>
+    <string name="info_email_confirm_verification_error_invalid">Ο σύνδεσμος επαλήθευσης που εισαγάγατε δεν είναι έγκυρος</string>
+    <string name="info_email_confirm_verification_error_noLongerValid">Ο σύνδεσμος επαλήθευσης δεν είναι πλέον έγκυρος</string>
+    <string name="info_email_confirm_verification_error_expired">Αυτή η επαλήθευση έχει λήξει</string>
     <string name="info_email_confirm_skip_button">Παράλειψη για τώρα</string>
     <string name="info_email_confirm_skip_notice">Θα σας ζητηθεί ξανά αργότερα</string>
     <string name="info_email_confirm_alert_button_resend">Αποστολή συνδέσμου επαλήθευσης ξανά</string>

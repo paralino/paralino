@@ -17,6 +17,8 @@ import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.DeeplinkType
 import app.paralino.core.utils.extensions.errorString
 import app.paralino.core.utils.extensions.getFormValidationErrorText
+import app.paralino.core.utils.extensions.isInPast
+import app.paralino.core.utils.extensions.isoWithOffsetToInstant
 import app.paralino.core.utils.extensions.mapToPayload
 import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.coroutines.Dispatchers
@@ -168,33 +170,48 @@ class VerifyEmailViewModel(
     }
 
     private suspend fun checkManualEmailVerification() {
-        val emailVerification = DeeplinkType.parse(deeplink = _uiState.value.emailVerificationLink)
+        val emailVerificationLink = _uiState.value.emailVerificationLink
 
-        _uiState.update {
-            it.copy(
-                hasEmailVerificationLinkError = emailVerification !is DeeplinkType.EmailVerify
-            )
+        fun showLinkError(text: String) {
+            _uiState.update { it.copy(hasEmailVerificationLinkError = true) }
+            showSnackbar(text)
         }
 
-        if (emailVerification is DeeplinkType.EmailVerify) {
-            if (emailVerification.userId.isNotBlank() && emailVerification.secret.isNotBlank()) {
-                try {
-                    _uiState.update { it.copy(fullLoading = true) }
-                    userRepo.confirmEmail(
-                        userId = emailVerification.userId,
-                        secret = emailVerification.secret
-                    )
-                    userRepo.refreshUserIfAvailable()
-                    _uiState.update { it.copy(fullLoading = false) }
-                } catch (e: Exception) {
-                    _uiState.update { it.copy(fullLoading = false) }
-                    showSnackbar(e.errorString())
-                }
-            } else {
-                showSnackbar(getFormValidationErrorText(validation = FormValidation.TextNotEmpty))
-            }
-        } else {
-            showSnackbar(getFormValidationErrorText(validation = FormValidation.TextNotEmpty))
+        if (emailVerificationLink.isBlank()) {
+            showLinkError(getFormValidationErrorText(validation = FormValidation.TextNotEmpty))
+            return
+        }
+
+        val emailVerification = DeeplinkType.parse(deeplink = emailVerificationLink)
+
+        if (emailVerification !is DeeplinkType.EmailVerify) {
+            showLinkError(MR.strings.info_email_confirm_verification_error_invalid.localizedString())
+            return
+        }
+
+        if (emailVerification.userId.isBlank() || emailVerification.secret.isBlank()) {
+            showLinkError(MR.strings.info_email_confirm_verification_error_noLongerValid.localizedString())
+            return
+        }
+
+        if (emailVerification.expire?.isoWithOffsetToInstant()?.isInPast() == true) {
+            showLinkError(MR.strings.info_email_confirm_verification_error_expired.localizedString())
+            return
+        }
+
+        _uiState.update { it.copy(hasEmailVerificationLinkError = false) }
+
+        try {
+            _uiState.update { it.copy(fullLoading = true) }
+            userRepo.confirmEmail(
+                userId = emailVerification.userId,
+                secret = emailVerification.secret
+            )
+            userRepo.refreshUserIfAvailable()
+            _uiState.update { it.copy(fullLoading = false) }
+        } catch (e: Exception) {
+            _uiState.update { it.copy(fullLoading = false) }
+            showSnackbar(e.errorString())
         }
     }
 

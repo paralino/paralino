@@ -598,6 +598,9 @@
     <string name="info_email_confirm_verification_placeholder">Ověřovací odkaz</string>
     <string name="info_email_confirm_manual_verification_button">Ruční ověření</string>
     <string name="info_email_confirm_manual_verification_notice">Pokud se vám nedaří otevřít ověřovací odkaz z vašeho e-mailu, zkopírujte a vložte ho sem pro ruční spuštění ověření.</string>
+    <string name="info_email_confirm_verification_error_invalid">Zadaný ověřovací odkaz není platný</string>
+    <string name="info_email_confirm_verification_error_noLongerValid">Ověřovací odkaz již není platný</string>
+    <string name="info_email_confirm_verification_error_expired">Platnost tohoto ověření vypršela</string>
     <string name="info_email_confirm_skip_button">Přeskočit nyní</string>
     <string name="info_email_confirm_skip_notice">Budete požádáni znovu později</string>
     <string name="info_email_confirm_alert_button_resend">Znovu odeslat ověřovací odkaz</string>

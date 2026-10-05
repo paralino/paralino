@@ -598,6 +598,9 @@
     <string name="info_email_confirm_verification_placeholder">Enllaç de verificació</string>
     <string name="info_email_confirm_manual_verification_button">Verificació manual</string>
     <string name="info_email_confirm_manual_verification_notice">Si no podeu obrir l\'enllaç de verificació del vostre correu electrònic, copieu-lo i enganxeu-lo aquí per activar manualment la verificació.</string>
+    <string name="info_email_confirm_verification_error_invalid">L\'enllaç de verificació introduït no és vàlid</string>
+    <string name="info_email_confirm_verification_error_noLongerValid">L\'enllaç de verificació ja no és vàlid</string>
+    <string name="info_email_confirm_verification_error_expired">Aquesta verificació ha caducat</string>
     <string name="info_email_confirm_skip_button">Ometre per ara</string>
     <string name="info_email_confirm_skip_notice">Se us tornarà a preguntar més tard</string>
     <string name="info_email_confirm_alert_button_resend">Reenviar l\'enllaç de verificació</string>

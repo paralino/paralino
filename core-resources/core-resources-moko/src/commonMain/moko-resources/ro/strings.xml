@@ -598,6 +598,9 @@
     <string name="info_email_confirm_verification_placeholder">Link de verificare</string>
     <string name="info_email_confirm_manual_verification_button">Verificare manuală</string>
     <string name="info_email_confirm_manual_verification_notice">Dacă nu puteți deschide linkul de verificare din email, copiați-l și lipiți-l aici pentru a declanșa manual verificarea.</string>
+    <string name="info_email_confirm_verification_error_invalid">Linkul de verificare introdus nu este valid</string>
+    <string name="info_email_confirm_verification_error_noLongerValid">Linkul de verificare nu mai este valid</string>
+    <string name="info_email_confirm_verification_error_expired">Această verificare a expirat</string>
     <string name="info_email_confirm_skip_button">Sari peste acum</string>
     <string name="info_email_confirm_skip_notice">Veți fi întrebat din nou mai târziu</string>
     <string name="info_email_confirm_alert_button_resend">Retrimiteți linkul de verificare</string>

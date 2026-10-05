@@ -598,6 +598,9 @@
     <string name="info_email_confirm_verification_placeholder">Lien de vérification</string>
     <string name="info_email_confirm_manual_verification_button">Vérification manuelle</string>
     <string name="info_email_confirm_manual_verification_notice">Si vous ne parvenez pas à ouvrir le lien de vérification depuis votre e-mail, copiez-le et collez-le ici pour déclencher manuellement la vérification.</string>
+    <string name="info_email_confirm_verification_error_invalid">Le lien de vérification saisi n\'est pas valide</string>
+    <string name="info_email_confirm_verification_error_noLongerValid">Le lien de vérification n\'est plus valide</string>
+    <string name="info_email_confirm_verification_error_expired">Cette vérification a expiré</string>
     <string name="info_email_confirm_skip_button">Passer pour l\'instant</string>
     <string name="info_email_confirm_skip_notice">Vous serez à nouveau interrogé plus tard</string>
     <string name="info_email_confirm_alert_button_resend">Renvoyer le lien de vérification</string>

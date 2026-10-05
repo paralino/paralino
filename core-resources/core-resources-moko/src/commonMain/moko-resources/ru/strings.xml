@@ -598,6 +598,9 @@
     <string name="info_email_confirm_verification_placeholder">Ссылка для подтверждения</string>
     <string name="info_email_confirm_manual_verification_button">Ручное подтверждение</string>
     <string name="info_email_confirm_manual_verification_notice">Если вы не можете открыть ссылку для подтверждения из вашего email, скопируйте и вставьте ее сюда, чтобы вручную инициировать подтверждение.</string>
+    <string name="info_email_confirm_verification_error_invalid">Введённая ссылка для подтверждения недействительна</string>
+    <string name="info_email_confirm_verification_error_noLongerValid">Ссылка для подтверждения больше не действительна</string>
+    <string name="info_email_confirm_verification_error_expired">Срок действия этого подтверждения истёк</string>
     <string name="info_email_confirm_skip_button">Пропустить на данный момент</string>
     <string name="info_email_confirm_skip_notice">Вас спросят снова позже</string>
     <string name="info_email_confirm_alert_button_resend">Отправить ссылку для подтверждения повторно</string>

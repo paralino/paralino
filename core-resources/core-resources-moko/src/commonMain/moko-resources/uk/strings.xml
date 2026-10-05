@@ -598,6 +598,9 @@
     <string name="info_email_confirm_verification_placeholder">Посилання для перевірки</string>
     <string name="info_email_confirm_manual_verification_button">Ручна перевірка</string>
     <string name="info_email_confirm_manual_verification_notice">Якщо ви не можете відкрити посилання для перевірки з вашої електронної пошти, скопіюйте та вставте його сюди, щоб вручну ініціювати перевірку.</string>
+    <string name="info_email_confirm_verification_error_invalid">Введене посилання для перевірки недійсне</string>
+    <string name="info_email_confirm_verification_error_noLongerValid">Посилання для перевірки більше не дійсне</string>
+    <string name="info_email_confirm_verification_error_expired">Термін дії цієї перевірки минув</string>
     <string name="info_email_confirm_skip_button">Пропустити зараз</string>
     <string name="info_email_confirm_skip_notice">Вас запитають знову пізніше</string>
     <string name="info_email_confirm_alert_button_resend">Відправити посилання для перевірки повторно</string>

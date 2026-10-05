@@ -598,6 +598,9 @@
     <string name="info_email_confirm_verification_placeholder">Verifikationslink</string>
     <string name="info_email_confirm_manual_verification_button">Manuel verifikation</string>
     <string name="info_email_confirm_manual_verification_notice">Hvis du ikke kan åbne verifikationslinket fra din e-mail, skal du kopiere og indsætte det her for manuelt at udløse verifikationen.</string>
+    <string name="info_email_confirm_verification_error_invalid">Det indtastede verifikationslink er ikke gyldigt</string>
+    <string name="info_email_confirm_verification_error_noLongerValid">Verifikationslinket er ikke længere gyldigt</string>
+    <string name="info_email_confirm_verification_error_expired">Denne verifikation er udløbet</string>
     <string name="info_email_confirm_skip_button">Spring over for nu</string>
     <string name="info_email_confirm_skip_notice">Du vil blive spurgt igen senere</string>
     <string name="info_email_confirm_alert_button_resend">Send verifikationslinket igen</string>
