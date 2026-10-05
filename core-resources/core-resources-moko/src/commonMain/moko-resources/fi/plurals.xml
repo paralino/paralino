@@ -32,4 +32,28 @@
         <item quantity="one">Laite</item>
         <item quantity="other">Laitetta</item>
     </plurals>
+    <plurals name="paywall_summary_groups">
+        <item quantity="one">%d ryhmä</item>
+        <item quantity="other">%d ryhmää</item>
+    </plurals>
+    <plurals name="paywall_summary_history_days">
+        <item quantity="one">%d päivän historia</item>
+        <item quantity="other">%d päivän historia</item>
+    </plurals>
+    <plurals name="paywall_summary_places">
+        <item quantity="one">%d paikka</item>
+        <item quantity="other">%d paikkaa</item>
+    </plurals>
+    <plurals name="paywall_summary_members">
+        <item quantity="one">%d jäsen</item>
+        <item quantity="other">%d jäsentä</item>
+    </plurals>
+    <plurals name="paywall_summary_privacy_zones">
+        <item quantity="one">%d yksityisyysalue</item>
+        <item quantity="other">%d yksityisyysaluetta</item>
+    </plurals>
+    <plurals name="paywall_summary_devices">
+        <item quantity="one">%d laite</item>
+        <item quantity="other">%d laitetta</item>
+    </plurals>
 </resources>

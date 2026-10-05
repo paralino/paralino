@@ -32,4 +32,28 @@
         <item quantity="one">Eszköz</item>
         <item quantity="other">Eszköz</item>
     </plurals>
+    <plurals name="paywall_summary_groups">
+        <item quantity="one">%d csoport</item>
+        <item quantity="other">%d csoport</item>
+    </plurals>
+    <plurals name="paywall_summary_history_days">
+        <item quantity="one">%d napos előzmények</item>
+        <item quantity="other">%d napos előzmények</item>
+    </plurals>
+    <plurals name="paywall_summary_places">
+        <item quantity="one">%d hely</item>
+        <item quantity="other">%d hely</item>
+    </plurals>
+    <plurals name="paywall_summary_members">
+        <item quantity="one">%d tag</item>
+        <item quantity="other">%d tag</item>
+    </plurals>
+    <plurals name="paywall_summary_privacy_zones">
+        <item quantity="one">%d adatvédelmi zóna</item>
+        <item quantity="other">%d adatvédelmi zóna</item>
+    </plurals>
+    <plurals name="paywall_summary_devices">
+        <item quantity="one">%d eszköz</item>
+        <item quantity="other">%d eszköz</item>
+    </plurals>
 </resources>

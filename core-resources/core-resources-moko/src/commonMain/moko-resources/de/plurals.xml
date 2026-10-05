@@ -24,14 +24,6 @@
         <item quantity="one">Standort wird mit 1 Gruppe geteilt</item>
         <item quantity="other">Standort wird mit %d Gruppen geteilt</item>
     </plurals>
-    <plurals name="plan_benefit_group">
-        <item quantity="one">**%d Gruppe**</item>
-        <item quantity="other">**%d Gruppen**</item>
-    </plurals>
-    <plurals name="plan_benefit_places">
-        <item quantity="one">**%d Ort** mit unbegrenzten Benachrichtigungen</item>
-        <item quantity="other">**%d Orte** mit unbegrenzten Benachrichtigungen</item>
-    </plurals>
     <plurals name="paywall_feature_summary_groups">
         <item quantity="one">Gruppe</item>
         <item quantity="other">Gruppen</item>
@@ -39,5 +31,29 @@
     <plurals name="paywall_feature_summary_devices">
         <item quantity="one">Gerät</item>
         <item quantity="other">Geräte</item>
+    </plurals>
+    <plurals name="paywall_summary_groups">
+        <item quantity="one">%d Gruppe</item>
+        <item quantity="other">%d Gruppen</item>
+    </plurals>
+    <plurals name="paywall_summary_history_days">
+        <item quantity="one">%d Tag Verlauf</item>
+        <item quantity="other">%d Tage Verlauf</item>
+    </plurals>
+    <plurals name="paywall_summary_places">
+        <item quantity="one">%d Ort</item>
+        <item quantity="other">%d Orte</item>
+    </plurals>
+    <plurals name="paywall_summary_members">
+        <item quantity="one">%d Mitglied</item>
+        <item quantity="other">%d Mitglieder</item>
+    </plurals>
+    <plurals name="paywall_summary_privacy_zones">
+        <item quantity="one">%d Privatsphärenzone</item>
+        <item quantity="other">%d Privatsphärenzonen</item>
+    </plurals>
+    <plurals name="paywall_summary_devices">
+        <item quantity="one">%d Gerät</item>
+        <item quantity="other">%d Geräte</item>
     </plurals>
 </resources>

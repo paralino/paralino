@@ -32,4 +32,28 @@
         <item quantity="one">Enhet</item>
         <item quantity="other">Enheter</item>
     </plurals>
+    <plurals name="paywall_summary_groups">
+        <item quantity="one">%d gruppe</item>
+        <item quantity="other">%d grupper</item>
+    </plurals>
+    <plurals name="paywall_summary_history_days">
+        <item quantity="one">%d dags historikk</item>
+        <item quantity="other">%d dagers historikk</item>
+    </plurals>
+    <plurals name="paywall_summary_places">
+        <item quantity="one">%d sted</item>
+        <item quantity="other">%d steder</item>
+    </plurals>
+    <plurals name="paywall_summary_members">
+        <item quantity="one">%d medlem</item>
+        <item quantity="other">%d medlemmer</item>
+    </plurals>
+    <plurals name="paywall_summary_privacy_zones">
+        <item quantity="one">%d personvernområde</item>
+        <item quantity="other">%d personvernområder</item>
+    </plurals>
+    <plurals name="paywall_summary_devices">
+        <item quantity="one">%d enhet</item>
+        <item quantity="other">%d enheter</item>
+    </plurals>
 </resources>

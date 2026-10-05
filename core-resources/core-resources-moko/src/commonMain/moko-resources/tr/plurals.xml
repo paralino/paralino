@@ -32,4 +32,28 @@
         <item quantity="one">Cihaz</item>
         <item quantity="other">Cihaz</item>
     </plurals>
+    <plurals name="paywall_summary_groups">
+        <item quantity="one">%d grup</item>
+        <item quantity="other">%d grup</item>
+    </plurals>
+    <plurals name="paywall_summary_history_days">
+        <item quantity="one">%d günlük geçmiş</item>
+        <item quantity="other">%d günlük geçmiş</item>
+    </plurals>
+    <plurals name="paywall_summary_places">
+        <item quantity="one">%d yer</item>
+        <item quantity="other">%d yer</item>
+    </plurals>
+    <plurals name="paywall_summary_members">
+        <item quantity="one">%d üye</item>
+        <item quantity="other">%d üye</item>
+    </plurals>
+    <plurals name="paywall_summary_privacy_zones">
+        <item quantity="one">%d gizlilik bölgesi</item>
+        <item quantity="other">%d gizlilik bölgesi</item>
+    </plurals>
+    <plurals name="paywall_summary_devices">
+        <item quantity="one">%d cihaz</item>
+        <item quantity="other">%d cihaz</item>
+    </plurals>
 </resources>

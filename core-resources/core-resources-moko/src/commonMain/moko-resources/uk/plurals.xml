@@ -40,4 +40,34 @@
         <item quantity="few">Пристрої</item>
         <item quantity="other">Пристроїв</item>
     </plurals>
+    <plurals name="paywall_summary_groups">
+        <item quantity="one">%d група</item>
+        <item quantity="few">%d групи</item>
+        <item quantity="other">%d груп</item>
+    </plurals>
+    <plurals name="paywall_summary_history_days">
+        <item quantity="one">Історія за %d день</item>
+        <item quantity="few">Історія за %d дні</item>
+        <item quantity="other">Історія за %d днів</item>
+    </plurals>
+    <plurals name="paywall_summary_places">
+        <item quantity="one">%d місце</item>
+        <item quantity="few">%d місця</item>
+        <item quantity="other">%d місць</item>
+    </plurals>
+    <plurals name="paywall_summary_members">
+        <item quantity="one">%d член</item>
+        <item quantity="few">%d члени</item>
+        <item quantity="other">%d членів</item>
+    </plurals>
+    <plurals name="paywall_summary_privacy_zones">
+        <item quantity="one">%d зона конфіденційності</item>
+        <item quantity="few">%d зони конфіденційності</item>
+        <item quantity="other">%d зон конфіденційності</item>
+    </plurals>
+    <plurals name="paywall_summary_devices">
+        <item quantity="one">%d пристрій</item>
+        <item quantity="few">%d пристрої</item>
+        <item quantity="other">%d пристроїв</item>
+    </plurals>
 </resources>
