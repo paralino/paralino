@@ -9,6 +9,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 import kotlin.math.absoluteValue
 import kotlin.math.cos
+import kotlin.math.max
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
@@ -94,7 +95,23 @@ data class LocationDataModel constructor(
             LocationPerformanceSettingsType.Balanced.Level5 -> 3f
         }
 
-        val timeValid = (firstTime - secondTime).absoluteValue <= timeThreshold
+        val areOtherFieldsSame = endTimeUTC == second.endTimeUTC
+                && isMasked == second.isMasked
+                && isApproximate == second.isApproximate
+                && isInPrivacyZone == second.isInPrivacyZone
+                && privacyZoneMessage == second.privacyZoneMessage
+
+        val timeDifference = (firstTime - secondTime).absoluteValue
+
+        // Some devices (mostly GPS only on Android) mix accurate fixes with very inaccurate ones
+        // every few seconds, which makes location jump back and forth on the map
+        // Degraded update is dropped unless nothing better comes in for a while
+        val isDegraded = second.accuracy > max(accuracy * 2, accuracy + 30f)
+        if (isDegraded && areOtherFieldsSame && timeDifference <= timeThreshold * 2) {
+            return this
+        }
+
+        val timeValid = timeDifference <= timeThreshold
         val distanceValid = isWithinRange(other = second, thresholdMeters = distanceThreshold)
         val accuracyValid = (accuracy - second.accuracy).absoluteValue <= accuracyThreshold
 
@@ -110,12 +127,6 @@ data class LocationDataModel constructor(
         } else {
             altitude == second.altitude
         }
-
-        val areOtherFieldsSame = endTimeUTC == second.endTimeUTC
-                && isMasked == second.isMasked
-                && isApproximate == second.isApproximate
-                && isInPrivacyZone == second.isInPrivacyZone
-                && privacyZoneMessage == second.privacyZoneMessage
 
         return if (
             timeValid
