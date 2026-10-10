@@ -122,13 +122,18 @@ class LocationPerformanceManager constructor(
         // fallback check in case reset gets canceled for whatever reason
         // here we give it enough buffer and reset
         performanceResetScheduleTime?.let {
-            if (it.first.plus(it.second).isOlderThan(20.seconds)) {
+            val currentType = locationPerformanceType.value.current
+            if (it.first.plus(it.second).isOlderThan(10.seconds)) {
                 logg.tag("location_performance")
                     .w("Device performance reset is overdue, schedule reset again")
                 schedulePerformanceReset(
                     type = LocationPerformanceType.BALANCED,
-                    resetDelay = 30.seconds
+                    resetDelay = 10.seconds
                 )
+            } else if (currentType > getCorrectType(type = currentType, logInfo = false)) {
+                performanceUpdateJob?.cancel()
+                setPerformance(type = LocationPerformanceType.BALANCED, allowDowngrade = true)
+                performanceResetScheduleTime = null
             }
         }
     }
@@ -216,12 +221,28 @@ class LocationPerformanceManager constructor(
         }
 
         val now = nowUTC().epochSeconds
-        val last10min = nowUTC().minus(10, DateTimeUnit.MINUTE).epochSeconds
-        val last20min = nowUTC().minus(20, DateTimeUnit.MINUTE).epochSeconds
         val last2Hours = nowUTC().minus(2, DateTimeUnit.HOUR).epochSeconds
 
         // keep only last few hours as record
         locationBoostTracker = locationBoostTracker.filter { it.key > last2Hours }.toMutableMap()
+
+        val newType = getCorrectType(type = type, logInfo = true)
+
+        locationBoostTracker[now] = newType
+        _locationPerformanceType.value = _locationPerformanceType.value.copy(
+            old = _locationPerformanceType.value.current,
+            requested = type,
+            current = newType
+        )
+    }
+
+    private fun getCorrectType(
+        type: LocationPerformanceType,
+        logInfo: Boolean
+    ): LocationPerformanceType {
+        val now = nowUTC().epochSeconds
+        val last10min = nowUTC().minus(10, DateTimeUnit.MINUTE).epochSeconds
+        val last20min = nowUTC().minus(20, DateTimeUnit.MINUTE).epochSeconds
 
         // take only recent period for optimization
         val iterator10Min = locationBoostTracker.filter { it.key > last10min }.toList()
@@ -270,22 +291,19 @@ class LocationPerformanceManager constructor(
             lowPowerMode = deviceStatus.isLowPowerMode
         )
 
-        logg.tag("location_performance")
-            .v(
-                "Performance - requested: $type, new: $newType, old: ${_locationPerformanceType.value.current} [${_locationPerformanceType.value}] - for: " +
-                        "BAT: ${deviceStatus.batteryLevel}%,\n" +
-                        "time: $now,\n" +
-                        "VERY_HIGH: $currentVeryHighBoostDuration,\n" +
-                        "HIGH: $currentHighBoostDuration,\n" +
-                        "MEDIUM: $currentMediumBoostDuration"
-            )
+        if (logInfo) {
+            logg.tag("location_performance")
+                .v(
+                    "Performance - requested: $type, new: $newType, old: ${_locationPerformanceType.value.current} [${_locationPerformanceType.value}] - for: " +
+                            "BAT: ${deviceStatus.batteryLevel}%,\n" +
+                            "time: $now,\n" +
+                            "VERY_HIGH: $currentVeryHighBoostDuration,\n" +
+                            "HIGH: $currentHighBoostDuration,\n" +
+                            "MEDIUM: $currentMediumBoostDuration"
+                )
+        }
 
-        locationBoostTracker[now] = newType
-        _locationPerformanceType.value = _locationPerformanceType.value.copy(
-            old = _locationPerformanceType.value.current,
-            requested = type,
-            current = newType
-        )
+        return newType
     }
 
     private fun adjustPerformanceType(
