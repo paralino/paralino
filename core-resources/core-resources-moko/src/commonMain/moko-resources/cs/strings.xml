@@ -326,6 +326,11 @@
     <string name="setting_appTheme_light_info">Vždy používat světlý motiv.</string>
     <string name="setting_appTheme_dark_title">Tmavý</string>
     <string name="setting_appTheme_dark_info">Vždy používat tmavý motiv.</string>
+    <string name="setting_appTheme_darkStyle_title">Styl tmavého motivu</string>
+    <string name="setting_appTheme_darkStyle_paralino_title">Paralino</string>
+    <string name="setting_appTheme_darkStyle_paralino_info">Tmavě zelené tóny klasického motivu Paralino.</string>
+    <string name="setting_appTheme_darkStyle_pitchBlack_title">Čistě černá</string>
+    <string name="setting_appTheme_darkStyle_pitchBlack_info">Zcela černé pozadí.</string>
     <string name="setting_measurementSystem_title">Měřící systém</string>
     <string name="setting_measurementSystem_default_title">Výchozí zařízení</string>
     <string name="setting_measurementSystem_metric_title">Metrický</string>

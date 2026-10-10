@@ -22,4 +22,9 @@ object AppColors {
     val darkThemePrimary = Color(0xFF0F443F)
 
     val darkThemeSecondary = Color(0xFF929292)
+
+    val pitchBlackBackground = Color(0xFF000000)
+    val pitchBlackOnBackground = Color(0xFFD7D7D7)
+    val pitchBlackSurface = Color(0xFF0C0C0C)
+    val pitchBlackThemePrimary = Color(0xFF0F443F)
 }

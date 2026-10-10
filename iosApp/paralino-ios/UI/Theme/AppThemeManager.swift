@@ -19,6 +19,15 @@ enum AppThemeManager {
             .flatMap { $0.windows }
             .forEach { $0.overrideUserInterfaceStyle = style }
     }
+    
+    /// Switches the dark style used by SwiftUI colors.
+    /// Compose follows `AppPrefs.darkThemeStyleFlow` on its own.
+    static func applyDarkThemeStyle(_ style: DarkThemeStyleType = AppPrefs.Companion.shared.instance.darkThemeStyle) {
+        let palette = AppColors.DarkPalette.shared
+        if palette.style != style {
+            palette.style = style
+        }
+    }
 }
 
 extension AppThemeType {

@@ -326,6 +326,11 @@
     <string name="setting_appTheme_light_info">Folosește întotdeauna tema luminoasă.</string>
     <string name="setting_appTheme_dark_title">Întunecat</string>
     <string name="setting_appTheme_dark_info">Folosește întotdeauna tema întunecată.</string>
+    <string name="setting_appTheme_darkStyle_title">Stilul temei întunecate</string>
+    <string name="setting_appTheme_darkStyle_paralino_title">Paralino</string>
+    <string name="setting_appTheme_darkStyle_paralino_info">Nuanțe de verde închis ale temei clasice Paralino.</string>
+    <string name="setting_appTheme_darkStyle_pitchBlack_title">Negru absolut</string>
+    <string name="setting_appTheme_darkStyle_pitchBlack_info">Fundal complet negru.</string>
     <string name="setting_measurementSystem_title">Sistem de măsurare</string>
     <string name="setting_measurementSystem_default_title">Implicitul dispozitivului</string>
     <string name="setting_measurementSystem_metric_title">Metric</string>

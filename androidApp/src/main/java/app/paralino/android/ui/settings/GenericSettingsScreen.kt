@@ -107,7 +107,10 @@ fun GenericSettingsScreen(
                     forcePrompt = true
                 )
             },
-            applyAppTheme = { it.applyAsNightMode(context) }
+            applyAppTheme = { it.applyAsNightMode(context) },
+            applyDarkThemeStyle = {
+                // AppTheme is observing this with app prefs
+            }
         )
     }
 }

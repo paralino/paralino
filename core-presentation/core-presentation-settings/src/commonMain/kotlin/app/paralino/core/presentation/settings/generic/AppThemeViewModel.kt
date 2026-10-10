@@ -4,6 +4,7 @@ import androidx.compose.ui.unit.dp
 import app.paralino.core.MR
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.models.settings.AppThemeType
+import app.paralino.core.models.settings.DarkThemeStyleType
 import app.paralino.core.provider.localizedString
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -20,30 +21,63 @@ class AppThemeViewModel(
 
     override fun createInitialState(): GenericSettingsScreenState {
         val currentOption = appPrefs.appTheme
+        val currentDarkThemeStyle = appPrefs.darkThemeStyle
         return GenericSettingsScreenState(
             screenTitle = initialScreenTitle,
             alertDialog = null,
             content = GenericSettingsScreenStateContent.ListItems(
-                items = listOf(
-                    GenericSettingListItem.Spacer(20.dp, keyId = "top_space"),
-                    GenericSettingListItem.GroupOptions(
-                        defaultId = AppThemeType.SYSTEM.key,
-                        keyId = "theme",
-                        items = AppThemeType.entries.map {
-                            GroupOptionItem(
-                                key = it,
-                                id = it.key,
-                                title = it.title.localizedString(),
-                                description = it.description.localizedString(),
-                                tag = null,
-                                isTagWarning = false,
-                                isPremiumFeatureEnabled = true,
-                                isSelected = it == currentOption
+                items = buildList {
+                    add(GenericSettingListItem.Spacer(20.dp, keyId = "top_space"))
+                    add(
+                        GenericSettingListItem.GroupOptions(
+                            defaultId = AppThemeType.SYSTEM.key,
+                            keyId = "theme",
+                            items = AppThemeType.entries.map {
+                                GroupOptionItem(
+                                    key = it,
+                                    id = it.key,
+                                    title = it.title.localizedString(),
+                                    description = it.description.localizedString(),
+                                    tag = null,
+                                    isTagWarning = false,
+                                    isPremiumFeatureEnabled = true,
+                                    isSelected = it == currentOption
+                                )
+                            }
+                        )
+                    )
+
+                    // no dark styles with light theme
+                    if (currentOption != AppThemeType.LIGHT) {
+                        add(GenericSettingListItem.Spacer(30.dp, keyId = "dark_style_space"))
+                        add(
+                            GenericSettingListItem.Subtitle(
+                                content = MR.strings.setting_appTheme_darkStyle_title.localizedString(),
+                                bottomPadding = 10.dp
                             )
-                        }
-                    ),
-                    GenericSettingListItem.Spacer(spacing = 40.dp, keyId = "bottom_space")
-                )
+                        )
+                        add(
+                            GenericSettingListItem.GroupOptions(
+                                defaultId = DarkThemeStyleType.PARALINO.key,
+                                keyId = "dark_style",
+                                items = DarkThemeStyleType.entries.map {
+                                    GroupOptionItem(
+                                        key = it,
+                                        id = it.key,
+                                        title = it.title.localizedString(),
+                                        description = it.description.localizedString(),
+                                        tag = null,
+                                        isTagWarning = false,
+                                        isPremiumFeatureEnabled = true,
+                                        isSelected = it == currentDarkThemeStyle
+                                    )
+                                }
+                            )
+                        )
+                    }
+
+                    add(GenericSettingListItem.Spacer(spacing = 40.dp, keyId = "bottom_space"))
+                }
             )
         )
     }
@@ -51,33 +85,22 @@ class AppThemeViewModel(
     override fun handleUiEvent(event: GenericSettingsScreenUiEvent) {
         when (event) {
             is GenericSettingsScreenUiEvent.SelectOptionItem -> {
-                val theme = event.option.key as? AppThemeType ?: return
-                appPrefs.appTheme = theme
-                _uiState.update { state ->
-                    state.copy(
-                        content = when (val stateContent = state.content) {
-                            is GenericSettingsScreenStateContent.ListItems -> {
-                                stateContent.copy(
-                                    items = stateContent.items.map { item ->
-                                        when (val finalItem = item) {
-                                            is GenericSettingListItem.GroupOptions -> {
-                                                finalItem.copy(
-                                                    items = finalItem.items.map {
-                                                        it.copy(isSelected = it.id == event.option.id)
-                                                    }
-                                                )
-                                            }
-                                            else -> item
-                                        }
-                                    }
-                                )
-                            }
-                            else -> state.content
+                when (val option = event.option.key) {
+                    is AppThemeType -> {
+                        appPrefs.appTheme = option
+                        _uiState.update { createInitialState() }
+                        coroutineScope.launch {
+                            _eventChannel.send(GenericSettingsScreenEvent.ApplyAppTheme(option))
                         }
-                    )
-                }
-                coroutineScope.launch {
-                    _eventChannel.send(GenericSettingsScreenEvent.ApplyAppTheme(theme))
+                    }
+
+                    is DarkThemeStyleType -> {
+                        appPrefs.darkThemeStyle = option
+                        _uiState.update { createInitialState() }
+                        coroutineScope.launch {
+                            _eventChannel.send(GenericSettingsScreenEvent.ApplyDarkThemeStyle(option))
+                        }
+                    }
                 }
             }
 

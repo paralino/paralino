@@ -326,6 +326,11 @@
     <string name="setting_appTheme_light_info">Her zaman açık temayı kullan.</string>
     <string name="setting_appTheme_dark_title">Koyu</string>
     <string name="setting_appTheme_dark_info">Her zaman koyu temayı kullan.</string>
+    <string name="setting_appTheme_darkStyle_title">Koyu tema stili</string>
+    <string name="setting_appTheme_darkStyle_paralino_title">Paralino</string>
+    <string name="setting_appTheme_darkStyle_paralino_info">Klasik Paralino temasının koyu yeşil tonları.</string>
+    <string name="setting_appTheme_darkStyle_pitchBlack_title">Simsiyah</string>
+    <string name="setting_appTheme_darkStyle_pitchBlack_info">Tamamen siyah arka plan.</string>
     <string name="setting_measurementSystem_title">Ölçüm sistemi</string>
     <string name="setting_measurementSystem_default_title">Cihaz varsayılanı</string>
     <string name="setting_measurementSystem_metric_title">Metrik</string>

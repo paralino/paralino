@@ -326,6 +326,11 @@
     <string name="setting_appTheme_light_info">Usar siempre el tema claro.</string>
     <string name="setting_appTheme_dark_title">Oscuro</string>
     <string name="setting_appTheme_dark_info">Usar siempre el tema oscuro.</string>
+    <string name="setting_appTheme_darkStyle_title">Estilo del tema oscuro</string>
+    <string name="setting_appTheme_darkStyle_paralino_title">Paralino</string>
+    <string name="setting_appTheme_darkStyle_paralino_info">Tonos verde oscuro del tema clásico de Paralino.</string>
+    <string name="setting_appTheme_darkStyle_pitchBlack_title">Negro puro</string>
+    <string name="setting_appTheme_darkStyle_pitchBlack_info">Fondo completamente negro.</string>
     <string name="setting_measurementSystem_title">Sistema de medida</string>
     <string name="setting_measurementSystem_default_title">Predeterminado del dispositivo</string>
     <string name="setting_measurementSystem_metric_title">Métrico</string>

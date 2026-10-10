@@ -4,6 +4,7 @@ import app.paralino.core.models.base.ParalinoSocketConnectionType
 import app.paralino.core.models.base.PushProvider
 import app.paralino.core.models.places.GroupPlaceSensitivityData
 import app.paralino.core.models.settings.AppThemeType
+import app.paralino.core.models.settings.DarkThemeStyleType
 import app.paralino.core.models.settings.FormValidation
 import app.paralino.core.models.settings.IOSNavigationAppType
 import app.paralino.core.models.settings.MapInteractionsType
@@ -13,6 +14,9 @@ import app.paralino.core.models.settings.NotificationGroupingType
 import app.paralino.core.provider.MeasurementSystemType
 import app.paralino.core.utils.BaseRemoteModule
 import app.paralino.core.utils.extensions.isoWithOffsetToInstant
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlin.time.Instant
 
 class AppPrefs(
@@ -107,6 +111,7 @@ class AppPrefs(
         const val keyMapInteractions = "prefs.device.mapInteractions"
         const val keyNavigatioApp = "prefs.device.navigationApp"
         const val keyDeviceTheme = "prefs.device.theme"
+        const val keyDarkThemeStyle = "prefs.device.theme.darkStyle"
         const val keyLocationHistoryPerformance = "prefs.location.history.performance"
         const val keyEmailVerificationSkipTime = "prefs.user.emailVerification.skipTime"
         const val keyFirstLoginTime = "prefs.user.firstLoginTime"
@@ -623,6 +628,21 @@ class AppPrefs(
             ?: AppThemeType.SYSTEM
         set(value) {
             provider.appSettings.putString(keyDeviceTheme, value.key)
+        }
+
+    private val _darkThemeStyleFlow = MutableStateFlow(
+        provider.appSettings.getString(keyDarkThemeStyle, "")
+            .let { DarkThemeStyleType.fromKey(it) }
+            ?: DarkThemeStyleType.PARALINO
+    )
+
+
+    val darkThemeStyleFlow: StateFlow<DarkThemeStyleType> = _darkThemeStyleFlow.asStateFlow()
+    var darkThemeStyle: DarkThemeStyleType
+        get() = _darkThemeStyleFlow.value
+        set(value) {
+            provider.appSettings.putString(keyDarkThemeStyle, value.key)
+            _darkThemeStyleFlow.value = value
         }
 
     fun setPlaceSensitivityForPlace(placeId: String, sensitivity: GroupPlaceSensitivityData?) {

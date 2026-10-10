@@ -35,6 +35,9 @@ struct GenericSettingsScreen: View {
                     },
                     applyAppTheme: { theme in
                         AppThemeManager.apply(theme: theme)
+                    },
+                    applyDarkThemeStyle: { style in
+                        AppThemeManager.applyDarkThemeStyle(style)
                     }
                 )
             }

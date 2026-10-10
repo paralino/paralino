@@ -326,6 +326,11 @@
     <string name="setting_appTheme_light_info">Mindig a világos téma használata.</string>
     <string name="setting_appTheme_dark_title">Sötét</string>
     <string name="setting_appTheme_dark_info">Mindig a sötét téma használata.</string>
+    <string name="setting_appTheme_darkStyle_title">Sötét téma stílusa</string>
+    <string name="setting_appTheme_darkStyle_paralino_title">Paralino</string>
+    <string name="setting_appTheme_darkStyle_paralino_info">A klasszikus Paralino téma sötétzöld árnyalatai.</string>
+    <string name="setting_appTheme_darkStyle_pitchBlack_title">Koromfekete</string>
+    <string name="setting_appTheme_darkStyle_pitchBlack_info">Teljesen fekete háttér.</string>
     <string name="setting_measurementSystem_title">Mérési rendszer</string>
     <string name="setting_measurementSystem_default_title">Eszköz alapértelmezett</string>
     <string name="setting_measurementSystem_metric_title">Metrikus</string>

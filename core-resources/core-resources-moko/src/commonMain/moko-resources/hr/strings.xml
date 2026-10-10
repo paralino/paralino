@@ -326,6 +326,11 @@
     <string name="setting_appTheme_light_info">Uvijek koristi svijetlu temu.</string>
     <string name="setting_appTheme_dark_title">Tamna</string>
     <string name="setting_appTheme_dark_info">Uvijek koristi tamnu temu.</string>
+    <string name="setting_appTheme_darkStyle_title">Stil tamne teme</string>
+    <string name="setting_appTheme_darkStyle_paralino_title">Paralino</string>
+    <string name="setting_appTheme_darkStyle_paralino_info">Tamnozelene nijanse klasične Paralino teme.</string>
+    <string name="setting_appTheme_darkStyle_pitchBlack_title">Čista crna</string>
+    <string name="setting_appTheme_darkStyle_pitchBlack_info">Potpuno crna pozadina.</string>
     <string name="setting_measurementSystem_title">Mjerne jedinice</string>
     <string name="setting_measurementSystem_default_title">Zadano na uređaju</string>
     <string name="setting_measurementSystem_metric_title">Metrički</string>

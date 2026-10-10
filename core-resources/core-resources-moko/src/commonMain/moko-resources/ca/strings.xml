@@ -326,6 +326,11 @@
     <string name="setting_appTheme_light_info">Utilitza sempre el tema clar.</string>
     <string name="setting_appTheme_dark_title">Fosc</string>
     <string name="setting_appTheme_dark_info">Utilitza sempre el tema fosc.</string>
+    <string name="setting_appTheme_darkStyle_title">Estil del tema fosc</string>
+    <string name="setting_appTheme_darkStyle_paralino_title">Paralino</string>
+    <string name="setting_appTheme_darkStyle_paralino_info">Tons verd fosc del tema clàssic de Paralino.</string>
+    <string name="setting_appTheme_darkStyle_pitchBlack_title">Negre absolut</string>
+    <string name="setting_appTheme_darkStyle_pitchBlack_info">Fons completament negre.</string>
     <string name="setting_measurementSystem_title">Sistema de mesura</string>
     <string name="setting_measurementSystem_default_title">Per defecte del dispositiu</string>
     <string name="setting_measurementSystem_metric_title">Mètric</string>

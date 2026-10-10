@@ -326,6 +326,11 @@
     <string name="setting_appTheme_light_info">Завжди використовувати світлу тему.</string>
     <string name="setting_appTheme_dark_title">Темна</string>
     <string name="setting_appTheme_dark_info">Завжди використовувати темну тему.</string>
+    <string name="setting_appTheme_darkStyle_title">Стиль темної теми</string>
+    <string name="setting_appTheme_darkStyle_paralino_title">Paralino</string>
+    <string name="setting_appTheme_darkStyle_paralino_info">Темно-зелені відтінки класичної теми Paralino.</string>
+    <string name="setting_appTheme_darkStyle_pitchBlack_title">Вугільно-чорна</string>
+    <string name="setting_appTheme_darkStyle_pitchBlack_info">Повністю чорний фон.</string>
     <string name="setting_measurementSystem_title">Система вимірювання</string>
     <string name="setting_measurementSystem_default_title">За замовчуванням пристрою</string>
     <string name="setting_measurementSystem_metric_title">Метрична</string>

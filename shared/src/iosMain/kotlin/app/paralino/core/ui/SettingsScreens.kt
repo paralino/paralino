@@ -5,6 +5,7 @@ import androidx.compose.ui.uikit.OnFocusBehavior
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.ComposeUIViewController
 import app.paralino.core.models.settings.AppThemeType
+import app.paralino.core.models.settings.DarkThemeStyleType
 import app.paralino.core.presentation.paralinoid.PersonalCodeViewModel
 import app.paralino.core.presentation.rawdata.RawDataPresentationViewModel
 import app.paralino.core.presentation.settings.SettingsViewModel
@@ -381,6 +382,7 @@ object SettingsScreens {
         askNotificationPermission: () -> Unit,
         askBackgroundAccessPermission: () -> Unit,
         applyAppTheme: (AppThemeType) -> Unit,
+        applyDarkThemeStyle: (DarkThemeStyleType) -> Unit,
     ) = ComposeUIViewController {
         RootScreenIOS {
             GenericSettingsScreenCore(
@@ -394,6 +396,7 @@ object SettingsScreens {
                 askNotificationPermission = askNotificationPermission,
                 askBackgroundAccessPermission = askBackgroundAccessPermission,
                 applyAppTheme = applyAppTheme,
+                applyDarkThemeStyle = applyDarkThemeStyle,
             )
         }
     }
