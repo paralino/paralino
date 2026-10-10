@@ -114,6 +114,10 @@ class LocationPerformanceManager constructor(
         }
     }
 
+    fun resetTimestamps() {
+        locationBoostTracker = mutableMapOf()
+    }
+
     fun checkPerformanceResetState() {
         // fallback check in case reset gets canceled for whatever reason
         // here we give it enough buffer and reset

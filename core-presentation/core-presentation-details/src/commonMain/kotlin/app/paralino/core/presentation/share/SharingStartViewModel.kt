@@ -628,6 +628,7 @@ class SharingStartViewModel(
             return
         }
 
+        locationPerformanceManager.resetTimestamps()
         locationPerformanceManager.locationBoostRequested(
             performanceType = LocationPerformanceType.HIGH,
             groupId = contract.groupOrSpaceId,
