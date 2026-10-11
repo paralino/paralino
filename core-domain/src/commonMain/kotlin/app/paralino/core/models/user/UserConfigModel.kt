@@ -10,7 +10,8 @@ import kotlin.time.Instant
 data class UserConfigModel(
     val lastUpdateTime: Instant,
     val billingCustomerId: String?,
-    val mapTilerToken: String?
+    val mapTilerStyleToken: String?,
+    val mapTilerSatelliteToken: String?
 ) {
 
     val isValid: Boolean get() = !lastUpdateTime.isOlderThan(5.days)
@@ -40,7 +41,8 @@ data class UserConfigModel(
     companion object {
         fun fromDatabase(
             nodes: List<UserConfigEntity>,
-            mapTilerToken: String?
+            mapTilerStyleToken: String?,
+            mapTilerSatelliteToken: String?
         ): UserConfigModel {
             return UserConfigModel(
                 lastUpdateTime = nodes.firstOrNull {
@@ -49,7 +51,8 @@ data class UserConfigModel(
                 billingCustomerId = nodes.firstOrNull {
                     it.type == "billingCustomerId"
                 }?.data,
-                mapTilerToken = mapTilerToken
+                mapTilerStyleToken = mapTilerStyleToken,
+                mapTilerSatelliteToken = mapTilerSatelliteToken
             )
         }
 
@@ -57,7 +60,8 @@ data class UserConfigModel(
             return UserConfigModel(
                 lastUpdateTime = nowUTC(),
                 billingCustomerId = data?.get("billingCustomerId") as? String?,
-                mapTilerToken = data?.get("mapTilerToken") as? String?
+                mapTilerStyleToken = data?.get("mapTilerStyleToken") as? String?,
+                mapTilerSatelliteToken = data?.get("mapTilerSatelliteToken") as? String?
             )
         }
     }

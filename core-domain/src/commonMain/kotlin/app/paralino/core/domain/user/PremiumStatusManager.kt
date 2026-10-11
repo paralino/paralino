@@ -9,7 +9,6 @@ import app.paralino.core.models.data
 import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.settings.MapsSDKProvider
 import app.paralino.core.repo.LocationSharingManager
-import app.paralino.core.repo.base.AppConfigRepository
 import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.location.LocationPerformanceSettingsType
@@ -31,7 +30,7 @@ class PremiumStatusManager(
     private val groupLocalDataSource: UserGroupLocalDataSource,
     private val personalSpaceRepo: UserPersonalSpaceLocalDataSource,
     private val appPrefs: AppPrefs,
-    private val appConfigRepo: AppConfigRepository
+    private val getMapSDKProvider: GetMapSDKProviderUseCase
 ) {
 
     private val _hasGroupOverLimits = MutableStateFlow(false)
@@ -75,12 +74,7 @@ class PremiumStatusManager(
 
         if (currentPlanConfig?.hasPremiumMapStyles == false) {
             appPrefs.setAndroidMapSDKProvider(
-                appPrefs.getAndroidMapSDKProviderOrDefault(
-                    hasGoogleMaps = appConfigRepo.hasGoogleMaps,
-                    canUseMapLibre = appConfigRepo.canUseMapLibre,
-                    isPremiumPlan = false,
-                    mapTilerToken = null
-                )
+                getMapSDKProvider.getProvider(hasPremiumMapStyles = false)
             )
         }
 
@@ -283,12 +277,7 @@ class PremiumStatusManager(
     }
 
     fun defaultMapProvider(): MapsSDKProvider {
-        return appPrefs.getAndroidMapSDKProviderOrDefault(
-            hasGoogleMaps = appConfigRepo.hasGoogleMaps,
-            canUseMapLibre = appConfigRepo.canUseMapLibre,
-            isPremiumPlan = userRepo.userPlans.value.highestValidPlanConfig.hasPremiumMapStyles,
-            mapTilerToken = appPrefs.mapTilerToken
-        )
+        return getMapSDKProvider.getProvider()
     }
 }
 

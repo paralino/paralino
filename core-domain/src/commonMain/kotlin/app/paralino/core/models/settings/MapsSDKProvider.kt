@@ -74,7 +74,8 @@ sealed interface MapsSDKProvider {
         }
 
         data class MAPLIBRE_PREMIUM(
-            val mapTilerToken: String,
+            val mapTilerStyleToken: String,
+            val mapTilerSatelliteToken: String,
             override val lightStyle: MapStyle.Light = MapStyle.Light.OPEN_FREE_MAP_LIBERTY,
             override val darkStyle: MapStyle.Dark = MapStyle.Dark.OPEN_FREE_MAP_DARK
         ) : MAPLIBRE {
@@ -82,39 +83,39 @@ sealed interface MapsSDKProvider {
             override val title = MR.strings.setting_mapsProvider_mapLibrePremium_title
             override val description = MR.strings.setting_mapsProvider_mapLibrePremium_info
             override val tag = null
-            override val hasSatelliteMaps = true
+            override val hasSatelliteMaps = mapTilerSatelliteToken.isNotBlank()
             override val isPremium = true
 
             override fun lightStyleUri(isSatelliteMaps: Boolean): String {
                 if (isSatelliteMaps) {
-                    return "https://api.maptiler.com/maps/hybrid-v4/style.json?key=${mapTilerToken}"
+                    return "https://api.maptiler.com/maps/hybrid-v4/style.json?key=${mapTilerSatelliteToken}"
                 }
 
                 return when (lightStyle) {
-                    MapStyle.Light.MAPTILER_DATAVIZ_LIGHT -> "https://api.maptiler.com/maps/dataviz-v4/style.json?key=${mapTilerToken}"
-                    MapStyle.Light.MAPTILER_OUTDOOR_LIGHT -> "https://api.maptiler.com/maps/outdoor-v4/style.json?key=${mapTilerToken}"
-                    MapStyle.Light.MAPTILER_STREET_LIGHT -> "https://api.maptiler.com/maps/streets-v4/style.json?key=${mapTilerToken}"
+                    MapStyle.Light.MAPTILER_DATAVIZ_LIGHT -> "https://api.maptiler.com/maps/dataviz-v4/style.json?key=${mapTilerStyleToken}"
+                    MapStyle.Light.MAPTILER_OUTDOOR_LIGHT -> "https://api.maptiler.com/maps/outdoor-v4/style.json?key=${mapTilerStyleToken}"
+                    MapStyle.Light.MAPTILER_STREET_LIGHT -> "https://api.maptiler.com/maps/streets-v4/style.json?key=${mapTilerStyleToken}"
                     MapStyle.Light.OPEN_FREE_MAP_LIBERTY -> "https://tiles.openfreemap.org/styles/liberty"
                     MapStyle.Light.OPEN_FREE_MAP_BRIGHT -> "https://tiles.openfreemap.org/styles/bright"
                     MapStyle.Light.OPEN_FREE_MAP_POSITRON -> "https://tiles.openfreemap.org/styles/positron"
-                    MapStyle.Light.MAPTILER_BACKDROP_LIGHT -> "https://api.maptiler.com/maps/backdrop-v4-light/style.json?key=${mapTilerToken}"
-                    MapStyle.Light.MAPTILER_BASE_LIGHT -> "https://api.maptiler.com/maps/base-v4-light/style.json?key=${mapTilerToken}"
+                    MapStyle.Light.MAPTILER_BACKDROP_LIGHT -> "https://api.maptiler.com/maps/backdrop-v4-light/style.json?key=${mapTilerStyleToken}"
+                    MapStyle.Light.MAPTILER_BASE_LIGHT -> "https://api.maptiler.com/maps/base-v4-light/style.json?key=${mapTilerStyleToken}"
                 }
             }
 
             override fun darkStyleUri(isSatelliteMaps: Boolean): String {
                 if (isSatelliteMaps) {
-                    return "https://api.maptiler.com/maps/hybrid-v4/style.json?key=${mapTilerToken}"
+                    return "https://api.maptiler.com/maps/hybrid-v4/style.json?key=${mapTilerSatelliteToken}"
                 }
 
                 return when (darkStyle) {
-                    MapStyle.Dark.MAPTILER_DATAVIZ_DARK -> "https://api.maptiler.com/maps/dataviz-v4-dark/style.json?key=${mapTilerToken}"
-                    MapStyle.Dark.MAPTILER_OUTDOOR_DARK -> "https://api.maptiler.com/maps/outdoor-v4-dark/style.json?key=${mapTilerToken}"
-                    MapStyle.Dark.MAPTILER_STREET_DARK -> "https://api.maptiler.com/maps/streets-v4-dark/style.json?key=${mapTilerToken}"
+                    MapStyle.Dark.MAPTILER_DATAVIZ_DARK -> "https://api.maptiler.com/maps/dataviz-v4-dark/style.json?key=${mapTilerStyleToken}"
+                    MapStyle.Dark.MAPTILER_OUTDOOR_DARK -> "https://api.maptiler.com/maps/outdoor-v4-dark/style.json?key=${mapTilerStyleToken}"
+                    MapStyle.Dark.MAPTILER_STREET_DARK -> "https://api.maptiler.com/maps/streets-v4-dark/style.json?key=${mapTilerStyleToken}"
                     MapStyle.Dark.OPEN_FREE_MAP_DARK -> "https://tiles.openfreemap.org/styles/dark"
                     MapStyle.Dark.OPEN_FREE_MAP_FIORD -> "https://tiles.openfreemap.org/styles/fiord"
-                    MapStyle.Dark.MAPTILER_BACKDROP_DARK -> "https://api.maptiler.com/maps/backdrop-v4-dark/style.json?key=${mapTilerToken}"
-                    MapStyle.Dark.MAPTILER_BASE_DARK -> "https://api.maptiler.com/maps/base-v4-dark/style.json?key=${mapTilerToken}"
+                    MapStyle.Dark.MAPTILER_BACKDROP_DARK -> "https://api.maptiler.com/maps/backdrop-v4-dark/style.json?key=${mapTilerStyleToken}"
+                    MapStyle.Dark.MAPTILER_BASE_DARK -> "https://api.maptiler.com/maps/base-v4-dark/style.json?key=${mapTilerStyleToken}"
                 }
             }
         }
@@ -123,7 +124,8 @@ sealed interface MapsSDKProvider {
     companion object {
         fun fromKey(
             key: String,
-            mapTilerToken: String,
+            mapTilerStyleToken: String,
+            mapTilerSatelliteToken: String,
             lightStyle: MapStyle.Light = MapStyle.Light.OPEN_FREE_MAP_LIBERTY,
             darkStyle: MapStyle.Dark = MapStyle.Dark.OPEN_FREE_MAP_DARK
         ): MapsSDKProvider? {
@@ -138,9 +140,13 @@ sealed interface MapsSDKProvider {
                         ?: MapStyle.Dark.OPEN_FREE_MAP_DARK
                 )
 
-                MAPLIBRE.MAPLIBRE_PREMIUM(mapTilerToken = mapTilerToken).key -> {
+                MAPLIBRE.MAPLIBRE_PREMIUM(
+                    mapTilerStyleToken = mapTilerStyleToken,
+                    mapTilerSatelliteToken = mapTilerSatelliteToken
+                ).key -> {
                     MAPLIBRE.MAPLIBRE_PREMIUM(
-                        mapTilerToken = mapTilerToken,
+                        mapTilerStyleToken = mapTilerStyleToken,
+                        mapTilerSatelliteToken = mapTilerSatelliteToken,
                         lightStyle = lightStyle,
                         darkStyle = darkStyle
                     )

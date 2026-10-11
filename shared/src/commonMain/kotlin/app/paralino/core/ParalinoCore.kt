@@ -93,6 +93,7 @@ import app.paralino.core.domain.user.DeletePersonalDeviceUseCase
 import app.paralino.core.domain.user.ExpiredSessionHandler
 import app.paralino.core.domain.user.ExpiredSessionRecovery
 import app.paralino.core.domain.user.GetDirectCheckoutWebPortalUseCase
+import app.paralino.core.domain.user.GetMapSDKProviderUseCase
 import app.paralino.core.domain.user.LoginUseCase
 import app.paralino.core.domain.user.LogoutUseCase
 import app.paralino.core.domain.user.PasswordConfirmationUseCase
@@ -379,9 +380,10 @@ val coreModule = module {
     single { LocationCacheRepository() }
     single { PlacesRepository(get(), get(), get(), get(), get(), get()) }
     single { RemoteConfigRepository(get(), get(), get(), get()) }
-    single { UserConfigRepository(get(), get(), get(), get()) }
+    single { UserConfigRepository(get(), get(), get(), get(), get()) }
     single { AppConfigRepository(get(), get()) }
     single { PremiumStatusManager(get(), get(), get(), get(), get(), get(), get()) }
+    factory { GetMapSDKProviderUseCase(get(), get(), get()) }
     single { StartDirectCheckoutUseCase(get()) }
     single { GetDirectCheckoutWebPortalUseCase(get()) }
 

@@ -306,7 +306,7 @@ object KoinSetup {
         viewModel { PlaceSearchSettingsViewModel(get(), get()) }
         viewModel { PersonalSpaceFeatureSettingsViewModel(get()) }
         viewModel { NotificationSocketSettingsViewModel(get(), get(), get(), get(), get(), get(), get()) }
-        viewModel { MapsProviderViewModel(get(), get(), get(), get(), get()) }
+        viewModel { MapsProviderViewModel(get(), get(), get(), get(), get(), get()) }
         viewModel { (groupId: String) -> LocationHistoryDeleteViewModel(groupId = groupId.asGroupOrSpaceId(), get(), get(), get(), get(), get(), get()) }
         viewModel { PersonalSpaceViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
         viewModel { PersonalSpaceSettingsViewModel(get(), get()) }

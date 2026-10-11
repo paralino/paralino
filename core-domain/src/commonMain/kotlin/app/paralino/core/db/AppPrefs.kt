@@ -121,6 +121,8 @@ class AppPrefs(
         const val keyAppTappedOnReview = "prefs.device.appReviewOpened"
         const val keyPlaceSearchLocation = "prefs.device.pleaseSearchLocation"
         const val keyMapTilerToken = "prefs.device.mapsTilerToken"
+        const val keyMapTilerStylesToken = "prefs.device.mapTilerStylesToken"
+        const val keyMapTilerSatelliteToken = "prefs.device.mapsTilerSatelliteToken"
         const val keyMapSDKProviderLocation = "prefs.device.mapsSDK"
         const val keyMapSDKProviderLightStyle = "prefs.device.mapsSDK.lightStyle"
         const val keyMapSDKProviderDarkStyle = "prefs.device.mapsSDK.darkStyle"
@@ -697,8 +699,9 @@ class AppPrefs(
     fun getAndroidMapSDKProviderOrDefault(
         hasGoogleMaps: Boolean,
         canUseMapLibre: Boolean,
-        isPremiumPlan: Boolean,
-        mapTilerToken: String?
+        hasPremiumMapStyles: Boolean,
+        mapTilerStyleToken: String?,
+        mapTilerSatelliteToken: String?
     ): MapsSDKProvider {
         val settingKey = provider.userSettings.getString(keyMapSDKProviderLocation, "")
         val lightStyleKey = provider.userSettings.getString(keyMapSDKProviderLightStyle, "")
@@ -709,8 +712,11 @@ class AppPrefs(
 
         val default = when {
             hasGoogleMaps -> MapsSDKProvider.GOOGLE
-            canUseMapLibre && isPremiumPlan && !mapTilerToken.isNullOrBlank() -> {
-                MapsSDKProvider.MAPLIBRE.MAPLIBRE_PREMIUM(mapTilerToken = mapTilerToken)
+            canUseMapLibre && hasPremiumMapStyles && !mapTilerStyleToken.isNullOrBlank() -> {
+                MapsSDKProvider.MAPLIBRE.MAPLIBRE_PREMIUM(
+                    mapTilerStyleToken = mapTilerStyleToken,
+                    mapTilerSatelliteToken = mapTilerSatelliteToken ?: ""
+                )
             }
             canUseMapLibre -> MapsSDKProvider.MAPLIBRE.MAPLIBRE_FREE()
             else -> MapsSDKProvider.NONE
@@ -718,14 +724,15 @@ class AppPrefs(
 
         val setting = MapsSDKProvider.fromKey(
             key = settingKey,
-            mapTilerToken = mapTilerToken ?: "",
+            mapTilerStyleToken = mapTilerStyleToken ?: "",
+            mapTilerSatelliteToken = mapTilerSatelliteToken ?: "",
             lightStyle = lightStyle,
             darkStyle = darkStyle
         ) ?: default
 
         return if (setting is MapsSDKProvider.MAPLIBRE && !canUseMapLibre) {
             default
-        } else if (!isPremiumPlan && setting.isPremium) {
+        } else if (!hasPremiumMapStyles && setting.isPremium) {
             if (canUseMapLibre) {
                 MapsSDKProvider.MAPLIBRE.MAPLIBRE_FREE(
                     lightStyle = lightStyle,
@@ -734,7 +741,7 @@ class AppPrefs(
             } else {
                 default
             }
-        } else if (setting is MapsSDKProvider.MAPLIBRE.MAPLIBRE_PREMIUM && mapTilerToken.isNullOrBlank()) {
+        } else if (setting is MapsSDKProvider.MAPLIBRE.MAPLIBRE_PREMIUM && mapTilerStyleToken.isNullOrBlank()) {
             if (canUseMapLibre) {
                 MapsSDKProvider.MAPLIBRE.MAPLIBRE_FREE(
                     lightStyle = lightStyle,
@@ -760,13 +767,33 @@ class AppPrefs(
         }
     }
 
-    var mapTilerToken: String?
+    var mapTilerTokenV1: String?
         get() = provider.userSettings.getStringOrNull(keyMapTilerToken)
         set(value) {
             if (value == null) {
                 provider.userSettings.remove(keyMapTilerToken)
             } else {
                 provider.userSettings.putString(keyMapTilerToken, value)
+            }
+        }
+
+    var mapTilerStylesToken: String?
+        get() = provider.userSettings.getStringOrNull(keyMapTilerStylesToken)
+        set(value) {
+            if (value == null) {
+                provider.userSettings.remove(keyMapTilerStylesToken)
+            } else {
+                provider.userSettings.putString(keyMapTilerStylesToken, value)
+            }
+        }
+
+    var mapTilerSatelliteToken: String?
+        get() = provider.userSettings.getStringOrNull(keyMapTilerSatelliteToken)
+        set(value) {
+            if (value == null) {
+                provider.userSettings.remove(keyMapTilerSatelliteToken)
+            } else {
+                provider.userSettings.putString(keyMapTilerSatelliteToken, value)
             }
         }
 
