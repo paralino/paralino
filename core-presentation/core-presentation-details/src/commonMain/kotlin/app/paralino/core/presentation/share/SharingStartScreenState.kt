@@ -7,6 +7,7 @@ import app.paralino.core.models.location.LocationSharingContract
 import app.paralino.core.presentation.common.AlertDialogAction
 import app.paralino.core.presentation.common.GroupItemState
 import app.paralino.core.presentation.common.MainAlertDialog
+import app.paralino.core.provider.DeviceStatusData
 import app.paralino.core.utils.ConditionErrorType
 import app.paralino.core.utils.SharingDurationPreset
 
@@ -49,7 +50,11 @@ data class SharingStartScreenState constructor(
     val errors: List<ConditionErrorType> = emptyList(),
     val warnings: List<ConditionErrorType> = emptyList(),
     val loadingAction: Boolean = false,
-    val alertDialog: MainAlertDialog? = null
+    val alertDialog: MainAlertDialog? = null,
+    val screenStep: SharingStartScreenStep = SharingStartScreenStep.SHARING,
+    val requirements: List<SharingRequirementState> = emptyList(),
+    val activeRequirement: ConditionErrorType? = null,
+    val isRequestingPermissions: Boolean = false
 ) {
     val isNewContract: Boolean = currentContract == null
     val isNameChanged: Boolean = deviceName != initialDeviceName
@@ -123,6 +128,57 @@ data class SharingStartScreenState constructor(
     }
 }
 
+enum class SharingStartScreenStep {
+    PERMISSIONS,
+    SHARING
+}
+
+data class SharingRequirementState(
+    val type: ConditionErrorType,
+    val isResolved: Boolean
+) {
+    companion object {
+        // order in which permissions are requested
+        private val all: List<ConditionErrorType> = listOf(
+            ConditionErrorType.PermissionLocation.PermissionLocationAny,
+            ConditionErrorType.PermissionLocationBackground,
+            ConditionErrorType.PermissionNotifications,
+            ConditionErrorType.UnrestrictedBackgroundAccess,
+            ConditionErrorType.GPS
+        )
+
+        fun fromDeviceStatus(deviceStatus: DeviceStatusData): List<SharingRequirementState> {
+            val missing = buildList {
+                addAll(deviceStatus.locationStatus.getPossibleErrors())
+                if (!deviceStatus.notificationStatus.isNotificationPermissionAllowed) {
+                    add(ConditionErrorType.PermissionNotifications)
+                }
+                if (!deviceStatus.locationStatus.isUnrestrictedBackgroundPermissionAllowed) {
+                    add(ConditionErrorType.UnrestrictedBackgroundAccess)
+                }
+            }
+
+            return all
+                .map { requirement ->
+                    val error = missing.firstOrNull { it.isSameRequirementAs(requirement) }
+                    SharingRequirementState(
+                        type = error ?: requirement,
+                        isResolved = error == null
+                    )
+                }
+                .sortedBy { it.isResolved }
+        }
+    }
+}
+
+fun ConditionErrorType.isSameRequirementAs(other: ConditionErrorType): Boolean {
+    return if (this is ConditionErrorType.PermissionLocation) {
+        other is ConditionErrorType.PermissionLocation
+    } else {
+        this == other
+    }
+}
+
 enum class SharingStartPresentationType {
     FULL,
     GROUP_CREATE_ONBOARDING,
@@ -150,4 +206,6 @@ sealed interface SharingStartScreenUiEvent {
     data object RequestSharingDurationEdit : SharingStartScreenUiEvent
     data class ToggleNotifyOthers(val state: Boolean): SharingStartScreenUiEvent
     data class ToggleRealtimeUpdates(val state: Boolean): SharingStartScreenUiEvent
+    data class StartPermissionRequest(val type: ConditionErrorType?) : SharingStartScreenUiEvent
+    data object SkipPermissions : SharingStartScreenUiEvent
 }

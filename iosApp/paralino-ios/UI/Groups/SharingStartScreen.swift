@@ -40,27 +40,27 @@ struct SharingStartScreen: View {
                     },
                     askNotificationPermission: {
                         appDelegate.notificationPermissionHandler.requestNotificationPermission(
-                            messageDispather: appState.vm.messageDispatcher
+                            messageDispather: appState.vm
                         )
                     },
                     askLocationService: {
                         appDelegate.locationPermissionHandler.requestLocationServices(
-                            messageDispather: appState.vm.messageDispatcher
+                            messageDispather: appState.vm
                         )
                     },
                     askLocationPermission: {
                         appDelegate.locationPermissionHandler.requestLocationPermission(
-                            messageDispather: appState.vm.messageDispatcher
+                            messageDispather: appState.vm
                         )
                     },
                     askBackgroundLocationPermission: {
                         appDelegate.locationPermissionHandler.requestLocationPermission(
-                            messageDispather: appState.vm.messageDispatcher
+                            messageDispather: appState.vm
                         )
                     },
                     askBackgroundAccessPermission: {
                         appDelegate.locationPermissionHandler.requestBackgroundRefreshPermission(
-                            messageDispather: appState.vm.messageDispatcher
+                            messageDispather: appState.vm
                         )
                     }
                 )

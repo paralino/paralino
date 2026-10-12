@@ -13,9 +13,12 @@ import androidx.compose.ui.platform.LocalContext
 import app.paralino.android.ui.main.MainAppState
 import app.paralino.core.MR
 import app.paralino.core.presentation.common.ICoreMessageDispatcher
+import app.paralino.core.provider.ConditionRequestFinishedEvent
+import app.paralino.core.provider.ConditionRequestType
 import app.paralino.core.provider.INotificationStatusProvider
 import app.paralino.core.provider.NotificationPermissionResultEvent
 import app.paralino.core.presentation.common.AppSnackbarData
+import app.paralino.core.presentation.common.AppSnackbarResultType
 import app.paralino.core.presentation.common.SnackbarDuration
 import app.paralino.core.presentation.common.onAction
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -77,6 +80,8 @@ class NotificationsPermissionHandlerState constructor(
         val handled = updateStatus(granted = !denied)
         if (denied && !handled) {
             showPermissionDeniedInfo()
+        } else {
+            requestFinished()
         }
     }
 
@@ -84,14 +89,20 @@ class NotificationsPermissionHandlerState constructor(
         when {
             notificationPermissionState?.allPermissionsGranted == true -> {
                 updateStatus(granted = true)
+                requestFinished()
             }
             notificationPermissionState?.shouldShowRationale == true -> {
                 showPermissionDeniedInfo()
             }
             else -> {
                 notificationPermissionState?.launchMultiplePermissionRequest()
+                    ?: requestFinished()
             }
         }
+    }
+
+    private fun requestFinished() {
+        messageDispatcher.onMessageEvent(ConditionRequestFinishedEvent(ConditionRequestType.NOTIFICATIONS))
     }
 
     private fun updateStatus(granted: Boolean): Boolean {
@@ -104,14 +115,19 @@ class NotificationsPermissionHandlerState constructor(
         val messageRes = MR.strings.error_notification_permission_missing_sheet_message.resourceId
 
         appState.uiScope.launch {
-            messageDispatcher.showSnackbarForResult(
+            val result = messageDispatcher.showSnackbarForResult(
                 AppSnackbarData(
                     text = context.getString(messageRes),
                     actionText = MR.strings.button_open_settings.getString(context),
                     duration = SnackbarDuration.Long
                 )
-            )?.result?.onAction {
+            )?.result
+
+            // request is finished once user returns from settings or dismisses info
+            if (result == AppSnackbarResultType.ActionPerformed) {
                 openSettings()
+            } else {
+                requestFinished()
             }
         }
     }

@@ -1,6 +1,8 @@
 package app.paralino.core.presentation.common
 
 import app.paralino.core.MR
+import app.paralino.core.models.base.DeviceType
+import app.paralino.core.provider.current
 import app.paralino.core.utils.ConditionErrorType
 import dev.icerock.moko.resources.StringResource
 
@@ -15,7 +17,26 @@ val ConditionErrorType.nameRes: StringResource
         is ConditionErrorType.EmailVerification -> MR.strings.info_email_confirm
         ConditionErrorType.GuestAccount -> MR.strings.settings_account_guest_badge
         ConditionErrorType.NewAppUpdate -> MR.strings.app_version_alert_title
-        ConditionErrorType.UnrestrictedBackgroundAccess -> MR.strings.location_banner_error_background_access
+        ConditionErrorType.UnrestrictedBackgroundAccess -> when (DeviceType.current) {
+            DeviceType.Android -> MR.strings.location_banner_error_background_access
+            DeviceType.iOS -> MR.strings.location_banner_error_background_app_refresh
+        }
+    }
+
+val ConditionErrorType.resolvedNameRes: StringResource?
+    get() = when (this) {
+        ConditionErrorType.GPS -> MR.strings.location_banner_resolved_gps_on
+        ConditionErrorType.PermissionNotifications -> MR.strings.location_banner_resolved_permission_notifications
+        is ConditionErrorType.PermissionLocation -> MR.strings.location_banner_resolved_permission_location
+        ConditionErrorType.PermissionLocationBackground -> MR.strings.location_banner_resolved_permission_location_background
+        ConditionErrorType.UnrestrictedBackgroundAccess -> when (DeviceType.current) {
+            DeviceType.Android -> MR.strings.location_banner_resolved_background_access
+            DeviceType.iOS -> MR.strings.location_banner_resolved_background_app_refresh
+        }
+        ConditionErrorType.Network,
+        is ConditionErrorType.EmailVerification,
+        ConditionErrorType.GuestAccount,
+        ConditionErrorType.NewAppUpdate -> null
     }
 
 val ConditionErrorType.endActionTextRes: StringResource?

@@ -99,6 +99,13 @@
     <string name="location_banner_error_no_permission_location_background">Missing all time location permission</string>
     <string name="location_banner_error_offline">Device is offline</string>
     <string name="location_banner_error_background_access">Missing unrestricted background access</string>
+    <string name="location_banner_error_background_app_refresh">Background App Refresh is disabled</string>
+    <string name="location_banner_resolved_gps_on">Device location is enabled</string>
+    <string name="location_banner_resolved_permission_notifications">Notifications permission</string>
+    <string name="location_banner_resolved_permission_location">Location permission</string>
+    <string name="location_banner_resolved_permission_location_background">All time location permission</string>
+    <string name="location_banner_resolved_background_access">Unrestricted background access</string>
+    <string name="location_banner_resolved_background_app_refresh">Background App Refresh</string>
     <string name="onboarding_step_location_title">Real-time location sharing</string>
     <string name="onboarding_step_location_title_tag">Paralino</string>
     <string name="onboarding_step_location_info">Battery, speed, elevation, and network monitoring. Private groups with family, friends, or only your devices.</string>
@@ -666,6 +673,8 @@
     <string name="location_sharing_button_stop_personal">Stop tracking</string>
     <string name="location_sharing_stop_groups_alert_message">Are you sure you want to stop sharing your location with this group?</string>
     <string name="groups_sharing_title">Share location</string>
+    <string name="groups_sharing_permissions_title">Before you start sharing</string>
+    <string name="groups_sharing_permissions_description">Paralino needs these permissions to reliably share your location.</string>
     <string name="groups_sharing_device_name_placeholder">Device name (optional)</string>
     <string name="groups_sharing_devices">Devices</string>
     <string name="groups_sharing_potential_error_title">Warning</string>

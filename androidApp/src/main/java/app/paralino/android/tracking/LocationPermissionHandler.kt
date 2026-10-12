@@ -19,11 +19,13 @@ import app.paralino.android.provider.isLocationOn
 import app.paralino.android.ui.main.MainAppState
 import app.paralino.core.MR
 import app.paralino.core.presentation.common.ICoreMessageDispatcher
+import app.paralino.core.provider.ConditionRequestFinishedEvent
+import app.paralino.core.provider.ConditionRequestType
 import app.paralino.core.provider.ILocationStatusProvider
 import app.paralino.core.provider.LocationConditionStatus
 import app.paralino.core.presentation.common.AppSnackbarData
+import app.paralino.core.presentation.common.AppSnackbarResultType
 import app.paralino.core.presentation.common.SnackbarDuration
-import app.paralino.core.presentation.common.onAction
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.MultiplePermissionsState
 import com.google.accompanist.permissions.PermissionState
@@ -144,26 +146,31 @@ data class LocationPermissionHandlerState constructor(
             denied = state.any { !it.value }
         }
 
+        updateStatus()
         if (denied) {
             showLocationDeniedInfo()
         } else if (backgroundDenied) {
             showBackgroundLocationDeniedInfo()
+        } else {
+            requestFinished(ConditionRequestType.LOCATION_PERMISSION)
         }
-        updateStatus()
     }
 
     fun backgroundLocationRequestResult(state: Boolean) {
         backgroundDenied = !state
+        updateStatus()
         if (!state) {
             showBackgroundLocationDeniedInfo()
+        } else {
+            requestFinished(ConditionRequestType.LOCATION_PERMISSION)
         }
-        updateStatus()
     }
 
     fun askLocationPermission() {
         when {
             locationPermissionsState?.allPermissionsGranted == true -> {
                 updateStatus()
+                requestFinished(ConditionRequestType.LOCATION_PERMISSION)
             }
 
             locationPermissionsState?.shouldShowRationale?.not() == true && backgroundDenied -> {
@@ -172,6 +179,7 @@ data class LocationPermissionHandlerState constructor(
 
             else -> {
                 locationPermissionsState?.launchMultiplePermissionRequest()
+                    ?: requestFinished(ConditionRequestType.LOCATION_PERMISSION)
             }
         }
     }
@@ -180,6 +188,7 @@ data class LocationPermissionHandlerState constructor(
         when {
             backgroundLocationPermissionState?.status?.isGranted == true -> {
                 updateStatus()
+                requestFinished(ConditionRequestType.LOCATION_PERMISSION)
             }
 
             backgroundLocationPermissionState?.status?.shouldShowRationale?.not() == true && backgroundDenied -> {
@@ -191,6 +200,8 @@ data class LocationPermissionHandlerState constructor(
                     locationPermissionsState?.launchMultiplePermissionRequest()
                 } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                     backgroundLocationPermissionState?.launchPermissionRequest()
+                } else {
+                    requestFinished(ConditionRequestType.LOCATION_PERMISSION)
                 }
             }
         }
@@ -199,6 +210,7 @@ data class LocationPermissionHandlerState constructor(
     fun askLocationService() {
         if (LocationConditionStatus.isLocationOn(context)) {
             updateStatus()
+            requestFinished(ConditionRequestType.LOCATION_SERVICE)
         } else {
             showGPSOffInfo()
         }
@@ -207,15 +219,22 @@ data class LocationPermissionHandlerState constructor(
     fun askUnrestrictedBackgroundAccess(forcePrompt: Boolean) {
         if (LocationConditionStatus.hasUnrestrictedBackgroundAccess(context)) {
             updateStatus()
+            requestFinished(ConditionRequestType.BACKGROUND_ACCESS)
         } else {
             if (forcePrompt) {
                 try {
-                    backgroundAccessLauncher?.launch(
-                        Intent(
-                            Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS,
-                            Uri.fromParts("package", context.packageName, null)
+                    val launcher = backgroundAccessLauncher
+                    if (launcher != null) {
+                        launcher.launch(
+                            Intent(
+                                Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS,
+                                Uri.fromParts("package", context.packageName, null)
+                            )
                         )
-                    )
+                        // request is finished once launcher result calls this again
+                    } else {
+                        requestFinished(ConditionRequestType.BACKGROUND_ACCESS)
+                    }
                 } catch (e: Exception) {
                     showBackgroundAccessOffInfo()
                 }
@@ -229,35 +248,51 @@ data class LocationPermissionHandlerState constructor(
         locationStatusProvider.refreshLocationStatus()
     }
 
-    private fun showBackgroundAccessOffInfo() {
+    private fun requestFinished(type: ConditionRequestType) {
+        messageDispatcher.onMessageEvent(ConditionRequestFinishedEvent(type))
+    }
+
+    private fun showOpenSettingsInfo(
+        text: String,
+        requestType: ConditionRequestType,
+        openSettings: () -> Unit
+    ) {
         appState.uiScope.launch {
-            messageDispatcher.showSnackbarForResult(
+            val result = messageDispatcher.showSnackbarForResult(
                 AppSnackbarData(
-                    text = context.getString(MR.strings.error_unrestricted_background_access_message_android.resourceId),
+                    text = text,
                     actionText = MR.strings.button_open_settings.getString(context),
                     duration = SnackbarDuration.Long
                 )
-            )?.result?.onAction {
-                try {
-                    backgroundAccessLauncher?.launch(Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS))
-                } catch (e: Exception) {
-                    openApplicationDetailsSettings()
-                }
+            )?.result
+
+            if (result == AppSnackbarResultType.ActionPerformed) {
+                openSettings()
+            } else {
+                requestFinished(requestType)
+            }
+        }
+    }
+
+    private fun showBackgroundAccessOffInfo() {
+        showOpenSettingsInfo(
+            text = context.getString(MR.strings.error_unrestricted_background_access_message_android.resourceId),
+            requestType = ConditionRequestType.BACKGROUND_ACCESS
+        ) {
+            try {
+                backgroundAccessLauncher?.launch(Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS))
+            } catch (e: Exception) {
+                openApplicationDetailsSettings()
             }
         }
     }
 
     private fun showGPSOffInfo() {
-        appState.uiScope.launch {
-            messageDispatcher.showSnackbarForResult(
-                AppSnackbarData(
-                    text = context.getString(MR.strings.error_location_service_missing_sheet_message.resourceId),
-                    actionText = MR.strings.button_open_settings.getString(context),
-                    duration = SnackbarDuration.Long
-                )
-            )?.result?.onAction {
-                gpsLauncher?.launch(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
-            }
+        showOpenSettingsInfo(
+            text = context.getString(MR.strings.error_location_service_missing_sheet_message.resourceId),
+            requestType = ConditionRequestType.LOCATION_SERVICE
+        ) {
+            gpsLauncher?.launch(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
         }
     }
 
@@ -267,17 +302,11 @@ data class LocationPermissionHandlerState constructor(
             MR.strings.error_location_precise_permission_missing_sheet_message
         } else MR.strings.error_location_permission_missing_sheet_message
 
-        appState.uiScope.launch {
-            messageDispatcher.showSnackbarForResult(
-                AppSnackbarData(
-                    text = context.getString(messageRes.resourceId),
-                    actionText = MR.strings.button_open_settings.getString(context),
-                    duration = SnackbarDuration.Long
-                )
-            )?.result?.onAction {
-                openApplicationDetailsSettings()
-            }
-        }
+        showOpenSettingsInfo(
+            text = context.getString(messageRes.resourceId),
+            requestType = ConditionRequestType.LOCATION_PERMISSION,
+            openSettings = ::openApplicationDetailsSettings
+        )
     }
 
     private fun showBackgroundLocationDeniedInfo() {
@@ -292,17 +321,11 @@ data class LocationPermissionHandlerState constructor(
             )
         }
 
-        appState.uiScope.launch {
-            messageDispatcher.showSnackbarForResult(
-                AppSnackbarData(
-                    text = message,
-                    actionText = MR.strings.button_open_settings.getString(context),
-                    duration = SnackbarDuration.Long
-                )
-            )?.result?.onAction {
-                openApplicationDetailsSettings()
-            }
-        }
+        showOpenSettingsInfo(
+            text = message,
+            requestType = ConditionRequestType.LOCATION_PERMISSION,
+            openSettings = ::openApplicationDetailsSettings
+        )
     }
 
     private fun openApplicationDetailsSettings() {

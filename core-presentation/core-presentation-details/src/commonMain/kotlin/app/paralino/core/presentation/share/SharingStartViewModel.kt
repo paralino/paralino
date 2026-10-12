@@ -22,12 +22,17 @@ import app.paralino.core.presentation.common.MainAlertDialog
 import app.paralino.core.presentation.common.SnackbarDuration
 import app.paralino.core.presentation.common.nameRes
 import app.paralino.core.presentation.share.SharingStartScreenEvent.AskForPermission
+import app.paralino.core.provider.AppLifecycleType
+import app.paralino.core.provider.ConditionRequestFinishedEvent
+import app.paralino.core.provider.ConditionRequestPromptedEvent
 import app.paralino.core.provider.DistanceType
 import app.paralino.core.provider.FormattingFractionsMode
+import app.paralino.core.provider.ICoreMessageDispatcherEvent
 import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.provider.MeasurementSystemType
 import app.paralino.core.provider.localizedString
+import app.paralino.core.provider.requestType
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.group.UserGroupLocalDataSource
@@ -44,11 +49,15 @@ import app.paralino.core.utils.extensions.errorString
 import app.paralino.core.utils.extensions.fromUTCtoInstant
 import app.paralino.core.utils.extensions.nowUTC
 import app.paralino.core.utils.poll
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
@@ -58,6 +67,10 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlin.coroutines.cancellation.CancellationException
+import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.seconds
+import kotlin.time.Instant
 
 class SharingStartViewModel(
     val initialGroupId: GroupOrSpaceId?,
@@ -79,14 +92,31 @@ class SharingStartViewModel(
 
     private val _uiState =
         MutableStateFlow(
-            SharingStartScreenState(
-                groupState = if (initialGroupId?.id.isNullOrBlank()) {
-                    Payload.Success(null)
-                } else {
-                    Payload.Loading
-                },
-                canChangeGroup = initialGroupId?.id.isNullOrBlank()
-            )
+            SharingRequirementState.fromDeviceStatus(deviceApiProvider.currentDeviceStatus()).let { requirements ->
+                SharingStartScreenState(
+                    groupState = if (initialGroupId?.id.isNullOrBlank()) {
+                        Payload.Success(null)
+                    } else {
+                        Payload.Loading
+                    },
+                    canChangeGroup = initialGroupId?.id.isNullOrBlank(),
+                    requirements = requirements,
+                    screenStep = when (presentationType) {
+                        SharingStartPresentationType.FULL -> {
+                            SharingStartScreenStep.SHARING
+                        }
+
+                        SharingStartPresentationType.GROUP_CREATE_ONBOARDING,
+                        SharingStartPresentationType.GROUP_JOIN -> {
+                            if (requirements.any { !it.isResolved }) {
+                                SharingStartScreenStep.PERMISSIONS
+                            } else {
+                                SharingStartScreenStep.SHARING
+                            }
+                        }
+                    }
+                )
+            }
         )
     val uiState: StateFlow<SharingStartScreenState> = _uiState
 
@@ -102,6 +132,9 @@ class SharingStartViewModel(
         get() = presentationType == SharingStartPresentationType.GROUP_CREATE_ONBOARDING
 
     private var didConfirmNotificationPermissionPrompt = false
+
+    private var permissionRequestJob: Job? = null
+    private var pendingPermissionRequest: PendingPermissionRequest? = null
 
     val shouldProceedToPaywall: Boolean
         get() {
@@ -131,10 +164,38 @@ class SharingStartViewModel(
             }
         }
 
+        deviceApiProvider.locationStatusProvider.refreshLocationStatus()
+        deviceApiProvider.notificationStatusProvider.refreshNotificationsStatus()
+
+        deviceApiProvider.appLifecycleState
+            .debounce(100.milliseconds)
+            .onEach { lifecycle ->
+                val request = pendingPermissionRequest ?: return@onEach
+                when (lifecycle.current) {
+                    AppLifecycleType.INACTIVE -> request.didLeaveActive = true
+                    AppLifecycleType.BACKGROUND -> {
+                        request.didLeaveActive = true
+                        request.didGoToBackground = true
+                    }
+
+                    AppLifecycleType.ACTIVE -> {
+                        // returned from settings opened by permission handlers, or system prompt was dismissed
+                        // this is only for prompts, other inactive cases like info snackbar shown will wait for the handler result
+                        if (request.didGoToBackground || (request.isSystemPrompt && request.didLeaveActive)) {
+                            request.result.complete(Unit)
+                        }
+                    }
+
+                    AppLifecycleType.DESTROYED -> {}
+                }
+            }
+            .launchIn(coroutineScope)
+
         deviceApiProvider.deviceStatus
             .onEach { deviceStatus ->
                 _uiState.update {
                     it.copy(
+                        requirements = SharingRequirementState.fromDeviceStatus(deviceStatus),
                         errors = getAllErrors(isForLongTerm = it.isLongTerm),
                         warnings = buildList {
                             if (!deviceStatus.notificationStatus.isNotificationPermissionAllowed) {
@@ -146,6 +207,12 @@ class SharingStartViewModel(
                             }
                         }
                     )
+                }
+
+                val state = _uiState.value
+                val active = state.activeRequirement
+                if (active != null && state.requirements.any { it.isResolved && it.type.isSameRequirementAs(active) }) {
+                    pendingPermissionRequest?.result?.complete(Unit)
                 }
             }
             .launchIn(coroutineScope)
@@ -266,6 +333,110 @@ class SharingStartViewModel(
             is SharingStartScreenUiEvent.ToggleNotifyOthers -> toggleNotifyOthers(state = event.state)
             is SharingStartScreenUiEvent.ToggleRealtimeUpdates -> toggleRealtimeUpdates(state = event.state)
             SharingStartScreenUiEvent.RequestSharingDurationEdit -> enableSharingDurationEdit()
+            is SharingStartScreenUiEvent.StartPermissionRequest -> requestPermissions(startWith = event.type)
+            SharingStartScreenUiEvent.SkipPermissions -> skipPermissions()
+        }
+    }
+
+    override fun onMessageEvent(event: ICoreMessageDispatcherEvent): Boolean {
+        val request = pendingPermissionRequest ?: return false
+        when (event) {
+            is ConditionRequestFinishedEvent -> {
+                if (request.type.requestType == event.type) {
+                    request.result.complete(Unit)
+                }
+            }
+
+            is ConditionRequestPromptedEvent -> {
+                if (request.type.requestType == event.type) {
+                    request.isSystemPrompt = true
+                    coroutineScope.launch {
+                        delay(1500)
+                        // app never became inactive, so system did not present the prompt
+                        if (!request.didLeaveActive) {
+                            request.result.complete(Unit)
+                        }
+                    }
+                }
+            }
+        }
+        return false
+    }
+
+    private fun requestPermissions(startWith: ConditionErrorType?) {
+        if (permissionRequestJob?.isActive == true) {
+            // in case platform never reports back, allow continuing manually
+            // ignore quick taps before system prompt shows up
+            val request = pendingPermissionRequest
+            if (startWith == null && request != null && nowUTC() - request.startedAt > 1.seconds) {
+                request.result.complete(Unit)
+            }
+            return
+        }
+
+        permissionRequestJob = coroutineScope.launch {
+            val unresolved = _uiState.value.requirements.filterNot { it.isResolved }.map { it.type }
+            val queue = if (startWith != null) {
+                listOf(startWith) + unresolved.filterNot { it.isSameRequirementAs(startWith) }
+            } else {
+                unresolved
+            }
+
+            _uiState.update { it.copy(isRequestingPermissions = true) }
+
+            queue.forEach { requirement ->
+                val requirements = _uiState.value.requirements
+                val current = requirements
+                    .firstOrNull { !it.isResolved && it.type.isSameRequirementAs(requirement) }
+                    ?.type
+                    ?: return@forEach
+
+                val isMissingForegroundLocation = requirements.any {
+                    !it.isResolved && it.type == ConditionErrorType.PermissionLocation.PermissionLocationAny
+                }
+                if (current == ConditionErrorType.PermissionLocationBackground && isMissingForegroundLocation) {
+                    // all time location can not be granted without location permission
+                    return@forEach
+                }
+
+                try {
+                    val request = PendingPermissionRequest(type = current, startedAt = nowUTC())
+                    pendingPermissionRequest = request
+                    _uiState.update { it.copy(activeRequirement = current) }
+                    _eventChannel.send(AskForPermission(current))
+                    request.result.await()
+                } catch (e: CancellationException) {
+                    throw e
+                } catch (e: Exception) {
+                    logg.e("Unable to request $current", e)
+                }
+
+                pendingPermissionRequest = null
+                _uiState.update { it.copy(activeRequirement = null) }
+                // let device status refresh
+                delay(500)
+            }
+
+            delay(300)
+            _uiState.update {
+                it.copy(
+                    isRequestingPermissions = false,
+                    screenStep = SharingStartScreenStep.SHARING
+                )
+            }
+        }
+    }
+
+    private fun skipPermissions() {
+        permissionRequestJob?.cancel()
+        permissionRequestJob = null
+        pendingPermissionRequest = null
+        _uiState.update {
+            it.copy(
+                activeRequirement = null,
+                isRequestingPermissions = false,
+                screenStep = SharingStartScreenStep.SHARING
+            )
         }
     }
 
@@ -927,4 +1098,15 @@ class SharingStartViewModel(
             } ?: this.approximateLocationValue
         )
     }
+}
+
+private class PendingPermissionRequest(
+    val type: ConditionErrorType,
+    val startedAt: Instant
+) {
+    val result = CompletableDeferred<Unit>()
+
+    var isSystemPrompt = false
+    var didLeaveActive = false
+    var didGoToBackground = false
 }
