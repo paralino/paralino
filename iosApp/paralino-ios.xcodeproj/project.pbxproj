@@ -65,6 +65,7 @@
 		25A228662CC7D3AE004577BE /* Number+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25A228652CC7D3A8004577BE /* Number+Extension.swift */; };
 		25A228682CC7F7D0004577BE /* MapComponentVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25A228672CC7F7BF004577BE /* MapComponentVC.swift */; };
 		25A2286A2CC809C8004577BE /* ValueAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25A228692CC809C4004577BE /* ValueAnimator.swift */; };
+		25A65C6D307D2E5D00A7B093 /* LocationStatusProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25A65C6C307D2E5300A7B093 /* LocationStatusProvider.swift */; };
 		25A812102CD51216002DF3E5 /* RevenueCat in Frameworks */ = {isa = PBXBuildFile; productRef = 25A8120F2CD51216002DF3E5 /* RevenueCat */; };
 		25A812122CD5122B002DF3E5 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 25A812112CD5122B002DF3E5 /* StoreKit.framework */; };
 		25AC7F472E5F887800A7C57E /* PersonalSpaceSettingsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25AC7F462E5F887800A7C57E /* PersonalSpaceSettingsScreen.swift */; };
@@ -258,6 +259,7 @@
 		25A228672CC7F7BF004577BE /* MapComponentVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapComponentVC.swift; sourceTree = "<group>"; };
 		25A228692CC809C4004577BE /* ValueAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValueAnimator.swift; sourceTree = "<group>"; };
 		25A5A6202CB7E14B00D3D160 /* paralino-ios.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "paralino-ios.entitlements"; sourceTree = "<group>"; };
+		25A65C6C307D2E5300A7B093 /* LocationStatusProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationStatusProvider.swift; sourceTree = "<group>"; };
 		25A812112CD5122B002DF3E5 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		25AC7F462E5F887800A7C57E /* PersonalSpaceSettingsScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonalSpaceSettingsScreen.swift; sourceTree = "<group>"; };
 		25AFAD4E2BBACDB3001909CA /* AppUpdateManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppUpdateManager.swift; sourceTree = "<group>"; };
@@ -326,7 +328,7 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Provider/ConnectionStatusProvider.swift,
-				Provider/LocationStatusProvider.swift,
+				"Provider/LocationStatusProvider+Ext.swift",
 				Provider/Logr.swift,
 				Provider/NotificationStatusProvider.swift,
 			);
@@ -346,7 +348,7 @@
 				Provider/CoreKoinSetup.swift,
 				Provider/DeviceApiProvider.swift,
 				Provider/GeofenceManager.swift,
-				Provider/LocationStatusProvider.swift,
+				"Provider/LocationStatusProvider+Ext.swift",
 				Provider/Logr.swift,
 				Provider/NotificationStatusProvider.swift,
 				Provider/PushNotificationPresenters.swift,
@@ -450,6 +452,7 @@
 		252E361129CF5EB0008FC635 /* Provider */ = {
 			isa = PBXGroup;
 			children = (
+				25A65C6C307D2E5300A7B093 /* LocationStatusProvider.swift */,
 				250FD3822CDF9D1A000F1070 /* CrashReportingLogr.swift */,
 				25C9E5662CCB75BA00C3C58A /* LocationPermissionHandler.swift */,
 				252EA00629DD89C800338956 /* KoinSetup.swift */,
@@ -1144,6 +1147,7 @@
 				255B0CA12E203D95001426C3 /* HistoryMapMarker.swift in Sources */,
 				255B0CA82E203D97001426C3 /* HistoryStartStopMapMarker.swift in Sources */,
 				25C9E5692CD0300E00C3C58A /* LoadingOverlay.swift in Sources */,
+				25A65C6D307D2E5D00A7B093 /* LocationStatusProvider.swift in Sources */,
 				25A228682CC7F7D0004577BE /* MapComponentVC.swift in Sources */,
 				25F8DB902DB91268007AECEB /* AppSettingsScreen.swift in Sources */,
 				25EFDE302A5B45C300522293 /* MapMarker.swift in Sources */,
