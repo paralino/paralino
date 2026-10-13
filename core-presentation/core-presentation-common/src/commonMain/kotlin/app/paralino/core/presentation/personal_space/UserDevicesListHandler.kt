@@ -8,7 +8,7 @@ import app.paralino.core.domain.user.PersonalSpaceRefreshUseCase
 import app.paralino.core.logg
 import app.paralino.core.models.Payload
 import app.paralino.core.models.exception
-import app.paralino.core.models.location.LocationDataModel
+import app.paralino.core.models.location.LocationUpdateDataFromDevice
 import app.paralino.core.models.location.UserDeviceModel
 import app.paralino.core.models.user.UserSession
 import app.paralino.core.presentation.common.AlertDialogAction
@@ -100,7 +100,7 @@ class UserDevicesListHandler(
     suspend fun publishDevices(
         devices: List<UserDeviceModel>,
         places: List<PlaceListItemData>,
-        myLocation: LocationDataModel?,
+        myLocation: LocationUpdateDataFromDevice?,
     ): List<UserDeviceOrSessionItemState> {
         val mappedDevices = mapDevices(
             devices = devices,
@@ -207,7 +207,7 @@ class UserDevicesListHandler(
     private fun mapDevices(
         devices: List<UserDeviceModel>,
         places: List<PlaceListItemData>,
-        myLocation: LocationDataModel?,
+        myLocation: LocationUpdateDataFromDevice?,
     ): List<UserDeviceItemState> {
         return devices
             .sortedBy { it.deviceId != appPrefs.deviceId }

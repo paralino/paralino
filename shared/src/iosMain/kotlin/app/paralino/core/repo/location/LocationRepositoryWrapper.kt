@@ -6,7 +6,7 @@ import app.paralino.core.logg
 import app.paralino.core.models.Payload
 import app.paralino.core.models.base.BackendDatabaseType
 import app.paralino.core.models.base.BackendResourceIDs
-import app.paralino.core.models.location.LocationDataModel
+import app.paralino.core.models.location.LocationUpdateDataFromDevice
 import app.paralino.core.models.raw.PushNotificationRaw
 import app.paralino.core.provider.CoroutineScopeProvider
 import app.paralino.core.repo.LocationSharingManager
@@ -75,7 +75,7 @@ class LocationRepositoryWrapper(
     }
 
     @OptIn(NativeRuntimeApi::class)
-    fun registerNewLocation(data: LocationDataModel): Payload<Unit> {
+    fun registerNewLocation(data: LocationUpdateDataFromDevice): Payload<Unit> {
         GC.collect()
         return try {
             locationRepo.registerNewLocation(data)

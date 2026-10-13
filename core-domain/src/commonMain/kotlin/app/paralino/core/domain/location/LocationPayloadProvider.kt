@@ -18,6 +18,7 @@ import app.paralino.core.models.location.LocationHistoryPointLocationModel
 import app.paralino.core.models.location.LocationHistoryPointModel
 import app.paralino.core.models.location.LocationHistoryPointStatusModel
 import app.paralino.core.models.location.LocationSharingContract
+import app.paralino.core.models.location.LocationUpdateDataFromDevice
 import app.paralino.core.models.location.MemberGroupId
 import app.paralino.core.utils.extensions.isLocationInaccurate
 import app.paralino.core.utils.extensions.roundToPrecision
@@ -41,7 +42,7 @@ class LocationPayloadProvider(
 
     suspend fun getLocationPayload(
         groupId: GroupOrSpaceId,
-        data: LocationDataModel?,
+        data: LocationUpdateDataFromDevice?,
         /**
          * if there is no contract, location data is ignored
          */
@@ -58,7 +59,7 @@ class LocationPayloadProvider(
 
     private suspend fun tryGetLocationPayload(
         groupId: GroupOrSpaceId,
-        data: LocationDataModel?,
+        data: LocationUpdateDataFromDevice?,
         contract: LocationSharingContract?
     ): LocationPayloadStatus {
 
@@ -77,7 +78,7 @@ class LocationPayloadProvider(
                             groupId = groupId,
                             trueLat = data.lat,
                             trueLng = data.lng,
-                            accuracyMeters = data.accuracy,
+                            accuracyMeters = data.adjustedHorizontalAccuracy,
                         )
                     } else {
                         null
@@ -86,7 +87,7 @@ class LocationPayloadProvider(
                     val approximateRadius = contract.approximateLocationInMeters
 
                     if (zoneResult != null || approximateRadius != null) {
-                        if (data.accuracy.isLocationInaccurate()) {
+                        if (data.adjustedHorizontalAccuracy.isLocationInaccurate()) {
                             // ignore inaccurate locations since it will cause jumps
                             // and since location is already spoofed, this just pollutes obfuscators
                             return@safeLet null
@@ -116,7 +117,7 @@ class LocationPayloadProvider(
                     } else {
                         approximateRadius?.toFloat()
                             ?: zoneResult?.uploadAccuracyMeters?.toFloat()
-                            ?: data.accuracy
+                            ?: data.adjustedHorizontalAccuracy
                     }
 
                     val isSharingInPrivacyZone = isInsidePrivacyZone && contract.shareDeviceStatus && zoneResult.shareStatus

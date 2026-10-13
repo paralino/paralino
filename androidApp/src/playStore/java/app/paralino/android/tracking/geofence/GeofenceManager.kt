@@ -7,7 +7,6 @@ import android.location.Location
 import android.os.Build
 import androidx.annotation.RequiresPermission
 import app.paralino.core.logg
-import app.paralino.core.models.location.LocationDataModel
 import app.paralino.core.models.places.GroupPlaceGeofenceData
 import app.paralino.core.repo.location.IGeofenceManager
 import com.google.android.gms.location.Geofence

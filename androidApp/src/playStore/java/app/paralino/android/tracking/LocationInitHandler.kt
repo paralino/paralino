@@ -8,8 +8,9 @@ import app.paralino.android.provider.getLocationStatus
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.logg
 import app.paralino.core.models.Payload
-import app.paralino.core.models.location.LocationDataModel
 import app.paralino.core.models.location.LocationPerformanceType
+import app.paralino.core.models.location.LocationProviderType
+import app.paralino.core.models.location.LocationUpdateDataFromDevice
 import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.provider.LocationConditionStatus
 import app.paralino.core.provider.LocationStatusException
@@ -43,7 +44,7 @@ class LocationInitHandler constructor(
     private val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
 
     private val locationTrackingFlag = MutableStateFlow(false)
-    val currentLocation = MutableStateFlow<Payload<LocationDataModel>>(
+    val currentLocation = MutableStateFlow<Payload<LocationUpdateDataFromDevice>>(
         Payload.Error(LocationStoppedException())
     )
 
@@ -139,7 +140,7 @@ class LocationInitHandler constructor(
         fusedLocationClient.removeLocationUpdates(locationCallback)
     }
 
-    suspend fun getOrFetchLastLocation(timeout: Duration, performanceType: LocationPerformanceType): LocationDataModel? {
+    suspend fun getOrFetchLastLocation(timeout: Duration, performanceType: LocationPerformanceType): LocationUpdateDataFromDevice? {
         return suspendCancellableCoroutine { continuation ->
             val cancellationTokenSource = CancellationTokenSource()
 
@@ -171,36 +172,20 @@ class LocationInitHandler constructor(
         }
     }
 
-    private fun Location.toLocationModel(): LocationDataModel {
-        return LocationDataModel(
+    private fun Location.toLocationModel(): LocationUpdateDataFromDevice {
+        return LocationUpdateDataFromDevice(
             lat = this.latitude,
             lng = this.longitude,
-            accuracy = this.accuracy.adaptAccuracy(),
+            rawHorizontalAccuracy = this.accuracy,
             timeUTC = Instant.fromEpochMilliseconds(this.time)
                 .toLocalDateTime(TimeZone.UTC)
                 .stripNanoseconds()
                 .toString(),
             speed = if (this.hasSpeed()) this.speed else null,
             altitude = if (this.hasAltitude()) this.altitude.toFloat() else null,
-            isMasked = false
+            provider = LocationProviderType.fromFullKey(key = this.provider)
         )
     }
-
-    private fun Float.adaptAccuracy(): Float {
-        // Accuracy is in meters at 68% confidence
-        // for more inaccurate location we want to have better confidence
-        // this will improve perceived accuracy on the map and in further calculations
-        return when {
-            this > 500 -> this * 1.47f // Scale to 85% confidence
-            this > 300 -> {
-                // Linear interpolation between 75% (1.15) and 85% (1.47)
-                val scale = 1.15f + (1.47f - 1.15f) * (this - 300) / (500 - 300)
-                this * scale.coerceIn(1.15f, 1.47f)
-            }
-            else -> this
-        }
-    }
-
 }
 
 class LocationStoppedException() : Exception("Location tracking/sharing stopped")

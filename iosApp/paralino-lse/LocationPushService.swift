@@ -107,7 +107,7 @@ class LocationPushService: NSObject, CLLocationPushServiceExtension, CLLocationM
         
         guard let location = locations.last?.toLocationModel() else { return }
         let systemLocation = manager.location?.toLocationModel()
-        let locationModel = LocationDataModel.companion.getBetter(first: location, second: systemLocation)
+        let locationModel = LocationUpdateDataFromDevice.companion.getBetter(first: location, second: systemLocation)
         
         _ = locationRepo.registerNewLocation(data: locationModel!)
     }

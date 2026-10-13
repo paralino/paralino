@@ -1,7 +1,7 @@
 package app.paralino.core.domain.location.engine
 
 import app.paralino.core.logg
-import app.paralino.core.models.location.LocationDataModel
+import app.paralino.core.models.location.LocationUpdateDataFromDevice
 import app.paralino.core.repo.base.BaseRepository
 import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.coroutines.CoroutineScope
@@ -27,10 +27,10 @@ abstract class ILocationEventProcessingEngine(
 
     abstract val tag: String
     abstract val processingRate: Duration
-    protected abstract fun eventAction(locationData: LocationDataModel)
+    protected abstract fun eventAction(locationData: LocationUpdateDataFromDevice)
 
     open fun start(
-        pendingLocationFlow: StateFlow<LocationDataModel?>
+        pendingLocationFlow: StateFlow<LocationUpdateDataFromDevice?>
     ) {
         eventMonitoringJob?.cancel()
         eventMonitoringJob = scope.launch {

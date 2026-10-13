@@ -4,8 +4,8 @@ import app.paralino.core.domain.location.IBatteryAlertUploadEngine
 import app.paralino.core.domain.location.LocationCacheRepository
 import app.paralino.core.domain.location.history.SavePendingLocationUseCase
 import app.paralino.core.models.AppHost
-import app.paralino.core.models.location.LocationDataModel
 import app.paralino.core.models.location.LocationPerformanceType
+import app.paralino.core.models.location.LocationUpdateDataFromDevice
 import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.base.AppConfigRepository
@@ -49,7 +49,7 @@ class LocationSaveEventProcessingEngine(
             }
         }
 
-    override fun start(pendingLocationFlow: StateFlow<LocationDataModel?>) {
+    override fun start(pendingLocationFlow: StateFlow<LocationUpdateDataFromDevice?>) {
         when (appConfig.appHost) {
             AppHost.MAIN_APP,
             AppHost.IOS_NOTIFICATION_EXTENSION -> {
@@ -62,14 +62,14 @@ class LocationSaveEventProcessingEngine(
         }
     }
 
-    override fun eventAction(locationData: LocationDataModel) {
+    override fun eventAction(locationData: LocationUpdateDataFromDevice) {
         locationCacheRepo.updateCache(data = locationData)
         scopeProvider.userSessionIOScope.launch {
             checkAndSaveLocationLocally(locationData = locationData)
         }
     }
 
-    suspend fun checkAndSaveLocationLocally(locationData: LocationDataModel?) {
+    suspend fun checkAndSaveLocationLocally(locationData: LocationUpdateDataFromDevice?) {
         val contracts = locationSharingManager.allValidContracts()
         val payloads = contracts.mapNotNull { contract ->
             locationPayloadRequest.getLocationPayload(

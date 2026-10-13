@@ -4,8 +4,8 @@ import app.paralino.core.domain.location.engine.LocationSaveEventProcessingEngin
 import app.paralino.core.domain.location.engine.LocationUploadEventProcessingEngine
 import app.paralino.core.logg
 import app.paralino.core.models.data
-import app.paralino.core.models.location.LocationDataModel
 import app.paralino.core.models.location.LocationPerformanceType
+import app.paralino.core.models.location.LocationUpdateDataFromDevice
 import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.provider.IOneTimeLocationProvider
 import app.paralino.core.repo.LocationSharingManager
@@ -32,7 +32,7 @@ class LocationUploadEngine constructor(
 ) {
 
     private var locationStatusMonitoringJob: Job? = null
-    private val _pendingLocation = MutableStateFlow<LocationDataModel?>(null)
+    private val _pendingLocation = MutableStateFlow<LocationUpdateDataFromDevice?>(null)
 
     fun startLocationUploadEngine() {
         locationSaveProcessing.stop()
@@ -59,7 +59,7 @@ class LocationUploadEngine constructor(
             .launchIn(scopeProvider.defaultIOScope)
     }
 
-    fun registerNewLocation(data: LocationDataModel) {
+    fun registerNewLocation(data: LocationUpdateDataFromDevice) {
         val sharingActive = locationSharingManager.isSharingActiveMaybe()
         logg.d("location_service", "Register new location (sharing active: $sharingActive - ${locationPerformanceManager.locationPerformanceType.value.current})")
 
@@ -68,7 +68,7 @@ class LocationUploadEngine constructor(
         }
 
         _pendingLocation.update { current ->
-            val potentialUpdate = LocationDataModel.getBetter(current, data)
+            val potentialUpdate = LocationUpdateDataFromDevice.getBetter(current, data)
             if (current != null && potentialUpdate != null) {
                 current.takeMostRelevantLocation(
                     second = potentialUpdate,

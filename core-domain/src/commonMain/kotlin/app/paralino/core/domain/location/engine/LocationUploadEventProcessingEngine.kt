@@ -5,9 +5,9 @@ import app.paralino.core.domain.location.SaveLocationUseCase
 import app.paralino.core.domain.location.history.SavePendingLocationUseCase
 import app.paralino.core.logg
 import app.paralino.core.models.AppHost
-import app.paralino.core.models.location.LocationDataModel
 import app.paralino.core.models.location.LocationPerformanceType
 import app.paralino.core.models.location.LocationSharingContract
+import app.paralino.core.models.location.LocationUpdateDataFromDevice
 import app.paralino.core.models.location.MemberGroupIdForUpload
 import app.paralino.core.provider.AppLifecycleType
 import app.paralino.core.provider.ICoroutineScopeProvider
@@ -125,7 +125,7 @@ class LocationUploadEventProcessingEngine(
             }
         }
 
-    override fun eventAction(locationData: LocationDataModel) {
+    override fun eventAction(locationData: LocationUpdateDataFromDevice) {
         scopeProvider.userSessionIOScope.launch {
             try {
                 checkAndUploadLocation(
@@ -144,7 +144,7 @@ class LocationUploadEventProcessingEngine(
     }
 
     suspend fun checkAndUploadLocation(
-        data: LocationDataModel?,
+        data: LocationUpdateDataFromDevice?,
         bypassFilter: Boolean,
         saveLocally: Boolean
     ) {

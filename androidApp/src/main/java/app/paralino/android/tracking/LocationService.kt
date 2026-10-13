@@ -17,8 +17,8 @@ import app.paralino.core.models.Resource
 import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.models.data
 import app.paralino.core.models.group.UserGroup
-import app.paralino.core.models.location.LocationDataModel
 import app.paralino.core.models.location.LocationSharingContract
+import app.paralino.core.models.location.LocationUpdateDataFromDevice
 import app.paralino.core.provider.AppLifecycleType
 import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.provider.LocationConditionStatus
@@ -26,8 +26,8 @@ import app.paralino.core.provider.NotificationConditionStatus
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.NoValidContractsException
 import app.paralino.core.utils.ConditionErrorType
-import app.paralino.core.utils.MandatoryForegroundLocationSharingConditionType
 import app.paralino.core.utils.MandatoryBackgroundLocationSharingConditionType
+import app.paralino.core.utils.MandatoryForegroundLocationSharingConditionType
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -233,7 +233,7 @@ class LocationService : Service() {
             .launchIn(serviceDefaultScope)
     }
 
-    private fun saveLocation(data: LocationDataModel) {
+    private fun saveLocation(data: LocationUpdateDataFromDevice) {
         serviceDefaultScope.launch {
             try {
                 locationUploadEngine.registerNewLocation(data)

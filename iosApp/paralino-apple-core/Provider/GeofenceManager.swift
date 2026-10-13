@@ -24,10 +24,6 @@ class GeofenceManager: IGeofenceManager {
         }
     }
     
-    func distanceBetweenPoints(data: LocationDataModel, geofence: GroupPlaceGeofenceData) -> Float {
-        return distanceBetweenPoints(lat1: data.lat, lng1: data.lng, lat2: geofence.lat, lng2: geofence.lng)
-    }
-    
     func distanceBetweenPoints(lat1: Double, lng1: Double, lat2: Double, lng2: Double) -> Float {
         return Float(
             CLLocation(latitude: lat1, longitude: lng1)
