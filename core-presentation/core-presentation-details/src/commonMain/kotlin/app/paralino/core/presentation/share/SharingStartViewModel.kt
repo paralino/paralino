@@ -25,12 +25,14 @@ import app.paralino.core.presentation.share.SharingStartScreenEvent.AskForPermis
 import app.paralino.core.provider.AppLifecycleType
 import app.paralino.core.provider.ConditionRequestFinishedEvent
 import app.paralino.core.provider.ConditionRequestPromptedEvent
+import app.paralino.core.provider.DeviceStatusData
 import app.paralino.core.provider.DistanceType
 import app.paralino.core.provider.FormattingFractionsMode
 import app.paralino.core.provider.ICoreMessageDispatcherEvent
 import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.provider.MeasurementSystemType
+import app.paralino.core.provider.NotificationSocketServiceManager
 import app.paralino.core.provider.localizedString
 import app.paralino.core.provider.requestType
 import app.paralino.core.repo.LocationSharingManager
@@ -87,12 +89,17 @@ class SharingStartViewModel(
     private val premiumStatusManager: PremiumStatusManager,
     private val refreshEverythingUseCase: RefreshEverythingUseCase,
     private val stopSharingUseCase: StopSharingLocationUseCase,
-    private val valueFormatter: IValueFormatter
+    private val valueFormatter: IValueFormatter,
+    val notificationServiceManager: NotificationSocketServiceManager
 ) : CoreViewModel() {
 
     private val _uiState =
         MutableStateFlow(
-            SharingRequirementState.fromDeviceStatus(deviceApiProvider.currentDeviceStatus()).let { requirements ->
+            SharingRequirementState.fromDeviceStatus(
+                deviceStatus = deviceApiProvider.currentDeviceStatus(),
+                hasPushNotificationService = notificationServiceManager.hasNotificationSocketService(),
+                pushNotificationServiceError = notificationServiceManager.getServiceSetupError()
+            ).let { requirements ->
                 SharingStartScreenState(
                     groupState = if (initialGroupId?.id.isNullOrBlank()) {
                         Payload.Success(null)
@@ -192,29 +199,7 @@ class SharingStartViewModel(
             .launchIn(coroutineScope)
 
         deviceApiProvider.deviceStatus
-            .onEach { deviceStatus ->
-                _uiState.update {
-                    it.copy(
-                        requirements = SharingRequirementState.fromDeviceStatus(deviceStatus),
-                        errors = getAllErrors(isForLongTerm = it.isLongTerm),
-                        warnings = buildList {
-                            if (!deviceStatus.notificationStatus.isNotificationPermissionAllowed) {
-                                add(ConditionErrorType.PermissionNotifications)
-                            }
-
-                            if (!deviceStatus.locationStatus.isUnrestrictedBackgroundPermissionAllowed) {
-                                add(ConditionErrorType.UnrestrictedBackgroundAccess)
-                            }
-                        }
-                    )
-                }
-
-                val state = _uiState.value
-                val active = state.activeRequirement
-                if (active != null && state.requirements.any { it.isResolved && it.type.isSameRequirementAs(active) }) {
-                    pendingPermissionRequest?.result?.complete(Unit)
-                }
-            }
+            .onEach { deviceStatus -> updateConditions(deviceStatus) }
             .launchIn(coroutineScope)
 
         currentGroup
@@ -335,6 +320,7 @@ class SharingStartViewModel(
             SharingStartScreenUiEvent.RequestSharingDurationEdit -> enableSharingDurationEdit()
             is SharingStartScreenUiEvent.StartPermissionRequest -> requestPermissions(startWith = event.type)
             SharingStartScreenUiEvent.SkipPermissions -> skipPermissions()
+            SharingStartScreenUiEvent.ScreenResumed -> onScreenResumed()
         }
     }
 
@@ -361,6 +347,45 @@ class SharingStartViewModel(
             }
         }
         return false
+    }
+
+    private fun updateConditions(deviceStatus: DeviceStatusData) {
+        val pushServiceError = notificationServiceManager.getServiceSetupError()
+        _uiState.update {
+            it.copy(
+                requirements = SharingRequirementState.fromDeviceStatus(
+                    deviceStatus = deviceStatus,
+                    hasPushNotificationService = notificationServiceManager.hasNotificationSocketService(),
+                    pushNotificationServiceError = pushServiceError
+                ),
+                errors = getAllErrors(isForLongTerm = it.isLongTerm),
+                warnings = buildList {
+                    if (!deviceStatus.notificationStatus.isNotificationPermissionAllowed) {
+                        add(ConditionErrorType.PermissionNotifications)
+                    }
+
+                    if (!deviceStatus.locationStatus.isUnrestrictedBackgroundPermissionAllowed) {
+                        add(ConditionErrorType.UnrestrictedBackgroundAccess)
+                    }
+
+                    pushServiceError?.let { add(it) }
+                }
+            )
+        }
+
+        val state = _uiState.value
+        val active = state.activeRequirement
+        if (active != null && state.requirements.any { it.isResolved && it.type.isSameRequirementAs(active) }) {
+            pendingPermissionRequest?.result?.complete(Unit)
+        }
+    }
+
+    private fun onScreenResumed() {
+        updateConditions(deviceApiProvider.currentDeviceStatus())
+        val request = pendingPermissionRequest
+        if (request?.type is ConditionErrorType.PushNotificationService) {
+            request.result.complete(Unit)
+        }
     }
 
     private fun requestPermissions(startWith: ConditionErrorType?) {

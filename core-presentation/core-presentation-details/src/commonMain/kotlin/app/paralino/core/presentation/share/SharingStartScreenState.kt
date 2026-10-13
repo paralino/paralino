@@ -144,10 +144,15 @@ data class SharingRequirementState(
             ConditionErrorType.PermissionLocationBackground,
             ConditionErrorType.PermissionNotifications,
             ConditionErrorType.UnrestrictedBackgroundAccess,
-            ConditionErrorType.GPS
+            ConditionErrorType.GPS,
+            ConditionErrorType.PushNotificationService.PushNotificationServiceOff
         )
 
-        fun fromDeviceStatus(deviceStatus: DeviceStatusData): List<SharingRequirementState> {
+        fun fromDeviceStatus(
+            deviceStatus: DeviceStatusData,
+            hasPushNotificationService: Boolean,
+            pushNotificationServiceError: ConditionErrorType.PushNotificationService?
+        ): List<SharingRequirementState> {
             val missing = buildList {
                 addAll(deviceStatus.locationStatus.getPossibleErrors())
                 if (!deviceStatus.notificationStatus.isNotificationPermissionAllowed) {
@@ -156,9 +161,11 @@ data class SharingRequirementState(
                 if (!deviceStatus.locationStatus.isUnrestrictedBackgroundPermissionAllowed) {
                     add(ConditionErrorType.UnrestrictedBackgroundAccess)
                 }
+                pushNotificationServiceError?.let { add(it) }
             }
 
             return all
+                .filter { hasPushNotificationService || it !is ConditionErrorType.PushNotificationService }
                 .map { requirement ->
                     val error = missing.firstOrNull { it.isSameRequirementAs(requirement) }
                     SharingRequirementState(
@@ -172,10 +179,10 @@ data class SharingRequirementState(
 }
 
 fun ConditionErrorType.isSameRequirementAs(other: ConditionErrorType): Boolean {
-    return if (this is ConditionErrorType.PermissionLocation) {
-        other is ConditionErrorType.PermissionLocation
-    } else {
-        this == other
+    return when (this) {
+        is ConditionErrorType.PermissionLocation -> other is ConditionErrorType.PermissionLocation
+        is ConditionErrorType.PushNotificationService -> other is ConditionErrorType.PushNotificationService
+        else -> this == other
     }
 }
 
@@ -208,4 +215,5 @@ sealed interface SharingStartScreenUiEvent {
     data class ToggleRealtimeUpdates(val state: Boolean): SharingStartScreenUiEvent
     data class StartPermissionRequest(val type: ConditionErrorType?) : SharingStartScreenUiEvent
     data object SkipPermissions : SharingStartScreenUiEvent
+    data object ScreenResumed : SharingStartScreenUiEvent
 }

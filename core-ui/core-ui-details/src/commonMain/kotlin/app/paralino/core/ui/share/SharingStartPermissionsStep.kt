@@ -188,9 +188,13 @@ internal fun SharingStartPermissionsStep(
     }
 }
 
-// keep it stable while location permission changes between any and precise variant
+// keep it stable while location permission or push notification service changes between its variants
 private val ConditionErrorType.requirementKey: Any
-    get() = if (this is ConditionErrorType.PermissionLocation) ConditionErrorType.PermissionLocation::class else this
+    get() = when (this) {
+        is ConditionErrorType.PermissionLocation -> ConditionErrorType.PermissionLocation::class
+        is ConditionErrorType.PushNotificationService -> ConditionErrorType.PushNotificationService::class
+        else -> this
+    }
 
 @Composable
 private fun SharingRequirementItem(

@@ -2,8 +2,10 @@ package app.paralino.core.provider
 
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.models.AppFlavor
+import app.paralino.core.models.base.ParalinoSocketConnectionType
 import app.paralino.core.models.base.PushProvider
 import app.paralino.core.repo.base.AppConfigRepository
+import app.paralino.core.utils.ConditionErrorType
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
@@ -45,6 +47,22 @@ class NotificationSocketServiceManager(
 
     fun isServiceEnabledInSettings(): Boolean {
         return _notificationPushProviderFlow.value.isServiceEnabledInSettings()
+    }
+
+    fun getServiceSetupError(): ConditionErrorType.PushNotificationService? {
+        val provider = _notificationPushProviderFlow.value
+        return when {
+            !hasNotificationSocketService() -> null
+            provider.isServiceEnabledInSettings() -> {
+                if (appPrefs.paralinoSocketConnectionType == ParalinoSocketConnectionType.REALTIME) {
+                    null
+                } else {
+                    ConditionErrorType.PushNotificationService.PushNotificationServiceNoConstantConnection
+                }
+            }
+            provider == PushProvider.UNIFIED_PUSH && !appPrefs.selectedUnifiedPushDistributor.isNullOrBlank() -> null
+            else -> ConditionErrorType.PushNotificationService.PushNotificationServiceOff
+        }
     }
 
     private fun PushProvider?.isServiceEnabledInSettings(): Boolean {

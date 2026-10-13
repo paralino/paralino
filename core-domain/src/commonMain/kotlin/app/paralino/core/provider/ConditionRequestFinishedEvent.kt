@@ -9,7 +9,8 @@ enum class ConditionRequestType {
     LOCATION_PERMISSION,
     LOCATION_SERVICE,
     NOTIFICATIONS,
-    BACKGROUND_ACCESS
+    BACKGROUND_ACCESS,
+    PUSH_NOTIFICATION_SERVICE
 }
 
 val ConditionErrorType.requestType: ConditionRequestType?
@@ -19,6 +20,7 @@ val ConditionErrorType.requestType: ConditionRequestType?
         ConditionErrorType.GPS -> ConditionRequestType.LOCATION_SERVICE
         ConditionErrorType.PermissionNotifications -> ConditionRequestType.NOTIFICATIONS
         ConditionErrorType.UnrestrictedBackgroundAccess -> ConditionRequestType.BACKGROUND_ACCESS
+        is ConditionErrorType.PushNotificationService -> ConditionRequestType.PUSH_NOTIFICATION_SERVICE
         ConditionErrorType.Network,
         is ConditionErrorType.EmailVerification,
         ConditionErrorType.GuestAccount,

@@ -21,6 +21,8 @@ val ConditionErrorType.nameRes: StringResource
             DeviceType.Android -> MR.strings.location_banner_error_background_access
             DeviceType.iOS -> MR.strings.location_banner_error_background_app_refresh
         }
+        ConditionErrorType.PushNotificationService.PushNotificationServiceOff -> MR.strings.location_banner_error_push_service_off
+        ConditionErrorType.PushNotificationService.PushNotificationServiceNoConstantConnection -> MR.strings.location_banner_error_push_service_no_constant_connection
     }
 
 val ConditionErrorType.resolvedNameRes: StringResource?
@@ -33,6 +35,7 @@ val ConditionErrorType.resolvedNameRes: StringResource?
             DeviceType.Android -> MR.strings.location_banner_resolved_background_access
             DeviceType.iOS -> MR.strings.location_banner_resolved_background_app_refresh
         }
+        is ConditionErrorType.PushNotificationService -> MR.strings.location_banner_resolved_push_service
         ConditionErrorType.Network,
         is ConditionErrorType.EmailVerification,
         ConditionErrorType.GuestAccount,
@@ -50,4 +53,5 @@ val ConditionErrorType.endActionTextRes: StringResource?
         ConditionErrorType.GuestAccount -> MR.strings.location_banner_fix
         ConditionErrorType.NewAppUpdate -> MR.strings.app_version_alert_button_update
         ConditionErrorType.UnrestrictedBackgroundAccess -> MR.strings.location_banner_fix
+        is ConditionErrorType.PushNotificationService -> MR.strings.location_banner_fix
     }

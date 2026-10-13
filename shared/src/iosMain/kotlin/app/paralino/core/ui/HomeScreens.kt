@@ -301,6 +301,7 @@ object HomeScreens {
                 askLocationPermission = askLocationPermission,
                 askBackgroundLocationPermission = askBackgroundLocationPermission,
                 askBackgroundAccessPermission = askBackgroundAccessPermission,
+                askPushNotificationService = {},
             )
         }
     }

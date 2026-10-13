@@ -8,7 +8,9 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.compose.LifecycleResumeEffect
 import app.paralino.android.notification.rememberNotificationsPermissionHandler
+import app.paralino.android.notification.rememberPushNotificationServicePermissionHandler
 import app.paralino.android.tracking.rememberLocationPermissionHandler
 import app.paralino.android.ui.groups.GroupBottomSheetPicker
 import app.paralino.android.ui.groups.GroupPickerAction
@@ -21,6 +23,7 @@ import app.paralino.core.ui.components.DefaultToolbar
 import app.paralino.core.ui.components.ToolbarButtons
 import app.paralino.core.presentation.billing.BillingScreenSourceType
 import app.paralino.core.presentation.share.SharingStartPresentationType
+import app.paralino.core.presentation.share.SharingStartScreenUiEvent
 import app.paralino.core.ui.share.SharingStartScreenCore
 import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.launch
@@ -47,6 +50,17 @@ fun SharingStartScreen(
         messageDispatcher = vm,
         notificationStatusProvider = vm.deviceApiProvider.notificationStatusProvider
     )
+
+    val pushServiceHandler = rememberPushNotificationServicePermissionHandler(
+        appState = appState,
+        messageDispatcher = vm,
+        serviceManager = vm.notificationServiceManager
+    )
+
+    LifecycleResumeEffect(Unit) {
+        vm.onEvent(SharingStartScreenUiEvent.ScreenResumed)
+        onPauseOrDispose { }
+    }
 
     val pickerState = rememberGroupBottomSheetPickerState()
     val isCreateOnboarding = presentationType == SharingStartPresentationType.GROUP_CREATE_ONBOARDING
@@ -136,6 +150,7 @@ fun SharingStartScreen(
                     forcePrompt = true
                 )
             },
+            askPushNotificationService = { pushServiceHandler.askPushNotificationService() },
             openSubscriptions = {
                 appState.navController.navigate(AppScreen.MainHome.BillingPaywall.route())
             }

@@ -104,6 +104,7 @@ fun SharingStartScreenCore(
     askLocationPermission: () -> Unit,
     askBackgroundLocationPermission: () -> Unit,
     askBackgroundAccessPermission: () -> Unit,
+    askPushNotificationService: () -> Unit,
 ) {
 
     MessageDispatcherEffect(vm, appState)
@@ -181,6 +182,7 @@ fun SharingStartScreenCore(
                         ConditionErrorType.PermissionLocationBackground -> askBackgroundLocationPermission()
                         ConditionErrorType.PermissionNotifications -> askNotificationPermission()
                         ConditionErrorType.UnrestrictedBackgroundAccess -> askBackgroundAccessPermission()
+                        is ConditionErrorType.PushNotificationService -> askPushNotificationService()
                         ConditionErrorType.Network -> vm.showSnackbar(
                             text = MR.strings.error_no_connection_snackbar.localizedString()
                         )
@@ -378,6 +380,7 @@ fun SharingStartScreenCore(
                                         ConditionErrorType.PermissionLocationBackground -> askBackgroundLocationPermission()
                                         ConditionErrorType.PermissionNotifications -> askNotificationPermission()
                                         ConditionErrorType.UnrestrictedBackgroundAccess -> askBackgroundAccessPermission()
+                                        is ConditionErrorType.PushNotificationService -> askPushNotificationService()
                                         ConditionErrorType.Network -> vm.showSnackbar(
                                             text = MR.strings.error_no_connection_snackbar.localizedString()
                                         )

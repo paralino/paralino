@@ -155,6 +155,7 @@ val ConditionErrorType.icon: Painter
             DeviceType.Android -> CoreAppIcons.BatteryFull
             DeviceType.iOS -> CoreAppIcons.PhonelinkSetup
         }
+        is ConditionErrorType.PushNotificationService -> CoreAppIcons.NotificationsOff
     }.asPainterResource()
 
 val ConditionErrorType.isEndActionLoading: Boolean
