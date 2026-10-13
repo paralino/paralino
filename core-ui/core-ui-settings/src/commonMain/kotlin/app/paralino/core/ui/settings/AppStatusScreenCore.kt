@@ -3,12 +3,14 @@ package app.paralino.core.ui.settings
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -22,7 +24,6 @@ import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
-import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.LocalContentAlpha
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -361,16 +362,38 @@ private fun AppStatusAllowance(allowance: AppStatusAllowanceState) {
                 }
             }
         }
-        if (allowance.remainingFraction != null) {
-            LinearProgressIndicator(
+        allowance.slots?.let { slots ->
+            AppStatusAllowanceSlots(slots = slots, color = color)
+        }
+    }
+}
+
+@Composable
+private fun AppStatusAllowanceSlots(slots: List<Float>, color: Color) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(14.dp),
+        horizontalArrangement = Arrangement.spacedBy(2.dp)
+    ) {
+        slots.forEach { usedFraction ->
+            Box(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .height(6.dp)
-                    .clip(RoundedCornerShape(3.dp)),
-                progress = allowance.remainingFraction ?: 0f,
-                color = color,
-                backgroundColor = MaterialTheme.colors.onSurface.copy(alpha = 0.1f)
-            )
+                    .weight(1f)
+                    .fillMaxHeight()
+                    .clip(RoundedCornerShape(2.dp))
+                    .background(MaterialTheme.colors.onSurface.copy(alpha = 0.1f)),
+                contentAlignment = Alignment.BottomCenter
+            ) {
+                if (usedFraction > 0f) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .fillMaxHeight(usedFraction)
+                            .background(color)
+                    )
+                }
+            }
         }
     }
 }

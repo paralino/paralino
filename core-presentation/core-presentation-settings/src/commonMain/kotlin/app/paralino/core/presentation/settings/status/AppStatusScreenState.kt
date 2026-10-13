@@ -46,10 +46,9 @@ data class AppStatusAllowanceState(
     val name: String,
     val windowMinutes: Long,
     val time: String?,
-    val remainingFraction: Float?
-) {
-    val isUsedUp: Boolean get() = time == null || remainingFraction == null || remainingFraction <= 0f
-}
+    val slots: List<Float>?,
+    val isUsedUp: Boolean
+)
 
 data class AppStatusSharingState(
     val groups: List<AppStatusSharingTargetState> = emptyList(),
@@ -88,6 +87,5 @@ val LocationPerformanceType.displayName: String
 
 val LocationPerformanceType.displayNameWithIndex: String
     get() {
-        val index = "${this.ordinal + 1}/${LocationPerformanceType.entries.size}"
-        return displayName.plus(" ($index)")
+        return displayName.plus(" (level ${this.ordinal + 1})")
     }

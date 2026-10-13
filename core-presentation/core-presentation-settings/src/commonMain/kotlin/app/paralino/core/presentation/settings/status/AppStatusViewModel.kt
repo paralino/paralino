@@ -17,6 +17,7 @@ import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.provider.NetworkSignalStrength
 import app.paralino.core.provider.NotificationSocketServiceManager
 import app.paralino.core.repo.LocationSharingManager
+import app.paralino.core.repo.base.AppConfigRepository
 import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.location.LocationPerformanceManager
@@ -59,7 +60,8 @@ class AppStatusViewModel(
     private val appUpdateManager: IAppUpdateManager,
     private val premiumStatusManager: PremiumStatusManager,
     private val valueFormatter: IValueFormatter,
-    private val serverConnectionTest: ServerConnectionTestUseCase
+    private val serverConnectionTest: ServerConnectionTestUseCase,
+    private val appConfig: AppConfigRepository
 ) : CoreViewModel() {
 
     private val _uiState = MutableStateFlow(AppStatusScreenState())
@@ -105,7 +107,7 @@ class AppStatusViewModel(
             refreshTicker
         ) { performance, _ ->
             safeUpdate("location mode") {
-                val hasBestLocationPerformance = premiumStatusManager.hasBestLocationPerformance()
+                val allowances = if (appConfig.isInAppDevMode) mapAllowances() else emptyList()
                 _uiState.update {
                     it.copy(
                         locationMode = AppStatusLocationModeState(
@@ -114,26 +116,7 @@ class AppStatusViewModel(
                                 .takeIf { it != performance.current }
                                 ?.displayNameWithIndex,
                             isThrottled = performance.isThrottlingPerformance,
-                            allowances = locationPerformanceManager.getPerformanceAllowances()
-                                .map { allowance ->
-                                    val isAvailable =
-                                        allowance.type != LocationPerformanceType.VERY_HIGH || hasBestLocationPerformance
-                                    AppStatusAllowanceState(
-                                        name = allowance.type.displayName,
-                                        windowMinutes = allowance.window.inWholeMinutes,
-                                        time = if (isAvailable) {
-                                            "${allowance.remaining.formatMinutesSeconds()} / ${allowance.allowed.formatMinutesSeconds()}"
-                                        } else {
-                                            null
-                                        },
-                                        remainingFraction = if (isAvailable && allowance.allowed.isPositive()) {
-                                            (allowance.remaining / allowance.allowed).toFloat()
-                                                .coerceIn(0f, 1f)
-                                        } else {
-                                            null
-                                        }
-                                    )
-                                }
+                            allowances = allowances
                         )
                     )
                 }
@@ -316,6 +299,40 @@ class AppStatusViewModel(
             provider = currentLocation.provider,
             isFiltered = currentLocation != location.filtered
         )
+    }
+
+    private suspend fun mapAllowances(): List<AppStatusAllowanceState> {
+        val hasBestLocationPerformance = premiumStatusManager.hasBestLocationPerformance()
+        return locationPerformanceManager.getPerformanceAllowances().map { allowance ->
+            val isAvailable = allowance.type != LocationPerformanceType.VERY_HIGH || hasBestLocationPerformance
+            AppStatusAllowanceState(
+                name = allowance.type.displayName,
+                windowMinutes = allowance.window.inWholeMinutes,
+                time = if (isAvailable) {
+                    "${allowance.remaining.formatMinutesSeconds()} / ${allowance.allowed.formatMinutesSeconds()}"
+                } else {
+                    null
+                },
+                slots = if (isAvailable) mapAllowanceSlots(allowance) else null,
+                isUsedUp = !isAvailable || !allowance.remaining.isPositive()
+            )
+        }
+    }
+
+    private fun mapAllowanceSlots(allowance: LocationPerformanceManager.LocationPerformanceAllowance): List<Float> {
+        val slotDuration = 1.minutes
+        val slotCount = (allowance.window / slotDuration).toInt().coerceAtLeast(1)
+        val windowStart = allowance.windowEnd - allowance.window
+
+        return List(slotCount) { index ->
+            val slotStart = windowStart + slotDuration * index
+            val slotEnd = slotStart + slotDuration
+            val used = allowance.usedIntervals.fold(Duration.ZERO) { total, interval ->
+                val overlap = minOf(slotEnd, interval.endInclusive) - maxOf(slotStart, interval.start)
+                if (overlap.isPositive()) total + overlap else total
+            }
+            (used / slotDuration).toFloat().coerceIn(0f, 1f)
+        }
     }
 
     private suspend fun safeUpdate(section: String, block: suspend () -> Unit) {
