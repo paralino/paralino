@@ -286,6 +286,9 @@
     <string name="setting_status_connection_noInternet">Connected, no internet</string>
     <string name="setting_status_connection_offline">Offline</string>
     <string name="setting_status_connection_cellular">Cellular</string>
+    <string name="setting_status_connection_api">API</string>
+    <string name="setting_status_connection_apiTest">Test</string>
+    <string name="setting_status_connection_apiOk">OK</string>
     <string name="setting_status_signal_poor">Poor</string>
     <string name="setting_status_signal_good">Good</string>
     <string name="setting_status_signal_great">Great</string>

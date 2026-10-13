@@ -1,12 +1,14 @@
 package app.paralino.core.ui.settings
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -16,6 +18,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
@@ -41,6 +44,7 @@ import app.paralino.core.presentation.common.endActionTextRes
 import app.paralino.core.presentation.common.nameRes
 import app.paralino.core.presentation.common.resolvedNameRes
 import app.paralino.core.presentation.settings.status.AppStatusAllowanceState
+import app.paralino.core.presentation.settings.status.AppStatusApiTestState
 import app.paralino.core.presentation.settings.status.AppStatusConnectionState
 import app.paralino.core.presentation.settings.status.AppStatusCurrentLocationState
 import app.paralino.core.presentation.settings.status.AppStatusLocationModeState
@@ -115,7 +119,12 @@ fun AppStatusScreenCore(
 
         uiState.connection?.let { connection ->
             SettingsSectionHeader(name = stringResource(MR.strings.setting_status_section_connection))
-            AppStatusConnectionTable(connection = connection)
+            AppStatusConnectionTable(
+                connection = connection,
+                apiTest = uiState.apiTest,
+                onTestApi = { vm.onEvent(AppStatusScreenUiEvent.TestApiConnection) },
+                onClearApiTest = { vm.onEvent(AppStatusScreenUiEvent.ClearApiTestResult) }
+            )
         }
 
         uiState.locationMode?.let { locationMode ->
@@ -169,7 +178,12 @@ private fun AppStatusRequirementItem(
 }
 
 @Composable
-private fun AppStatusConnectionTable(connection: AppStatusConnectionState) {
+private fun AppStatusConnectionTable(
+    connection: AppStatusConnectionState,
+    apiTest: AppStatusApiTestState,
+    onTestApi: () -> Unit,
+    onClearApiTest: () -> Unit
+) {
     AppStatusTable {
         AppStatusTableRow(
             label = stringResource(MR.strings.setting_status_connection_status),
@@ -210,6 +224,65 @@ private fun AppStatusConnectionTable(connection: AppStatusConnectionState) {
                     leadingValue = {
                         NetworkTypeIcon(networkType = networkType, signalStrength = signalStrength)
                     }
+                )
+            }
+        }
+        if (connection.status.isOnline) {
+            AppStatusApiTestRow(
+                apiTest = apiTest,
+                onTestApi = onTestApi,
+                onClearApiTest = onClearApiTest
+            )
+        }
+    }
+}
+
+@Composable
+private fun AppStatusApiTestRow(
+    apiTest: AppStatusApiTestState,
+    onTestApi: () -> Unit,
+    onClearApiTest: () -> Unit
+) {
+    AppStatusTableRow(
+        label = stringResource(MR.strings.setting_status_connection_api),
+        onClick = if (apiTest is AppStatusApiTestState.Failed) onClearApiTest else null
+    ) {
+        when (apiTest) {
+            AppStatusApiTestState.Idle -> {
+                Text(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(AppColors.accent.copy(alpha = 0.15f))
+                        .clickable(onClick = onTestApi)
+                        .padding(horizontal = 12.dp, vertical = 4.dp),
+                    text = stringResource(MR.strings.setting_status_connection_apiTest),
+                    style = MaterialTheme.typography.body2,
+                    fontWeight = FontWeight.SemiBold,
+                    color = AppColors.accentDark
+                )
+            }
+
+            AppStatusApiTestState.Loading -> {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(20.dp),
+                    color = MaterialTheme.colors.onSurface,
+                    strokeWidth = 2.dp
+                )
+            }
+
+            AppStatusApiTestState.Success -> {
+                AppStatusTableValue(
+                    modifier = Modifier.weight(1f),
+                    value = stringResource(MR.strings.setting_status_connection_apiOk),
+                    valueColor = AppColors.accentDark
+                )
+            }
+
+            is AppStatusApiTestState.Failed -> {
+                AppStatusTableValue(
+                    modifier = Modifier.weight(1f),
+                    value = apiTest.failedTags.joinToString(", "),
+                    valueColor = AppColors.redMain
                 )
             }
         }
@@ -432,6 +505,28 @@ private fun AppStatusTableRow(
     showDivider: Boolean = true,
     leadingValue: (@Composable () -> Unit)? = null
 ) {
+    AppStatusTableRow(
+        label = label,
+        showDivider = showDivider
+    ) {
+        Row(
+            modifier = Modifier.weight(1f),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.End
+        ) {
+            leadingValue?.invoke()
+            AppStatusTableValue(value = value, valueColor = valueColor)
+        }
+    }
+}
+
+@Composable
+private fun AppStatusTableRow(
+    label: String,
+    showDivider: Boolean = true,
+    onClick: (() -> Unit)? = null,
+    value: @Composable RowScope.() -> Unit
+) {
     if (showDivider) {
         Divider(
             modifier = Modifier.padding(horizontal = 14.dp),
@@ -442,9 +537,11 @@ private fun AppStatusTableRow(
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .then(if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier)
             .heightIn(min = 48.dp)
             .padding(horizontal = 14.dp, vertical = 10.dp),
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.End
     ) {
         Text(
             modifier = Modifier.weight(1f),
@@ -452,14 +549,22 @@ private fun AppStatusTableRow(
             style = MaterialTheme.typography.body1,
             fontWeight = FontWeight.Medium
         )
-        leadingValue?.invoke()
-        Text(
-            modifier = Modifier.padding(start = 6.dp),
-            text = value,
-            style = MaterialTheme.typography.body1,
-            fontWeight = FontWeight.SemiBold,
-            textAlign = TextAlign.End,
-            color = valueColor
-        )
+        value()
     }
+}
+
+@Composable
+private fun RowScope.AppStatusTableValue(
+    modifier: Modifier = Modifier,
+    value: String,
+    valueColor: Color = Color.Unspecified
+) {
+    Text(
+        modifier = modifier.padding(start = 6.dp),
+        text = value,
+        style = MaterialTheme.typography.body1,
+        fontWeight = FontWeight.SemiBold,
+        textAlign = TextAlign.End,
+        color = valueColor
+    )
 }

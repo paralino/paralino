@@ -104,6 +104,7 @@ import app.paralino.core.domain.user.RecoverAccountUseCase
 import app.paralino.core.domain.user.RefreshEverythingUseCase
 import app.paralino.core.domain.user.ResetPasswordUseCase
 import app.paralino.core.domain.user.SessionRenewalHandler
+import app.paralino.core.domain.user.ServerConnectionTestUseCase
 import app.paralino.core.domain.user.StartDirectCheckoutUseCase
 import app.paralino.core.domain.user.UpdateUserDataUseCase
 import app.paralino.core.domain.user.UserCryptoKeyRefreshUseCase
@@ -384,6 +385,7 @@ val coreModule = module {
     single { AppConfigRepository(get(), get()) }
     single { PremiumStatusManager(get(), get(), get(), get(), get(), get(), get()) }
     factory { GetMapSDKProviderUseCase(get(), get(), get()) }
+    factory { ServerConnectionTestUseCase(get(), get(), get(), get()) }
     single { StartDirectCheckoutUseCase(get()) }
     single { GetDirectCheckoutWebPortalUseCase(get()) }
 

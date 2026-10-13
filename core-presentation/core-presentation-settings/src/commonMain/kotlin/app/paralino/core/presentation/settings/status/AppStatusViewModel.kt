@@ -3,6 +3,8 @@ package app.paralino.core.presentation.settings.status
 import app.paralino.core.app_update.IAppUpdateManager
 import app.paralino.core.domain.location.LocationUploadEngine
 import app.paralino.core.domain.user.PremiumStatusManager
+import app.paralino.core.domain.user.ServerConnectionTestStep
+import app.paralino.core.domain.user.ServerConnectionTestUseCase
 import app.paralino.core.logg
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.data
@@ -38,6 +40,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.minutes
@@ -55,7 +58,8 @@ class AppStatusViewModel(
     private val remoteConfigRepository: RemoteConfigRepository,
     private val appUpdateManager: IAppUpdateManager,
     private val premiumStatusManager: PremiumStatusManager,
-    private val valueFormatter: IValueFormatter
+    private val valueFormatter: IValueFormatter,
+    private val serverConnectionTest: ServerConnectionTestUseCase
 ) : CoreViewModel() {
 
     private val _uiState = MutableStateFlow(AppStatusScreenState())
@@ -185,6 +189,35 @@ class AppStatusViewModel(
             AppStatusScreenUiEvent.TriggerAppUpdate -> {
                 appUpdateManager.startUpdateProcess(data = remoteConfigRepository.getCachedConfigOnce())
             }
+
+            AppStatusScreenUiEvent.TestApiConnection -> testApiConnection()
+
+            AppStatusScreenUiEvent.ClearApiTestResult -> {
+                _uiState.update { it.copy(apiTest = AppStatusApiTestState.Idle) }
+            }
+        }
+    }
+
+    private fun testApiConnection() {
+        if (_uiState.value.apiTest == AppStatusApiTestState.Loading) return
+        _uiState.update { it.copy(apiTest = AppStatusApiTestState.Loading) }
+
+        coroutineScope.launch(Dispatchers.IO) {
+            val failedSteps = try {
+                serverConnectionTest.runTest()
+            } catch (e: Exception) {
+                logg.w("Unable to test api connection", e)
+                ServerConnectionTestStep.entries
+            }
+            _uiState.update {
+                it.copy(
+                    apiTest = if (failedSteps.isEmpty()) {
+                        AppStatusApiTestState.Success
+                    } else {
+                        AppStatusApiTestState.Failed(failedTags = failedSteps.map { step -> step.tag })
+                    }
+                )
+            }
         }
     }
 
@@ -289,7 +322,7 @@ class AppStatusViewModel(
         try {
             block()
         } catch (e: Exception) {
-            logg.e("Unable to refresh app status $section", e)
+            logg.w("Unable to refresh app status $section", e)
         }
     }
 

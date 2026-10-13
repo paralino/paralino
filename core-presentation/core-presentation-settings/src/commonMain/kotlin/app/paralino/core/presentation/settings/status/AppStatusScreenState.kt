@@ -11,6 +11,7 @@ import app.paralino.core.utils.ConditionErrorType
 data class AppStatusScreenState(
     val requirements: List<AppStatusRequirementState> = emptyList(),
     val connection: AppStatusConnectionState? = null,
+    val apiTest: AppStatusApiTestState = AppStatusApiTestState.Idle,
     val locationMode: AppStatusLocationModeState? = null,
     val sharing: AppStatusSharingState = AppStatusSharingState(),
     val currentLocation: AppStatusCurrentLocationState? = null
@@ -26,6 +27,13 @@ data class AppStatusConnectionState(
     val networkType: NetworkType?,
     val signalStrength: NetworkSignalStrength?
 )
+
+sealed class AppStatusApiTestState {
+    data object Idle : AppStatusApiTestState()
+    data object Loading : AppStatusApiTestState()
+    data object Success : AppStatusApiTestState()
+    data class Failed(val failedTags: List<String>) : AppStatusApiTestState()
+}
 
 data class AppStatusLocationModeState(
     val current: String,
@@ -68,6 +76,8 @@ data class AppStatusCurrentLocationState(
 
 sealed class AppStatusScreenUiEvent {
     data object TriggerAppUpdate : AppStatusScreenUiEvent()
+    data object TestApiConnection : AppStatusScreenUiEvent()
+    data object ClearApiTestResult : AppStatusScreenUiEvent()
 }
 
 val LocationPerformanceType.displayName: String
