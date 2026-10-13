@@ -36,10 +36,10 @@ val ConditionErrorType.resolvedNameRes: StringResource?
             DeviceType.iOS -> MR.strings.location_banner_resolved_background_app_refresh
         }
         is ConditionErrorType.PushNotificationService -> MR.strings.location_banner_resolved_push_service
-        ConditionErrorType.Network,
+        ConditionErrorType.Network -> MR.strings.location_banner_resolved_online
+        ConditionErrorType.NewAppUpdate -> MR.strings.location_banner_resolved_app_up_to_date
         is ConditionErrorType.EmailVerification,
-        ConditionErrorType.GuestAccount,
-        ConditionErrorType.NewAppUpdate -> null
+        ConditionErrorType.GuestAccount -> null
     }
 
 val ConditionErrorType.endActionTextRes: StringResource?

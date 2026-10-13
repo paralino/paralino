@@ -378,6 +378,10 @@ sealed class AppScreen {
             override val routeSignature: String = "app-status"
         }
 
+        object AppStatus : AppScreen() {
+            override val routeSignature: String = "status"
+        }
+
         object GeneralInfo : AppScreen() {
             override val routeSignature: String = "general-info"
         }

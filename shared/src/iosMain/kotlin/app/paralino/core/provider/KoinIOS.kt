@@ -82,6 +82,7 @@ import app.paralino.core.presentation.privacyzones.list.PrivacyZonesViewModel
 import app.paralino.core.presentation.rawdata.RawDataPresentationViewModel
 import app.paralino.core.presentation.settings.SettingsViewModel
 import app.paralino.core.presentation.settings.appstatus.AppStatusDebugViewModel
+import app.paralino.core.presentation.settings.status.AppStatusViewModel
 import app.paralino.core.presentation.settings.billing.PaywallViewModel
 import app.paralino.core.presentation.settings.billing.PlanInfoViewModel
 import app.paralino.core.presentation.settings.billing.SubscriptionViewModel
@@ -368,6 +369,7 @@ object KoinIOS {
             factory { BlocklistViewModel(get()) }
             factory { UserDevicesViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(),) }
             factory { AppStatusDebugViewModel(get(), get(), get(), get(), get()) }
+            factory { AppStatusViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
             factory { SubscriptionViewModel(get(), get(), get(), get(), get(), get()) }
             factory { (type: BillingScreenSourceType) -> PaywallViewModel(type, get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
             factory { PlanInfoViewModel(get(), get()) }
@@ -483,6 +485,7 @@ object KoinIOS {
             lng: Double? = null
         ) = get<CreatePrivacyZoneViewModel> { parametersOf(groupId, zoneId, editStep, lat, lng) }
         val appStatusDebugVM get() = get<AppStatusDebugViewModel>()
+        val appStatusVM get() = get<AppStatusViewModel>()
         val subscriptionVM get() = get<SubscriptionViewModel>()
         fun paywallVM(type: BillingScreenSourceType) = get<PaywallViewModel> { parametersOf(type) }
         val planInfoVM get() = get<PlanInfoViewModel>()

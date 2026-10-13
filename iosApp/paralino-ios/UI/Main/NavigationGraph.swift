@@ -64,6 +64,7 @@ enum SettingsGraph: Hashable {
     case paywall(groupId: String? = nil, type: BillingScreenSourceType)
     case rawData(type: RawPresentationDataType)
     case appStatusDebug
+    case appStatus
     case licences
     case generalInfo
     case locationSettings

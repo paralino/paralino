@@ -38,6 +38,7 @@ import app.paralino.android.ui.privacyzones.PrivacyZonesScreen
 import app.paralino.core.ui.components.DefaultEmptyState
 import app.paralino.android.ui.settings.AppSettingsScreen
 import app.paralino.android.ui.settings.AppStatusDebugScreen
+import app.paralino.android.ui.settings.AppStatusScreen
 import app.paralino.android.ui.settings.BlocklistScreen
 import app.paralino.android.ui.settings.GeneralInfoScreen
 import app.paralino.android.ui.settings.GenericSettingsScreen
@@ -320,6 +321,9 @@ fun NavGraphBuilder.settingsGraph(appState: MainAppState) {
         }
         composable(AppScreen.Settings.AppStatusDebug.routeSignature) {
             AppStatusDebugScreen(appState)
+        }
+        composable(AppScreen.Settings.AppStatus.routeSignature) {
+            AppStatusScreen(appState)
         }
         composable(AppScreen.Settings.Subscriptions.routeSignature) {
             SubscriptionScreen(appState)

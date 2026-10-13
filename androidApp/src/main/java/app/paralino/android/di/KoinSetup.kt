@@ -101,6 +101,7 @@ import app.paralino.core.presentation.privacyzones.list.PrivacyZonesViewModel
 import app.paralino.core.presentation.rawdata.RawDataPresentationViewModel
 import app.paralino.core.presentation.settings.SettingsViewModel
 import app.paralino.core.presentation.settings.appstatus.AppStatusDebugViewModel
+import app.paralino.core.presentation.settings.status.AppStatusViewModel
 import app.paralino.core.presentation.settings.billing.PaywallViewModel
 import app.paralino.core.presentation.settings.billing.PlanInfoViewModel
 import app.paralino.core.presentation.settings.billing.SubscriptionViewModel
@@ -290,6 +291,7 @@ object KoinSetup {
         viewModel { BlocklistViewModel(get()) }
         viewModel { UserDevicesViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(),) }
         viewModel { AppStatusDebugViewModel(get(), get(), get(), get(), get()) }
+        viewModel { AppStatusViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
         viewModel { SubscriptionViewModel(get(), get(), get(), get(), get(), get()) }
         viewModel { (type: BillingScreenSourceType) -> PaywallViewModel(type, get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
         viewModel { LicenceCodeViewModel(get(), get()) }

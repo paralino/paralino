@@ -10,6 +10,7 @@ import app.paralino.core.presentation.paralinoid.PersonalCodeViewModel
 import app.paralino.core.presentation.rawdata.RawDataPresentationViewModel
 import app.paralino.core.presentation.settings.SettingsViewModel
 import app.paralino.core.presentation.settings.appstatus.AppStatusDebugViewModel
+import app.paralino.core.presentation.settings.status.AppStatusViewModel
 import app.paralino.core.presentation.settings.billing.PaywallScreenEvent
 import app.paralino.core.presentation.settings.billing.PaywallViewModel
 import app.paralino.core.presentation.settings.billing.SubscriptionViewModel
@@ -28,6 +29,7 @@ import app.paralino.core.presentation.common.BottomSheetPickerType
 import app.paralino.core.ui.invite.manage.PersonalCodeScreenCore
 import app.paralino.core.ui.settings.AppSettingsScreenCore
 import app.paralino.core.ui.settings.AppStatusDebugScreenCore
+import app.paralino.core.ui.settings.AppStatusScreenCore
 import app.paralino.core.ui.settings.BlocklistScreenCore
 import app.paralino.core.ui.settings.GeneralInfoScreenCore
 import app.paralino.core.ui.settings.GenericSettingsScreenCore
@@ -55,6 +57,7 @@ object SettingsScreens {
         openBlockList: () -> Unit,
         openGeneralInfo: () -> Unit,
         openAppStatus: () -> Unit,
+        openStatus: () -> Unit,
         openSubscriptions: () -> Unit,
         openPaywall: () -> Unit,
         openAppSettings: () -> Unit,
@@ -73,6 +76,7 @@ object SettingsScreens {
                 openBlockList = openBlockList,
                 openGeneralInfo = openGeneralInfo,
                 openAppStatus = openAppStatus,
+                openStatus = openStatus,
                 openSubscriptions = openSubscriptions,
                 openPaywall = openPaywall,
                 openAppSettings = openAppSettings,
@@ -302,6 +306,29 @@ object SettingsScreens {
                 appState = it,
                 vm = vm,
                 paddingValues = PaddingValues(bottom = 30.dp)
+            )
+        }
+    }
+
+    fun AppStatusScreenVC(
+        vm: AppStatusViewModel,
+        askNotificationPermission: () -> Unit,
+        askLocationService: () -> Unit,
+        askLocationPermission: () -> Unit,
+        askBackgroundLocationPermission: () -> Unit,
+        askBackgroundAccessPermission: () -> Unit,
+    ) = ComposeUIViewController {
+        RootScreenIOS {
+            AppStatusScreenCore(
+                appState = it,
+                vm = vm,
+                paddingValues = PaddingValues(bottom = 30.dp),
+                askNotificationPermission = askNotificationPermission,
+                askLocationService = askLocationService,
+                askLocationPermission = askLocationPermission,
+                askBackgroundLocationPermission = askBackgroundLocationPermission,
+                askBackgroundAccessPermission = askBackgroundAccessPermission,
+                askPushNotificationService = {}
             )
         }
     }

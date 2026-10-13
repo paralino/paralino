@@ -49,12 +49,18 @@ class PremiumStatusManager(
         return highestPlan
     }
 
-    suspend fun adjustDeviceSettingsForPlan() {
+    suspend fun hasBestLocationPerformance(): Boolean {
         val config = remoteConfigRepo.getConfigOnce()
         val currentPlanConfig = userRepo.userPlans.value.highestValidPlanConfig.takeIf { config.plans.isNotEmpty() }
         val hasBestPerformanceFromGroup = allGroupPlans(config).any { it.hasBestLocationPerformance }
+        return currentPlanConfig?.hasBestLocationPerformance != false || hasBestPerformanceFromGroup
+    }
 
-        if (currentPlanConfig?.hasBestLocationPerformance == false && !hasBestPerformanceFromGroup) {
+    suspend fun adjustDeviceSettingsForPlan() {
+        val config = remoteConfigRepo.getConfigOnce()
+        val currentPlanConfig = userRepo.userPlans.value.highestValidPlanConfig.takeIf { config.plans.isNotEmpty() }
+
+        if (!hasBestLocationPerformance()) {
             appPrefs.locationSettingsHighPerformanceDurationTypeFallback = null
 
             if (LocationPerformanceSettingsType.HighPerformance.fromKey(appPrefs.locationSettingsHighPerformanceDurationType).isPremiumFeature) {

@@ -12,7 +12,11 @@ import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.NoValidContractsException
 import app.paralino.core.repo.location.LocationPerformanceManager
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onEach
@@ -33,6 +37,16 @@ class LocationUploadEngine constructor(
 
     private var locationStatusMonitoringJob: Job? = null
     private val _pendingLocation = MutableStateFlow<LocationUpdateDataFromDevice?>(null)
+    private val _currentLocation = MutableStateFlow<LocationUpdateDataFromDevice?>(null)
+    val locationFlow: Flow<LocationsForUpload?> = combine(
+        _pendingLocation,
+        _currentLocation
+    ) { pending, current ->
+        LocationsForUpload(
+            mostRecent = current,
+            filtered = pending
+        )
+    }
 
     fun startLocationUploadEngine() {
         locationSaveProcessing.stop()
@@ -67,6 +81,7 @@ class LocationUploadEngine constructor(
             throw NoValidContractsException()
         }
 
+        _currentLocation.update { data }
         _pendingLocation.update { current ->
             val potentialUpdate = LocationUpdateDataFromDevice.getBetter(current, data)
             if (current != null && potentialUpdate != null) {
@@ -108,4 +123,9 @@ class LocationUploadEngine constructor(
         locationCacheRepo.clearCache()
         registerDeviceForSharing.logout()
     }
+
+    class LocationsForUpload(
+        val mostRecent: LocationUpdateDataFromDevice?,
+        val filtered: LocationUpdateDataFromDevice?,
+    )
 }

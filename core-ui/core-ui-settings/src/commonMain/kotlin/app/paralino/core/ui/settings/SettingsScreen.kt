@@ -59,6 +59,7 @@ fun SettingsScreenCore(
     openBlockList: () -> Unit,
     openGeneralInfo: () -> Unit,
     openAppStatus: () -> Unit,
+    openStatus: () -> Unit,
     openSubscriptions: () -> Unit,
     openPaywall: () -> Unit,
     openLocationSettings: () -> Unit,
@@ -283,6 +284,13 @@ fun SettingsScreenCore(
                     )
                 }
             }
+        }
+
+        SettingsActionItem(
+            name = stringResource(MR.strings.setting_status_title),
+            icon = CoreAppIcons.InfoCircle.asPainterResource()
+        ) {
+            openStatus()
         }
 
         SettingsActionItem(

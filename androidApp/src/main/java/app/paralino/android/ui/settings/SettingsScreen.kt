@@ -73,6 +73,9 @@ fun SettingsScreen(
             openAppStatus = {
                 appState.navController.navigate(AppScreen.Settings.AppStatusDebug.routeSignature)
             },
+            openStatus = {
+                appState.navController.navigate(AppScreen.Settings.AppStatus.routeSignature)
+            },
             openSubscriptions = {
                 appState.navController.navigate(AppScreen.Settings.Subscriptions.route())
             },

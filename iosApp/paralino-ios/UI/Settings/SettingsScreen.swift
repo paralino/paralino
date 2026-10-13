@@ -43,6 +43,9 @@ struct SettingsScreen: View {
                     openAppStatus: {
                         path.append(.settings(.appStatusDebug))
                     },
+                    openStatus: {
+                        path.append(.settings(.appStatus))
+                    },
                     openSubscriptions: {
                         path.append(.settings(.subscriptions))
                     },
