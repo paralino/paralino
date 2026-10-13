@@ -13,7 +13,7 @@ extension CLLocation {
         let location = self
         let accuracy: Float = if !location.horizontalAccuracy.isNaN && location.horizontalAccuracy > 0 { Float(location.horizontalAccuracy) } else { 0 }
         let speed: KotlinFloat? = if !location.speed.isNaN && location.speed > 0 { KotlinFloat(floatLiteral: location.speed) } else { nil }
-        let altitude: KotlinFloat? = if !location.altitude.isNaN { KotlinFloat(floatLiteral: location.altitude) } else { nil }
+        let altitude: KotlinFloat? = if !location.altitude.isNaN && location.verticalAccuracy >= 0 { KotlinFloat(floatLiteral: location.altitude) } else { nil }
         let timeUTC = location.timestamp.ISO8601Format(.iso8601(timeZone: .gmt))
         
         return LocationDataModel(
