@@ -102,7 +102,7 @@
     <string name="location_banner_error_background_access">Missing unrestricted background access</string>
     <string name="location_banner_error_background_app_refresh">Background App Refresh is disabled</string>
     <string name="location_banner_error_push_service_off">Push notification service is disabled</string>
-    <string name="location_banner_error_push_service_no_constant_connection">Push notification service is not using constant connection</string>
+    <string name="location_banner_error_push_service_no_constant_connection">Push notification service is not using a constant connection</string>
     <string name="location_banner_resolved_gps_on">Device location is enabled</string>
     <string name="location_banner_resolved_permission_notifications">Notifications permission</string>
     <string name="location_banner_resolved_permission_location">Location permission</string>
@@ -293,7 +293,7 @@
     <string name="setting_status_signal_good">Good</string>
     <string name="setting_status_signal_great">Great</string>
     <string name="setting_status_locationMode_requested">Requested: %s</string>
-    <string name="setting_status_locationMode_window">Within last %s minutes</string>
+    <string name="setting_status_locationMode_window">Within the last %s minutes</string>
     <string name="setting_status_sharing_none">Location sharing is off</string>
     <string name="setting_status_sharing_off">%s · Off</string>
     <string name="setting_status_location_accuracy">Accuracy</string>
