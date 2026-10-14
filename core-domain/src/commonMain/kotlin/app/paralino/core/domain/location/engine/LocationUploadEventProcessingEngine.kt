@@ -47,14 +47,22 @@ class LocationUploadEventProcessingEngine(
                 AppHost.MAIN_APP,
                 AppHost.IOS_NOTIFICATION_EXTENSION -> {
                     when (locationPerformanceManager.locationPerformanceType.value.current) {
-                        LocationPerformanceType.HIGH_BATTERY_SAVER -> 120.seconds
-                        LocationPerformanceType.BATTERY_SAVER -> 90.seconds
+                        LocationPerformanceType.HIGH_BATTERY_SAVER -> 3.minutes
+                        LocationPerformanceType.BATTERY_SAVER -> 2.minutes
                         LocationPerformanceType.BALANCED -> {
                             when (deviceApiProvider.appLifecycleState.value.current) {
                                 AppLifecycleType.ACTIVE -> 40.seconds
                                 AppLifecycleType.INACTIVE,
                                 AppLifecycleType.BACKGROUND,
-                                AppLifecycleType.DESTROYED -> 90.seconds
+                                AppLifecycleType.DESTROYED -> {
+                                    when (locationPerformanceManager.locationPerformanceType.value.balancedPerformanceSettings.config) {
+                                        LocationPerformanceSettingsType.Balanced.Level1 -> 6.minutes
+                                        LocationPerformanceSettingsType.Balanced.Level2 -> 5.minutes
+                                        LocationPerformanceSettingsType.Balanced.Level3 -> 4.minutes
+                                        LocationPerformanceSettingsType.Balanced.Level4 -> 3.minutes
+                                        LocationPerformanceSettingsType.Balanced.Level5 -> 2.minutes
+                                    }
+                                }
                             }
                         }
 
