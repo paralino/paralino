@@ -6,6 +6,7 @@ import app.paralino.core.repo.location.LocationPerformanceManager
 import app.paralino.core.repo.location.LocationPerformanceSettingsType
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.Priority
+import kotlin.time.Duration.Companion.minutes
 
 object LocationRequestModels {
 
@@ -25,7 +26,7 @@ object LocationRequestModels {
             }
 
             LocationPerformanceType.MEDIUM_HIGH -> {
-                LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 5 * 60 * 1000L)
+                LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 1.minutes.inWholeMilliseconds)
                     .setMinUpdateIntervalMillis(10_000L)
                     .build()
             }

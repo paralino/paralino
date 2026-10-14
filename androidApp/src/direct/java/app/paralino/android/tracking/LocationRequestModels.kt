@@ -25,7 +25,7 @@ object LocationRequestModels {
             }
 
             LocationPerformanceType.MEDIUM_HIGH -> {
-                LocationRequestCompat.Builder(2.minutes.inWholeMilliseconds)
+                LocationRequestCompat.Builder(1.minutes.inWholeMilliseconds)
                     .setMinUpdateIntervalMillis(10_000L)
                     .setQuality(LocationRequestCompat.QUALITY_HIGH_ACCURACY)
                     .build()
