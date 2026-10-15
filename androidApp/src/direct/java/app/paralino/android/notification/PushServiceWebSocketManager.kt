@@ -20,6 +20,7 @@ import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.request.request
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.isSuccess
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -61,13 +62,59 @@ class PushServiceWebSocketManager(
 
     private var socketHttpClient: OkHttpClient? = null
 
+    private val pollHttpClient by lazy {
+        HttpClient {
+            if (AppBuildConfig.instance.isDevMode) {
+                install(Logging) {
+                    logger = object : Logger {
+                        override fun log(message: String) {
+                            logg.d("notification_socket_manager", message)
+                        }
+                    }
+                    level = LogLevel.INFO
+                }
+            }
+        }
+    }
+
+    private val alarmManager by lazy {
+        appClass.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+    }
+
+    private val refreshAlarmListener = AlarmManager.OnAlarmListener {
+        onRefreshAlarm()
+    }
+
+    private var periodicPollUrl: String? = null
+
     suspend fun startConnection(url: String) {
         connectionLock.withLock {
-            val connectionType = appPrefs.paralinoSocketConnectionType
-            if (connectionType == ParalinoSocketConnectionType.REALTIME) {
-                startRealtimeSocketConnection(url = url)
-            } else {
-                startPeriodicPollConnection(url = url)
+            startConnectionNow(url = url)
+        }
+    }
+
+    private fun startConnectionNow(url: String) {
+        val connectionType = appPrefs.paralinoSocketConnectionType
+        if (connectionType == ParalinoSocketConnectionType.REALTIME) {
+            startRealtimeSocketConnection(url = url)
+        } else {
+            startPeriodicPollConnection(url = url)
+        }
+    }
+
+    private fun onRefreshAlarm() {
+        scopeProvider.userSessionIOScope.launch {
+            connectionLock.withLock {
+                val url = periodicPollUrl
+                if (url == null) {
+                    logg.i(
+                        tag = "notification_socket_manager",
+                        message = "Periodic refresh cancelled, ignore refresh alarm"
+                    )
+                    return@withLock
+                }
+
+                startConnectionNow(url = url)
             }
         }
     }
@@ -81,7 +128,7 @@ class PushServiceWebSocketManager(
     }
 
     private fun startRealtimeSocketConnection(url: String) {
-        periodicJob?.cancel()
+        cancelPeriodicRefresh()
 
         val baseUrl = url.substringBefore("?")
         val wsUrl = if (baseUrl.endsWith("/ws")) {
@@ -151,9 +198,9 @@ class PushServiceWebSocketManager(
         val connectionType: ParalinoSocketConnectionType = appPrefs.paralinoSocketConnectionType
         closeConnectionNow()
         socketHttpClient = null
+        periodicPollUrl = url
         _connectionState.value = PushServiceConnectionState.Connected
 
-        val alarmManager = appClass.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val canScheduleAlarm = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             alarmManager.canScheduleExactAlarms()
         } else {
@@ -161,17 +208,16 @@ class PushServiceWebSocketManager(
         }
 
         if (canScheduleAlarm) {
-            scopeProvider.userSessionIOScope.launch {
+            periodicJob = scopeProvider.userSessionIOScope.launch {
                 fireAndScheduleAlarm(
                     url = url,
-                    connectionType = connectionType,
-                    alarmManager = alarmManager
+                    connectionType = connectionType
                 )
             }
         } else {
             logg.i(
-                "notification_socket_manager",
-                "Schedule alarm permission denied, fallback to scope only refresh"
+                tag = "notification_socket_manager",
+                message = "Schedule alarm permission denied, fallback to scope only refresh"
             )
 
             periodicJob = scopeProvider.userSessionIOScope.launch {
@@ -183,8 +229,8 @@ class PushServiceWebSocketManager(
                         updateState = true
                     )
                     logg.i(
-                        "notification_socket_manager",
-                        "Delay next scope push message refresh for ${newState.nextDelay}"
+                        tag = "notification_socket_manager",
+                        message = "Delay next scope push message refresh for ${newState.nextDelay}"
                     )
                     delay(newState.nextDelay)
                 }
@@ -194,8 +240,7 @@ class PushServiceWebSocketManager(
 
     private suspend fun fireAndScheduleAlarm(
         url: String,
-        connectionType: ParalinoSocketConnectionType,
-        alarmManager: AlarmManager
+        connectionType: ParalinoSocketConnectionType
     ) {
         val newState = checkMessagesAndUpdateState(
             baseUrl = url,
@@ -204,16 +249,15 @@ class PushServiceWebSocketManager(
             updateState = true
         )
 
-        logg.i("notification_socket_manager", "Scheduling notification check alarm in ${newState.nextDelay}")
+        logg.i(
+            tag = "notification_socket_manager",
+            message = "Scheduling notification check alarm in ${newState.nextDelay}"
+        )
         alarmManager.setExact(
             AlarmManager.RTC_WAKEUP,
             nowUTC().plus(newState.nextDelay).toEpochMilliseconds(),
             "paralino_notification_refresh",
-            {
-                startPeriodicPollConnection(
-                    url = url
-                )
-            },
+            refreshAlarmListener,
             null
         )
     }
@@ -226,30 +270,18 @@ class PushServiceWebSocketManager(
     ): PeriodicPollState {
         val time = lastUpdateTimeUnixSeconds ?: "latest"
         val url = "${baseUrl.substringBefore("?")}/json?poll=1&since=$time"
-        logg.i("notification_socket_manager", "Fetch push messages since $time")
+        logg.i(tag = "notification_socket_manager", message = "Fetch push messages since $time")
 
-        val client = HttpClient() {
-            if (AppBuildConfig.instance.isDevMode) {
-                install(Logging) {
-                    logger = object : Logger {
-                        override fun log(message: String) {
-                            logg.d("notification_socket_manager", message)
-                        }
-                    }
-                    level = LogLevel.INFO
-                }
-            }
-        }
         val state = try {
-            val response = client.request(urlString = url)
+            val response = pollHttpClient.request(urlString = url)
             val responseText = response.bodyAsText()
 
             if (response.status.isSuccess()) {
                 _connectionState.value = PushServiceConnectionState.Connected
                 if (responseText.isNotBlank() || currentState?.shouldMakeFullRefresh == true) {
                     logg.i(
-                        "notification_socket_manager",
-                        "Found new push messages, sync notifications"
+                        tag = "notification_socket_manager",
+                        message = "Found new push messages, sync notifications"
                     )
                     pushProvider.syncPushNotifications()
                     _lastSyncTime.value = nowUTC()
@@ -260,7 +292,7 @@ class PushServiceWebSocketManager(
                         counter = 0
                     )
                 } else {
-                    logg.i("notification_socket_manager", "No new push messages")
+                    logg.i(tag = "notification_socket_manager", message = "No new push messages")
                     _lastSyncTime.value = nowUTC()
 
                     val counter = currentState?.counter?.plus(1) ?: 0
@@ -272,8 +304,8 @@ class PushServiceWebSocketManager(
                 }
             } else {
                 logg.i(
-                    "notification_socket_manager",
-                    "Failed to fetch new messages: ${response.status}"
+                    tag = "notification_socket_manager",
+                    message = "Failed to fetch new messages: ${response.status}"
                 )
                 _connectionState.value = PushServiceConnectionState.Scheduled
                 PeriodicPollState(
@@ -282,8 +314,11 @@ class PushServiceWebSocketManager(
                     counter = currentState?.counter ?: 0
                 )
             }
+        } catch (e: CancellationException) {
+            // don't schedule next refresh when the poll was cancelled
+            throw e
         } catch (e: Exception) {
-            logg.w("notification_socket_manager", "Failed to check messages", e)
+            logg.w(tag = "notification_socket_manager", message = "Failed to check messages", t = e)
             _connectionState.value = PushServiceConnectionState.Scheduled
             PeriodicPollState(
                 nextDelay = getDefaultDelayDuration(connectionType) / 2,
@@ -301,7 +336,7 @@ class PushServiceWebSocketManager(
             ParalinoSocketConnectionType.REALTIME,
             ParalinoSocketConnectionType.PERIODIC_LEVEL_1 -> {
                 when {
-                    batteryLevel > 60 -> 1.minutes
+                    batteryLevel > 60 -> 5.minutes
                     batteryLevel > 30 -> 10.minutes
                     else -> 15.minutes
                 }
@@ -364,11 +399,17 @@ class PushServiceWebSocketManager(
         return newState
     }
 
-    private fun closeConnectionNow() {
+    private fun cancelPeriodicRefresh() {
         periodicJob?.cancel()
         periodicJob = null
+        periodicPollUrl = null
+        alarmManager.cancel(refreshAlarmListener)
+    }
+
+    private fun closeConnectionNow() {
+        cancelPeriodicRefresh()
         if (connection != null) {
-            logg.i("notification_socket_manager", "Closing WebSocket connection")
+            logg.i(tag = "notification_socket_manager", message = "Closing WebSocket connection")
             connection?.close()
             connection = null
             socketHttpClient = null
