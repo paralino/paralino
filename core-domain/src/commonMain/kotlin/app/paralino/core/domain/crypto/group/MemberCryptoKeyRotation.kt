@@ -6,6 +6,7 @@ import app.paralino.core.crypto.SimpleKeyPairData
 import app.paralino.core.crypto.UserGroupPersonalKeyPair
 import app.paralino.core.domain.crypto.user.CryptoUserKeysLocalSource
 import app.paralino.core.db.AppPrefs
+import app.paralino.core.db.main.keys.PendingKeyRefreshType
 import app.paralino.core.domain.LimitedExecution
 import app.paralino.core.logg
 import app.paralino.core.models.data
@@ -97,7 +98,9 @@ class MemberCryptoKeyRotation(
             .i("group member key is deprecated - rotating: ${remoteGroup.id}")
 
         try {
-            rotateMemberKeysForGroup(remoteGroup)
+            cryptoKEKRepository.trackKeyRotation(groupId = remoteGroup.id, keyType = PendingKeyRefreshType.MEMBER) {
+                rotateMemberKeysForGroup(remoteGroup)
+            }
         } finally {
             stopProcessing(remoteGroup.id)
         }

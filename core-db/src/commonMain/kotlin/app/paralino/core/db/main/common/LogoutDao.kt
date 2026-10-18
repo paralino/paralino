@@ -44,6 +44,7 @@ interface LogoutDao {
         clearAllPrivacyZones()
         clearAllPrivacyZoneSharedLocations()
         clearAllPendingGroupJoinWelcomes()
+        clearAllPendingKeyRefreshes()
     }
 
     @Query("DELETE FROM userEntity")
@@ -150,4 +151,7 @@ interface LogoutDao {
 
     @Query("DELETE FROM pendingGroupJoinWelcomeEntity")
     suspend fun clearAllPendingGroupJoinWelcomes()
+
+    @Query("DELETE FROM pendingKeyRefreshEntity")
+    suspend fun clearAllPendingKeyRefreshes()
 }

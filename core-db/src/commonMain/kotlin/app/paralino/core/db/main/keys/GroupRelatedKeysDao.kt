@@ -85,6 +85,7 @@ interface GroupRelatedKeysDao {
         clearAllPersonalGroupKeys(groupId = groupId)
         clearAllGroupDeviceIntegrityKeys(groupId = groupId)
         clearAllLocalGroupDeviceSenderKeys(groupId = groupId)
+        clearAllPendingKeyRefreshes(groupId = groupId)
     }
 
     @Transaction
@@ -203,8 +204,46 @@ interface GroupRelatedKeysDao {
     suspend fun clearAllGroupMembersKeys(groupId: String, userId: String)
 
     @Query("""
-        DELETE FROM groupDeviceKeysEntity 
+        DELETE FROM groupDeviceKeysEntity
         WHERE groupId = :groupId AND (memberUserId = :userId OR ownerUserId = :userId)
     """)
     suspend fun clearAllGroupDeviceKeys(groupId: String, userId: String)
+
+
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun savePendingKeyRefresh(entity: PendingKeyRefreshEntity)
+
+    @Query("""
+        SELECT COUNT(*) FROM pendingKeyRefreshEntity
+        WHERE groupId = :groupId AND (state = 'done' OR updatedAtMillis < :staleStartedBeforeMillis)
+    """)
+    suspend fun countPendingKeyRefreshes(groupId: String, staleStartedBeforeMillis: Long): Int
+
+    @Query("""
+        DELETE FROM pendingKeyRefreshEntity
+        WHERE groupId = :groupId
+        AND keyType IN (:keyTypes)
+        AND updatedAtMillis < :refreshStartedAtMillis
+        AND (state = 'done' OR updatedAtMillis < :staleStartedBeforeMillis)
+    """)
+    suspend fun clearPendingKeyRefreshes(
+        groupId: String,
+        keyTypes: List<String>,
+        refreshStartedAtMillis: Long,
+        staleStartedBeforeMillis: Long
+    )
+
+    @Query("""
+        DELETE FROM pendingKeyRefreshEntity
+        WHERE updatedAtMillis < :refreshStartedAtMillis
+        AND (state = 'done' OR updatedAtMillis < :staleStartedBeforeMillis)
+    """)
+    suspend fun clearAllPendingKeyRefreshes(
+        refreshStartedAtMillis: Long,
+        staleStartedBeforeMillis: Long
+    )
+
+    @Query("DELETE FROM pendingKeyRefreshEntity WHERE groupId = :groupId")
+    suspend fun clearAllPendingKeyRefreshes(groupId: String)
 }

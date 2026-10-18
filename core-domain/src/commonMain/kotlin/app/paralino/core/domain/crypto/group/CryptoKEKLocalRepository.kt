@@ -9,9 +9,13 @@ import app.paralino.core.db.AppPrefs
 import app.paralino.core.db.main.keys.GroupDeviceIntegrityEntity
 import app.paralino.core.db.main.keys.GroupDeviceKeysEntity
 import app.paralino.core.db.main.keys.GroupHistoryKeyEntity
+import app.paralino.core.db.main.keys.PendingKeyRefreshType
 import app.paralino.core.db.main.keys.PersonalHistoryKeyEntity
+import app.paralino.core.logg
 import app.paralino.core.models.raw.GroupDeviceCryptoKeyRaw
 import app.paralino.core.repo.base.BaseRepository
+import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.withContext
 
 class CryptoKEKLocalRepository(
     private val local: CryptoKeyLocalDataSource,
@@ -42,6 +46,30 @@ class CryptoKEKLocalRepository(
 
     suspend fun getAllEncryptedMembershipPublicKeys(groupId: String): List<String> {
         return local.getMemberKeys().filter { it.groupId == groupId }.map { it.signedMembershipPublicKey }
+    }
+
+    suspend fun <T> trackKeyRotation(
+        groupId: String,
+        keyType: PendingKeyRefreshType,
+        rotation: suspend () -> T
+    ): T {
+        local.markKeyRotationStarted(groupId = groupId, keyType = keyType)
+        try {
+            return rotation()
+        } finally {
+            // using NonCancellable so this can continue even if parent coroutine is canceled
+            withContext(NonCancellable) {
+                try {
+                    local.markKeyRotationDone(groupId = groupId, keyType = keyType)
+                } catch (e: Exception) {
+                    logg.tag("tag_crypto_key_rotation").w("Unable to mark $keyType rotation as done in $groupId: ${e.message}")
+                }
+            }
+        }
+    }
+
+    suspend fun hasPendingKeyRefresh(groupId: String): Boolean {
+        return local.hasPendingKeyRefresh(groupId = groupId)
     }
 
     suspend fun hasGroupKeyByVersion(groupId: String, groupKeyVersion: Long): Boolean {
