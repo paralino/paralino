@@ -94,8 +94,9 @@ class CryptoUserKeysLocalSource(
         }
     }
 
+    // collected eagerly by PersonalCodesRepository, so it has to survive database reopening
     fun userKeyState(): Flow<UserCryptoKeyState> {
-        return database.userKeysDao.getAll()
+        return database.observe { userKeysDao.getAll() }
             .distinctUntilChanged()
             .map { keys ->
                 val activeKey = keys.firstOrNull { it.isActive }

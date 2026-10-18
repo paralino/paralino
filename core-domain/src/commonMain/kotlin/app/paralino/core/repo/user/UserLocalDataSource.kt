@@ -17,8 +17,9 @@ class UserLocalDataSource(
     private val mapper: UserMapperLocal,
 ) {
 
+    // collected eagerly by UserRepository, so it has to survive database reopening
     fun getMeRaw(): Flow<UserMeRaw?> {
-        return database.userDao.getUser()
+        return database.observe { userDao.getUser() }
             .map { it?.let { mapper.local2Remote(it) } }
             .distinctUntilChanged()
     }
@@ -51,8 +52,9 @@ class UserLocalDataSource(
         database.userDao.recreatePlans(plans.map { mapper.remote2Local(it) })
     }
 
+    // collected eagerly by UserRepository, so it has to survive database reopening
     fun getPlans(): Flow<List<UserPlanRaw>> {
-        return database.userDao.getAllPlans()
+        return database.observe { userDao.getAllPlans() }
             .distinctFlowOfList()
             .map { it.map { mapper.local2Remote(it) } }
     }

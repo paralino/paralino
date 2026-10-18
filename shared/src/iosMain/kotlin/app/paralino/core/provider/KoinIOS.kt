@@ -11,6 +11,7 @@ import app.paralino.core.db.MainDatabaseHelper
 import app.paralino.core.db.SqlDriverFactory
 import app.paralino.core.db.logs.AppLogsDatabase
 import app.paralino.core.db.main.AppMainDatabase
+import app.paralino.core.logg
 import app.paralino.core.domain.crypto.group.IMemberCryptoKeyRotation
 import app.paralino.core.domain.crypto.group.IMemberDeviceKeyRotation
 import app.paralino.core.domain.crypto.group.MemberCryptoKeyRotation
@@ -194,14 +195,19 @@ object KoinIOS {
                     single { FunctionsApiWrapper(functionsApi(get(), get())) } bind IFunctionsApi::class
                     single { RealtimeApiWrapperIOS(realtimeApi(get(), get()), get()) } bind IRealtimeApi::class
                     single { CoroutineScopeProvider() } bind ICoroutineScopeProvider::class
-                    single { MainDatabaseHelper(AppMainDatabase.create(SqlDriverFactory(get()))) }
+                    single {
+                        val driverFactory = SqlDriverFactory(get())
+                        MainDatabaseHelper(
+                            onError = { message, error -> logg.w(tag = "database", message = message, t = error) }
+                        ) { AppMainDatabase.create(driverFactory) }
+                    }
                     single { LogsDatabaseHelper(AppLogsDatabase.create(SqlDriverFactory(get()))) }
                     single { CryptoServiceWrapperIOS(cryptoServiceProvider()) } bind ICryptoServiceProvider::class
                     single { valueFormatter(get()) } bind IValueFormatter::class
                     single { appUpdateManager() } bind IAppUpdateManager::class
                     single { appRatingPresenter() } bind IAppRatingPresenter::class
                     single { oneTimeLocationProvider(get(), get()) }
-                    single { LocationRepositoryWrapper(get(), get(), get(), get()) }
+                    single { LocationRepositoryWrapper(get(), get(), get(), get(), get()) }
                     single { IOSNSEPlaceCreatedNotificationProcessor(get(), get(), get(), get()) }
                     single { IOSNSEPrivacyZoneCreatedNotificationProcessor(get(), get(), get(), get()) }
                     single { IOSNSEPushNotificationHandler(get(), get(), get(), get()) }

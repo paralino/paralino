@@ -28,10 +28,12 @@ class LocationPushService: NSObject, CLLocationPushServiceExtension, CLLocationM
         pushCompletion = completion
         
         KoinSetup.initKoin(locationManager: locationManagerDelegate)
-        
+
         let notificationId = payload["notificationId"] as? String
         let directGroupId = payload["groupId"] as? String
         Logr.i(tag: "location_service", message: "LSE: Got location push payload for notification \(notificationId ?? "unknown") and group \(directGroupId ?? "unknown")")
+
+        locationRepo.startNewPushSession()
         
         self.locationManager = CLLocationManager()
         self.locationManager?.distanceFilter = 0
