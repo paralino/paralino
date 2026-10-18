@@ -91,13 +91,15 @@ class GetMemberSenderKeyUseCase(
         if (memberUserId == currentUserId) {
             val key = local.getLocalGroupSenderKey(groupId = groupId)
                 ?.takeIf { key ->
+                    logg.tag("tag_crypto_key_group_member")
+                        .d("Loaded current device sender key ${key.deviceKeyVersion} from encrypted cache, actual key: ${keyRaw.deviceKeyVersion}")
                     key.locationId == locationId
                             && keyRaw.memberKeyVersion == key.memberKeyVersion
                             && keyRaw.deviceKeyVersion == key.deviceKeyVersion
                 }
                 ?.let { key ->
                     logg.tag("tag_crypto_key_group_member")
-                        .d("Try to load current device sender key from encrypted cache")
+                        .d("Try to unwrap current device sender key ${key.deviceKeyVersion} from encrypted cache")
                     try {
                         GroupMemberSenderKey.Valid(
                             key = cryptoCore.decryptDataWithKey(
