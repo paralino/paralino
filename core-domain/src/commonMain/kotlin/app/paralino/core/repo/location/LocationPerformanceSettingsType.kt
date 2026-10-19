@@ -24,7 +24,7 @@ sealed interface LocationPerformanceSettingsType {
 
         data object Level1 : HighPerformance() {
             override val allowedVeryHighPerformanceDuration: Duration = 3.minutes
-            override val allowedHighPerformanceDuration: Duration = 3.minutes
+            override val allowedHighPerformanceDuration: Duration = 90.seconds
             override val allowedMediumPerformanceDuration: Duration = 6.minutes
             override val isPremiumFeature: Boolean = false
             override val key: String = "high_performance_100"
@@ -133,18 +133,18 @@ sealed interface LocationPerformanceSettingsType {
         }
 
         data object Level4 : Balanced {
-            override val updateInterval: Duration = 20.minutes
-            override val minUpdateInterval: Duration = 3.minutes
+            override val updateInterval: Duration = 10.minutes
+            override val minUpdateInterval: Duration = 2.minutes
             override val minUpdateDistanceMeters: Int = 70
             override val isPremiumFeature: Boolean = true
             override val key: String = "balanced_level_400"
         }
 
         data object Level5 : Balanced {
-            override val updateInterval: Duration = 5.minutes
+            override val updateInterval: Duration = 3.minutes
             override val minUpdateInterval: Duration = 1.minutes
             override val minUpdateDistanceMeters: Int get() = when (DeviceType.current) {
-                DeviceType.Android -> 10
+                DeviceType.Android -> 20
                 DeviceType.iOS -> 0
             }
             override val isPremiumFeature: Boolean = true

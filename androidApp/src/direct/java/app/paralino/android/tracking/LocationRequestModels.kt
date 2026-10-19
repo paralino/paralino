@@ -5,6 +5,7 @@ import app.paralino.core.models.location.LocationPerformanceType
 import app.paralino.core.repo.location.LocationPerformanceManager
 import app.paralino.core.repo.location.LocationPerformanceSettingsType
 import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Duration.Companion.seconds
 
 object LocationRequestModels {
 
@@ -25,8 +26,9 @@ object LocationRequestModels {
             }
 
             LocationPerformanceType.MEDIUM_HIGH -> {
-                LocationRequestCompat.Builder(1.minutes.inWholeMilliseconds)
-                    .setMinUpdateIntervalMillis(10_000L)
+                LocationRequestCompat.Builder(10.seconds.inWholeMilliseconds)
+                    .setMinUpdateIntervalMillis(10.seconds.inWholeMilliseconds)
+                    .setMinUpdateDistanceMeters(300f)
                     .setQuality(LocationRequestCompat.QUALITY_HIGH_ACCURACY)
                     .build()
             }
