@@ -317,6 +317,7 @@ object SettingsScreens {
         askLocationPermission: () -> Unit,
         askBackgroundLocationPermission: () -> Unit,
         askBackgroundAccessPermission: () -> Unit,
+        openLocationSettings: () -> Unit,
     ) = ComposeUIViewController {
         RootScreenIOS {
             AppStatusScreenCore(
@@ -328,7 +329,8 @@ object SettingsScreens {
                 askLocationPermission = askLocationPermission,
                 askBackgroundLocationPermission = askBackgroundLocationPermission,
                 askBackgroundAccessPermission = askBackgroundAccessPermission,
-                askPushNotificationService = {}
+                askPushNotificationService = {},
+                openLocationSettings = openLocationSettings
             )
         }
     }

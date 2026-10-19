@@ -43,6 +43,9 @@ struct AppStatusScreen: View {
                         appDelegate.locationPermissionHandler.requestBackgroundRefreshPermission(
                             messageDispather: appState.vm
                         )
+                    },
+                    openLocationSettings: {
+                        path.append(.settings(.locationSettings))
                     }
                 )
             }

@@ -45,8 +45,10 @@ sealed class AppStatusApiTestState {
 
 data class AppStatusLocationModeState(
     val current: String,
+    val timeLeft: String?,
     val requested: String?,
     val isThrottled: Boolean,
+    val canBoostLong: Boolean,
     val allowances: List<AppStatusAllowanceState>
 )
 
@@ -85,6 +87,7 @@ sealed class AppStatusScreenUiEvent {
     data object TriggerAppUpdate : AppStatusScreenUiEvent()
     data object TestApiConnection : AppStatusScreenUiEvent()
     data object ClearApiTestResult : AppStatusScreenUiEvent()
+    data class BoostLocation(val isLong: Boolean) : AppStatusScreenUiEvent()
 }
 
 val LocationPerformanceType.displayName: String

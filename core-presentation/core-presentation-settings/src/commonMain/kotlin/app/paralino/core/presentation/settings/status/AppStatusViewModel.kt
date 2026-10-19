@@ -1,6 +1,7 @@
 package app.paralino.core.presentation.settings.status
 
 import app.paralino.core.app_update.IAppUpdateManager
+import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.location.LocationUploadEngine
 import app.paralino.core.domain.user.PremiumStatusManager
 import app.paralino.core.domain.user.ServerConnectionTestStep
@@ -43,6 +44,7 @@ import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlin.time.Duration
+import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
@@ -61,8 +63,12 @@ class AppStatusViewModel(
     private val premiumStatusManager: PremiumStatusManager,
     private val valueFormatter: IValueFormatter,
     private val serverConnectionTest: ServerConnectionTestUseCase,
-    private val appConfig: AppConfigRepository
+    private val appConfig: AppConfigRepository,
+    private val appPrefs: AppPrefs
 ) : CoreViewModel() {
+
+    private val manualBoostDuration = 30.seconds
+    private val manualBoostLongDuration = 1.hours
 
     private val _uiState = MutableStateFlow(AppStatusScreenState())
     val uiState: StateFlow<AppStatusScreenState> = _uiState
@@ -130,14 +136,18 @@ class AppStatusViewModel(
         ) { performance, _ ->
             safeUpdate("location mode") {
                 val allowances = if (appConfig.isInAppDevMode) mapAllowances() else emptyList()
+                val isThrottled = performance.isThrottlingPerformance
+                val timeLeft = if (isThrottled) null else mapTimeLeft(performance.current)
                 _uiState.update {
                     it.copy(
                         locationMode = AppStatusLocationModeState(
                             current = performance.current.displayNameWithIndex,
+                            timeLeft = timeLeft,
                             requested = performance.requested
-                                .takeIf { it != performance.current }
+                                .takeIf { isThrottled }
                                 ?.displayNameWithIndex,
-                            isThrottled = performance.isThrottlingPerformance,
+                            isThrottled = isThrottled,
+                            canBoostLong = appConfig.isInAppDevMode,
                             allowances = allowances
                         )
                     )
@@ -200,7 +210,21 @@ class AppStatusViewModel(
             AppStatusScreenUiEvent.ClearApiTestResult -> {
                 _uiState.update { it.copy(apiTest = AppStatusApiTestState.Idle) }
             }
+
+            is AppStatusScreenUiEvent.BoostLocation -> boostLocation(isLong = event.isLong)
         }
+    }
+
+    private fun boostLocation(isLong: Boolean) {
+        if (isLong && !appConfig.isInAppDevMode) return
+        val duration = if (isLong) manualBoostLongDuration else manualBoostDuration
+        logg.v("Status screen manual location boost for $duration")
+        appPrefs.trackingBoostEndTime = nowUTC() + duration
+        locationPerformanceManager.locationBoostRequested(
+            performanceType = LocationPerformanceType.MANUAL_BOOST,
+            groupId = null,
+            from = "App status manual boost"
+        )
     }
 
     private fun testApiConnection() {
@@ -321,6 +345,24 @@ class AppStatusViewModel(
             provider = currentLocation.provider,
             isFiltered = currentLocation != location.filtered
         )
+    }
+
+    private fun mapTimeLeft(current: LocationPerformanceType): String? {
+        val allowanceType = when (current) {
+            LocationPerformanceType.HIGH,
+            LocationPerformanceType.HIGHER_FOCUS -> LocationPerformanceType.HIGH
+            LocationPerformanceType.VERY_HIGH -> LocationPerformanceType.VERY_HIGH
+            LocationPerformanceType.MANUAL_BOOST -> {
+                return appPrefs.trackingBoostEndTime
+                    ?.let { it - nowUTC() }
+                    ?.formatMinutesSeconds()
+            }
+            else -> return null
+        }
+        return locationPerformanceManager.getPerformanceAllowances()
+            .firstOrNull { it.type == allowanceType }
+            ?.remaining
+            ?.formatMinutesSeconds()
     }
 
     private suspend fun mapAllowances(): List<AppStatusAllowanceState> {

@@ -2,6 +2,7 @@ package app.paralino.core.ui.settings
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -71,6 +72,7 @@ import app.paralino.core.ui.components.icon
 import app.paralino.core.ui.groups.components.NetworkTypeIcon
 import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.utils.ConditionErrorType
+import app.paralino.core.utils.extensions.annotatedBoldCompose
 import dev.icerock.moko.resources.compose.stringResource
 
 @Composable
@@ -84,6 +86,7 @@ fun AppStatusScreenCore(
     askBackgroundLocationPermission: () -> Unit,
     askBackgroundAccessPermission: () -> Unit,
     askPushNotificationService: () -> Unit,
+    openLocationSettings: () -> Unit,
 ) {
 
     MessageDispatcherEffect(vm, appState)
@@ -138,7 +141,11 @@ fun AppStatusScreenCore(
 
         uiState.locationMode?.let { locationMode ->
             SettingsSectionHeader(name = stringResource(MR.strings.setting_status_section_locationMode))
-            AppStatusLocationMode(locationMode = locationMode)
+            AppStatusLocationMode(
+                locationMode = locationMode,
+                onBoost = { isLong -> vm.onEvent(AppStatusScreenUiEvent.BoostLocation(isLong = isLong)) },
+                onIncreaseTime = openLocationSettings
+            )
         }
 
         SettingsSectionHeader(name = stringResource(MR.strings.setting_status_section_sharing))
@@ -159,9 +166,12 @@ fun AppStatusScreenCore(
 
         CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
             Text(
-                modifier = Modifier.padding(top = 16.dp, start = 4.dp, end = 4.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 16.dp, start = 4.dp, end = 4.dp),
                 text = stringResource(MR.strings.setting_status_refreshInfo),
-                style = MaterialTheme.typography.caption
+                style = MaterialTheme.typography.caption,
+                textAlign = TextAlign.Center
             )
         }
     }
@@ -298,16 +308,9 @@ private fun AppStatusApiTestRow(
     ) {
         when (apiTest) {
             AppStatusApiTestState.Idle -> {
-                Text(
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(8.dp))
-                        .background(AppColors.accent.copy(alpha = 0.15f))
-                        .clickable(onClick = onTestApi)
-                        .padding(horizontal = 12.dp, vertical = 4.dp),
+                AppStatusTableButton(
                     text = stringResource(MR.strings.setting_status_connection_apiTest),
-                    style = MaterialTheme.typography.body2,
-                    fontWeight = FontWeight.SemiBold,
-                    color = AppColors.accentDark
+                    onClick = onTestApi
                 )
             }
 
@@ -339,21 +342,54 @@ private fun AppStatusApiTestRow(
 }
 
 @Composable
-private fun AppStatusLocationMode(locationMode: AppStatusLocationModeState) {
-    Text(
-        text = locationMode.current,
-        style = MaterialTheme.typography.h5,
-        fontWeight = FontWeight.Bold
-    )
-    locationMode.requested?.let { requested ->
-        CompositionLocalProvider(LocalContentAlpha provides if (locationMode.isThrottled) 1f else ContentAlpha.medium) {
-            Text(
-                modifier = Modifier.padding(top = 4.dp),
-                text = stringResource(MR.strings.setting_status_locationMode_requested, requested),
-                style = MaterialTheme.typography.body2,
-                fontWeight = FontWeight.Medium,
-                color = if (locationMode.isThrottled) AppColors.redMain else Color.Unspecified
+private fun AppStatusLocationMode(
+    locationMode: AppStatusLocationModeState,
+    onBoost: (isLong: Boolean) -> Unit,
+    onIncreaseTime: () -> Unit
+) {
+    AppStatusTable {
+        AppStatusTableRow(
+            label = stringResource(MR.strings.setting_status_locationMode_current),
+            value = locationMode.current,
+            valueColor = if (locationMode.isThrottled) AppColors.redMain else Color.Unspecified,
+            showDivider = false
+        )
+        locationMode.timeLeft?.let { timeLeft ->
+            AppStatusTableRow(
+                label = stringResource(MR.strings.setting_status_locationMode_timeLeft),
+                value = timeLeft
             )
+        }
+        if (locationMode.isThrottled) {
+            locationMode.requested?.let { requested ->
+                AppStatusTableRow(
+                    label = stringResource(MR.strings.setting_status_locationMode_requested),
+                    value = requested
+                )
+            }
+            AppStatusTableRow(label = stringResource(MR.strings.setting_status_locationMode_boost)) {
+                AppStatusTableButton(
+                    text = stringResource(MR.strings.setting_status_connection_apiTest),
+                    onClick = { onBoost(false) },
+                    onLongClick = if (locationMode.canBoostLong) {
+                        { onBoost(true) }
+                    } else {
+                        null
+                    }
+                )
+            }
+            AppStatusTableRow(
+                label = stringResource(MR.strings.setting_status_locationMode_increaseTime),
+                labelColor = AppColors.accentDark,
+                onClick = onIncreaseTime
+            ) {
+                Icon(
+                    modifier = Modifier.size(20.dp),
+                    painter = CoreAppIcons.ChevronRight.asPainterResource(),
+                    tint = AppColors.accentDark,
+                    contentDescription = null
+                )
+            }
         }
     }
 
@@ -594,6 +630,7 @@ private fun AppStatusTableRow(
 @Composable
 private fun AppStatusTableRow(
     label: String,
+    labelColor: Color = Color.Unspecified,
     showDivider: Boolean = true,
     onClick: (() -> Unit)? = null,
     value: @Composable RowScope.() -> Unit
@@ -616,9 +653,10 @@ private fun AppStatusTableRow(
     ) {
         Text(
             modifier = Modifier.weight(1f),
-            text = label,
+            text = label.annotatedBoldCompose(),
             style = MaterialTheme.typography.body1,
-            fontWeight = FontWeight.Medium
+            fontWeight = FontWeight.Medium,
+            color = labelColor
         )
         value()
     }
@@ -637,5 +675,24 @@ private fun RowScope.AppStatusTableValue(
         fontWeight = FontWeight.SemiBold,
         textAlign = TextAlign.End,
         color = valueColor
+    )
+}
+
+@Composable
+private fun AppStatusTableButton(
+    text: String,
+    onClick: () -> Unit,
+    onLongClick: (() -> Unit)? = null
+) {
+    Text(
+        modifier = Modifier
+            .clip(RoundedCornerShape(8.dp))
+            .background(AppColors.accent.copy(alpha = 0.15f))
+            .combinedClickable(onClick = onClick, onLongClick = onLongClick)
+            .padding(horizontal = 12.dp, vertical = 4.dp),
+        text = text,
+        style = MaterialTheme.typography.body2,
+        fontWeight = FontWeight.SemiBold,
+        color = AppColors.accentDark
     )
 }
