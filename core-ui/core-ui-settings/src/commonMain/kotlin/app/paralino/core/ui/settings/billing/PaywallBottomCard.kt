@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ContentAlpha
+import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.LocalContentColor
 import androidx.compose.material.MaterialTheme
@@ -166,7 +167,7 @@ private fun PaywallBottomCard(
                 if (periodPlan != null) {
                     CompositionLocalProvider(LocalContentColor provides contentColor) {
                         BillingPeriodOptionsSelector(
-                            modifier = Modifier.padding(bottom = 10.dp),
+                            modifier = Modifier,
                             selectedPlan = periodPlan,
                             showTrialInfo = !state.hasActivePlanOnAnotherPlatform,
                             onPeriodSelected = { onPeriodSelected(periodPlan.type, it) }
@@ -207,6 +208,16 @@ private fun PaywallBottomCard(
 
             AnimatedVisibility(state.screenStep != PaywallScreenStep.PAYWALL) {
                 Spacer(modifier = Modifier.size(6.dp))
+            }
+
+            AnimatedVisibility(
+                !state.showExternalPricingInfo && periodPlan != null && state.canShowPlanPeriodSelector && state.screenStep == PaywallScreenStep.PAYWALL
+            ) {
+                Divider(
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 14.dp, vertical = 12.dp),
+                    color = Color.Gray.copy(alpha = 0.15f),
+                    thickness = 0.5.dp
+                )
             }
 
             AnimatedVisibility(selectedPlan != null || state.screenStep != PaywallScreenStep.PAYWALL) {
