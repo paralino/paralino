@@ -58,7 +58,6 @@ fun SettingsScreenCore(
     openPersonalCodes: () -> Unit,
     openBlockList: () -> Unit,
     openGeneralInfo: () -> Unit,
-    openAppStatus: () -> Unit,
     openStatus: () -> Unit,
     openSubscriptions: () -> Unit,
     openPaywall: () -> Unit,
@@ -174,15 +173,6 @@ fun SettingsScreenCore(
                 icon = CoreAppIcons.ShareLocation.asPainterResource()
             ) {
                 openLocationSettings()
-            }
-        }
-
-        if (readyState?.canAccessDebugScreen == true) {
-            SettingsActionItem(
-                name = "App status",
-                icon = CoreAppIcons.Settings.asPainterResource()
-            ) {
-                openAppStatus()
             }
         }
 

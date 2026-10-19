@@ -46,6 +46,9 @@ struct AppStatusScreen: View {
                     },
                     openLocationSettings: {
                         path.append(.settings(.locationSettings))
+                    },
+                    openDebugLogs: {
+                        path.append(.settings(.appStatusDebug))
                     }
                 )
             }

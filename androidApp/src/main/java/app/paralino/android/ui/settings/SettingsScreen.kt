@@ -70,9 +70,6 @@ fun SettingsScreen(
             openGeneralInfo = {
                 appState.navController.navigate(AppScreen.Settings.GeneralInfo.routeSignature)
             },
-            openAppStatus = {
-                appState.navController.navigate(AppScreen.Settings.AppStatusDebug.routeSignature)
-            },
             openStatus = {
                 appState.navController.navigate(AppScreen.Settings.AppStatus.routeSignature)
             },

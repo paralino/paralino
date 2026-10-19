@@ -56,7 +56,6 @@ object SettingsScreens {
         openPersonalCodes: () -> Unit,
         openBlockList: () -> Unit,
         openGeneralInfo: () -> Unit,
-        openAppStatus: () -> Unit,
         openStatus: () -> Unit,
         openSubscriptions: () -> Unit,
         openPaywall: () -> Unit,
@@ -75,7 +74,6 @@ object SettingsScreens {
                 openPersonalCodes = openPersonalCodes,
                 openBlockList = openBlockList,
                 openGeneralInfo = openGeneralInfo,
-                openAppStatus = openAppStatus,
                 openStatus = openStatus,
                 openSubscriptions = openSubscriptions,
                 openPaywall = openPaywall,
@@ -318,6 +316,7 @@ object SettingsScreens {
         askBackgroundLocationPermission: () -> Unit,
         askBackgroundAccessPermission: () -> Unit,
         openLocationSettings: () -> Unit,
+        openDebugLogs: () -> Unit,
     ) = ComposeUIViewController {
         RootScreenIOS {
             AppStatusScreenCore(
@@ -330,7 +329,8 @@ object SettingsScreens {
                 askBackgroundLocationPermission = askBackgroundLocationPermission,
                 askBackgroundAccessPermission = askBackgroundAccessPermission,
                 askPushNotificationService = {},
-                openLocationSettings = openLocationSettings
+                openLocationSettings = openLocationSettings,
+                openDebugLogs = openDebugLogs
             )
         }
     }

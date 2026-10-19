@@ -40,9 +40,6 @@ struct SettingsScreen: View {
                     openGeneralInfo: {
                         path.append(.settings(.generalInfo))
                     },
-                    openAppStatus: {
-                        path.append(.settings(.appStatusDebug))
-                    },
                     openStatus: {
                         path.append(.settings(.appStatus))
                     },

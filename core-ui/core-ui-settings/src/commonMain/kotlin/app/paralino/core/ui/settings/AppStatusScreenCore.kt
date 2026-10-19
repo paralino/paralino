@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -87,6 +88,7 @@ fun AppStatusScreenCore(
     askBackgroundAccessPermission: () -> Unit,
     askPushNotificationService: () -> Unit,
     openLocationSettings: () -> Unit,
+    openDebugLogs: () -> Unit,
 ) {
 
     MessageDispatcherEffect(vm, appState)
@@ -162,6 +164,25 @@ fun AppStatusScreenCore(
                     text = stringResource(MR.strings.setting_status_location_none),
                     style = MaterialTheme.typography.body2
                 )
+            }
+        }
+
+        if (uiState.isDevMode) {
+            Spacer(modifier = Modifier.size(16.dp))
+            AppStatusTable {
+                AppStatusTableRow(
+                    label = "Debug logs",
+                    labelColor = AppColors.accentDark,
+                    showDivider = false,
+                    onClick = openDebugLogs
+                ) {
+                    Icon(
+                        modifier = Modifier.size(20.dp),
+                        painter = CoreAppIcons.ChevronRight.asPainterResource(),
+                        tint = AppColors.accentDark,
+                        contentDescription = null
+                    )
+                }
             }
         }
 

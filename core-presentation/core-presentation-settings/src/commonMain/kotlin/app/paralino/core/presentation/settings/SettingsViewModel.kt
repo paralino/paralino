@@ -170,7 +170,6 @@ class SettingsViewModel(
                             versionName = deviceApiProvider.appVersionText,
                             userPlan = userPlans.highestValidPlanConfig,
                             showUpgradeBanner = !userPlans.highestValidPlanConfig.isPremium && !premiumStatusManager.highestGroupPlan(remoteConfig).isPremium,
-                            canAccessDebugScreen = appConfig.isInAppDevMode,
                             appReviewUrl = when (deviceApiProvider.deviceType) {
                                 DeviceType.Android -> BackendResourceIDs.storeUrlGooglePlay
                                 DeviceType.iOS -> BackendResourceIDs.storeUrlDeeplinkAppleAppStoreReview

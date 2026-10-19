@@ -17,7 +17,8 @@ data class AppStatusScreenState(
     val pushService: AppStatusPushServiceState? = null,
     val locationMode: AppStatusLocationModeState? = null,
     val sharing: AppStatusSharingState = AppStatusSharingState(),
-    val currentLocation: AppStatusCurrentLocationState? = null
+    val currentLocation: AppStatusCurrentLocationState? = null,
+    val isDevMode: Boolean = false
 )
 
 data class AppStatusRequirementState(

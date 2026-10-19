@@ -67,7 +67,7 @@ class AppStatusViewModel(
     private val appPrefs: AppPrefs
 ) : CoreViewModel() {
 
-    private val _uiState = MutableStateFlow(AppStatusScreenState())
+    private val _uiState = MutableStateFlow(AppStatusScreenState(isDevMode = appConfig.isInAppDevMode))
     val uiState: StateFlow<AppStatusScreenState> = _uiState
 
     // values without subscription api are refreshed with every tick
