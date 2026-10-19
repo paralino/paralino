@@ -90,6 +90,7 @@ enum class ServerFunction constructor(
     TEST_API(method = "POST", path = "/api-test", functionId = "api"),
     TEST_PING(method = "POST", path = "/api-test", functionId = "ping"),
     TEST_LOCATION_UPLOAD(method = "POST", path = "/api-test", functionId = "location-upload"),
+    TEST_HISTORY_UPLOAD(method = "POST", path = "/api-test", functionId = "history-upload"),
 
     CONFIG(method = "GET", path = "/config", functionId = AppBuildConfig.instance.apiServerConfig.publicServerUrl, useSdk = false),
     BILLING_CONFIG(method = "GET", path = "/billing-config", functionId = AppBuildConfig.instance.apiServerConfig.publicServerUrl, useSdk = false),

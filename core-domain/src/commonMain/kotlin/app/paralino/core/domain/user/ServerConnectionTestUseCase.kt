@@ -31,6 +31,7 @@ class ServerConnectionTestUseCase(
                 ServerConnectionTestStep.TEST_API -> testFunction(ServerFunction.TEST_API)
                 ServerConnectionTestStep.TEST_PING -> testFunction(ServerFunction.TEST_PING)
                 ServerConnectionTestStep.TEST_LOCATION_UPLOAD -> testFunction(ServerFunction.TEST_LOCATION_UPLOAD)
+                ServerConnectionTestStep.TEST_HISTORY_UPLOAD -> testFunction(ServerFunction.TEST_HISTORY_UPLOAD)
             }
         } catch (e: Exception) {
             logg.w("Connection test failed for ${step.tag} - ${e.message}")
@@ -51,5 +52,6 @@ enum class ServerConnectionTestStep(val tag: String) {
     AUTH("auth"),
     TEST_API("test:api"),
     TEST_PING("test:ping"),
-    TEST_LOCATION_UPLOAD("test:location")
+    TEST_LOCATION_UPLOAD("test:location"),
+    TEST_HISTORY_UPLOAD("test:history")
 }
