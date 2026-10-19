@@ -3,7 +3,9 @@ package app.paralino.core.presentation.billing
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import app.paralino.core.MR
+import app.paralino.core.models.base.DeviceType
 import app.paralino.core.models.base.PlanType
+import app.paralino.core.provider.current
 import app.paralino.core.provider.localizedString
 import app.paralino.core.resources.CoreAppIcons
 import org.jetbrains.compose.resources.DrawableResource
@@ -422,6 +424,26 @@ data class FeatureTableState(
                             }
                         )
                     )
+
+                    if (DeviceType.current == DeviceType.Android) {
+                        add(
+                            FeatureTableItemState.Detail(
+                                content = MR.strings.paywall_feature_premium_map_styles.localizedString(),
+                                visibilityMode = FeatureTableItemVisibilityMode.VISIBLE_EXPANDED,
+                                values = plans.map {
+                                    FeatureTableItemValue.Emoji(
+                                        content = if (it.config.hasPremiumMapStyles) "✅" else "❌",
+                                        planType = it.type,
+                                        highlightMode = if (it.isSelected) {
+                                            FeatureTableItemHighlightMode.FULL
+                                        } else {
+                                            FeatureTableItemHighlightMode.NONE
+                                        }
+                                    )
+                                }
+                            )
+                        )
+                    }
                 }
 
                 if (!isGroupPlanOnly) {

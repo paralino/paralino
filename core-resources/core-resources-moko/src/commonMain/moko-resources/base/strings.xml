@@ -562,6 +562,7 @@
     <string name="paywall_feature_places_group">Places with **unlimited alerts**</string>
     <string name="paywall_feature_privacy_zones_group">Privacy zones</string>
     <string name="paywall_feature_places_personal">Places with **unlimited alerts**</string>
+    <string name="paywall_feature_premium_map_styles">Premium map styles</string>
     <string name="paywall_feature_battery">Low battery alerts</string>
     <string name="paywall_feature_locate">Locate devices on demand</string>
     <string name="paywall_feature_demo_realtime_location">Real-time location</string>
