@@ -3,6 +3,7 @@ package app.paralino.core.domain.crypto.group
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.db.MainDatabaseHelper
 import app.paralino.core.db.main.history.UnsyncedGroupHistoryKeyEntity
+import app.paralino.core.db.main.keys.ArchivedGroupDeviceKeyEntity
 import app.paralino.core.db.main.keys.GroupDeviceIntegrityEntity
 import app.paralino.core.db.main.keys.GroupDeviceKeysEntity
 import app.paralino.core.db.main.keys.GroupKeysEntity
@@ -22,6 +23,7 @@ import app.paralino.core.models.raw.GroupMemberCryptoKeyDataRaw
 import app.paralino.core.models.raw.PersonalGroupKeyRaw
 import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Instant
 
@@ -281,6 +283,35 @@ class CryptoKeyLocalDataSource constructor(
     private fun staleRotationStartedBeforeMillis(): Long {
         // if rotation started more than 5 minutes ago, but not done yet, treat it as done
         return (nowUTC() - 5.minutes).toEpochMilliseconds()
+    }
+
+    private fun archivedDeviceKeysExpiredBeforeMillis(): Long {
+        // previous device keys are kept for 7 days after rotation
+        return (nowUTC() - 7.days).toEpochMilliseconds()
+    }
+
+    suspend fun getGroupDeviceKeysFromDatabase(): List<GroupDeviceKeysEntity> {
+        return getAllGroupDeviceKeys()
+    }
+
+    suspend fun archiveGroupDeviceKeys(keys: List<ArchivedGroupDeviceKeyEntity>) {
+        database.groupRelatedKeysDao.archiveGroupDeviceKeys(
+            keys = keys,
+            removeExpiredBeforeMillis = archivedDeviceKeysExpiredBeforeMillis()
+        )
+    }
+
+    suspend fun getArchivedGroupDeviceKey(
+        groupId: String,
+        ownerUserId: String,
+        locationId: String
+    ): ArchivedGroupDeviceKeyEntity? {
+        return database.groupRelatedKeysDao.getArchivedGroupDeviceKey(
+            groupId = groupId,
+            ownerUserId = ownerUserId,
+            locationId = locationId,
+            notExpiredAfterMillis = archivedDeviceKeysExpiredBeforeMillis()
+        )
     }
 
     suspend fun getGroupDeviceIntegrity(groupId: String): GroupDeviceIntegrityEntity? {

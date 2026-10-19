@@ -112,11 +112,11 @@ class LocationUploadPayloadFactory(
             key = deviceKey.key
             deviceKeyVersion = null
         } else {
-            val memberKey = getMemberSenderKey.getCurrentUserDeviceSenderKey(
+            val memberKey = getMemberSenderKey.getCurrentUserDeviceSenderKeyForReadWrite(
                 groupId = data.groupId.id,
                 locationId = data.locationId
             )
-            if (memberKey !is GroupMemberSenderKey.Valid) {
+            if (memberKey !is GroupMemberSenderKey.ValidForReadWrite) {
                 throw MissingMemberKeyException(
                     groupId = data.groupId.id,
                     memberId = appPrefs.userId

@@ -9,7 +9,8 @@ import kotlinx.coroutines.async
 class CryptoKEKRefreshUseCase(
     private val remote: CryptoKeyRemoteDataSource,
     private val local: CryptoKeyLocalDataSource,
-    private val cryptoKEKRepo: CryptoKEKLocalRepository
+    private val cryptoKEKRepo: CryptoKEKLocalRepository,
+    private val archiveMemberSenderKey: ArchiveMemberSenderKeyUseCase
 ): BaseRepository() {
 
     suspend fun refreshAllKeys(groups: List<GroupWithMembersAndPlacesRaw>, force: Boolean) {
@@ -34,6 +35,7 @@ class CryptoKEKRefreshUseCase(
             val deviceKeys = deviceKeysAsync.await()
             val preKeys = preKeysAsync.await()
 
+            archiveMemberSenderKey.archiveReplacedDeviceKeys(newDeviceKeys = deviceKeys, groupId = null)
             local.recreateAllGroupKeys(groupKeys, memberKeys, deviceKeys, preKeys, refreshStartedAt)
 
             logg.tag("tag_crypto_key")
@@ -74,6 +76,7 @@ class CryptoKEKRefreshUseCase(
             logg.tag("tag_crypto_key_group_member")
                 .w("updated member device (${deviceKeys.size}) keys")
 
+            archiveMemberSenderKey.archiveReplacedDeviceKeys(newDeviceKeys = deviceKeys, groupId = groupId)
             local.recreateDeviceKeysForGroup(groupId, deviceKeys, refreshStartedAt)
         }
     }
@@ -107,6 +110,7 @@ class CryptoKEKRefreshUseCase(
             logg.tag("tag_crypto_key_group")
                 .d("Got new group (${groupKeys.size}), member (${memberKeys.size}), device (${deviceKeys.size}), pre (${preKeys.size}) for group $groupId")
 
+            archiveMemberSenderKey.archiveReplacedDeviceKeys(newDeviceKeys = deviceKeys, groupId = groupId)
             local.recreateGroupKeyForGroup(groupId, groupKeys, memberKeys, deviceKeys, preKeys, refreshStartedAt)
 
             logg.tag("tag_crypto_key_group").d("updated group and member keys for group")

@@ -86,12 +86,25 @@ interface GroupRelatedKeysDao {
         clearAllGroupDeviceIntegrityKeys(groupId = groupId)
         clearAllLocalGroupDeviceSenderKeys(groupId = groupId)
         clearAllPendingKeyRefreshes(groupId = groupId)
+        clearAllArchivedGroupDeviceKeys(groupId = groupId)
     }
 
     @Transaction
     suspend fun clearAllKeysForUser(groupId: String, userId: String) {
         clearAllGroupMembersKeys(groupId = groupId, userId = userId)
         clearAllGroupDeviceKeys(groupId = groupId, userId = userId)
+        clearAllArchivedGroupDeviceKeys(groupId = groupId, ownerUserId = userId)
+    }
+
+    @Transaction
+    suspend fun archiveGroupDeviceKeys(
+        keys: List<ArchivedGroupDeviceKeyEntity>,
+        removeExpiredBeforeMillis: Long
+    ) {
+        if (keys.isNotEmpty()) {
+            createArchivedGroupDeviceKeys(keys)
+        }
+        clearExpiredArchivedGroupDeviceKeys(expiredBeforeMillis = removeExpiredBeforeMillis)
     }
 
 
@@ -246,4 +259,32 @@ interface GroupRelatedKeysDao {
 
     @Query("DELETE FROM pendingKeyRefreshEntity WHERE groupId = :groupId")
     suspend fun clearAllPendingKeyRefreshes(groupId: String)
+
+
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun createArchivedGroupDeviceKeys(keys: List<ArchivedGroupDeviceKeyEntity>)
+
+    @Query("""
+        SELECT * FROM archivedGroupDeviceKeyEntity
+        WHERE groupId = :groupId
+        AND ownerUserId = :ownerUserId
+        AND locationId = :locationId
+        AND archivedAtMillis >= :notExpiredAfterMillis
+    """)
+    suspend fun getArchivedGroupDeviceKey(
+        groupId: String,
+        ownerUserId: String,
+        locationId: String,
+        notExpiredAfterMillis: Long
+    ): ArchivedGroupDeviceKeyEntity?
+
+    @Query("DELETE FROM archivedGroupDeviceKeyEntity WHERE archivedAtMillis < :expiredBeforeMillis")
+    suspend fun clearExpiredArchivedGroupDeviceKeys(expiredBeforeMillis: Long)
+
+    @Query("DELETE FROM archivedGroupDeviceKeyEntity WHERE groupId = :groupId")
+    suspend fun clearAllArchivedGroupDeviceKeys(groupId: String)
+
+    @Query("DELETE FROM archivedGroupDeviceKeyEntity WHERE groupId = :groupId AND ownerUserId = :ownerUserId")
+    suspend fun clearAllArchivedGroupDeviceKeys(groupId: String, ownerUserId: String)
 }

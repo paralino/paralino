@@ -29,6 +29,7 @@ import app.paralino.core.db.main.keys.GroupRelatedKeysDao
 import app.paralino.core.db.main.keys.LocalGroupDeviceKeysEntity
 import app.paralino.core.db.main.keys.GroupLocalHistoryKeyEntity
 import app.paralino.core.db.main.keys.PendingKeyRefreshEntity
+import app.paralino.core.db.main.keys.ArchivedGroupDeviceKeyEntity
 import app.paralino.core.db.main.keys.PersonalGroupKeyEntity
 import app.paralino.core.db.main.keys.PersonalHistoryKeyEntity
 import app.paralino.core.db.main.keys.UserKeysDao
@@ -106,8 +107,9 @@ import kotlinx.coroutines.IO
         PrivacyZoneEntity::class,
         PrivacyZoneSharedLocationEntity::class,
         PendingKeyRefreshEntity::class,
+        ArchivedGroupDeviceKeyEntity::class,
     ],
-    version = 27,
+    version = 28,
     exportSchema = true
 )
 @ConstructedBy(AppMainDatabaseConstructor::class)

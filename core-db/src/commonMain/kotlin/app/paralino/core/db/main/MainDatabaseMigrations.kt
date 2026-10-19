@@ -295,6 +295,26 @@ object MainDatabaseMigrations {
         }
     }
 
+    private val MIGRATION_27_28 = object : Migration(27, 28) {
+        override fun migrate(connection: SQLiteConnection) {
+            connection.execSQL(
+                """
+                CREATE TABLE IF NOT EXISTS `archivedGroupDeviceKeyEntity` (
+                    `groupId` TEXT NOT NULL,
+                    `ownerUserId` TEXT NOT NULL,
+                    `locationId` TEXT NOT NULL,
+                    `memberKeyVersion` INTEGER NOT NULL,
+                    `deviceKeyVersion` INTEGER NOT NULL,
+                    `userKeyVersion` INTEGER NOT NULL,
+                    `encryptedSenderKey` TEXT NOT NULL,
+                    `archivedAtMillis` INTEGER NOT NULL,
+                    PRIMARY KEY(`groupId`, `ownerUserId`, `locationId`)
+                )
+                """.trimIndent()
+            )
+        }
+    }
+
     val migrations: List<Migration> = listOf(
         MIGRATION_1_2,
         MIGRATION_2_3,
@@ -322,5 +342,6 @@ object MainDatabaseMigrations {
         MIGRATION_24_25,
         MIGRATION_25_26,
         MIGRATION_26_27,
+        MIGRATION_27_28,
     )
 }

@@ -7,7 +7,9 @@ import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.LimitedExecutionParentManager
 import app.paralino.core.domain.crypto.RawCryptoPresentation
 import app.paralino.core.domain.crypto.group.CryptoKEKLocalRepository
+import app.paralino.core.domain.crypto.group.ArchiveMemberSenderKeyUseCase
 import app.paralino.core.domain.crypto.group.CryptoKEKRefreshUseCase
+import app.paralino.core.domain.crypto.group.GetMemberSenderKeyForReadUseCase
 import app.paralino.core.domain.crypto.group.CryptoKeyLocalDataSource
 import app.paralino.core.domain.crypto.group.CryptoKeyRemoteDataSource
 import app.paralino.core.domain.crypto.group.GetGroupHistoryKeyUseCase
@@ -408,11 +410,13 @@ val coreModule = module {
     single { GetPersonalGroupKeyUseCase(get(), get(), get()) }
     single { GetMemberPublicKeyUseCase(get(), get(), get(), get(), get()) }
     single { GetMemberSenderKeyUseCase(get(), get(), get(), get(), get(), get(), get()) }
+    single { GetMemberSenderKeyForReadUseCase(get(), get(), get(), get()) }
+    single { ArchiveMemberSenderKeyUseCase(get(), get(), get(), get(), get()) }
     single { GetGroupHistoryKeyUseCase(get(), get(), get()) }
     single { GetPersonalHistoryKeyUseCase(get(), get()) }
     single { CryptoKEKLocalRepository(get(), get(), get(), get(), get(), get(), get(), get()) }
     single { CryptoUserKeysLocalSource(get(), get(), get()) }
-    single { CryptoKEKRefreshUseCase(get(), get(), get()) }
+    single { CryptoKEKRefreshUseCase(get(), get(), get(), get()) }
 
     factory { NotificationPreCheckProcessor(get(), get(), get()) }
     factory { PushNotificationDeleteUseCase(get(), get()) }

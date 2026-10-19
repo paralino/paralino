@@ -12,7 +12,6 @@ import app.paralino.core.db.main.keys.GroupHistoryKeyEntity
 import app.paralino.core.db.main.keys.PendingKeyRefreshType
 import app.paralino.core.db.main.keys.PersonalHistoryKeyEntity
 import app.paralino.core.logg
-import app.paralino.core.models.raw.GroupDeviceCryptoKeyRaw
 import app.paralino.core.repo.base.BaseRepository
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.withContext
@@ -21,7 +20,7 @@ class CryptoKEKLocalRepository(
     private val local: CryptoKeyLocalDataSource,
     private val getGroupKey: GetGroupKeyUseCase,
     private val getMemberPublicKey: GetMemberPublicKeyUseCase,
-    private val getMemberSenderKey: GetMemberSenderKeyUseCase,
+    private val getMemberSenderKeyForRead: GetMemberSenderKeyForReadUseCase,
     private val getPersonalGroupKey: GetPersonalGroupKeyUseCase,
     private val getGroupHistoryKey: GetGroupHistoryKeyUseCase,
     private val getPersonalHistoryKey: GetPersonalHistoryKeyUseCase,
@@ -90,15 +89,17 @@ class CryptoKEKLocalRepository(
         }
     }
 
-    suspend fun getMemberSenderKey(
+    suspend fun getMemberSenderKeyForRead(
         groupId: String,
         memberUserId: String,
-        locationId: String
+        locationId: String,
+        deviceKeyVersion: Long
     ): GroupMemberSenderKey {
-        return getMemberSenderKey.getMemberSenderKey(
+        return getMemberSenderKeyForRead.getMemberSenderKeyForRead(
             groupId = groupId,
             memberUserId = memberUserId,
-            locationId = locationId
+            locationId = locationId,
+            deviceKeyVersion = deviceKeyVersion
         )
     }
 
