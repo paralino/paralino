@@ -103,6 +103,28 @@ class AppStatusViewModel(
             .launchIn(coroutineScope)
 
         combine(
+            notificationServiceManager.connectionState,
+            refreshTicker
+        ) { connectionState, _ ->
+            safeUpdate("push service") {
+                _uiState.update {
+                    it.copy(
+                        pushService = if (notificationServiceManager.isServiceAvailableAndEnabled()) {
+                            AppStatusPushServiceState(
+                                connectionState = connectionState,
+                                connectionType = notificationServiceManager.connectionType
+                            )
+                        } else {
+                            null
+                        }
+                    )
+                }
+            }
+        }
+            .flowOn(Dispatchers.IO)
+            .launchIn(coroutineScope)
+
+        combine(
             locationPerformanceManager.locationPerformanceType,
             refreshTicker
         ) { performance, _ ->

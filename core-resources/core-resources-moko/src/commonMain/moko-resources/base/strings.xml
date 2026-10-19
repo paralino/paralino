@@ -279,6 +279,12 @@
     <string name="setting_status_section_locationMode">Location mode</string>
     <string name="setting_status_section_sharing">Location sharing</string>
     <string name="setting_status_section_currentLocation">Current location</string>
+    <string name="setting_status_pushService_mode">Mode</string>
+    <string name="setting_status_pushService_connected">Connected</string>
+    <string name="setting_status_pushService_connecting">Connecting</string>
+    <string name="setting_status_pushService_scheduled">Reconnecting</string>
+    <string name="setting_status_pushService_disconnected">Disconnected</string>
+    <string name="setting_status_pushService_notRunning">Not running</string>
     <string name="setting_status_connection_status">Status</string>
     <string name="setting_status_connection_network">Network</string>
     <string name="setting_status_connection_signal">Signal</string>

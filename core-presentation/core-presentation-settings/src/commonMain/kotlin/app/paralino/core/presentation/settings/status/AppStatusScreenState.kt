@@ -1,6 +1,8 @@
 package app.paralino.core.presentation.settings.status
 
 import app.paralino.core.models.base.ImageModel
+import app.paralino.core.models.base.ParalinoSocketConnectionType
+import app.paralino.core.models.base.PushServiceConnectionState
 import app.paralino.core.models.location.LocationPerformanceType
 import app.paralino.core.models.location.LocationProviderType
 import app.paralino.core.provider.ConnectionStatus
@@ -12,6 +14,7 @@ data class AppStatusScreenState(
     val requirements: List<AppStatusRequirementState> = emptyList(),
     val connection: AppStatusConnectionState? = null,
     val apiTest: AppStatusApiTestState = AppStatusApiTestState.Idle,
+    val pushService: AppStatusPushServiceState? = null,
     val locationMode: AppStatusLocationModeState? = null,
     val sharing: AppStatusSharingState = AppStatusSharingState(),
     val currentLocation: AppStatusCurrentLocationState? = null
@@ -26,6 +29,11 @@ data class AppStatusConnectionState(
     val status: ConnectionStatus,
     val networkType: NetworkType?,
     val signalStrength: NetworkSignalStrength?
+)
+
+data class AppStatusPushServiceState(
+    val connectionState: PushServiceConnectionState?,
+    val connectionType: ParalinoSocketConnectionType
 )
 
 sealed class AppStatusApiTestState {

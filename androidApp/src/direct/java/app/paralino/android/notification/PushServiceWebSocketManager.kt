@@ -8,6 +8,7 @@ import app.paralino.core.db.AppPrefs
 import app.paralino.core.logg
 import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.base.ParalinoSocketConnectionType
+import app.paralino.core.models.base.PushServiceConnectionState
 import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.repo.base.BaseRepository

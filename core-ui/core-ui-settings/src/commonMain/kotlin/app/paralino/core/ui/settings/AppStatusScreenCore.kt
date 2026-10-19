@@ -40,6 +40,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import app.paralino.core.MR
+import app.paralino.core.models.base.ParalinoSocketConnectionType
+import app.paralino.core.models.base.PushServiceConnectionState
 import app.paralino.core.models.location.LocationProviderType
 import app.paralino.core.presentation.common.endActionTextRes
 import app.paralino.core.presentation.common.nameRes
@@ -49,6 +51,7 @@ import app.paralino.core.presentation.settings.status.AppStatusApiTestState
 import app.paralino.core.presentation.settings.status.AppStatusConnectionState
 import app.paralino.core.presentation.settings.status.AppStatusCurrentLocationState
 import app.paralino.core.presentation.settings.status.AppStatusLocationModeState
+import app.paralino.core.presentation.settings.status.AppStatusPushServiceState
 import app.paralino.core.presentation.settings.status.AppStatusRequirementState
 import app.paralino.core.presentation.settings.status.AppStatusScreenUiEvent
 import app.paralino.core.presentation.settings.status.AppStatusSharingState
@@ -126,6 +129,11 @@ fun AppStatusScreenCore(
                 onTestApi = { vm.onEvent(AppStatusScreenUiEvent.TestApiConnection) },
                 onClearApiTest = { vm.onEvent(AppStatusScreenUiEvent.ClearApiTestResult) }
             )
+        }
+
+        uiState.pushService?.let { pushService ->
+            SettingsSectionHeader(name = stringResource(MR.strings.setting_notificationSocket_title))
+            AppStatusPushServiceTable(pushService = pushService)
         }
 
         uiState.locationMode?.let { locationMode ->
@@ -235,6 +243,46 @@ private fun AppStatusConnectionTable(
                 onClearApiTest = onClearApiTest
             )
         }
+    }
+}
+
+@Composable
+private fun AppStatusPushServiceTable(pushService: AppStatusPushServiceState) {
+    val connectionState = pushService.connectionState
+    val connectionType = pushService.connectionType
+    AppStatusTable {
+        AppStatusTableRow(
+            label = stringResource(MR.strings.setting_status_connection_status),
+            value = stringResource(
+                when (connectionState) {
+                    PushServiceConnectionState.Connected -> MR.strings.setting_status_pushService_connected
+                    PushServiceConnectionState.Connecting -> MR.strings.setting_status_pushService_connecting
+                    PushServiceConnectionState.Scheduled -> MR.strings.setting_status_pushService_scheduled
+                    PushServiceConnectionState.Disconnected -> MR.strings.setting_status_pushService_disconnected
+                    null -> MR.strings.setting_status_pushService_notRunning
+                }
+            ),
+            valueColor = when (connectionState) {
+                PushServiceConnectionState.Connected -> AppColors.accentDark
+                PushServiceConnectionState.Connecting,
+                PushServiceConnectionState.Scheduled -> Color.Unspecified
+                PushServiceConnectionState.Disconnected,
+                null -> AppColors.redMain
+            },
+            showDivider = false
+        )
+        AppStatusTableRow(
+            label = stringResource(MR.strings.setting_status_pushService_mode),
+            value = stringResource(
+                when (connectionType) {
+                    ParalinoSocketConnectionType.REALTIME -> MR.strings.setting_notificationSocket_connectionType_realtime_title
+                    ParalinoSocketConnectionType.PERIODIC_LEVEL_1 -> MR.strings.setting_notificationSocket_connectionType_periodic1_title
+                    ParalinoSocketConnectionType.PERIODIC_LEVEL_2 -> MR.strings.setting_notificationSocket_connectionType_periodic2_title
+                    ParalinoSocketConnectionType.PERIODIC_LEVEL_3 -> MR.strings.setting_notificationSocket_connectionType_periodic3_title
+                }
+            ),
+            valueColor = if (connectionType != ParalinoSocketConnectionType.REALTIME) AppColors.redMain else Color.Unspecified
+        )
     }
 }
 

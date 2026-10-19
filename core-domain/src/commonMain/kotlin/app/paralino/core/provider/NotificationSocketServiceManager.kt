@@ -4,10 +4,13 @@ import app.paralino.core.db.AppPrefs
 import app.paralino.core.models.AppFlavor
 import app.paralino.core.models.base.ParalinoSocketConnectionType
 import app.paralino.core.models.base.PushProvider
+import app.paralino.core.models.base.PushServiceConnectionState
 import app.paralino.core.repo.base.AppConfigRepository
 import app.paralino.core.utils.ConditionErrorType
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.update
 
@@ -18,6 +21,15 @@ class NotificationSocketServiceManager(
 ) {
     private val _notificationPushProviderFlow = MutableStateFlow(appPrefs.notificationPushProvider)
 
+    private val _connectionState = MutableStateFlow<PushServiceConnectionState?>(null)
+    val connectionState: StateFlow<PushServiceConnectionState?> = _connectionState.asStateFlow()
+
+    val connectionType: ParalinoSocketConnectionType
+        get() = appPrefs.paralinoSocketConnectionType
+
+    fun setConnectionState(state: PushServiceConnectionState?) {
+        _connectionState.update { state }
+    }
 
     fun setNotificationPushProvider(provider: PushProvider?) {
         appPrefs.notificationPushProvider = provider

@@ -5,6 +5,7 @@ import android.content.Context
 import android.os.Build
 import app.paralino.android.AppClass
 import app.paralino.core.logg
+import app.paralino.core.models.base.PushServiceConnectionState
 import app.paralino.core.utils.BaseRemoteModule
 import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.coroutines.CoroutineScope
