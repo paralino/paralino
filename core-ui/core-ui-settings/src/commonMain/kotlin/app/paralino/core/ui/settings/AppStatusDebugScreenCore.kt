@@ -46,7 +46,6 @@ import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.components.SettingsSectionHeader
 import app.paralino.core.ui.components.SmallActionButton
 import app.paralino.core.ui.theme.AppColors
-import app.paralino.core.utils.extensions.annotatedBoldCompose
 
 @OptIn(
     ExperimentalFoundationApi::class, ExperimentalMaterialApi::class,
@@ -79,26 +78,6 @@ fun AppStatusDebugScreenCore(
             bottom = paddingValues.calculateBottomPadding() + 20.dp
         ),
     ) {
-        this.stickyHeader {
-            Row(
-                modifier = Modifier
-                    .fillParentMaxWidth()
-                    .background(MaterialTheme.colors.background),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                SettingsSectionHeader(name = "Info")
-            }
-        }
-        this.items(items = uiState.status, key = { it.key }) {
-            Text(
-                text = it.text.annotatedBoldCompose(),
-                color = if (it.isError) MaterialTheme.colors.error else MaterialTheme.colors.onBackground,
-                style = MaterialTheme.typography.caption.copy(lineHeight = 12.sp)
-            )
-        }
-        this.item (key = "section_spacer") {
-            Spacer(modifier = Modifier.size(8.dp))
-        }
         this.stickyHeader {
             Column(
                 modifier = Modifier

@@ -374,7 +374,7 @@ object KoinIOS {
             }
             factory { BlocklistViewModel(get()) }
             factory { UserDevicesViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(),) }
-            factory { AppStatusDebugViewModel(get(), get(), get(), get(), get()) }
+            factory { AppStatusDebugViewModel(get(), get()) }
             factory { AppStatusViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
             factory { SubscriptionViewModel(get(), get(), get(), get(), get(), get()) }
             factory { (type: BillingScreenSourceType) -> PaywallViewModel(type, get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }

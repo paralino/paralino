@@ -7,14 +7,7 @@ import app.paralino.core.provider.LogPriority
 data class AppStatusDebugScreenState(
     val query: String = "",
     val filters: AppStatusFilterState = AppStatusFilterState(),
-    val status: List<AppStatusItemStatusState> = emptyList(),
     val logs: List<AppStatusItemLogState> = emptyList()
-)
-
-data class AppStatusItemStatusState(
-    val key: String,
-    val text: String,
-    val isError: Boolean
 )
 
 data class AppStatusItemLogState(

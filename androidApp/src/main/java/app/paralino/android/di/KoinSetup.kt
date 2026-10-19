@@ -293,7 +293,7 @@ object KoinSetup {
         viewModel { (rawDataType: RawPresentationDataType) -> RawDataPresentationViewModel(rawDataType, get(), get()) }
         viewModel { BlocklistViewModel(get()) }
         viewModel { UserDevicesViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(),) }
-        viewModel { AppStatusDebugViewModel(get(), get(), get(), get(), get()) }
+        viewModel { AppStatusDebugViewModel(get(), get()) }
         viewModel { AppStatusViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
         viewModel { SubscriptionViewModel(get(), get(), get(), get(), get(), get()) }
         viewModel { (type: BillingScreenSourceType) -> PaywallViewModel(type, get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
