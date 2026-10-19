@@ -40,7 +40,7 @@ enum class ServerFunction constructor(
     LOCATION_REQUEST_DEVICE(method = "POST", path = "/refresh/device", functionId = "ping"),
     LOCATION_REQUEST_DEVICE_ALT(method = "POST", path = "/refresh/device", functionId = "api"),
 
-    HISTORY_CREATE(method = "POST", path = "/history"),
+    HISTORY_CREATE(method = "POST", path = "/history", functionId = "history-upload"),
     HISTORY_READ_GROUP(method = "POST", path = "/history/group/read"),
     HISTORY_READ_PERSONAL(method = "POST", path = "/history/personal/read"),
     HISTORY_UPDATE_GROUP(method = "PATCH", path = "/history/group"),
