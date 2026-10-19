@@ -67,9 +67,6 @@ class AppStatusViewModel(
     private val appPrefs: AppPrefs
 ) : CoreViewModel() {
 
-    private val manualBoostDuration = 30.seconds
-    private val manualBoostLongDuration = 1.hours
-
     private val _uiState = MutableStateFlow(AppStatusScreenState())
     val uiState: StateFlow<AppStatusScreenState> = _uiState
 
@@ -147,7 +144,8 @@ class AppStatusViewModel(
                                 .takeIf { isThrottled }
                                 ?.displayNameWithIndex,
                             isThrottled = isThrottled,
-                            canBoostLong = appConfig.isInAppDevMode,
+                            isDevMode = appConfig.isInAppDevMode,
+                            isManualBoost = performance.current == LocationPerformanceType.MANUAL_BOOST,
                             allowances = allowances
                         )
                     )
@@ -212,12 +210,20 @@ class AppStatusViewModel(
             }
 
             is AppStatusScreenUiEvent.BoostLocation -> boostLocation(isLong = event.isLong)
+
+            AppStatusScreenUiEvent.StopBoost -> stopBoost()
         }
+    }
+
+    private fun stopBoost() {
+        logg.v("Status screen stop manual location boost")
+        appPrefs.trackingBoostEndTime = null
+        locationPerformanceManager.disableManualBoost()
     }
 
     private fun boostLocation(isLong: Boolean) {
         if (isLong && !appConfig.isInAppDevMode) return
-        val duration = if (isLong) manualBoostLongDuration else manualBoostDuration
+        val duration = if (isLong) 1.hours else 1.minutes
         logg.v("Status screen manual location boost for $duration")
         appPrefs.trackingBoostEndTime = nowUTC() + duration
         locationPerformanceManager.locationBoostRequested(

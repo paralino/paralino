@@ -144,6 +144,7 @@ fun AppStatusScreenCore(
             AppStatusLocationMode(
                 locationMode = locationMode,
                 onBoost = { isLong -> vm.onEvent(AppStatusScreenUiEvent.BoostLocation(isLong = isLong)) },
+                onStopBoost = { vm.onEvent(AppStatusScreenUiEvent.StopBoost) },
                 onIncreaseTime = openLocationSettings
             )
         }
@@ -345,6 +346,7 @@ private fun AppStatusApiTestRow(
 private fun AppStatusLocationMode(
     locationMode: AppStatusLocationModeState,
     onBoost: (isLong: Boolean) -> Unit,
+    onStopBoost: () -> Unit,
     onIncreaseTime: () -> Unit
 ) {
     AppStatusTable {
@@ -367,17 +369,28 @@ private fun AppStatusLocationMode(
                     value = requested
                 )
             }
+        }
+        if (locationMode.isThrottled || locationMode.isManualBoost || locationMode.isDevMode) {
             AppStatusTableRow(label = stringResource(MR.strings.setting_status_locationMode_boost)) {
-                AppStatusTableButton(
-                    text = stringResource(MR.strings.setting_status_connection_apiTest),
-                    onClick = { onBoost(false) },
-                    onLongClick = if (locationMode.canBoostLong) {
-                        { onBoost(true) }
-                    } else {
-                        null
-                    }
-                )
+                if (locationMode.isManualBoost) {
+                    AppStatusTableButton(
+                        text = stringResource(MR.strings.setting_status_locationMode_stopTest),
+                        onClick = onStopBoost
+                    )
+                } else {
+                    AppStatusTableButton(
+                        text = stringResource(MR.strings.setting_status_connection_apiTest),
+                        onClick = { onBoost(false) },
+                        onLongClick = if (locationMode.isDevMode) {
+                            { onBoost(true) }
+                        } else {
+                            null
+                        }
+                    )
+                }
             }
+        }
+        if (locationMode.isThrottled) {
             AppStatusTableRow(
                 label = stringResource(MR.strings.setting_status_locationMode_increaseTime),
                 labelColor = AppColors.accentDark,
@@ -686,9 +699,9 @@ private fun AppStatusTableButton(
 ) {
     Text(
         modifier = Modifier
+            .combinedClickable(onClick = onClick, onLongClick = onLongClick)
             .clip(RoundedCornerShape(8.dp))
             .background(AppColors.accent.copy(alpha = 0.15f))
-            .combinedClickable(onClick = onClick, onLongClick = onLongClick)
             .padding(horizontal = 12.dp, vertical = 4.dp),
         text = text,
         style = MaterialTheme.typography.body2,

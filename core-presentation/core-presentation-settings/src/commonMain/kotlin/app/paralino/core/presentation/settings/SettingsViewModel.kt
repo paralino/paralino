@@ -8,7 +8,6 @@ import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.user.AppAccountStateMonitor
 import app.paralino.core.domain.user.LogoutUseCase
 import app.paralino.core.domain.user.PremiumStatusManager
-import app.paralino.core.logg
 import app.paralino.core.models.AppFlavor
 import app.paralino.core.models.Payload
 import app.paralino.core.models.Resource
@@ -18,7 +17,6 @@ import app.paralino.core.models.base.DeviceType
 import app.paralino.core.models.base.PushProvider
 import app.paralino.core.models.data
 import app.paralino.core.models.exception
-import app.paralino.core.models.location.LocationPerformanceType
 import app.paralino.core.models.location.UserPersonalSpaceModel
 import app.paralino.core.models.mapSuccess
 import app.paralino.core.models.user.PushProviderEndpointConfig
@@ -35,7 +33,6 @@ import app.paralino.core.provider.NotificationSocketServiceManager
 import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.base.AppConfigRepository
 import app.paralino.core.repo.base.RemoteConfigRepository
-import app.paralino.core.repo.location.LocationPerformanceManager
 import app.paralino.core.repo.personal_code.PersonalCodesRepository
 import app.paralino.core.repo.user.UserConfigRepository
 import app.paralino.core.repo.user.UserPersonalSpaceLocalDataSource
@@ -47,7 +44,6 @@ import app.paralino.core.utils.extensions.errorString
 import app.paralino.core.utils.extensions.isoToLocalDateTime
 import app.paralino.core.utils.extensions.isoWithOffsetToInstant
 import app.paralino.core.utils.extensions.mapToPayload
-import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.Job
@@ -61,12 +57,9 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
-import kotlin.time.Duration.Companion.hours
-import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
 class SettingsViewModel(
@@ -75,7 +68,6 @@ class SettingsViewModel(
     private val remoteConfigRepository: RemoteConfigRepository,
     private val personalCodeRepo: PersonalCodesRepository,
     val deviceApiProvider: IDeviceApiProvider,
-    private val locationPerformanceManager: LocationPerformanceManager,
     private val premiumStatusManager: PremiumStatusManager,
     private val valueFormatter: IValueFormatter,
     private val appPrefs: AppPrefs,
@@ -143,7 +135,6 @@ class SettingsViewModel(
             )
         }.onEach { value ->
             _accountState.update { value }
-            runLocationBoostJob()
         }
             .flowOn(Dispatchers.IO)
             .launchIn(coroutineScope)
@@ -177,10 +168,8 @@ class SettingsViewModel(
                             logoutState = null,
                             deleteAccountState = null,
                             versionName = deviceApiProvider.appVersionText,
-                            boostTime = null,
                             userPlan = userPlans.highestValidPlanConfig,
                             showUpgradeBanner = !userPlans.highestValidPlanConfig.isPremium && !premiumStatusManager.highestGroupPlan(remoteConfig).isPremium,
-                            canBoostLocation = appConfig.isInAppDevMode,
                             canAccessDebugScreen = appConfig.isInAppDevMode,
                             appReviewUrl = when (deviceApiProvider.deviceType) {
                                 DeviceType.Android -> BackendResourceIDs.storeUrlGooglePlay
@@ -346,32 +335,6 @@ class SettingsViewModel(
         deviceApiProvider.copyToClipboard(data)
     }
 
-    private fun toggleBoost() {
-        _accountState.value.data?.let {
-            val boostValue = it.boostTime == null
-            logg.v("Toggle manual location boost: $boostValue")
-
-            val trackingBoostEndTime = if (boostValue) {
-                nowUTC() + 2.hours
-            } else {
-                null
-            }
-
-            appPrefs.trackingBoostEndTime = trackingBoostEndTime
-
-            if (boostValue) {
-                locationPerformanceManager.locationBoostRequested(
-                    performanceType = LocationPerformanceType.MANUAL_BOOST,
-                    groupId = null,
-                    from = "Settings manual boost"
-                )
-            } else {
-                locationPerformanceManager.disableManualBoost()
-            }
-            runLocationBoostJob()
-        }
-    }
-
     private fun onShowDialog(dialog: MainAlertDialog?) {
         _accountState.update { it.mapSuccess { it.copy(alertDialog = dialog) } }
     }
@@ -380,7 +343,6 @@ class SettingsViewModel(
         when (event) {
             AccountScreenUiEvent.DeleteAccount -> onShowDialog(MainAlertDialog.DeleteAccount)
             AccountScreenUiEvent.Logout -> onShowDialog(MainAlertDialog.Logout)
-            AccountScreenUiEvent.ToggleLocationBoost -> toggleBoost()
             is AccountScreenUiEvent.Copy -> copyToClipboard(event.content)
             AccountScreenUiEvent.SendEmailVerification -> {
                 _accountState.update {
@@ -459,34 +421,6 @@ class SettingsViewModel(
 
             AccountScreenUiEvent.TriggerAppUpdate -> {
                 appUpdateManager.startUpdateProcess(data = remoteConfigRepository.getCachedConfigOnce())
-            }
-        }
-    }
-
-    private fun runLocationBoostJob() {
-        locationBoostTimeJob?.cancel()
-        locationBoostTimeJob = coroutineScope.launch {
-            while (isActive) {
-                updateLocationBoostTime()
-                delay(1.minutes)
-                if (appPrefs.trackingBoostEndTime == null) {
-                    locationBoostTimeJob?.cancel()
-                }
-            }
-        }
-    }
-
-    private fun updateLocationBoostTime() {
-        _accountState.update {
-            it.mapSuccess {
-                it.copy(
-                    boostTime = appPrefs.trackingBoostEndTime?.takeIf { it > nowUTC() }?.let {
-                        valueFormatter.formatTimeOnly(
-                            timeUTC = it.toLocalDateTime(TimeZone.UTC),
-                            showSeconds = false
-                        )
-                    }
-                )
             }
         }
     }

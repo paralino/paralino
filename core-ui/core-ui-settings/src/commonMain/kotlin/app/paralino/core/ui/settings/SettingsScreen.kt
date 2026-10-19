@@ -175,24 +175,6 @@ fun SettingsScreenCore(
             ) {
                 openLocationSettings()
             }
-
-            if (readyState.canBoostLocation) {
-                SettingsActionItem(
-                    name = stringResource(MR.strings.setting_title_locationBoost),
-                    description = when (readyState.boostTime != null) {
-                        true -> stringResource(
-                            MR.strings.setting_description_locationBoost_enabled,
-                            readyState.boostTime ?: ""
-                        )
-
-                        false -> stringResource(MR.strings.setting_description_locationBoost_disabled)
-                    },
-                    icon = CoreAppIcons.ShareLocation.asPainterResource(),
-                    type = SettingsActionItemType.Switch(readyState.boostTime != null)
-                ) {
-                    viewModel.onEvent(AccountScreenUiEvent.ToggleLocationBoost)
-                }
-            }
         }
 
         if (readyState?.canAccessDebugScreen == true) {
