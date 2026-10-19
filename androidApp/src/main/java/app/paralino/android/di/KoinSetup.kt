@@ -156,7 +156,10 @@ object KoinSetup {
     val modules get() = listOf(coreDependencyModule, appSpecificModule)
 
     private val coreDependencyModule = module {
-        single { MainDatabaseHelper(AppMainDatabase.create(SqlDriverFactory(androidContext()))) }
+        single {
+            val driverFactory = SqlDriverFactory(androidContext())
+            MainDatabaseHelper { AppMainDatabase.create(driverFactory) }
+        }
         single { LogsDatabaseHelper(AppLogsDatabase.create(SqlDriverFactory(androidContext()))) }
 
         single { CryptoFrameworkLibsodium() } bind ICryptoServiceProvider::class

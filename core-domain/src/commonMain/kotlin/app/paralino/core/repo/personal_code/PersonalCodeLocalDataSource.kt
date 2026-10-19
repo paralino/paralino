@@ -18,8 +18,9 @@ class PersonalCodeLocalDataSource(
         database.personalCodeDao.recreateCodes(data.map { mapper.remote2Local(it) })
     }
 
+    // collected eagerly by PersonalCodesRepository, so it has to survive database reopening
     fun getPersonalCodes(): Flow<List<UserPersonalCode>> {
-        return database.personalCodeDao.getAllCodes()
+        return database.observe { personalCodeDao.getAllCodes() }
             .distinctFlowOfList()
             .map {
                 it.mapNotNull {

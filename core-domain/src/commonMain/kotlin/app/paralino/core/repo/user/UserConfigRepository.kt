@@ -92,7 +92,7 @@ class UserConfigRepository(
     }
 
     private fun getConfig(): Flow<UserConfigModel> {
-        return database.userConfigDao.getAll()
+        return database.observe { userConfigDao.getAll() }
             .map {
                 UserConfigModel.fromDatabase(
                     nodes = it,

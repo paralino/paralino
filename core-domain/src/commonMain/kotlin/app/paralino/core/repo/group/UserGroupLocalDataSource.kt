@@ -51,7 +51,7 @@ class UserGroupLocalDataSource constructor(
 ) {
 
     val allGroupsState: StateFlow<Resource<List<UserGroupWithMetadata>>> =
-        getAllGroupsWithMetadata()
+        database.observe { getAllGroupsWithMetadata() }
             .map { Resource.Ready(it) }
             .conflate()
             .distinctUntilChanged { old, new ->

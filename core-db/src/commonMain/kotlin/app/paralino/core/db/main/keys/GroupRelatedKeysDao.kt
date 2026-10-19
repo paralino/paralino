@@ -85,12 +85,26 @@ interface GroupRelatedKeysDao {
         clearAllPersonalGroupKeys(groupId = groupId)
         clearAllGroupDeviceIntegrityKeys(groupId = groupId)
         clearAllLocalGroupDeviceSenderKeys(groupId = groupId)
+        clearAllPendingKeyRefreshes(groupId = groupId)
+        clearAllArchivedGroupDeviceKeys(groupId = groupId)
     }
 
     @Transaction
     suspend fun clearAllKeysForUser(groupId: String, userId: String) {
         clearAllGroupMembersKeys(groupId = groupId, userId = userId)
         clearAllGroupDeviceKeys(groupId = groupId, userId = userId)
+        clearAllArchivedGroupDeviceKeys(groupId = groupId, ownerUserId = userId)
+    }
+
+    @Transaction
+    suspend fun archiveGroupDeviceKeys(
+        keys: List<ArchivedGroupDeviceKeyEntity>,
+        removeExpiredBeforeMillis: Long
+    ) {
+        if (keys.isNotEmpty()) {
+            createArchivedGroupDeviceKeys(keys)
+        }
+        clearExpiredArchivedGroupDeviceKeys(expiredBeforeMillis = removeExpiredBeforeMillis)
     }
 
 
@@ -203,8 +217,74 @@ interface GroupRelatedKeysDao {
     suspend fun clearAllGroupMembersKeys(groupId: String, userId: String)
 
     @Query("""
-        DELETE FROM groupDeviceKeysEntity 
+        DELETE FROM groupDeviceKeysEntity
         WHERE groupId = :groupId AND (memberUserId = :userId OR ownerUserId = :userId)
     """)
     suspend fun clearAllGroupDeviceKeys(groupId: String, userId: String)
+
+
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun savePendingKeyRefresh(entity: PendingKeyRefreshEntity)
+
+    @Query("""
+        SELECT COUNT(*) FROM pendingKeyRefreshEntity
+        WHERE groupId = :groupId AND (state = 'done' OR updatedAtMillis < :staleStartedBeforeMillis)
+    """)
+    suspend fun countPendingKeyRefreshes(groupId: String, staleStartedBeforeMillis: Long): Int
+
+    @Query("""
+        DELETE FROM pendingKeyRefreshEntity
+        WHERE groupId = :groupId
+        AND keyType IN (:keyTypes)
+        AND updatedAtMillis < :refreshStartedAtMillis
+        AND (state = 'done' OR updatedAtMillis < :staleStartedBeforeMillis)
+    """)
+    suspend fun clearPendingKeyRefreshes(
+        groupId: String,
+        keyTypes: List<String>,
+        refreshStartedAtMillis: Long,
+        staleStartedBeforeMillis: Long
+    )
+
+    @Query("""
+        DELETE FROM pendingKeyRefreshEntity
+        WHERE updatedAtMillis < :refreshStartedAtMillis
+        AND (state = 'done' OR updatedAtMillis < :staleStartedBeforeMillis)
+    """)
+    suspend fun clearAllPendingKeyRefreshes(
+        refreshStartedAtMillis: Long,
+        staleStartedBeforeMillis: Long
+    )
+
+    @Query("DELETE FROM pendingKeyRefreshEntity WHERE groupId = :groupId")
+    suspend fun clearAllPendingKeyRefreshes(groupId: String)
+
+
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun createArchivedGroupDeviceKeys(keys: List<ArchivedGroupDeviceKeyEntity>)
+
+    @Query("""
+        SELECT * FROM archivedGroupDeviceKeyEntity
+        WHERE groupId = :groupId
+        AND ownerUserId = :ownerUserId
+        AND locationId = :locationId
+        AND archivedAtMillis >= :notExpiredAfterMillis
+    """)
+    suspend fun getArchivedGroupDeviceKey(
+        groupId: String,
+        ownerUserId: String,
+        locationId: String,
+        notExpiredAfterMillis: Long
+    ): ArchivedGroupDeviceKeyEntity?
+
+    @Query("DELETE FROM archivedGroupDeviceKeyEntity WHERE archivedAtMillis < :expiredBeforeMillis")
+    suspend fun clearExpiredArchivedGroupDeviceKeys(expiredBeforeMillis: Long)
+
+    @Query("DELETE FROM archivedGroupDeviceKeyEntity WHERE groupId = :groupId")
+    suspend fun clearAllArchivedGroupDeviceKeys(groupId: String)
+
+    @Query("DELETE FROM archivedGroupDeviceKeyEntity WHERE groupId = :groupId AND ownerUserId = :ownerUserId")
+    suspend fun clearAllArchivedGroupDeviceKeys(groupId: String, ownerUserId: String)
 }

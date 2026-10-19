@@ -1,5 +1,6 @@
 package app.paralino.core.repo.location
 
+import app.paralino.core.db.MainDatabaseHelper
 import app.paralino.core.domain.location.LocationUploadEngine
 import app.paralino.core.domain.notifications.processors.LocationRequestNotificationProcessor.LocationRequestNotificationPayload
 import app.paralino.core.logg
@@ -20,8 +21,17 @@ class LocationRepositoryWrapper(
     private val locationRepo: LocationUploadEngine,
     private val locationSharingManager: LocationSharingManager,
     private val docApi: IDocumentsApi,
-    private val scopeProvider: CoroutineScopeProvider
+    private val scopeProvider: CoroutineScopeProvider,
+    private val databaseHelper: MainDatabaseHelper
 ) {
+    
+    fun startNewPushSession() {
+        try {
+            databaseHelper.reopen(scope = scopeProvider.userSessionIOScope)
+        } catch (e: Exception) {
+            logg.tag("location_service").w("Unable to start new push session: ${e.message}")
+        }
+    }
 
     fun startLocationUploadEngine() {
         locationRepo.startLocationUploadEngine()

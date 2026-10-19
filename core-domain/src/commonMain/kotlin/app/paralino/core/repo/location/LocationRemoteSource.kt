@@ -6,6 +6,7 @@ import app.paralino.core.crypto.PersonalSpaceDeviceKey
 import app.paralino.core.domain.crypto.group.CryptoKEKLocalRepository
 import app.paralino.core.domain.crypto.user.CryptoUserKeysLocalSource
 import app.paralino.core.db.AppPrefs
+import app.paralino.core.domain.crypto.group.GetMemberSenderKeyUseCase
 import app.paralino.core.models.base.BackendDatabaseType
 import app.paralino.core.models.base.GroupOrSpaceId
 import app.paralino.core.models.location.LocationDataModel
@@ -29,7 +30,7 @@ class LocationRemoteSource constructor(
     private val functionsApi: IFunctionsApi,
     private val appConfig: AppConfigRepository,
     private val cryptoCore: CryptoCore,
-    private val cryptoKEKRepo: CryptoKEKLocalRepository,
+    private val getMemberSenderKeyUseCase: GetMemberSenderKeyUseCase,
     private val userKeyRepo: CryptoUserKeysLocalSource,
     private val appPrefs: AppPrefs
 ) {
@@ -90,13 +91,13 @@ class LocationRemoteSource constructor(
                     )
                 )
             } else {
-                val memberKey = cryptoKEKRepo.getMemberSenderKey(
+                val memberKey = getMemberSenderKeyUseCase.getMemberSenderKeyForReadWrite(
                     groupId = groupId.id,
                     memberUserId = appPrefs.userId,
                     locationId = locationId
                 )
 
-                if (memberKey !is GroupMemberSenderKey.Valid) {
+                if (memberKey !is GroupMemberSenderKey.ValidForReadWrite) {
                     throw MissingMemberKeyException(
                         groupId = groupId.id,
                         memberId = appPrefs.userId

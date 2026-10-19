@@ -272,6 +272,49 @@ object MainDatabaseMigrations {
         }
     }
 
+    private val MIGRATION_26_27 = object : Migration(26, 27) {
+        override fun migrate(connection: SQLiteConnection) {
+            connection.execSQL(
+                """
+                CREATE TABLE IF NOT EXISTS `pendingKeyRefreshEntity` (
+                    `groupId` TEXT NOT NULL,
+                    `keyType` TEXT NOT NULL,
+                    `state` TEXT NOT NULL,
+                    `updatedAtMillis` INTEGER NOT NULL,
+                    PRIMARY KEY(`groupId`, `keyType`)
+                )
+                """.trimIndent()
+            )
+            // force one full key refresh for every group, so devices stuck with outdated keys recover
+            connection.execSQL(
+                """
+                INSERT OR REPLACE INTO `pendingKeyRefreshEntity` (`groupId`, `keyType`, `state`, `updatedAtMillis`)
+                SELECT `id`, 'device', 'done', 0 FROM `groupEntity`
+                """.trimIndent()
+            )
+        }
+    }
+
+    private val MIGRATION_27_28 = object : Migration(27, 28) {
+        override fun migrate(connection: SQLiteConnection) {
+            connection.execSQL(
+                """
+                CREATE TABLE IF NOT EXISTS `archivedGroupDeviceKeyEntity` (
+                    `groupId` TEXT NOT NULL,
+                    `ownerUserId` TEXT NOT NULL,
+                    `locationId` TEXT NOT NULL,
+                    `memberKeyVersion` INTEGER NOT NULL,
+                    `deviceKeyVersion` INTEGER NOT NULL,
+                    `userKeyVersion` INTEGER NOT NULL,
+                    `encryptedSenderKey` TEXT NOT NULL,
+                    `archivedAtMillis` INTEGER NOT NULL,
+                    PRIMARY KEY(`groupId`, `ownerUserId`, `locationId`)
+                )
+                """.trimIndent()
+            )
+        }
+    }
+
     val migrations: List<Migration> = listOf(
         MIGRATION_1_2,
         MIGRATION_2_3,
@@ -298,5 +341,7 @@ object MainDatabaseMigrations {
         MIGRATION_23_24,
         MIGRATION_24_25,
         MIGRATION_25_26,
+        MIGRATION_26_27,
+        MIGRATION_27_28,
     )
 }

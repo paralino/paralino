@@ -32,7 +32,7 @@ class UserPersonalSpaceLocalDataSource constructor(
 ) {
 
     val personalSpaceState: StateFlow<Resource<UserPersonalSpaceModel?>> =
-        getPersonalSpaceWithDevices()
+        database.observe { getPersonalSpaceWithDevices() }
             .map { Resource.Ready(it) }
             .conflate()
             .distinctUntilChanged()
