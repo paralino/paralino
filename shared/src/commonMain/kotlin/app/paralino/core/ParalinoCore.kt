@@ -328,7 +328,7 @@ val coreModule = module {
     factory { ConvertAccountUseCase(get(), get(), get()) }
     factory { ExpiredSessionRecovery(get(), get(), get(), get(), get(), get()) }
     factory { SessionRenewalHandler(get(), get(), get(), get()) }
-    factory { LocationRequestUseCase(get(), get(), get(), get()) }
+    factory { LocationRequestUseCase(get(), get(), get(), get(), get(), get()) }
     single { LocationUploadPayloadFactory(get(), get(), get(), get(), get(), get(), get(), get()) }
     single { SaveLocationUseCase(get(), get(), get(), get(), get(), get(), get()) }
     factory { SavePendingLocationUseCase(get(), get(), get(), get(), get()) }

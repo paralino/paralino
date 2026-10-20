@@ -15,6 +15,7 @@ import app.paralino.core.models.raw.GroupSettingsRaw
 import app.paralino.core.models.raw.MemberDocumentRaw
 import app.paralino.core.models.raw.MemberLocationRaw
 import app.paralino.core.models.raw.MemberWithLocationsRaw
+import app.paralino.core.models.raw.UserDeviceLocationRaw
 import app.paralino.core.repo.api.BackendQuery
 import app.paralino.core.repo.api.IDocumentsApi
 import app.paralino.core.repo.api.IFunctionsApi
@@ -119,6 +120,26 @@ class LocationRemoteSource constructor(
                     )
                 )
             }
+        }
+    }
+
+    suspend fun getGroupLocation(locationId: String): MemberLocationRaw {
+        return blocking {
+            documentApi.getDocument(
+                databaseType = BackendDatabaseType.DATA,
+                collectionId = appConfig.resourceIds.collectionMemberLocationsID,
+                documentId = locationId
+            ).let { MemberLocationRaw.from(it) }
+        }
+    }
+
+    suspend fun getPersonalLocation(locationId: String): UserDeviceLocationRaw {
+        return blocking {
+            documentApi.getDocument(
+                databaseType = BackendDatabaseType.DATA,
+                collectionId = appConfig.resourceIds.collectionPersonalLocationsID,
+                documentId = locationId
+            ).let { UserDeviceLocationRaw.from(it) }
         }
     }
 
