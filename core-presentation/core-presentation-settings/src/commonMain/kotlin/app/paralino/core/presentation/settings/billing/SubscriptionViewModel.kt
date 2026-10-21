@@ -5,6 +5,7 @@ import app.paralino.core.domain.user.GetDirectCheckoutWebPortalUseCase
 import app.paralino.core.logg
 import app.paralino.core.models.AppFlavor
 import app.paralino.core.models.Payload
+import app.paralino.core.models.base.ConfigData
 import app.paralino.core.models.base.DeviceType
 import app.paralino.core.models.base.PlanBillingPeriod
 import app.paralino.core.models.base.PlanConfig
@@ -111,7 +112,8 @@ class SubscriptionViewModel(
                     isManageLoading = previousState?.allActivePlans?.firstOrNull {
                         it.planId == plan.plan.id
                     }?.isManageLoading ?: false,
-                    config = plan.config
+                    planConfig = plan.config,
+                    appConfigData = plans.config
                 )
             }
     }
@@ -120,12 +122,13 @@ class SubscriptionViewModel(
         plan: UserPlan?,
         isCurrentPlan: Boolean,
         isManageLoading: Boolean,
-        config: PlanConfig
+        planConfig: PlanConfig,
+        appConfigData: ConfigData
     ): SubscriptionDetailsState {
         return SubscriptionDetailsState(
             planId = plan?.plan?.id ?: "free",
             isCurrentPlan = isCurrentPlan,
-            isPremiumPlan = config.isPremium,
+            isPremiumPlan = planConfig.isPremium,
             isManageLoading = isManageLoading,
             canManagePlanOnThisDevice = when (plan?.plan?.provider) {
                 PlanProvider.APPLE_APP_STORE -> deviceApi.deviceType == DeviceType.iOS
@@ -141,7 +144,7 @@ class SubscriptionViewModel(
                 PlanProvider.PARALINO -> false
                 null -> false
             },
-            planName = config.adjustedPlanName,
+            planName = planConfig.adjustedPlanName,
             billingPeriod = when (plan?.plan?.billingPeriod) {
                 PlanBillingPeriod.WEEKLY -> MR.strings.plan_period_weekly_name.localizedString()
                 PlanBillingPeriod.MONTHLY -> MR.strings.plan_period_monthly_name.localizedString()
@@ -162,7 +165,18 @@ class SubscriptionViewModel(
                 null
             },
             expiresAt = if (plan?.plan?.cancelledAt != null || plan?.plan?.billingPeriod?.isRenewalBased == false) {
-                plan.plan.expiresAt?.let { expiresAt ->
+                val expiredTime = if (plan.isPlanFullyExpired(appConfigData)) {
+                    // completely expired
+                    plan.plan.expiresAt
+                } else if (plan.isExpiredWithoutGracePeriod) {
+                    // expired but still in grace period
+                    plan.gracePeriodAdjustedExpiresAt(appConfigData)
+                } else {
+                    // not expired yet
+                    plan.plan.expiresAt
+                }
+
+                expiredTime?.let { expiresAt ->
                     valueFormatter.formatSimpleDateTime(
                         timeUTC = expiresAt.toLocalDateTime(TimeZone.UTC),
                         optionalYear = false,
@@ -170,6 +184,22 @@ class SubscriptionViewModel(
                         showTodayInfo = true
                     )
                 } ?: "∅"
+            } else {
+                null
+            },
+            expiredAt = if (plan?.plan?.cancelledAt != null || plan?.plan?.billingPeriod?.isRenewalBased == false) {
+                plan.plan.expiresAt
+                    ?.takeIf {
+                        plan.isPlanFullyExpired(appConfigData) || plan.isExpiredWithoutGracePeriod
+                    }
+                    ?.let { expiresAt ->
+                        valueFormatter.formatSimpleDateTime(
+                            timeUTC = expiresAt.toLocalDateTime(TimeZone.UTC),
+                            optionalYear = false,
+                            optionalMonth = false,
+                            showTodayInfo = true
+                        )
+                    }
             } else {
                 null
             },
