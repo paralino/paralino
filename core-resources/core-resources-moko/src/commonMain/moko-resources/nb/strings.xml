@@ -270,6 +270,12 @@
     <string name="setting_status_section_locationMode">Plasseringsmodus</string>
     <string name="setting_status_section_sharing">Plasseringsdeling</string>
     <string name="setting_status_section_currentLocation">Nåværende plassering</string>
+    <string name="setting_status_pushService_mode">Modus</string>
+    <string name="setting_status_pushService_connected">Tilkoblet</string>
+    <string name="setting_status_pushService_connecting">Kobler til</string>
+    <string name="setting_status_pushService_scheduled">Kobler til på nytt</string>
+    <string name="setting_status_pushService_disconnected">Frakoblet</string>
+    <string name="setting_status_pushService_notRunning">Kjører ikke</string>
     <string name="setting_status_connection_status">Status</string>
     <string name="setting_status_connection_network">Nettverk</string>
     <string name="setting_status_connection_signal">Signal</string>
@@ -283,7 +289,12 @@
     <string name="setting_status_signal_poor">Svakt</string>
     <string name="setting_status_signal_good">Godt</string>
     <string name="setting_status_signal_great">Utmerket</string>
-    <string name="setting_status_locationMode_requested">Forespurt: %s</string>
+    <string name="setting_status_locationMode_current">Nåværende</string>
+    <string name="setting_status_locationMode_timeLeft">Gjenstående tid</string>
+    <string name="setting_status_locationMode_requested">Forespurt</string>
+    <string name="setting_status_locationMode_boost">Test høy ytelse-modus</string>
+    <string name="setting_status_locationMode_stopTest">Stopp test</string>
+    <string name="setting_status_locationMode_increaseTime">Øk tiden for **Når i bruk**</string>
     <string name="setting_status_locationMode_window">I løpet av de siste %s minuttene</string>
     <string name="setting_status_sharing_none">Plasseringsdeling er av</string>
     <string name="setting_status_sharing_off">%s · Av</string>
@@ -454,6 +465,7 @@
     <string name="plans_management_billingPeriod_label">Faktureringsperiode: %1$s</string>
     <string name="plans_management_nextRenewal_label">Fornyes på: %1$s</string>
     <string name="plans_management_expiresAt_label">Gyldig til: %1$s</string>
+    <string name="plans_management_expired_label">Planen din har utløpt. Den blir kansellert %1$s med mindre den fornyes.</string>
     <string name="plans_management_provider_label">Leverandør: %1$s</string>
     <string name="plans_management_activePlan_tag">Aktiv plan</string>
     <string name="plans_management_action_manage">Administrer eller si opp</string>
@@ -534,6 +546,7 @@
     <string name="paywall_feature_devices_personal">Aktiverte enheter</string>
     <string name="paywall_feature_places_group">Steder med **ubegrensede varsler**</string>
     <string name="paywall_feature_places_personal">Steder med **ubegrensede varsler**</string>
+    <string name="paywall_feature_premium_map_styles">Premium-kartstiler</string>
     <string name="paywall_feature_battery">Varsler om lavt batteri</string>
     <string name="paywall_feature_locate">Lokaliser enheter på forespørsel</string>
     <string name="paywall_feature_performance">Best ytelse for plassering og **raske oppdateringer av plassering**</string>

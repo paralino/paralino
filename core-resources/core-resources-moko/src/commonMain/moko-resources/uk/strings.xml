@@ -270,6 +270,12 @@
     <string name="setting_status_section_locationMode">Режим місцезнаходження</string>
     <string name="setting_status_section_sharing">Поширення місцезнаходження</string>
     <string name="setting_status_section_currentLocation">Поточне місцезнаходження</string>
+    <string name="setting_status_pushService_mode">Режим</string>
+    <string name="setting_status_pushService_connected">Підключено</string>
+    <string name="setting_status_pushService_connecting">Підключення</string>
+    <string name="setting_status_pushService_scheduled">Повторне підключення</string>
+    <string name="setting_status_pushService_disconnected">Відключено</string>
+    <string name="setting_status_pushService_notRunning">Не запущено</string>
     <string name="setting_status_connection_status">Статус</string>
     <string name="setting_status_connection_network">Мережа</string>
     <string name="setting_status_connection_signal">Сигнал</string>
@@ -283,7 +289,12 @@
     <string name="setting_status_signal_poor">Слабкий</string>
     <string name="setting_status_signal_good">Добрий</string>
     <string name="setting_status_signal_great">Відмінний</string>
-    <string name="setting_status_locationMode_requested">Запитано: %s</string>
+    <string name="setting_status_locationMode_current">Поточний</string>
+    <string name="setting_status_locationMode_timeLeft">Залишилось часу</string>
+    <string name="setting_status_locationMode_requested">Запитаний</string>
+    <string name="setting_status_locationMode_boost">Тест режиму високої продуктивності</string>
+    <string name="setting_status_locationMode_stopTest">Зупинити тест</string>
+    <string name="setting_status_locationMode_increaseTime">Збільшити час **Коли використовується**</string>
     <string name="setting_status_locationMode_window">За останні %s хв</string>
     <string name="setting_status_sharing_none">Поширення місцезнаходження вимкнено</string>
     <string name="setting_status_sharing_off">%s · Вимк.</string>
@@ -454,6 +465,7 @@
     <string name="plans_management_billingPeriod_label">Період виставлення рахунку: %1$s</string>
     <string name="plans_management_nextRenewal_label">Оновлюється: %1$s</string>
     <string name="plans_management_expiresAt_label">Дійсно до: %1$s</string>
+    <string name="plans_management_expired_label">Термін дії вашого плану закінчився. Його буде скасовано %1$s, якщо його не поновити.</string>
     <string name="plans_management_provider_label">Постачальник: %1$s</string>
     <string name="plans_management_activePlan_tag">Активний план</string>
     <string name="plans_management_action_manage">Керувати або скасувати</string>
@@ -534,6 +546,7 @@
     <string name="paywall_feature_devices_personal">Активовані пристрої</string>
     <string name="paywall_feature_places_group">Місця з **необмеженими сповіщеннями**</string>
     <string name="paywall_feature_places_personal">Місця з **необмеженими сповіщеннями**</string>
+    <string name="paywall_feature_premium_map_styles">Преміум-стилі карт</string>
     <string name="paywall_feature_battery">Сповіщення про низький заряд батареї</string>
     <string name="paywall_feature_locate">Знайти пристрої на вимогу</string>
     <string name="paywall_feature_performance">Найкраща продуктивність місцезнаходження та **швидкі оновлення місцезнаходження**</string>

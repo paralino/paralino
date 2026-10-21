@@ -270,6 +270,12 @@
     <string name="setting_status_section_locationMode">Mode de localisation</string>
     <string name="setting_status_section_sharing">Partage de localisation</string>
     <string name="setting_status_section_currentLocation">Position actuelle</string>
+    <string name="setting_status_pushService_mode">Mode</string>
+    <string name="setting_status_pushService_connected">Connecté</string>
+    <string name="setting_status_pushService_connecting">Connexion</string>
+    <string name="setting_status_pushService_scheduled">Reconnexion</string>
+    <string name="setting_status_pushService_disconnected">Déconnecté</string>
+    <string name="setting_status_pushService_notRunning">Arrêté</string>
     <string name="setting_status_connection_status">État</string>
     <string name="setting_status_connection_network">Réseau</string>
     <string name="setting_status_connection_signal">Signal</string>
@@ -283,7 +289,12 @@
     <string name="setting_status_signal_poor">Faible</string>
     <string name="setting_status_signal_good">Bon</string>
     <string name="setting_status_signal_great">Excellent</string>
-    <string name="setting_status_locationMode_requested">Demandé : %s</string>
+    <string name="setting_status_locationMode_current">Actuel</string>
+    <string name="setting_status_locationMode_timeLeft">Temps restant</string>
+    <string name="setting_status_locationMode_requested">Demandé</string>
+    <string name="setting_status_locationMode_boost">Tester le mode Haute performance</string>
+    <string name="setting_status_locationMode_stopTest">Arrêter le test</string>
+    <string name="setting_status_locationMode_increaseTime">Augmenter la durée **Lors de l\'utilisation**</string>
     <string name="setting_status_locationMode_window">Au cours des %s dernières minutes</string>
     <string name="setting_status_sharing_none">Le partage de localisation est désactivé</string>
     <string name="setting_status_sharing_off">%s · Désactivé</string>
@@ -454,6 +465,7 @@
     <string name="plans_management_billingPeriod_label">Période de facturation : %1$s</string>
     <string name="plans_management_nextRenewal_label">Se renouvelle le : %1$s</string>
     <string name="plans_management_expiresAt_label">Valide jusqu\'au : %1$s</string>
+    <string name="plans_management_expired_label">Votre plan a expiré. Il sera annulé le %1$s, sauf s\'il est renouvelé.</string>
     <string name="plans_management_provider_label">Fournisseur : %1$s</string>
     <string name="plans_management_activePlan_tag">Plan actif</string>
     <string name="plans_management_action_manage">Gérer ou annuler</string>
@@ -534,6 +546,7 @@
     <string name="paywall_feature_devices_personal">Appareils activés</string>
     <string name="paywall_feature_places_group">Lieux avec **alertes illimitées**</string>
     <string name="paywall_feature_places_personal">Lieux avec **alertes illimitées**</string>
+    <string name="paywall_feature_premium_map_styles">Styles de carte premium</string>
     <string name="paywall_feature_battery">Alertes de batterie faible</string>
     <string name="paywall_feature_locate">Localisez les appareils à la demande</string>
     <string name="paywall_feature_performance">Meilleure performance de localisation et **mises à jour de localisation rapides**</string>

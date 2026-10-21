@@ -270,6 +270,12 @@
     <string name="setting_status_section_locationMode">Platsläge</string>
     <string name="setting_status_section_sharing">Platsdelning</string>
     <string name="setting_status_section_currentLocation">Nuvarande plats</string>
+    <string name="setting_status_pushService_mode">Läge</string>
+    <string name="setting_status_pushService_connected">Ansluten</string>
+    <string name="setting_status_pushService_connecting">Ansluter</string>
+    <string name="setting_status_pushService_scheduled">Återansluter</string>
+    <string name="setting_status_pushService_disconnected">Frånkopplad</string>
+    <string name="setting_status_pushService_notRunning">Körs inte</string>
     <string name="setting_status_connection_status">Status</string>
     <string name="setting_status_connection_network">Nätverk</string>
     <string name="setting_status_connection_signal">Signal</string>
@@ -283,7 +289,12 @@
     <string name="setting_status_signal_poor">Svag</string>
     <string name="setting_status_signal_good">Bra</string>
     <string name="setting_status_signal_great">Utmärkt</string>
-    <string name="setting_status_locationMode_requested">Begärt: %s</string>
+    <string name="setting_status_locationMode_current">Aktuellt</string>
+    <string name="setting_status_locationMode_timeLeft">Återstående tid</string>
+    <string name="setting_status_locationMode_requested">Begärt</string>
+    <string name="setting_status_locationMode_boost">Testa High performance-läge</string>
+    <string name="setting_status_locationMode_stopTest">Stoppa test</string>
+    <string name="setting_status_locationMode_increaseTime">Öka tiden för **När den används**</string>
     <string name="setting_status_locationMode_window">Inom de senaste %s minuterna</string>
     <string name="setting_status_sharing_none">Platsdelning är av</string>
     <string name="setting_status_sharing_off">%s · Av</string>
@@ -454,6 +465,7 @@
     <string name="plans_management_billingPeriod_label">Faktureringsperiod: %1$s</string>
     <string name="plans_management_nextRenewal_label">Förnyas den: %1$s</string>
     <string name="plans_management_expiresAt_label">Giltig till: %1$s</string>
+    <string name="plans_management_expired_label">Din plan har gått ut. Den avslutas den %1$s om den inte förnyas.</string>
     <string name="plans_management_provider_label">Leverantör: %1$s</string>
     <string name="plans_management_activePlan_tag">Aktiv plan</string>
     <string name="plans_management_action_manage">Hantera eller avsluta</string>
@@ -534,6 +546,7 @@
     <string name="paywall_feature_devices_personal">Aktiverade enheter</string>
     <string name="paywall_feature_places_group">Platser med **obegränsade aviseringar**</string>
     <string name="paywall_feature_places_personal">Platser med **obegränsade aviseringar**</string>
+    <string name="paywall_feature_premium_map_styles">Premium-kartstilar</string>
     <string name="paywall_feature_battery">Låg batterinivå-aviseringar</string>
     <string name="paywall_feature_locate">Lokalisera enheter på begäran</string>
     <string name="paywall_feature_performance">Bästa platsprestanda och **snabba platsuppdateringar**</string>

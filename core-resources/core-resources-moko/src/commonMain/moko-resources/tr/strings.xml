@@ -270,6 +270,12 @@
     <string name="setting_status_section_locationMode">Konum modu</string>
     <string name="setting_status_section_sharing">Konum paylaşımı</string>
     <string name="setting_status_section_currentLocation">Mevcut konum</string>
+    <string name="setting_status_pushService_mode">Mod</string>
+    <string name="setting_status_pushService_connected">Bağlı</string>
+    <string name="setting_status_pushService_connecting">Bağlanıyor</string>
+    <string name="setting_status_pushService_scheduled">Yeniden bağlanıyor</string>
+    <string name="setting_status_pushService_disconnected">Bağlantı kesildi</string>
+    <string name="setting_status_pushService_notRunning">Çalışmıyor</string>
     <string name="setting_status_connection_status">Durum</string>
     <string name="setting_status_connection_network">Ağ</string>
     <string name="setting_status_connection_signal">Sinyal</string>
@@ -283,7 +289,12 @@
     <string name="setting_status_signal_poor">Zayıf</string>
     <string name="setting_status_signal_good">İyi</string>
     <string name="setting_status_signal_great">Mükemmel</string>
-    <string name="setting_status_locationMode_requested">İstenen: %s</string>
+    <string name="setting_status_locationMode_current">Mevcut</string>
+    <string name="setting_status_locationMode_timeLeft">Kalan süre</string>
+    <string name="setting_status_locationMode_requested">İstenen</string>
+    <string name="setting_status_locationMode_boost">Yüksek performans modunu test et</string>
+    <string name="setting_status_locationMode_stopTest">Testi durdur</string>
+    <string name="setting_status_locationMode_increaseTime">**Kullanımda** süresini artır</string>
     <string name="setting_status_locationMode_window">Son %s dakika içinde</string>
     <string name="setting_status_sharing_none">Konum paylaşımı kapalı</string>
     <string name="setting_status_sharing_off">%s · Kapalı</string>
@@ -454,6 +465,7 @@
     <string name="plans_management_billingPeriod_label">Faturalama periyodu: %1$s</string>
     <string name="plans_management_nextRenewal_label">Yenileniyor: %1$s</string>
     <string name="plans_management_expiresAt_label">Geçerlilik tarihi: %1$s</string>
+    <string name="plans_management_expired_label">Planınızın süresi doldu. Yenilenmezse %1$s tarihinde iptal edilecek.</string>
     <string name="plans_management_provider_label">Sağlayıcı: %1$s</string>
     <string name="plans_management_activePlan_tag">Aktif plan</string>
     <string name="plans_management_action_manage">Yönetiniz veya iptal ediniz</string>
@@ -534,6 +546,7 @@
     <string name="paywall_feature_devices_personal">Aktif cihazlar</string>
     <string name="paywall_feature_places_group">**Sınırsız uyarılar** ile yerler</string>
     <string name="paywall_feature_places_personal">**Sınırsız uyarılar** ile yerler</string>
+    <string name="paywall_feature_premium_map_styles">Premium harita stilleri</string>
     <string name="paywall_feature_battery">Düşük pil uyarıları</string>
     <string name="paywall_feature_locate">Cihazları talep üzerine bul</string>
     <string name="paywall_feature_performance">En iyi konum performansı ve **hızlı konum güncellemeleri**</string>

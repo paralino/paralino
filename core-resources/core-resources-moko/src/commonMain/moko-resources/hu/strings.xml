@@ -270,6 +270,12 @@
     <string name="setting_status_section_locationMode">Helymeghatározási mód</string>
     <string name="setting_status_section_sharing">Helymegosztás</string>
     <string name="setting_status_section_currentLocation">Jelenlegi hely</string>
+    <string name="setting_status_pushService_mode">Mód</string>
+    <string name="setting_status_pushService_connected">Csatlakozva</string>
+    <string name="setting_status_pushService_connecting">Csatlakozás</string>
+    <string name="setting_status_pushService_scheduled">Újracsatlakozás</string>
+    <string name="setting_status_pushService_disconnected">Leválasztva</string>
+    <string name="setting_status_pushService_notRunning">Nem fut</string>
     <string name="setting_status_connection_status">Állapot</string>
     <string name="setting_status_connection_network">Hálózat</string>
     <string name="setting_status_connection_signal">Jel</string>
@@ -283,7 +289,12 @@
     <string name="setting_status_signal_poor">Gyenge</string>
     <string name="setting_status_signal_good">Jó</string>
     <string name="setting_status_signal_great">Kiváló</string>
-    <string name="setting_status_locationMode_requested">Kért: %s</string>
+    <string name="setting_status_locationMode_current">Jelenlegi</string>
+    <string name="setting_status_locationMode_timeLeft">Hátralévő idő</string>
+    <string name="setting_status_locationMode_requested">Kért</string>
+    <string name="setting_status_locationMode_boost">Nagy teljesítményű mód tesztelése</string>
+    <string name="setting_status_locationMode_stopTest">Teszt leállítása</string>
+    <string name="setting_status_locationMode_increaseTime">**Használat közben** idő növelése</string>
     <string name="setting_status_locationMode_window">Az elmúlt %s percben</string>
     <string name="setting_status_sharing_none">A helymegosztás ki van kapcsolva</string>
     <string name="setting_status_sharing_off">%s · Ki</string>
@@ -454,6 +465,7 @@
     <string name="plans_management_billingPeriod_label">Számlázási időszak: %1$s</string>
     <string name="plans_management_nextRenewal_label">Megújul: %1$s</string>
     <string name="plans_management_expiresAt_label">Érvényes: %1$s</string>
+    <string name="plans_management_expired_label">A csomagod lejárt. Megújítás hiányában ekkor szűnik meg: %1$s.</string>
     <string name="plans_management_provider_label">Szolgáltató: %1$s</string>
     <string name="plans_management_activePlan_tag">Aktív terv</string>
     <string name="plans_management_action_manage">Kezelés vagy lemondás</string>
@@ -534,6 +546,7 @@
     <string name="paywall_feature_devices_personal">Aktivált eszközök</string>
     <string name="paywall_feature_places_group">Helyek **korlátlan értesítésekkel**</string>
     <string name="paywall_feature_places_personal">Helyek **korlátlan értesítésekkel**</string>
+    <string name="paywall_feature_premium_map_styles">Prémium térképstílusok</string>
     <string name="paywall_feature_battery">Alacsony akkumulátor értesítések</string>
     <string name="paywall_feature_locate">Eszközök keresése igény szerint</string>
     <string name="paywall_feature_performance">Legjobb helymeghatározási teljesítmény és **gyors helyfrissítések**</string>

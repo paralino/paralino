@@ -270,6 +270,12 @@
     <string name="setting_status_section_locationMode">Mode d\'ubicació</string>
     <string name="setting_status_section_sharing">Compartició d\'ubicació</string>
     <string name="setting_status_section_currentLocation">Ubicació actual</string>
+    <string name="setting_status_pushService_mode">Mode</string>
+    <string name="setting_status_pushService_connected">Connectat</string>
+    <string name="setting_status_pushService_connecting">Connectant</string>
+    <string name="setting_status_pushService_scheduled">Reconnectant</string>
+    <string name="setting_status_pushService_disconnected">Desconnectat</string>
+    <string name="setting_status_pushService_notRunning">No s\'està executant</string>
     <string name="setting_status_connection_status">Estat</string>
     <string name="setting_status_connection_network">Xarxa</string>
     <string name="setting_status_connection_signal">Senyal</string>
@@ -283,7 +289,12 @@
     <string name="setting_status_signal_poor">Feble</string>
     <string name="setting_status_signal_good">Bo</string>
     <string name="setting_status_signal_great">Excel·lent</string>
-    <string name="setting_status_locationMode_requested">Sol·licitat: %s</string>
+    <string name="setting_status_locationMode_current">Actual</string>
+    <string name="setting_status_locationMode_timeLeft">Temps restant</string>
+    <string name="setting_status_locationMode_requested">Sol·licitat</string>
+    <string name="setting_status_locationMode_boost">Prova el mode Alt rendiment</string>
+    <string name="setting_status_locationMode_stopTest">Atura la prova</string>
+    <string name="setting_status_locationMode_increaseTime">Augmenta el temps de **Quan s\'utilitza**</string>
     <string name="setting_status_locationMode_window">En els últims %s minuts</string>
     <string name="setting_status_sharing_none">La compartició d\'ubicació està desactivada</string>
     <string name="setting_status_sharing_off">%s · Desactivat</string>
@@ -454,6 +465,7 @@
     <string name="plans_management_billingPeriod_label">Període de facturació: %1$s</string>
     <string name="plans_management_nextRenewal_label">Es renova el: %1$s</string>
     <string name="plans_management_expiresAt_label">Vàlid fins a: %1$s</string>
+    <string name="plans_management_expired_label">El teu pla ha caducat. Es cancel·larà el %1$s si no es renova.</string>
     <string name="plans_management_provider_label">Proveïdor: %1$s</string>
     <string name="plans_management_activePlan_tag">Pla actiu</string>
     <string name="plans_management_action_manage">Gestionar o cancel·lar</string>
@@ -534,6 +546,7 @@
     <string name="paywall_feature_devices_personal">Dispositius activats</string>
     <string name="paywall_feature_places_group">Llocs amb **alertes il·limitades**</string>
     <string name="paywall_feature_places_personal">Llocs amb **alertes il·limitades**</string>
+    <string name="paywall_feature_premium_map_styles">Estils de mapa prèmium</string>
     <string name="paywall_feature_battery">Alertes de bateria baixa</string>
     <string name="paywall_feature_locate">Localitzar dispositius a demanda</string>
     <string name="paywall_feature_performance">Millor rendiment de localització i **actualitzacions de localització ràpides**</string>

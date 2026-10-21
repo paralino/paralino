@@ -270,6 +270,12 @@
     <string name="setting_status_section_locationMode">Sijaintitila</string>
     <string name="setting_status_section_sharing">Sijainnin jakaminen</string>
     <string name="setting_status_section_currentLocation">Nykyinen sijainti</string>
+    <string name="setting_status_pushService_mode">Tila</string>
+    <string name="setting_status_pushService_connected">Yhdistetty</string>
+    <string name="setting_status_pushService_connecting">Yhdistetään</string>
+    <string name="setting_status_pushService_scheduled">Yhdistetään uudelleen</string>
+    <string name="setting_status_pushService_disconnected">Yhteys katkaistu</string>
+    <string name="setting_status_pushService_notRunning">Ei käynnissä</string>
     <string name="setting_status_connection_status">Tila</string>
     <string name="setting_status_connection_network">Verkko</string>
     <string name="setting_status_connection_signal">Signaali</string>
@@ -283,7 +289,12 @@
     <string name="setting_status_signal_poor">Heikko</string>
     <string name="setting_status_signal_good">Hyvä</string>
     <string name="setting_status_signal_great">Erinomainen</string>
-    <string name="setting_status_locationMode_requested">Pyydetty: %s</string>
+    <string name="setting_status_locationMode_current">Nykyinen</string>
+    <string name="setting_status_locationMode_timeLeft">Aikaa jäljellä</string>
+    <string name="setting_status_locationMode_requested">Pyydetty</string>
+    <string name="setting_status_locationMode_boost">Testaa korkean suorituskyvyn tilaa</string>
+    <string name="setting_status_locationMode_stopTest">Lopeta testi</string>
+    <string name="setting_status_locationMode_increaseTime">Pidennä **Kun käytössä** -aikaa</string>
     <string name="setting_status_locationMode_window">Viimeisten %s minuutin aikana</string>
     <string name="setting_status_sharing_none">Sijainnin jakaminen on pois päältä</string>
     <string name="setting_status_sharing_off">%s · Pois</string>
@@ -454,6 +465,7 @@
     <string name="plans_management_billingPeriod_label">Laskutusjakso: %1$s</string>
     <string name="plans_management_nextRenewal_label">Uudistuu: %1$s</string>
     <string name="plans_management_expiresAt_label">Voimassa: %1$s</string>
+    <string name="plans_management_expired_label">Suunnitelmasi on vanhentunut. Se perutaan %1$s, ellei sitä uusita.</string>
     <string name="plans_management_provider_label">Palveluntarjoaja: %1$s</string>
     <string name="plans_management_activePlan_tag">Aktiivinen suunnitelma</string>
     <string name="plans_management_action_manage">Hallitse tai peruuta</string>
@@ -534,6 +546,7 @@
     <string name="paywall_feature_devices_personal">Aktivoidut laitteet</string>
     <string name="paywall_feature_places_group">Paikat, joissa on **rajoittamattomat hälytykset**</string>
     <string name="paywall_feature_places_personal">Paikat, joissa on **rajoittamattomat hälytykset**</string>
+    <string name="paywall_feature_premium_map_styles">Premium-karttatyylit</string>
     <string name="paywall_feature_battery">Alhaisen akun hälytykset</string>
     <string name="paywall_feature_locate">Löydä laitteet pyynnöstä</string>
     <string name="paywall_feature_performance">Paras sijaintisuorituskyky ja **nopeat sijaintipäivitykset**</string>

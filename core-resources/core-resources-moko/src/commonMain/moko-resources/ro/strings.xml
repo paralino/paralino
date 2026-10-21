@@ -270,6 +270,12 @@
     <string name="setting_status_section_locationMode">Mod locație</string>
     <string name="setting_status_section_sharing">Partajarea locației</string>
     <string name="setting_status_section_currentLocation">Locația curentă</string>
+    <string name="setting_status_pushService_mode">Mod</string>
+    <string name="setting_status_pushService_connected">Conectat</string>
+    <string name="setting_status_pushService_connecting">Se conectează</string>
+    <string name="setting_status_pushService_scheduled">Reconectare</string>
+    <string name="setting_status_pushService_disconnected">Deconectat</string>
+    <string name="setting_status_pushService_notRunning">Nu rulează</string>
     <string name="setting_status_connection_status">Stare</string>
     <string name="setting_status_connection_network">Rețea</string>
     <string name="setting_status_connection_signal">Semnal</string>
@@ -283,7 +289,12 @@
     <string name="setting_status_signal_poor">Slab</string>
     <string name="setting_status_signal_good">Bun</string>
     <string name="setting_status_signal_great">Excelent</string>
-    <string name="setting_status_locationMode_requested">Solicitat: %s</string>
+    <string name="setting_status_locationMode_current">Curent</string>
+    <string name="setting_status_locationMode_timeLeft">Timp rămas</string>
+    <string name="setting_status_locationMode_requested">Solicitat</string>
+    <string name="setting_status_locationMode_boost">Testează modul de înaltă performanță</string>
+    <string name="setting_status_locationMode_stopTest">Oprește testul</string>
+    <string name="setting_status_locationMode_increaseTime">Mărește timpul **Când este utilizat**</string>
     <string name="setting_status_locationMode_window">În ultimele %s minute</string>
     <string name="setting_status_sharing_none">Partajarea locației este dezactivată</string>
     <string name="setting_status_sharing_off">%s · Dezactivat</string>
@@ -454,6 +465,7 @@
     <string name="plans_management_billingPeriod_label">Perioada de facturare: %1$s</string>
     <string name="plans_management_nextRenewal_label">Se reînnoiește la: %1$s</string>
     <string name="plans_management_expiresAt_label">Valabil până la: %1$s</string>
+    <string name="plans_management_expired_label">Planul dumneavoastră a expirat. Va fi anulat pe %1$s, dacă nu este reînnoit.</string>
     <string name="plans_management_provider_label">Furnizor: %1$s</string>
     <string name="plans_management_activePlan_tag">Plan activ</string>
     <string name="plans_management_action_manage">Actualizați planul pentru a debloca toate opțiunile.</string>
@@ -534,6 +546,7 @@
     <string name="paywall_feature_devices_personal">Dispozitive activate</string>
     <string name="paywall_feature_places_group">Locații cu **alerte nelimitate**</string>
     <string name="paywall_feature_places_personal">Locații cu **alerte nelimitate**</string>
+    <string name="paywall_feature_premium_map_styles">Stiluri de hartă premium</string>
     <string name="paywall_feature_battery">Alerte pentru baterie descărcată</string>
     <string name="paywall_feature_locate">Localizați dispozitive la cerere</string>
     <string name="paywall_feature_performance">Cea mai bună performanță de localizare și **actualizări rapide ale locației**</string>

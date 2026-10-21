@@ -270,6 +270,12 @@
     <string name="setting_status_section_locationMode">Режим локације</string>
     <string name="setting_status_section_sharing">Дељење локације</string>
     <string name="setting_status_section_currentLocation">Тренутна локација</string>
+    <string name="setting_status_pushService_mode">Режим</string>
+    <string name="setting_status_pushService_connected">Повезано</string>
+    <string name="setting_status_pushService_connecting">Повезивање</string>
+    <string name="setting_status_pushService_scheduled">Поновно повезивање</string>
+    <string name="setting_status_pushService_disconnected">Веза прекинута</string>
+    <string name="setting_status_pushService_notRunning">Није покренуто</string>
     <string name="setting_status_connection_status">Статус</string>
     <string name="setting_status_connection_network">Мрежа</string>
     <string name="setting_status_connection_signal">Сигнал</string>
@@ -283,7 +289,12 @@
     <string name="setting_status_signal_poor">Слаб</string>
     <string name="setting_status_signal_good">Добар</string>
     <string name="setting_status_signal_great">Одличан</string>
-    <string name="setting_status_locationMode_requested">Захтевано: %s</string>
+    <string name="setting_status_locationMode_current">Тренутни</string>
+    <string name="setting_status_locationMode_timeLeft">Преостало време</string>
+    <string name="setting_status_locationMode_requested">Затражено</string>
+    <string name="setting_status_locationMode_boost">Тестирај режим високих перформанси</string>
+    <string name="setting_status_locationMode_stopTest">Заустави тест</string>
+    <string name="setting_status_locationMode_increaseTime">Повећај време **Када је у употреби**</string>
     <string name="setting_status_locationMode_window">У последњих %s минута</string>
     <string name="setting_status_sharing_none">Дељење локације је искључено</string>
     <string name="setting_status_sharing_off">%s · Искључено</string>
@@ -454,6 +465,7 @@
     <string name="plans_management_billingPeriod_label">Период наплате: %1$s</string>
     <string name="plans_management_nextRenewal_label">Обнавља се: %1$s</string>
     <string name="plans_management_expiresAt_label">Важи до: %1$s</string>
+    <string name="plans_management_expired_label">Ваш план је истекао. Биће отказан %1$s, осим ако га не обновите.</string>
     <string name="plans_management_provider_label">Провајдер: %1$s</string>
     <string name="plans_management_activePlan_tag">Активан план</string>
     <string name="plans_management_action_manage">Управљајте или откажите</string>
@@ -534,6 +546,7 @@
     <string name="paywall_feature_devices_personal">Активирани уређаји</string>
     <string name="paywall_feature_places_group">Места са **неограниченим обавештењима**</string>
     <string name="paywall_feature_places_personal">Места са **неограниченим упозорењима**</string>
+    <string name="paywall_feature_premium_map_styles">Премијум стилови мапе</string>
     <string name="paywall_feature_battery">Упозорења на низак ниво батерије</string>
     <string name="paywall_feature_locate">Лоцирајте уређаје по захтеву</string>
     <string name="paywall_feature_performance">Најбоље перформансе локације и **брза ажурирања локације**</string>

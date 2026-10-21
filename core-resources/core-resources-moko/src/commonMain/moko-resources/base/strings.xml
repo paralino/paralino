@@ -242,7 +242,7 @@
     <string name="settings_account_logout_alert_message">Are you sure you want to logout?</string>
     <string name="settings_account_delete_alert_title">Delete account</string>
     <string name="settings_account_delete_alert_message">Deleting your account will also delete all your data. Are you sure you want to continue?</string>
-    <string name="settings_account_delete_alert_confirm_message">There is no turning back, are you sure you want to delete you account?</string>
+    <string name="settings_account_delete_alert_confirm_message">There is no turning back, are you sure you want to delete your account?</string>
     <string name="settings_account_delete_alert_confirm_button">Delete</string>
     <string name="settings_account_delete_alert_cancel_button1">Cancel</string>
     <string name="settings_account_delete_alert_cancel_button2">Never mind</string>
@@ -328,7 +328,7 @@
     <string name="setting_location_highPerformance_section_title">When in Use</string>
     <string name="setting_location_highPerformance_section_info">**High performance** mode is active if you or one of your group members are looking at the map.</string>
     <string name="setting_location_highPerformance_duration_title">Allowed</string>
-    <string name="setting_location_highPerformance_duration_info">Choose the maximum amount of time your device can spend in high performance mode within a moving 20-minutes window.</string>
+    <string name="setting_location_highPerformance_duration_info">Choose the maximum amount of time your device can spend in high performance mode within a moving 20-minute window.</string>
     <string name="setting_location_balanced_section_title">When not actively used</string>
     <string name="setting_location_balanced_section_info">Choose your preferred location update frequency when your battery is at least 30% charged and the app is inactive.\nThe app will switch to **high performance** mode if you or one of your group members are looking at the map.</string>
     <string name="setting_location_balanced_highAccuracy_title">High Accuracy Location</string>
@@ -486,7 +486,7 @@
     <string name="plans_management_billingPeriod_label">Billing period: %1$s</string>
     <string name="plans_management_nextRenewal_label">Renews at: %1$s</string>
     <string name="plans_management_expiresAt_label">Valid until: %1$s</string>
-    <string name="plans_management_expired_label">Your plan expired. It will be canceled on %1$s, unless renewed.</string>
+    <string name="plans_management_expired_label">Your plan has expired. It will be canceled on %1$s unless renewed.</string>
     <string name="plans_management_provider_label">Provider: %1$s</string>
     <string name="plans_management_activePlan_tag">Active plan</string>
     <string name="plans_management_action_manage">Manage or cancel</string>

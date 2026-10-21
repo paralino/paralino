@@ -270,6 +270,12 @@
     <string name="setting_status_section_locationMode">Λειτουργία τοποθεσίας</string>
     <string name="setting_status_section_sharing">Κοινοποίηση τοποθεσίας</string>
     <string name="setting_status_section_currentLocation">Τρέχουσα τοποθεσία</string>
+    <string name="setting_status_pushService_mode">Λειτουργία</string>
+    <string name="setting_status_pushService_connected">Συνδέθηκε</string>
+    <string name="setting_status_pushService_connecting">Σύνδεση</string>
+    <string name="setting_status_pushService_scheduled">Επανασύνδεση</string>
+    <string name="setting_status_pushService_disconnected">Αποσυνδέθηκε</string>
+    <string name="setting_status_pushService_notRunning">Δεν εκτελείται</string>
     <string name="setting_status_connection_status">Κατάσταση</string>
     <string name="setting_status_connection_network">Δίκτυο</string>
     <string name="setting_status_connection_signal">Σήμα</string>
@@ -283,7 +289,12 @@
     <string name="setting_status_signal_poor">Ασθενές</string>
     <string name="setting_status_signal_good">Καλό</string>
     <string name="setting_status_signal_great">Εξαιρετικό</string>
-    <string name="setting_status_locationMode_requested">Ζητήθηκε: %s</string>
+    <string name="setting_status_locationMode_current">Τρέχουσα</string>
+    <string name="setting_status_locationMode_timeLeft">Υπολειπόμενος χρόνος</string>
+    <string name="setting_status_locationMode_requested">Ζητήθηκε</string>
+    <string name="setting_status_locationMode_boost">Δοκιμή λειτουργίας Υψηλής απόδοσης</string>
+    <string name="setting_status_locationMode_stopTest">Διακοπή δοκιμής</string>
+    <string name="setting_status_locationMode_increaseTime">Αύξηση χρόνου **Όταν είναι σε Χρήση**</string>
     <string name="setting_status_locationMode_window">Μέσα στα τελευταία %s λεπτά</string>
     <string name="setting_status_sharing_none">Η κοινοποίηση τοποθεσίας είναι απενεργοποιημένη</string>
     <string name="setting_status_sharing_off">%s · Ανενεργό</string>
@@ -454,6 +465,7 @@
     <string name="plans_management_billingPeriod_label">Περίοδος χρέωσης: %1$s</string>
     <string name="plans_management_nextRenewal_label">Ανανεώνεται στις: %1$s</string>
     <string name="plans_management_expiresAt_label">Έγκυρο έως: %1$s</string>
+    <string name="plans_management_expired_label">Το σχέδιό σας έληξε. Θα ακυρωθεί στις %1$s, εκτός αν ανανεωθεί.</string>
     <string name="plans_management_provider_label">Πάροχος: %1$s</string>
     <string name="plans_management_activePlan_tag">Ενεργό σχέδιο</string>
     <string name="plans_management_action_manage">Διαχείριση ή ακύρωση</string>
@@ -534,6 +546,7 @@
     <string name="paywall_feature_devices_personal">Ενεργοποιημένες συσκευές</string>
     <string name="paywall_feature_places_group">Μέρη με **απεριόριστες ειδοποιήσεις**</string>
     <string name="paywall_feature_places_personal">Μέρη με **απεριόριστες ειδοποιήσεις**</string>
+    <string name="paywall_feature_premium_map_styles">Premium στυλ χάρτη</string>
     <string name="paywall_feature_battery">Ειδοποιήσεις χαμηλής μπαταρίας</string>
     <string name="paywall_feature_locate">Εντοπισμός συσκευών κατόπιν αιτήματος</string>
     <string name="paywall_feature_performance">Καλύτερη απόδοση τοποθεσίας και **γρήγορες ενημερώσεις τοποθεσίας**</string>

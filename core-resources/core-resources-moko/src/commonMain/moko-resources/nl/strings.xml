@@ -270,6 +270,12 @@
     <string name="setting_status_section_locationMode">Locatiemodus</string>
     <string name="setting_status_section_sharing">Locatie delen</string>
     <string name="setting_status_section_currentLocation">Huidige locatie</string>
+    <string name="setting_status_pushService_mode">Modus</string>
+    <string name="setting_status_pushService_connected">Verbonden</string>
+    <string name="setting_status_pushService_connecting">Verbinden</string>
+    <string name="setting_status_pushService_scheduled">Opnieuw verbinden</string>
+    <string name="setting_status_pushService_disconnected">Verbinding verbroken</string>
+    <string name="setting_status_pushService_notRunning">Niet actief</string>
     <string name="setting_status_connection_status">Status</string>
     <string name="setting_status_connection_network">Netwerk</string>
     <string name="setting_status_connection_signal">Signaal</string>
@@ -283,7 +289,12 @@
     <string name="setting_status_signal_poor">Zwak</string>
     <string name="setting_status_signal_good">Goed</string>
     <string name="setting_status_signal_great">Uitstekend</string>
-    <string name="setting_status_locationMode_requested">Aangevraagd: %s</string>
+    <string name="setting_status_locationMode_current">Huidig</string>
+    <string name="setting_status_locationMode_timeLeft">Resterende tijd</string>
+    <string name="setting_status_locationMode_requested">Aangevraagd</string>
+    <string name="setting_status_locationMode_boost">High performance-modus testen</string>
+    <string name="setting_status_locationMode_stopTest">Test stoppen</string>
+    <string name="setting_status_locationMode_increaseTime">Tijd voor **Wanneer in gebruik** verhogen</string>
     <string name="setting_status_locationMode_window">In de afgelopen %s minuten</string>
     <string name="setting_status_sharing_none">Locatie delen staat uit</string>
     <string name="setting_status_sharing_off">%s · Uit</string>
@@ -454,6 +465,7 @@
     <string name="plans_management_billingPeriod_label">Factureringsperiode: %1$s</string>
     <string name="plans_management_nextRenewal_label">Verloopt op: %1$s</string>
     <string name="plans_management_expiresAt_label">Geldig tot: %1$s</string>
+    <string name="plans_management_expired_label">Uw plan is verlopen. Het wordt op %1$s geannuleerd, tenzij het wordt verlengd.</string>
     <string name="plans_management_provider_label">Aanbieder: %1$s</string>
     <string name="plans_management_activePlan_tag">Actief plan</string>
     <string name="plans_management_action_manage">Beheren of annuleren</string>
@@ -534,6 +546,7 @@
     <string name="paywall_feature_devices_personal">Geactiveerde apparaten</string>
     <string name="paywall_feature_places_group">Plaatsen met **onbeperkte meldingen**</string>
     <string name="paywall_feature_places_personal">Plaatsen met **onbeperkte meldingen**</string>
+    <string name="paywall_feature_premium_map_styles">Premium-kaartstijlen</string>
     <string name="paywall_feature_battery">Laag batterij meldingen</string>
     <string name="paywall_feature_locate">Zoek apparaten op aanvraag</string>
     <string name="paywall_feature_performance">Beste locatieprestaties en **snelle locatie-updates**</string>

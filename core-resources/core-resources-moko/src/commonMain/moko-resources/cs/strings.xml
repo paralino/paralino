@@ -270,6 +270,12 @@
     <string name="setting_status_section_locationMode">Režim polohy</string>
     <string name="setting_status_section_sharing">Sdílení polohy</string>
     <string name="setting_status_section_currentLocation">Aktuální poloha</string>
+    <string name="setting_status_pushService_mode">Režim</string>
+    <string name="setting_status_pushService_connected">Připojeno</string>
+    <string name="setting_status_pushService_connecting">Připojování</string>
+    <string name="setting_status_pushService_scheduled">Opětovné připojování</string>
+    <string name="setting_status_pushService_disconnected">Odpojeno</string>
+    <string name="setting_status_pushService_notRunning">Neběží</string>
     <string name="setting_status_connection_status">Stav</string>
     <string name="setting_status_connection_network">Síť</string>
     <string name="setting_status_connection_signal">Signál</string>
@@ -283,7 +289,12 @@
     <string name="setting_status_signal_poor">Slabý</string>
     <string name="setting_status_signal_good">Dobrý</string>
     <string name="setting_status_signal_great">Výborný</string>
-    <string name="setting_status_locationMode_requested">Požadováno: %s</string>
+    <string name="setting_status_locationMode_current">Aktuální</string>
+    <string name="setting_status_locationMode_timeLeft">Zbývající čas</string>
+    <string name="setting_status_locationMode_requested">Požadovaný</string>
+    <string name="setting_status_locationMode_boost">Otestovat režim Vysoký výkon</string>
+    <string name="setting_status_locationMode_stopTest">Zastavit test</string>
+    <string name="setting_status_locationMode_increaseTime">Prodloužit čas **Když je používáno**</string>
     <string name="setting_status_locationMode_window">Během posledních %s minut</string>
     <string name="setting_status_sharing_none">Sdílení polohy je vypnuté</string>
     <string name="setting_status_sharing_off">%s · Vypnuto</string>
@@ -454,6 +465,7 @@
     <string name="plans_management_billingPeriod_label">Úroveň fakturace: %1$s</string>
     <string name="plans_management_nextRenewal_label">Obnovuje se: %1$s</string>
     <string name="plans_management_expiresAt_label">Platnost do: %1$s</string>
+    <string name="plans_management_expired_label">Platnost vašeho plánu vypršela. Pokud ho neobnovíte, bude %1$s zrušen.</string>
     <string name="plans_management_provider_label">Poskytovatel: %1$s</string>
     <string name="plans_management_activePlan_tag">Aktivní plán</string>
     <string name="plans_management_action_manage">Spravovat nebo zrušit</string>
@@ -534,6 +546,7 @@
     <string name="paywall_feature_devices_personal">Aktivovaná zařízení</string>
     <string name="paywall_feature_places_group">Místa s **neomezenými upozorněními**</string>
     <string name="paywall_feature_places_personal">Místa s **neomezenými upozorněními**</string>
+    <string name="paywall_feature_premium_map_styles">Prémiové styly map</string>
     <string name="paywall_feature_battery">Upozornění na nízkou baterii</string>
     <string name="paywall_feature_locate">Najít zařízení na vyžádání</string>
     <string name="paywall_feature_performance">Nejlepší výkon polohy a **rychlé aktualizace polohy**</string>
