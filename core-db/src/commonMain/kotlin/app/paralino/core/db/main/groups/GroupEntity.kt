@@ -14,10 +14,8 @@ data class GroupEntity(
     @ColumnInfo(name = "serverIntegrity") val serverIntegrity: String,
     @ColumnInfo(name = "planType") val planType: String,
     @ColumnInfo(name = "schemeVersion") val schemeVersion: String,
-    @ColumnInfo(name = "membersLimitOverride") val membersLimitOverride: Long?,
-    @ColumnInfo(name = "devicesLimitOverride") val devicesLimitOverride: Long?,
-    @ColumnInfo(name = "placesLimitOverride") val placesLimitOverride: Long?,
     @ColumnInfo(name = "planExpiresAt") val planExpiresAt: String?,
     @ColumnInfo(name = "provider") val provider: String?,
-    @ColumnInfo(name = "fallbackPlanType") val fallbackPlanType: String?
+    @ColumnInfo(name = "fallbackPlanType") val fallbackPlanType: String?,
+    @ColumnInfo(name = "groupPlans") val groupPlans: String?
 )

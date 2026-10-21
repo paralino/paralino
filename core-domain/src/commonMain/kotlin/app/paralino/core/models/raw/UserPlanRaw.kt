@@ -1,13 +1,9 @@
 package app.paralino.core.models.raw
 
-import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.base.PlanBillingPeriod
 import app.paralino.core.models.base.PlanProvider
 import app.paralino.core.utils.extensions.isoWithOffsetToInstant
-import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.serialization.SerialName
-import kotlin.time.Duration.Companion.minutes
-import kotlin.time.Duration.Companion.seconds
 import kotlin.time.Instant
 
 data class UserPlanRaw constructor(
@@ -23,16 +19,6 @@ data class UserPlanRaw constructor(
     val groupsLimitOverride: Long?,
     val provider: PlanProvider
 ) {
-
-    // allow for some manual grace period
-    // it might take some time until correct subscription data is synced and reflected on backend
-    // most of time it is just few minutes at most
-    // In production we use multiple days as grace period if there are some billing issues
-    val isExpired: Boolean get() = expiresAt
-        ?.plus(if (AppBuildConfig.instance.isDevMode) 30.seconds else 2.minutes)
-        ?.let { it < nowUTC() }
-        ?: false
-
     companion object {
         fun from(map: Map<String, Any>): UserPlanRaw {
             return UserPlanRaw(

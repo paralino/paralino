@@ -20,6 +20,7 @@ data class ConfigData(
     val newSoftVersionIOS: Long = 0,
     val androidAppUrl: String? = null,
     val emailEnabled: Boolean = false,
+    val planGracePeriodFallbackSeconds: Long = 0,
     val freePlanPromoBillingId: String? = null,
     val defaultPremiumPlan: String,
     val plans: List<PlanConfig> = emptyList(),
@@ -54,6 +55,7 @@ data class ConfigData(
                 newSoftVersionIOS = map.get("newSoftVersionIOS")?.toLongOrNull() ?: 0,
                 androidAppUrl = map.get("androidAppUrl")?.takeIf { it.isNotBlank() },
                 emailEnabled = map.get("emailEnabled")?.toBooleanStrictOrNull() ?: false,
+                planGracePeriodFallbackSeconds = map.get("planGracePeriodFallbackSeconds")?.toLongOrNull() ?: 0,
                 freePlanPromoBillingId = map.get("freePlanPromoBillingId")?.takeIf { it.isNotBlank() },
                 defaultPremiumPlan = map.get("defaultPremiumPlan")
                     ?.let {

@@ -315,6 +315,15 @@ object MainDatabaseMigrations {
         }
     }
 
+    private val MIGRATION_28_29 = object : Migration(28, 29) {
+        override fun migrate(connection: SQLiteConnection) {
+            connection.execSQL("ALTER TABLE groupEntity ADD COLUMN groupPlans TEXT DEFAULT NULL")
+            connection.execSQL("ALTER TABLE groupEntity DROP COLUMN membersLimitOverride")
+            connection.execSQL("ALTER TABLE groupEntity DROP COLUMN devicesLimitOverride")
+            connection.execSQL("ALTER TABLE groupEntity DROP COLUMN placesLimitOverride")
+        }
+    }
+
     val migrations: List<Migration> = listOf(
         MIGRATION_1_2,
         MIGRATION_2_3,
@@ -343,5 +352,6 @@ object MainDatabaseMigrations {
         MIGRATION_25_26,
         MIGRATION_26_27,
         MIGRATION_27_28,
+        MIGRATION_28_29,
     )
 }

@@ -109,7 +109,7 @@ import kotlinx.coroutines.IO
         PendingKeyRefreshEntity::class,
         ArchivedGroupDeviceKeyEntity::class,
     ],
-    version = 28,
+    version = 29,
     exportSchema = true
 )
 @ConstructedBy(AppMainDatabaseConstructor::class)
