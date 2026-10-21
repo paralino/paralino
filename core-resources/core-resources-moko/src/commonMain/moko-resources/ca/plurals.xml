@@ -32,4 +32,28 @@
         <item quantity="one">Dispositiu</item>
         <item quantity="other">Dispositius</item>
     </plurals>
+    <plurals name="paywall_summary_groups">
+        <item quantity="one">%d grup</item>
+        <item quantity="other">%d grups</item>
+    </plurals>
+    <plurals name="paywall_summary_history_days">
+        <item quantity="one">%d dia d\'historial</item>
+        <item quantity="other">%d dies d\'historial</item>
+    </plurals>
+    <plurals name="paywall_summary_places">
+        <item quantity="one">%d lloc</item>
+        <item quantity="other">%d llocs</item>
+    </plurals>
+    <plurals name="paywall_summary_members">
+        <item quantity="one">%d membre</item>
+        <item quantity="other">%d membres</item>
+    </plurals>
+    <plurals name="paywall_summary_privacy_zones">
+        <item quantity="one">%d zona de privadesa</item>
+        <item quantity="other">%d zones de privadesa</item>
+    </plurals>
+    <plurals name="paywall_summary_devices">
+        <item quantity="one">%d dispositiu</item>
+        <item quantity="other">%d dispositius</item>
+    </plurals>
 </resources>

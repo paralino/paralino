@@ -3,6 +3,7 @@ package app.paralino.core.presentation.settings.generic.maps
 import androidx.compose.ui.unit.dp
 import app.paralino.core.MR
 import app.paralino.core.db.AppPrefs
+import app.paralino.core.domain.user.GetMapSDKProviderUseCase
 import app.paralino.core.domain.user.PremiumStatusManager
 import app.paralino.core.models.location.LatLng
 import app.paralino.core.models.settings.MapStyle
@@ -19,6 +20,7 @@ import app.paralino.core.repo.user.UserConfigRepository
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.presentation.common.MainAlertDialog
 import app.paralino.core.resources.CoreAppIcons
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.minutes
@@ -29,9 +31,12 @@ class MapsProviderViewModel(
     private val userRepository: UserRepository,
     private val appConfigRepo: AppConfigRepository,
     private val userConfigRepo: UserConfigRepository,
+    private val getMapSDKProvider: GetMapSDKProviderUseCase,
 ) : BaseGenericSettingViewModel(
     initialScreenTitle = MR.strings.setting_mapsProvider_title.localizedString()
 ) {
+
+    private var configRefreshJob: Job? = null
 
     init {
         _uiState.update { createInitialState() }
@@ -60,7 +65,12 @@ class MapsProviderViewModel(
 
             if (appConfigRepo.canUseMapLibre) {
                 add(MapsSDKProvider.MAPLIBRE.MAPLIBRE_FREE())
-                add(MapsSDKProvider.MAPLIBRE.MAPLIBRE_PREMIUM(mapTilerToken = ""))
+                add(
+                    MapsSDKProvider.MAPLIBRE.MAPLIBRE_PREMIUM(
+                        mapTilerStyleToken = "",
+                        mapTilerSatelliteToken = ""
+                    )
+                )
             }
         }
 
@@ -262,6 +272,7 @@ class MapsProviderViewModel(
                         }
                         appPrefs.setAndroidMapSDKProvider(finalProvider)
                         _uiState.update { createInitialState() }
+                        refreshUserConfig()
                     }
 
                     is MapStyle -> {
@@ -288,6 +299,7 @@ class MapsProviderViewModel(
                         if (updatedProvider != null) {
                             appPrefs.setAndroidMapSDKProvider(updatedProvider)
                             _uiState.update { createInitialState() }
+                            refreshUserConfig()
                         }
                     }
                 }
@@ -311,16 +323,23 @@ class MapsProviderViewModel(
         }
     }
 
+    private fun refreshUserConfig() {
+        configRefreshJob?.cancel()
+        configRefreshJob = coroutineScope.launch {
+            try {
+                userConfigRepo.refreshMaybeAndGetConfig(cacheTime = 1.minutes)
+            } catch (e: Exception) {
+            }
+
+            _uiState.update { createInitialState() }
+        }
+    }
+
     private fun currentMapProvider(): MapsSDKProvider {
-        return appPrefs.getAndroidMapSDKProviderOrDefault(
-            hasGoogleMaps = appConfigRepo.hasGoogleMaps,
-            canUseMapLibre = appConfigRepo.canUseMapLibre,
-            isPremiumPlan = canUserHavePremiumMaps(),
-            mapTilerToken = appPrefs.mapTilerToken
-        )
+        return getMapSDKProvider.getProvider()
     }
 
     private fun canUserHavePremiumMaps(): Boolean {
-        return userRepository.userPlans.value.highestValidPlanConfig.hasPremiumMapStyles && !appPrefs.mapTilerToken.isNullOrBlank()
+        return userRepository.userPlans.value.highestValidPlanConfig.hasPremiumMapStyles && !(appPrefs.mapTilerStylesToken ?: appPrefs.mapTilerTokenV1).isNullOrBlank()
     }
 }

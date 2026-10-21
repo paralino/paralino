@@ -6,6 +6,8 @@ import app.paralino.core.repo.location.LocationPerformanceManager
 import app.paralino.core.repo.location.LocationPerformanceSettingsType
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.Priority
+import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Duration.Companion.seconds
 
 object LocationRequestModels {
 
@@ -15,6 +17,7 @@ object LocationRequestModels {
         batterySaverSettings: LocationPerformanceManager.LocationPerformanceSettingsBatterySaver,
     ): LocationRequest {
         return when (type) {
+            LocationPerformanceType.HIGH,
             LocationPerformanceType.HIGHER_FOCUS,
             LocationPerformanceType.VERY_HIGH,
             LocationPerformanceType.MANUAL_BOOST -> {
@@ -23,15 +26,10 @@ object LocationRequestModels {
                     .build()
             }
 
-            LocationPerformanceType.HIGH -> {
-                LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 3_000L)
-                    .setMinUpdateIntervalMillis(2_000L)
-                    .build()
-            }
-
             LocationPerformanceType.MEDIUM_HIGH -> {
-                LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 5 * 60 * 1000L)
-                    .setMinUpdateIntervalMillis(10_000L)
+                LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 10.seconds.inWholeMilliseconds)
+                    .setMinUpdateIntervalMillis(10.seconds.inWholeMilliseconds)
+                    .setMinUpdateDistanceMeters(300f)
                     .build()
             }
 

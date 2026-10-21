@@ -13,6 +13,10 @@ sealed interface ConditionErrorType {
     object GuestAccount: ConditionErrorType
     object NewAppUpdate: ConditionErrorType
     object UnrestrictedBackgroundAccess: ConditionErrorType, BackgroundLocationSharingConditionType
+    sealed class PushNotificationService(): ConditionErrorType, BackgroundLocationSharingConditionType {
+        object PushNotificationServiceOff: PushNotificationService()
+        object PushNotificationServiceNoConstantConnection: PushNotificationService()
+    }
 }
 
 interface BackgroundLocationSharingConditionType

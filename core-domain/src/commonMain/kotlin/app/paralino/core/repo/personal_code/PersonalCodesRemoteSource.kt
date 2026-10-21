@@ -7,6 +7,7 @@ import app.paralino.core.crypto.SimpleKeyPairData
 import app.paralino.core.domain.crypto.user.CryptoUserKeysLocalSource
 import app.paralino.core.logg
 import app.paralino.core.models.base.BackendDatabaseType
+import app.paralino.core.models.data
 import app.paralino.core.models.group.GroupIntegrity
 import app.paralino.core.models.mappers.PersonalCodeMapperCore
 import app.paralino.core.models.raw.PersonalCodeCreateData
@@ -103,8 +104,8 @@ class PersonalCodesRemoteSource constructor(
 
         val codeUserData = PersonalCodeUserData(
             ownerUserId = user.id,
-            ownerName = userMeData?.userName ?: user.data?.userName ?: "",
-            ownerImage = userMeData?.userImage ?: user.data?.userImage,
+            ownerName = userMeData?.userName ?: user.data.data?.userName ?: "",
+            ownerImage = userMeData?.userImage ?: user.data.data?.userImage,
             ownerIdentityKey = myKey.publicKey,
         )
 

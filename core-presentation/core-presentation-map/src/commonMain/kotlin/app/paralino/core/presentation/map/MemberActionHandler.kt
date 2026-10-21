@@ -4,6 +4,8 @@ import app.paralino.core.MR
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.location.ClearUserLocationUseCase
 import app.paralino.core.domain.location.LocationRequestUseCase
+import app.paralino.core.logg
+import app.paralino.core.models.base.GroupOrSpaceId
 import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.presentation.billing.BillingScreenSourceType
 import app.paralino.core.presentation.common.AppSnackbarData
@@ -29,6 +31,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
+import kotlin.coroutines.cancellation.CancellationException
 import kotlin.time.Duration
 
 class MemberActionHandler(
@@ -42,7 +45,6 @@ class MemberActionHandler(
     private val eventChannel: Channel<MapHomeScreenEvent?>,
     private val locationRequestDuration: Duration,
 ) {
-
     fun memberAction(
         action: MemberActionType,
         state: GroupMemberItemState,
@@ -272,6 +274,11 @@ class MemberActionHandler(
                         else -> {}
                     }
                 } else {
+                    scheduleLocationRefreshFallback(
+                        keyId = stateWithLocation.keyId,
+                        groupId = stateWithLocation.memberState.groupId.asGroupOrSpaceId(),
+                        locationId = singleLocation.locationId
+                    )
                     scheduleDeviceResponseCheck(updateReadyState)
                 }
             }
@@ -315,6 +322,32 @@ class MemberActionHandler(
         }
 
         scheduleDeviceResponseCheck(updateReadyState, notifyIfUnresponsive = false)
+    }
+
+    private fun scheduleLocationRefreshFallback(
+        keyId: String,
+        groupId: GroupOrSpaceId,
+        locationId: String
+    ) {
+        coroutineScope.launch {
+            delay(locationRequestDuration * 0.75)
+
+            val isStillWaiting = uiState.value.asReady()?.allMembersOrDevices
+                ?.firstOrNull { it.keyId == keyId }
+                ?.actions?.locationRequest?.isWaitingForUser == true
+
+            if (!isStillWaiting) return@launch
+
+            try {
+                logg.tag("location_request").d("No response for location request, fetching location ($locationId) manually")
+                locationRequestUseCase.refreshMemberDeviceLocation(
+                    groupId = groupId,
+                    locationId = locationId
+                )
+            } catch (e: Exception) {
+                logg.tag("location_request").w("Error while fetching location ($locationId) manually", e)
+            }
+        }
     }
 
     private fun scheduleDeviceResponseCheck(
@@ -371,7 +404,7 @@ class MemberActionHandler(
     }
 
     fun canDeleteLocation(
-        groupId: app.paralino.core.models.base.GroupOrSpaceId,
+        groupId: GroupOrSpaceId,
         isCurrentUser: Boolean,
         isCurrentDevice: Boolean,
         hasLocation: Boolean

@@ -33,6 +33,9 @@ fun AppSettingsScreen(
             vm = vm,
             appState = appState,
             paddingValues = it,
+            onAppThemeClick = {
+                appState.navController.navigate(AppScreen.Settings.AppTheme.routeSignature)
+            },
             onMeasurementSystemClick = {
                 appState.navController.navigate(AppScreen.Settings.MeasurementSystem.routeSignature)
             },
@@ -45,6 +48,9 @@ fun AppSettingsScreen(
             onNavigationAppClick = {},
             onPlaceSearchSettingsClick = {
                 appState.navController.navigate(AppScreen.Settings.PlaceSearch.routeSignature)
+            },
+            onPersonalSpaceSettingsClick = {
+                appState.navController.navigate(AppScreen.Settings.PersonalSpace.routeSignature)
             },
             onNotificationSocketSettingsClick = {
                 appState.navController.navigate(AppScreen.Settings.NotificationSocket.routeSignature)

@@ -3,12 +3,14 @@ package app.paralino.core.domain.crypto.group
 import app.paralino.core.logg
 import app.paralino.core.models.raw.GroupWithMembersAndPlacesRaw
 import app.paralino.core.repo.base.BaseRepository
+import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.coroutines.async
 
 class CryptoKEKRefreshUseCase(
     private val remote: CryptoKeyRemoteDataSource,
     private val local: CryptoKeyLocalDataSource,
-    private val cryptoKEKRepo: CryptoKEKLocalRepository
+    private val cryptoKEKRepo: CryptoKEKLocalRepository,
+    private val archiveMemberSenderKey: ArchiveMemberSenderKeyUseCase
 ): BaseRepository() {
 
     suspend fun refreshAllKeys(groups: List<GroupWithMembersAndPlacesRaw>, force: Boolean) {
@@ -21,6 +23,8 @@ class CryptoKEKRefreshUseCase(
 
             logg.tag("tag_crypto_key").d("Need to refresh all keys for all groups (${groups.size})")
 
+            // rotations that finish after this point are not covered by this refresh
+            val refreshStartedAt = nowUTC()
             val groupKeysAsync = async { remote.getAllGroupKeys() }
             val memberKeysAsync = async { remote.getAllGroupMemberKeys() }
             val deviceKeysAsync = async { remote.getAllGroupDeviceKeys() }
@@ -31,7 +35,8 @@ class CryptoKEKRefreshUseCase(
             val deviceKeys = deviceKeysAsync.await()
             val preKeys = preKeysAsync.await()
 
-            local.recreateAllGroupKeys(groupKeys, memberKeys, deviceKeys, preKeys)
+            archiveMemberSenderKey.archiveReplacedDeviceKeys(newDeviceKeys = deviceKeys, groupId = null)
+            local.recreateAllGroupKeys(groupKeys, memberKeys, deviceKeys, preKeys, refreshStartedAt)
 
             logg.tag("tag_crypto_key")
                 .w("updated group (${groupKeys.size}), member (${memberKeys.size}), device (${deviceKeys.size}), pre (${preKeys.size}) keys")
@@ -39,36 +44,40 @@ class CryptoKEKRefreshUseCase(
     }
 
     suspend fun refreshGroupKeysForGroup(groupId: String) {
+        val refreshStartedAt = nowUTC()
         triggerRemoteOnly {
             logg.tag("tag_crypto_key_group").d("refreshing only group key")
             remote.getGroupKeyForGroup(groupId)
         }.also {
             logg.tag("tag_crypto_key_group").d("updated only group keys (${it.size})")
-            local.recreateGroupKeyForGroup(groupId, it)
+            local.recreateGroupKeyForGroup(groupId, it, refreshStartedAt)
         }
     }
 
     suspend fun refreshMemberKeysForGroup(groupId: String) {
         triggerRemoteOnly {
             logg.tag("tag_crypto_key_group_member").d("refreshing only group member key")
+            val refreshStartedAt = nowUTC()
             val memberKeys = remote.getAllGroupMemberKeysForGroup(groupId)
             logg.tag("tag_crypto_key_group_member").d("refreshing group pre keys")
             val preKeys = remote.getAllPersonalGroupKeysForGroup(groupId)
             logg.tag("tag_crypto_key_group_member")
                 .d("updated member (${memberKeys.size}), pre (${preKeys.size}) keys")
 
-            local.recreateMemberKeysForGroup(groupId, memberKeys, preKeys)
+            local.recreateMemberKeysForGroup(groupId, memberKeys, preKeys, refreshStartedAt)
         }
     }
 
     suspend fun refreshDeviceKeysForGroup(groupId: String) {
         triggerRemoteOnly {
             logg.tag("tag_crypto_key_group_member").w("refreshing only group device key")
+            val refreshStartedAt = nowUTC()
             val deviceKeys = remote.getAllGroupDeviceKeysForGroup(groupId)
             logg.tag("tag_crypto_key_group_member")
                 .w("updated member device (${deviceKeys.size}) keys")
 
-            local.recreateDeviceKeysForGroup(groupId, deviceKeys)
+            archiveMemberSenderKey.archiveReplacedDeviceKeys(newDeviceKeys = deviceKeys, groupId = groupId)
+            local.recreateDeviceKeysForGroup(groupId, deviceKeys, refreshStartedAt)
         }
     }
 
@@ -86,6 +95,8 @@ class CryptoKEKRefreshUseCase(
 
             logg.tag("tag_crypto_key_group").d("Need to refresh all keys for group $groupId")
 
+            // rotations that finish after this point are not covered by this refresh
+            val refreshStartedAt = nowUTC()
             val groupKeysAsync = async { remote.getGroupKeyForGroup(groupId) }
             val memberKeysAsync = async { remote.getAllGroupMemberKeysForGroup(groupId) }
             val deviceKeysAsync = async { remote.getAllGroupDeviceKeysForGroup(groupId) }
@@ -99,7 +110,8 @@ class CryptoKEKRefreshUseCase(
             logg.tag("tag_crypto_key_group")
                 .d("Got new group (${groupKeys.size}), member (${memberKeys.size}), device (${deviceKeys.size}), pre (${preKeys.size}) for group $groupId")
 
-            local.recreateGroupKeyForGroup(groupId, groupKeys, memberKeys, deviceKeys, preKeys)
+            archiveMemberSenderKey.archiveReplacedDeviceKeys(newDeviceKeys = deviceKeys, groupId = groupId)
+            local.recreateGroupKeyForGroup(groupId, groupKeys, memberKeys, deviceKeys, preKeys, refreshStartedAt)
 
             logg.tag("tag_crypto_key_group").d("updated group and member keys for group")
         }
@@ -142,6 +154,10 @@ class CryptoKEKRefreshUseCase(
             ?: return false
 
         if (local.getMemberKeys().filter { it.groupId == group.group.group.id }.size != group.group.members.size) {
+            return false
+        }
+
+        if (cryptoKEKRepo.hasPendingKeyRefresh(groupId = group.group.group.id)) {
             return false
         }
 

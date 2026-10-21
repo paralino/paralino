@@ -5,6 +5,7 @@ import app.paralino.core.crypto.GroupMasterKey
 import app.paralino.core.domain.crypto.group.CryptoKEKLocalRepository
 import app.paralino.core.logg
 import app.paralino.core.models.CryptoResource
+import app.paralino.core.models.group.EmbeddedGroupPlanModel
 import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.group.UserGroupData
 import app.paralino.core.models.group.UserGroupWithMembers
@@ -51,10 +52,8 @@ class GroupMapperCore constructor(
             planType = model.planType,
             planExpiresAt = model.planExpiresAt,
             provider = model.provider,
-            membersLimitOverride = model.membersLimitOverride,
-            devicesLimitOverride = model.devicesLimitOverride,
-            placesLimitOverride = model.placesLimitOverride,
-            fallbackPlanType = model.fallbackPlanType
+            fallbackPlanType = model.fallbackPlanType,
+            groupPlans = model.groupPlans?.map { BaseRemoteModule.formatter.encodeToString(it) }
         )
     }
 
@@ -97,10 +96,14 @@ class GroupMapperCore constructor(
             planType = model.planType,
             planExpiresAt = model.planExpiresAt,
             provider = model.provider,
-            membersLimitOverride = model.membersLimitOverride,
-            devicesLimitOverride = model.devicesLimitOverride,
-            placesLimitOverride = model.placesLimitOverride,
-            fallbackPlanType = model.fallbackPlanType
+            fallbackPlanType = model.fallbackPlanType,
+            groupPlans = model.groupPlans?.mapNotNull { plan ->
+                try {
+                    BaseRemoteModule.formatter.decodeFromString<EmbeddedGroupPlanModel>(plan)
+                } catch (e: Exception) {
+                    null
+                }
+            }
         )
     }
 

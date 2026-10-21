@@ -1,16 +1,12 @@
 package app.paralino.core.presentation.settings.appstatus
 
 import app.paralino.core.models.AppHost
-import app.paralino.core.models.data
 import app.paralino.core.presentation.CoreViewModel
-import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.provider.InAppLogger
 import app.paralino.core.provider.InAppLoggerLogType
 import app.paralino.core.provider.LogPriority
 import app.paralino.core.provider.print
-import app.paralino.core.repo.LocationSharingManager
-import app.paralino.core.repo.location.LocationPerformanceManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
@@ -27,9 +23,6 @@ import kotlin.time.Duration.Companion.milliseconds
 
 class AppStatusDebugViewModel(
     private val inAppLogger: InAppLogger,
-    private val deviceApi: IDeviceApiProvider,
-    private val locationPerformanceManager: LocationPerformanceManager,
-    private val locationSharingManager: LocationSharingManager,
     private val valueFormatter: IValueFormatter
 ) : CoreViewModel() {
 
@@ -62,90 +55,6 @@ class AppStatusDebugViewModel(
                 }
             )
         }
-
-        combine(
-            deviceApi.deviceStatus,
-            locationSharingManager.allContractsFlow,
-            locationPerformanceManager.locationPerformanceType
-        ) { deviceStatus, sharingStatus, locationPerformance ->
-            _uiState.update {
-                it.copy(
-                    status = buildList {
-                        add(
-                            AppStatusItemStatusState(
-                                key = "location-sharing",
-                                text = "Sharing location to (${sharingStatus.data?.size ?: 0}) groups",
-                                isError = false
-                            )
-                        )
-                        add(
-                            AppStatusItemStatusState(
-                                key = "network",
-                                text = "Network: **${deviceStatus.networkStatus.status} (${deviceStatus.networkStatus.networkType ?: "NONE"})**",
-                                isError = !deviceStatus.networkStatus.isOnline
-                            )
-                        )
-                        add(
-                            AppStatusItemStatusState(
-                                key = "location-performance",
-                                text = "Location performance: **${locationPerformance.current}**\n  requested=${locationPerformance.requested}, old=${locationPerformance.requested}",
-                                isError = false
-                            )
-                        )
-
-                        add(
-                            AppStatusItemStatusState(
-                                key = "notification-permission",
-                                text = "Notification permission: ${if (deviceStatus.notificationStatus.isNotificationPermissionAllowed) "**OK**" else "**MISSING**"}",
-                                isError = !deviceStatus.notificationStatus.isNotificationPermissionAllowed
-                            )
-                        )
-
-                        add(
-                            AppStatusItemStatusState(
-                                key = "device-location",
-                                text = "Device location: ${if (deviceStatus.locationStatus.isGpsOn) "**ON**" else "**OFF**"}",
-                                isError = !deviceStatus.locationStatus.isGpsOn
-                            )
-                        )
-
-                        add(
-                            AppStatusItemStatusState(
-                                key = "location-permission",
-                                text = "Location permission: ${if (deviceStatus.locationStatus.isCoarsePermissionAllowed) "**OK**" else "**MISSING**"}",
-                                isError = !deviceStatus.locationStatus.isCoarsePermissionAllowed
-                            )
-                        )
-
-                        add(
-                            AppStatusItemStatusState(
-                                key = "location-permission-fine",
-                                text = "Fine Location permission: ${if (deviceStatus.locationStatus.isFinePermissionAllowed) "**OK**" else "**MISSING**"}",
-                                isError = !deviceStatus.locationStatus.isFinePermissionAllowed
-                            )
-                        )
-
-                        add(
-                            AppStatusItemStatusState(
-                                key = "location-permission-background",
-                                text = "Background location permission: ${if (deviceStatus.locationStatus.isBackgroundPermissionAllowed) "**OK**" else "**MISSING**"}",
-                                isError = !deviceStatus.locationStatus.isBackgroundPermissionAllowed
-                            )
-                        )
-
-                        add(
-                            AppStatusItemStatusState(
-                                key = "unrestricted-background-battery",
-                                text = "Unrestricted background run: ${if (deviceStatus.locationStatus.isUnrestrictedBackgroundPermissionAllowed) "**OK**" else "**MISSING**"}",
-                                isError = !deviceStatus.locationStatus.isUnrestrictedBackgroundPermissionAllowed
-                            )
-                        )
-                    }
-                )
-            }
-        }
-            .flowOn(Dispatchers.IO)
-            .launchIn(coroutineScope)
 
         combine(
             searchEntryFlow.debounce(500.milliseconds),

@@ -32,4 +32,28 @@
         <item quantity="one">Device</item>
         <item quantity="other">Devices</item>
     </plurals>
+    <plurals name="paywall_summary_groups">
+        <item quantity="one">%d group</item>
+        <item quantity="other">%d groups</item>
+    </plurals>
+    <plurals name="paywall_summary_history_days">
+        <item quantity="one">%d-day history</item>
+        <item quantity="other">%d-day history</item>
+    </plurals>
+    <plurals name="paywall_summary_places">
+        <item quantity="one">%d place</item>
+        <item quantity="other">%d places</item>
+    </plurals>
+    <plurals name="paywall_summary_members">
+        <item quantity="one">%d member</item>
+        <item quantity="other">%d members</item>
+    </plurals>
+    <plurals name="paywall_summary_privacy_zones">
+        <item quantity="one">%d privacy zone</item>
+        <item quantity="other">%d privacy zones</item>
+    </plurals>
+    <plurals name="paywall_summary_devices">
+        <item quantity="one">%d device</item>
+        <item quantity="other">%d devices</item>
+    </plurals>
 </resources>

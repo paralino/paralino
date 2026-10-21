@@ -7,6 +7,7 @@
 
 import Foundation
 import SwiftUI
+import shared
 
 struct AppColors {
     struct Raw {
@@ -29,6 +30,32 @@ struct AppColors {
         
         static let darkThemePrimary = 0xFF0F443F
         static let darkThemeSecondary = 0xFF929292
+        
+        static let pitchBlackBackground = 0xFF000000
+        static let pitchBlackOnBackground = 0xFFD7D7D7
+        static let pitchBlackSurface = 0xFF0C0C0C
+        static let pitchBlackThemePrimary = 0xFF0F443F
+    }
+    
+    /// Observable, so SwiftUI views reading Color.theme colors can re-render when style changes
+    @Observable
+    final class DarkPalette {
+        static let shared = DarkPalette()
+        
+        var style: DarkThemeStyleType = .paralino
+        
+        var background: Int {
+            style == .pitchBlack ? Raw.pitchBlackBackground : Raw.darkBackground
+        }
+        var surface: Int {
+            style == .pitchBlack ? Raw.pitchBlackSurface : Raw.darkSurface
+        }
+        var primary: Int {
+            style == .pitchBlack ? Raw.pitchBlackThemePrimary : Raw.darkThemePrimary
+        }
+        var onBackground: Int {
+            style == .pitchBlack ? Raw.pitchBlackOnBackground : Raw.lightBackground
+        }
     }
 }
 
@@ -68,32 +95,32 @@ extension Color {
     static let darkThemeSecondary = Color(withAlphaRGB: AppColors.Raw.darkThemeSecondary)
     
     static var themePrimary: Color {
-        getColor(lightArgb: AppColors.Raw.lightThemePrimary, darkArgb: AppColors.Raw.darkThemePrimary)
+        getColor(lightArgb: AppColors.Raw.lightThemePrimary, darkArgb: AppColors.DarkPalette.shared.primary)
     }
     static var themeSecondary: Color {
         getColor(lightArgb: AppColors.Raw.lightThemeSecondary, darkArgb: AppColors.Raw.darkThemeSecondary)
     }
     static var themebackground: Color {
-        getColor(lightArgb: AppColors.Raw.lightBackground, darkArgb: AppColors.Raw.darkBackground)
+        getColor(lightArgb: AppColors.Raw.lightBackground, darkArgb: AppColors.DarkPalette.shared.background)
     }
     static var themeSurface: Color {
-        getColor(lightArgb: AppColors.Raw.lightSurface, darkArgb: AppColors.Raw.darkSurface)
+        getColor(lightArgb: AppColors.Raw.lightSurface, darkArgb: AppColors.DarkPalette.shared.surface)
     }
     static var themeErrorBackground: Color {
         getColor(lightArgb: AppColors.Raw.errorBackground, darkArgb: AppColors.Raw.errorBackground)
     }
     
     static var themeOnPrimary: Color {
-        getColor(lightArgb: AppColors.Raw.lightBackground, darkArgb: AppColors.Raw.lightBackground)
+        getColor(lightArgb: AppColors.Raw.lightBackground, darkArgb: AppColors.DarkPalette.shared.onBackground)
     }
     static var themeOnSecondary: Color {
-        getColor(lightArgb: AppColors.Raw.darkBackground, darkArgb: AppColors.Raw.lightBackground)
+        getColor(lightArgb: AppColors.Raw.darkBackground, darkArgb: AppColors.DarkPalette.shared.onBackground)
     }
     static var themeOnBackground: Color {
-        getColor(lightArgb: AppColors.Raw.darkBackground, darkArgb: AppColors.Raw.lightBackground)
+        getColor(lightArgb: AppColors.Raw.darkBackground, darkArgb: AppColors.DarkPalette.shared.onBackground)
     }
     static var themeOnSurface: Color {
-        getColor(lightArgb: AppColors.Raw.darkBackground, darkArgb: AppColors.Raw.lightBackground)
+        getColor(lightArgb: AppColors.Raw.darkBackground, darkArgb: AppColors.DarkPalette.shared.onBackground)
     }
     static var themeOnError: Color {
         getColor(lightArgb: AppColors.Raw.redMain, darkArgb: AppColors.Raw.redMain)

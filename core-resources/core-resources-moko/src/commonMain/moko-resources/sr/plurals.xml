@@ -40,4 +40,34 @@
         <item quantity="few">Уређаја</item>
         <item quantity="other">Уређаја</item>
     </plurals>
+    <plurals name="paywall_summary_groups">
+        <item quantity="one">%d група</item>
+        <item quantity="few">%d групе</item>
+        <item quantity="other">%d група</item>
+    </plurals>
+    <plurals name="paywall_summary_history_days">
+        <item quantity="one">%d дан историје</item>
+        <item quantity="few">%d дана историје</item>
+        <item quantity="other">%d дана историје</item>
+    </plurals>
+    <plurals name="paywall_summary_places">
+        <item quantity="one">%d место</item>
+        <item quantity="few">%d места</item>
+        <item quantity="other">%d места</item>
+    </plurals>
+    <plurals name="paywall_summary_members">
+        <item quantity="one">%d члан</item>
+        <item quantity="few">%d члана</item>
+        <item quantity="other">%d чланова</item>
+    </plurals>
+    <plurals name="paywall_summary_privacy_zones">
+        <item quantity="one">%d зона приватности</item>
+        <item quantity="few">%d зоне приватности</item>
+        <item quantity="other">%d зона приватности</item>
+    </plurals>
+    <plurals name="paywall_summary_devices">
+        <item quantity="one">%d уређај</item>
+        <item quantity="few">%d уређаја</item>
+        <item quantity="other">%d уређаја</item>
+    </plurals>
 </resources>

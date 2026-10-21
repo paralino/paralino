@@ -526,6 +526,12 @@ data class LocationHistoryDeletePeriodPersonalPayload(
 )
 
 @Serializable
+data class UserConfigPayload(
+    val satelliteMaps: Boolean,
+    val premiumMapStyles: Boolean
+)
+
+@Serializable
 data class PersonalDeviceDeletePayload(
     val deviceId: String
 )

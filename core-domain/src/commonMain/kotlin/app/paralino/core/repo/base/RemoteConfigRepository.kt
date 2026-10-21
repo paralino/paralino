@@ -39,8 +39,8 @@ class RemoteConfigRepository(
             .distinctUntilChanged()
     }
 
-    suspend fun refreshConfig(cacheTimeMillis: Long = 1.minutes.inWholeMilliseconds) {
-        triggerRemoteMaybe(
+    suspend fun refreshConfig(cacheTimeMillis: Long = 1.minutes.inWholeMilliseconds): ConfigData? {
+        return triggerRemoteMaybe(
             remotePreference = RemotePreference.CACHE(
                 key = "config_refresh",
                 timeMillis = cacheTimeMillis,

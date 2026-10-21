@@ -3,7 +3,6 @@ package app.paralino.core.models.group
 import app.paralino.core.appPrefs
 import app.paralino.core.db.main.groups.MemberRegisteredLocationCount
 import app.paralino.core.domain.crypto.group.VerificationResult
-import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.CryptoResource
 import app.paralino.core.models.base.ConfigData
 import app.paralino.core.models.base.GroupOrSpaceId
@@ -16,10 +15,10 @@ import app.paralino.core.models.location.MemberModelWithLocations
 import app.paralino.core.models.places.GroupPlaceWithSettings
 import app.paralino.core.models.privacyzones.GroupPrivacyZone
 import app.paralino.core.utils.Emojis
+import app.paralino.core.utils.extensions.isoWithOffsetToInstant
 import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
-import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.Instant
 
@@ -36,10 +35,8 @@ data class UserGroup constructor(
     val fallbackPlanType: String,
     val planExpiresAt: Instant?,
     val provider: String?,
-    val membersLimitOverride: Long?,
-    val devicesLimitOverride: Long?,
-    val placesLimitOverride: Long?,
-    val createdAt: Instant?
+    val createdAt: Instant?,
+    val groupPlans: List<EmbeddedGroupPlanModel>?
 ) {
 
     val name: String get() = nameOrNull ?: "---"
@@ -50,56 +47,58 @@ data class UserGroup constructor(
 
     // allow for some manual grace period
     // it might take few minutes until correct subscription data is synced and reflected on backend
-    private val isPlanExpired: Boolean get() = planExpiresAt
-        ?.plus(if (AppBuildConfig.instance.isDevMode) 30.seconds else 2.minutes)
-        ?.let { it < nowUTC() }
-        ?: false
+    private fun isPlanFullyExpired(config: ConfigData): Boolean {
+        return planExpiresAt
+            ?.plus(config.planGracePeriodFallbackSeconds.seconds)
+            ?.let { it < nowUTC() }
+            ?: false
+    }
+
+    private fun activePlanConfigOrNull(config: ConfigData): PlanConfig? {
+        if (groupPlans.isNullOrEmpty()) {
+            // fallback to previous logic
+            return if (isPlanFullyExpired(config)) {
+                null
+            } else {
+                config.planConfigForPlanTypeOrDefault(planType)
+            }
+        }
+        return groupPlans
+            .filter { !it.isPlanFullyExpired(config) }
+            .map { config.planConfigForPlanTypeOrDefault(it.planType) }
+            .maxByOrNull { it.planOrder }
+    }
+
+    private fun fallbackPlanConfig(config: ConfigData): PlanConfig {
+        return config.planConfigForPlanTypeOrDefault(fallbackPlanType)
+    }
 
     fun isGroupPremium(config: ConfigData): Boolean {
         return planConfig(config).isPremium
     }
 
     fun membersLimit(config: ConfigData): Int {
-        if (isPlanExpired) {
-            return config.planConfigForPlanTypeOrDefault(fallbackPlanType).membersLimit
-        } else {
-            return membersLimitOverride?.toInt()
-                ?: config.planConfigForPlanTypeOrDefault(planType).membersLimit
-        }
+        val activePlanConfig = activePlanConfigOrNull(config) ?: fallbackPlanConfig(config)
+        return activePlanConfig.membersLimit
     }
 
     fun devicesLimit(config: ConfigData): Int {
-        if (isPlanExpired) {
-            return config.planConfigForPlanTypeOrDefault(fallbackPlanType).devicesLimit
-        } else {
-            return devicesLimitOverride?.toInt()
-                ?: config.planConfigForPlanTypeOrDefault(planType).devicesLimit
-        }
+        val activePlanConfig = activePlanConfigOrNull(config) ?: fallbackPlanConfig(config)
+        return activePlanConfig.devicesLimit
     }
 
     fun placesLimit(config: ConfigData): Int? {
-        return if (isPlanExpired) {
-            config.planConfigForPlanTypeOrDefault(fallbackPlanType).placesLimit
-        } else {
-            placesLimitOverride?.toInt()
-                ?: config.planConfigForPlanTypeOrDefault(planType).placesLimit
-        }.takeIf { it >= 0 }
+        val activePlanConfig = activePlanConfigOrNull(config) ?: fallbackPlanConfig(config)
+        return activePlanConfig.placesLimit.takeIf { it >= 0 }
     }
 
     fun privacyZonesLimit(config: ConfigData): Int? {
-        return if (isPlanExpired) {
-            config.planConfigForPlanTypeOrDefault(fallbackPlanType).privacyZonesLimit
-        } else {
-            config.planConfigForPlanTypeOrDefault(planType).privacyZonesLimit
-        }.takeIf { it >= 0 }
+        val activePlanConfig = activePlanConfigOrNull(config) ?: fallbackPlanConfig(config)
+        return activePlanConfig.privacyZonesLimit.takeIf { it >= 0 }
     }
 
     fun planConfig(config: ConfigData): PlanConfig {
-        if (isPlanExpired) {
-            return config.planConfigForPlanTypeOrDefault(fallbackPlanType)
-        } else {
-            return config.planConfigForPlanTypeOrDefault(planType)
-        }
+        return activePlanConfigOrNull(config) ?: fallbackPlanConfig(config)
     }
 
     companion object {
@@ -137,6 +136,23 @@ data class UserGroupWithMetadata constructor(
 
     fun isGroupOverLimits(config: ConfigData): Boolean {
         return memberCount > group.membersLimit(config) || arePlacesOverLimits(config) || devicesCount > group.devicesLimit(config)
+    }
+}
+
+@Serializable
+data class EmbeddedGroupPlanModel(
+    val planType: String,
+    val expiresAt: String?
+) {
+    val expiresAtInstant: Instant? get() = expiresAt?.isoWithOffsetToInstant()
+
+    // null expiresAt means plan does not expire, unreadable expiresAt is treated as expired
+    fun isPlanFullyExpired(config: ConfigData): Boolean {
+        if (expiresAt == null) return false
+        return expiresAtInstant
+            ?.plus(config.planGracePeriodFallbackSeconds.seconds)
+            ?.let { it < nowUTC() }
+            ?: true
     }
 }
 

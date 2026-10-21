@@ -153,15 +153,13 @@ fun GenericSettingsOptionItem(
             }
 
             if (description != null) {
-                CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-                    Text(
-                        modifier = Modifier.padding(top = 2.dp),
-                        text = description.annotatedBoldCompose(),
-                        style = MaterialTheme.typography.caption,
-                        textAlign = TextAlign.Start,
-                        color = contentColor
-                    )
-                }
+                Text(
+                    modifier = Modifier,
+                    text = description.annotatedBoldCompose(),
+                    style = MaterialTheme.typography.caption,
+                    textAlign = TextAlign.Start,
+                    color = contentColor.copy(alpha = ContentAlpha.medium)
+                )
             }
         }
 

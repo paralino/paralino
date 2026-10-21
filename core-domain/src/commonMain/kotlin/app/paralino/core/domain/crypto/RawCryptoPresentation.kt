@@ -315,8 +315,8 @@ class RawCryptoPresentation constructor(
                     rawData = it?.first?.data?.let {
                         BaseRemoteModule.prettyPrintFormatter.encodeToString(it)
                     } ?: "",
-                    decryptedData = it?.second?.data?.let {
-                        CryptoResource.Ready(BaseRemoteModule.prettyPrintFormatter.encodeToString(it))
+                    decryptedData = it?.second?.data?.mapSuccess {
+                        BaseRemoteModule.prettyPrintFormatter.encodeToString(it)
                     } ?: CryptoResource.WrongKeyOrData,
                     type = RawPresentationDataType.UserPresentation
                 )

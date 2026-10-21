@@ -40,4 +40,34 @@
         <item quantity="few">Zariadenia</item>
         <item quantity="other">Zariadení</item>
     </plurals>
+    <plurals name="paywall_summary_groups">
+        <item quantity="one">%d skupina</item>
+        <item quantity="few">%d skupiny</item>
+        <item quantity="other">%d skupín</item>
+    </plurals>
+    <plurals name="paywall_summary_history_days">
+        <item quantity="one">História za %d deň</item>
+        <item quantity="few">História za %d dni</item>
+        <item quantity="other">História za %d dní</item>
+    </plurals>
+    <plurals name="paywall_summary_places">
+        <item quantity="one">%d miesto</item>
+        <item quantity="few">%d miesta</item>
+        <item quantity="other">%d miest</item>
+    </plurals>
+    <plurals name="paywall_summary_members">
+        <item quantity="one">%d člen</item>
+        <item quantity="few">%d členovia</item>
+        <item quantity="other">%d členov</item>
+    </plurals>
+    <plurals name="paywall_summary_privacy_zones">
+        <item quantity="one">%d zóna súkromia</item>
+        <item quantity="few">%d zóny súkromia</item>
+        <item quantity="other">%d zón súkromia</item>
+    </plurals>
+    <plurals name="paywall_summary_devices">
+        <item quantity="one">%d zariadenie</item>
+        <item quantity="few">%d zariadenia</item>
+        <item quantity="other">%d zariadení</item>
+    </plurals>
 </resources>

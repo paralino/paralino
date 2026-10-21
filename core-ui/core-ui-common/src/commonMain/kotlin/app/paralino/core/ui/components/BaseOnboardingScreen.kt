@@ -129,10 +129,12 @@ fun BaseOnboardingScreen(
     modifier: Modifier = Modifier,
     nextButton: (@Composable () -> Unit)?,
     skipButton: (@Composable () -> Unit)?,
+    topBarContent: @Composable () -> Unit = {},
     content: @Composable (PaddingValues) -> Unit
 ) {
     Scaffold(
         modifier = modifier,
+        topBar = topBarContent,
         bottomBar = {
             if (nextButton != null || skipButton != null) {
                 ScaffoldBottomBarButtons(

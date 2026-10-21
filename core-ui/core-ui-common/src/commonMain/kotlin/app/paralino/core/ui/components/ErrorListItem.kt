@@ -22,8 +22,10 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import app.paralino.core.models.base.DeviceType
 import app.paralino.core.presentation.common.endActionTextRes
 import app.paralino.core.presentation.common.nameRes
+import app.paralino.core.provider.current
 import app.paralino.core.resources.CoreAppIcons
 import app.paralino.core.resources.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.theme.AppColors
@@ -149,7 +151,11 @@ val ConditionErrorType.icon: Painter
         is ConditionErrorType.EmailVerification -> CoreAppIcons.Email
         ConditionErrorType.GuestAccount -> CoreAppIcons.Incognito
         ConditionErrorType.NewAppUpdate -> CoreAppIcons.DownloadArrow
-        ConditionErrorType.UnrestrictedBackgroundAccess -> CoreAppIcons.BatteryFull
+        ConditionErrorType.UnrestrictedBackgroundAccess -> when (DeviceType.current) {
+            DeviceType.Android -> CoreAppIcons.BatteryFull
+            DeviceType.iOS -> CoreAppIcons.PhonelinkSetup
+        }
+        is ConditionErrorType.PushNotificationService -> CoreAppIcons.NotificationsOff
     }.asPainterResource()
 
 val ConditionErrorType.isEndActionLoading: Boolean

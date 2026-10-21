@@ -115,12 +115,13 @@ class PlacesViewModel(
                 null
             }
 
-            val placesLimit = space.plan.personalPlacesLimit
-                .takeIf { it >= 0 }
+            val placesLimit = space.plan.personalPlacesLimitForDisplay(
+                currentCount = places.size
+            )
             val canShowPlanBanner = !space.plan.isPremium
             val state = PlacesListScreenState(
                 groupId = UserGroup.groupPersonalDevicesId.asGroupOrSpaceId(),
-                groupImage = space.user.data?.userImage ?: ImageModel.emoji(Emojis.robot),
+                groupImage = space.user.data.data?.userImage ?: ImageModel.emoji(Emojis.robot),
                 groupName = MR.strings.personalSpace_spaceTitle.localizedString(),
                 placesLimit = placesLimit,
                 isGroupOwner = true,

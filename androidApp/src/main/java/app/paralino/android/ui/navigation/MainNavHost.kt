@@ -38,6 +38,7 @@ import app.paralino.android.ui.privacyzones.PrivacyZonesScreen
 import app.paralino.core.ui.components.DefaultEmptyState
 import app.paralino.android.ui.settings.AppSettingsScreen
 import app.paralino.android.ui.settings.AppStatusDebugScreen
+import app.paralino.android.ui.settings.AppStatusScreen
 import app.paralino.android.ui.settings.BlocklistScreen
 import app.paralino.android.ui.settings.GeneralInfoScreen
 import app.paralino.android.ui.settings.GenericSettingsScreen
@@ -53,6 +54,7 @@ import app.paralino.android.ui.settings.profile.ChangeEmailScreen
 import app.paralino.android.ui.settings.profile.ChangePasswordScreen
 import app.paralino.android.ui.settings.profile.ConvertAccountScreen
 import app.paralino.android.ui.settings.profile.EditProfileScreen
+import app.paralino.android.ui.settings.profile.UserDevicesScreen
 import app.paralino.android.ui.share.SharingStartScreen
 import app.paralino.core.MR
 import app.paralino.core.presentation.login.LoginScreenState
@@ -62,8 +64,10 @@ import app.paralino.core.models.settings.RawPresentationDataType
 import dev.icerock.moko.resources.compose.stringResource
 import app.paralino.core.presentation.settings.generic.maps.MapsProviderViewModel
 import app.paralino.core.presentation.settings.generic.maps.MapInteractionsViewModel
+import app.paralino.core.presentation.settings.generic.AppThemeViewModel
 import app.paralino.core.presentation.settings.generic.MeasurementSystemViewModel
 import app.paralino.core.presentation.settings.generic.NotificationsGroupingViewModel
+import app.paralino.core.presentation.settings.generic.PersonalSpaceFeatureSettingsViewModel
 import app.paralino.core.presentation.settings.generic.PlaceSearchSettingsViewModel
 import app.paralino.android.presentation.settings.generic.NotificationSocketSettingsViewModel
 import app.paralino.core.presentation.billing.BillingScreenSourceType
@@ -289,6 +293,9 @@ fun NavGraphBuilder.settingsGraph(appState: MainAppState) {
         composable(AppScreen.Settings.BlockList.routeSignature) {
             BlocklistScreen(appState)
         }
+        composable(AppScreen.Settings.UserDevices.routeSignature) {
+            UserDevicesScreen(appState)
+        }
         composable(AppScreen.Settings.ProfileDetails.EditProfile.routeSignature) {
             EditProfileScreen(appState)
         }
@@ -314,6 +321,9 @@ fun NavGraphBuilder.settingsGraph(appState: MainAppState) {
         }
         composable(AppScreen.Settings.AppStatusDebug.routeSignature) {
             AppStatusDebugScreen(appState)
+        }
+        composable(AppScreen.Settings.AppStatus.routeSignature) {
+            AppStatusScreen(appState)
         }
         composable(AppScreen.Settings.Subscriptions.routeSignature) {
             SubscriptionScreen(appState)
@@ -346,6 +356,12 @@ fun NavGraphBuilder.settingsGraph(appState: MainAppState) {
         composable(AppScreen.Settings.AppSettings.routeSignature) {
             AppSettingsScreen(appState)
         }
+        composable(AppScreen.Settings.AppTheme.routeSignature) {
+            GenericSettingsScreen(
+                appState = appState,
+                vm = koinViewModel<AppThemeViewModel>()
+            )
+        }
         composable(AppScreen.Settings.MeasurementSystem.routeSignature) {
             GenericSettingsScreen(
                 appState = appState,
@@ -368,6 +384,12 @@ fun NavGraphBuilder.settingsGraph(appState: MainAppState) {
             GenericSettingsScreen(
                 appState = appState,
                 vm = koinViewModel<PlaceSearchSettingsViewModel>()
+            )
+        }
+        composable(AppScreen.Settings.PersonalSpace.routeSignature) {
+            GenericSettingsScreen(
+                appState = appState,
+                vm = koinViewModel<PersonalSpaceFeatureSettingsViewModel>()
             )
         }
         composable(AppScreen.Settings.NotificationSocket.routeSignature) {

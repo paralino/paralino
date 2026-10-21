@@ -21,6 +21,7 @@ import app.paralino.core.presentation.billing.FeatureTableItemHighlightMode
 import app.paralino.core.presentation.billing.FeatureTableItemState
 import app.paralino.core.presentation.billing.FeatureTableItemValue
 import app.paralino.core.presentation.billing.FeatureTableState
+import app.paralino.core.presentation.billing.FeatureTableSummary
 import app.paralino.core.presentation.billing.PlanBillingPeriodState
 import app.paralino.core.presentation.billing.PlanInfoState
 import org.jetbrains.compose.resources.DrawableResource
@@ -66,8 +67,8 @@ data class PaywallScreenState(
     }
 
     val canShowAdditionalPlanSelector: Boolean = !screenType.isOnboarding && isPlatformBillingSupported
-    val canShowPlanPeriodSelector: Boolean = isPlatformBillingSupported && selectedPlan != null
-    val showExternalPricingInfo: Boolean = !isPlatformBillingSupported
+    val canShowPlanPeriodSelector: Boolean = isPlatformBillingSupported && selectedPlan != null && !isLoading
+    val showExternalPricingInfo: Boolean = !isPlatformBillingSupported && screenStep == PaywallScreenStep.PAYWALL && !isLoading
 
     val continueButtonType: PaywallContinueButtonType = when (screenStep) {
         PaywallScreenStep.PAYWALL -> {
@@ -134,15 +135,19 @@ data class PaywallScreenState(
                     is FeatureTableItemState.Section -> it
                     is FeatureTableItemState.Detail -> it.copy(values = newValues)
                     is FeatureTableItemState.Title -> it.copy(values = newValues)
-                    is FeatureTableItemState.Summary -> {
-                        it.copy(
-                            values = newValues.filterIsInstance<FeatureTableItemValue.Summary>()
-                        )
-                    }
+                }
+            },
+            summary = fullFeatureTable.summary.mapNotNull {
+                if (it.planType == plan.type) {
+                    it
+                } else {
+                    null
                 }
             }
         )
     }
+
+    val featureSummaryForSelectedPlan: FeatureTableSummary? = featureTableForSelectedPlan?.summary?.firstOrNull()
 
     val subscriptionNoticeForCurrentPlan: String? = selectedPlan?.let { plan ->
         plan.selectedBillingPeriod?.let {
@@ -175,7 +180,8 @@ enum class PaywallScreenStep {
     DEMO_TO_HISTORY,
     DEMO_TO_PAYWALL,
     PERSONAL_LOCATION_HISTORY,
-    PAYWALL
+    PAYWALL,
+    PURCHASE_CONFIRMATION
 }
 
 sealed interface PaywallContinueButtonType {

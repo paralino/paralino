@@ -1,6 +1,7 @@
 package app.paralino.core.domain.user
 
 import app.paralino.core.db.AppPrefs
+import app.paralino.core.models.base.ConfigData
 import app.paralino.core.models.base.GroupOrSpaceId
 import app.paralino.core.models.base.PlanConfig
 import app.paralino.core.models.base.asGroupOrSpaceId
@@ -8,7 +9,6 @@ import app.paralino.core.models.data
 import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.settings.MapsSDKProvider
 import app.paralino.core.repo.LocationSharingManager
-import app.paralino.core.repo.base.AppConfigRepository
 import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.location.LocationPerformanceSettingsType
@@ -30,20 +30,37 @@ class PremiumStatusManager(
     private val groupLocalDataSource: UserGroupLocalDataSource,
     private val personalSpaceRepo: UserPersonalSpaceLocalDataSource,
     private val appPrefs: AppPrefs,
-    private val appConfigRepo: AppConfigRepository
+    private val getMapSDKProvider: GetMapSDKProviderUseCase
 ) {
 
     private val _hasGroupOverLimits = MutableStateFlow(false)
     val hasGroupOverLimits: StateFlow<Boolean> = _hasGroupOverLimits.asStateFlow()
 
+    fun allGroupPlans(config: ConfigData): List<PlanConfig> {
+        return groupLocalDataSource.allGroupsState.value.data
+            ?.map { it.group.planConfig(config) }
+            ?: emptyList()
+    }
+
+    fun highestGroupPlan(config: ConfigData): PlanConfig {
+        val highestPlan = allGroupPlans(config)
+            .maxByOrNull { it.planOrder }
+            ?: config.defaultFreePlanConfig()
+        return highestPlan
+    }
+
+    suspend fun hasBestLocationPerformance(): Boolean {
+        val config = remoteConfigRepo.getConfigOnce()
+        val currentPlanConfig = userRepo.userPlans.value.highestValidPlanConfig.takeIf { config.plans.isNotEmpty() }
+        val hasBestPerformanceFromGroup = allGroupPlans(config).any { it.hasBestLocationPerformance }
+        return currentPlanConfig?.hasBestLocationPerformance != false || hasBestPerformanceFromGroup
+    }
+
     suspend fun adjustDeviceSettingsForPlan() {
         val config = remoteConfigRepo.getConfigOnce()
         val currentPlanConfig = userRepo.userPlans.value.highestValidPlanConfig.takeIf { config.plans.isNotEmpty() }
-        val hasBestPerformanceFromGroup = groupLocalDataSource.allGroupsState.value.data?.any {
-            it.group.planConfig(remoteConfigRepo.getConfigOnce()).hasBestLocationPerformance
-        } ?: false
 
-        if (currentPlanConfig?.hasBestLocationPerformance == false && !hasBestPerformanceFromGroup) {
+        if (!hasBestLocationPerformance()) {
             appPrefs.locationSettingsHighPerformanceDurationTypeFallback = null
 
             if (LocationPerformanceSettingsType.HighPerformance.fromKey(appPrefs.locationSettingsHighPerformanceDurationType).isPremiumFeature) {
@@ -63,12 +80,7 @@ class PremiumStatusManager(
 
         if (currentPlanConfig?.hasPremiumMapStyles == false) {
             appPrefs.setAndroidMapSDKProvider(
-                appPrefs.getAndroidMapSDKProviderOrDefault(
-                    hasGoogleMaps = appConfigRepo.hasGoogleMaps,
-                    canUseMapLibre = appConfigRepo.canUseMapLibre,
-                    isPremiumPlan = false,
-                    mapTilerToken = null
-                )
+                getMapSDKProvider.getProvider(hasPremiumMapStyles = false)
             )
         }
 
@@ -161,7 +173,7 @@ class PremiumStatusManager(
 
         if (maxPlaceLimit != null && payload.isOwner && payload.count >= maxPlaceLimit) {
             return PremiumStatusLimitState.ServiceLimitReached(payload)
-        } else if (payload.limit != null && payload.limit in 0..payload.count) {
+        } else if (isPersonalSpaceOnLimit(groupId, payload) || (payload.limit != null && payload.limit in 0..payload.count)) {
             return PremiumStatusLimitState.PlanLimitReached(payload)
         } else {
             return PremiumStatusLimitState.WithinLimits(payload)
@@ -230,11 +242,19 @@ class PremiumStatusManager(
 
         if (maxDeviceLimit != null && payload.isOwner && payload.count >= maxDeviceLimit) {
             return PremiumStatusLimitState.ServiceLimitReached(payload)
-        } else if (payload.limit in 0..payload.count) {
+        } else if (isPersonalSpaceOnLimit(groupId, payload) || payload.limit in 0..payload.count) {
             return PremiumStatusLimitState.PlanLimitReached(payload)
         } else {
             return PremiumStatusLimitState.WithinLimits(payload)
         }
+    }
+
+    private fun isPersonalSpaceOnLimit(
+        groupId: GroupOrSpaceId,
+        payload: PremiumStatusLimitPayload
+    ): Boolean {
+        // checking for == 0 since hasPersonalSpace does not affect created resources
+        return groupId.isPersonalSpace && !payload.plan.hasPersonalSpace && payload.count == 0
     }
 
     suspend fun checkMemberCountLimits(groupId: String): PremiumStatusLimitState? {
@@ -263,12 +283,7 @@ class PremiumStatusManager(
     }
 
     fun defaultMapProvider(): MapsSDKProvider {
-        return appPrefs.getAndroidMapSDKProviderOrDefault(
-            hasGoogleMaps = appConfigRepo.hasGoogleMaps,
-            canUseMapLibre = appConfigRepo.canUseMapLibre,
-            isPremiumPlan = userRepo.userPlans.value.highestValidPlanConfig.hasPremiumMapStyles,
-            mapTilerToken = appPrefs.mapTilerToken
-        )
+        return getMapSDKProvider.getProvider()
     }
 }
 

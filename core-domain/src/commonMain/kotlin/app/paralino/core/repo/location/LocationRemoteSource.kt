@@ -6,6 +6,7 @@ import app.paralino.core.crypto.PersonalSpaceDeviceKey
 import app.paralino.core.domain.crypto.group.CryptoKEKLocalRepository
 import app.paralino.core.domain.crypto.user.CryptoUserKeysLocalSource
 import app.paralino.core.db.AppPrefs
+import app.paralino.core.domain.crypto.group.GetMemberSenderKeyUseCase
 import app.paralino.core.models.base.BackendDatabaseType
 import app.paralino.core.models.base.GroupOrSpaceId
 import app.paralino.core.models.location.LocationDataModel
@@ -14,6 +15,7 @@ import app.paralino.core.models.raw.GroupSettingsRaw
 import app.paralino.core.models.raw.MemberDocumentRaw
 import app.paralino.core.models.raw.MemberLocationRaw
 import app.paralino.core.models.raw.MemberWithLocationsRaw
+import app.paralino.core.models.raw.UserDeviceLocationRaw
 import app.paralino.core.repo.api.BackendQuery
 import app.paralino.core.repo.api.IDocumentsApi
 import app.paralino.core.repo.api.IFunctionsApi
@@ -29,7 +31,7 @@ class LocationRemoteSource constructor(
     private val functionsApi: IFunctionsApi,
     private val appConfig: AppConfigRepository,
     private val cryptoCore: CryptoCore,
-    private val cryptoKEKRepo: CryptoKEKLocalRepository,
+    private val getMemberSenderKeyUseCase: GetMemberSenderKeyUseCase,
     private val userKeyRepo: CryptoUserKeysLocalSource,
     private val appPrefs: AppPrefs
 ) {
@@ -90,13 +92,13 @@ class LocationRemoteSource constructor(
                     )
                 )
             } else {
-                val memberKey = cryptoKEKRepo.getMemberSenderKey(
+                val memberKey = getMemberSenderKeyUseCase.getMemberSenderKeyForReadWrite(
                     groupId = groupId.id,
                     memberUserId = appPrefs.userId,
                     locationId = locationId
                 )
 
-                if (memberKey !is GroupMemberSenderKey.Valid) {
+                if (memberKey !is GroupMemberSenderKey.ValidForReadWrite) {
                     throw MissingMemberKeyException(
                         groupId = groupId.id,
                         memberId = appPrefs.userId
@@ -118,6 +120,26 @@ class LocationRemoteSource constructor(
                     )
                 )
             }
+        }
+    }
+
+    suspend fun getGroupLocation(locationId: String): MemberLocationRaw {
+        return blocking {
+            documentApi.getDocument(
+                databaseType = BackendDatabaseType.DATA,
+                collectionId = appConfig.resourceIds.collectionMemberLocationsID,
+                documentId = locationId
+            ).let { MemberLocationRaw.from(it) }
+        }
+    }
+
+    suspend fun getPersonalLocation(locationId: String): UserDeviceLocationRaw {
+        return blocking {
+            documentApi.getDocument(
+                databaseType = BackendDatabaseType.DATA,
+                collectionId = appConfig.resourceIds.collectionPersonalLocationsID,
+                documentId = locationId
+            ).let { UserDeviceLocationRaw.from(it) }
         }
     }
 

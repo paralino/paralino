@@ -184,11 +184,23 @@ sealed class GroupMemberSenderKey {
         data class InvalidOwnerPublicKey(val reason: GroupMemberMainPublicKey.Error) : Error()
     }
 
-    data class Valid(
+    open class ValidForRead(
         val key: String,
         val deviceKeyVersion: Long,
-        val memberKeyVersion: Long
-    ) : GroupMemberSenderKey()
+        val memberKeyVersion: Long,
+        val isCurrent: Boolean
+    ): GroupMemberSenderKey()
+
+    class ValidForReadWrite(
+        key: String,
+        deviceKeyVersion: Long,
+        memberKeyVersion: Long
+    ) : ValidForRead(
+        key = key,
+        deviceKeyVersion = deviceKeyVersion,
+        memberKeyVersion = memberKeyVersion,
+        isCurrent = true
+    )
 }
 
 sealed class GroupMasterKey {

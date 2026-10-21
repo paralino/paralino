@@ -19,6 +19,9 @@ struct AppSettingsScreen: View {
             ComposeRepresentable {
                 ScreensIOS.shared.settings.AppSettingsScreenVC(
                     vm: appState.vm,
+                    openAppThemeScreen: {
+                        path.append(.settings(.appThemeSettings))
+                    },
                     openMeasurementSystemScreen: {
                         path.append(.settings(.measurementSystemSettings))
                     },
@@ -33,6 +36,9 @@ struct AppSettingsScreen: View {
                     },
                     openPlaceSearchSettings: {
                         path.append(.settings(.placeSearchSettings))
+                    },
+                    openPersonalSpaceSettings: {
+                        path.append(.settings(.personalSpaceSettings))
                     }
                 )
             }

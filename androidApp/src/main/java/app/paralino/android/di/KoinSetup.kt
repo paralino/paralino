@@ -101,18 +101,22 @@ import app.paralino.core.presentation.privacyzones.list.PrivacyZonesViewModel
 import app.paralino.core.presentation.rawdata.RawDataPresentationViewModel
 import app.paralino.core.presentation.settings.SettingsViewModel
 import app.paralino.core.presentation.settings.appstatus.AppStatusDebugViewModel
+import app.paralino.core.presentation.settings.status.AppStatusViewModel
 import app.paralino.core.presentation.settings.billing.PaywallViewModel
 import app.paralino.core.presentation.settings.billing.PlanInfoViewModel
 import app.paralino.core.presentation.settings.billing.SubscriptionViewModel
 import app.paralino.core.presentation.settings.billing.licence.LicenceCodeViewModel
 import app.paralino.core.presentation.settings.blocklist.BlocklistViewModel
+import app.paralino.core.presentation.settings.userdevices.UserDevicesViewModel
 import app.paralino.core.presentation.settings.convertaccount.ConvertAccountViewModel
 import app.paralino.core.presentation.settings.editprofile.EditProfileViewModel
 import app.paralino.core.presentation.settings.emailchange.ChangeEmailViewModel
 import app.paralino.core.presentation.settings.general.GeneralInfoViewModel
 import app.paralino.core.presentation.settings.generic.AppSettingsViewModel
+import app.paralino.core.presentation.settings.generic.AppThemeViewModel
 import app.paralino.core.presentation.settings.generic.MeasurementSystemViewModel
 import app.paralino.core.presentation.settings.generic.NotificationsGroupingViewModel
+import app.paralino.core.presentation.settings.generic.PersonalSpaceFeatureSettingsViewModel
 import app.paralino.core.presentation.settings.generic.PlaceSearchSettingsViewModel
 import app.paralino.core.presentation.settings.generic.maps.MapInteractionsViewModel
 import app.paralino.core.presentation.settings.generic.maps.MapsProviderViewModel
@@ -152,7 +156,10 @@ object KoinSetup {
     val modules get() = listOf(coreDependencyModule, appSpecificModule)
 
     private val coreDependencyModule = module {
-        single { MainDatabaseHelper(AppMainDatabase.create(SqlDriverFactory(androidContext()))) }
+        single {
+            val driverFactory = SqlDriverFactory(androidContext())
+            MainDatabaseHelper { AppMainDatabase.create(driverFactory) }
+        }
         single { LogsDatabaseHelper(AppLogsDatabase.create(SqlDriverFactory(androidContext()))) }
 
         single { CryptoFrameworkLibsodium() } bind ICryptoServiceProvider::class
@@ -244,13 +251,13 @@ object KoinSetup {
             )
         }
 
-        viewModel { AccountOnboardingViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
-        viewModel { MapHomeViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
-        viewModel { SettingsViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+        viewModel { AccountOnboardingViewModel(get(), get(), get(), get(), get(), get(), get(), get()) }
+        viewModel { MapHomeViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+        viewModel { SettingsViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
         viewModel { (startScreenType: LoginScreenUiType) -> LoginViewModel(get(), get(), get(), get(), startScreenType, get(), get()) }
         viewModel { (groupID: String?) -> CreateGroupViewModel(groupID, get(), get(), get(), get(), get()) }
         viewModel { (groupId: String?, presentationType: SharingStartPresentationType) ->
-            SharingStartViewModel(initialGroupId = groupId?.asGroupOrSpaceId(), presentationType, get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get())
+            SharingStartViewModel(initialGroupId = groupId?.asGroupOrSpaceId(), presentationType, get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get())
         }
         viewModel { LoggedOutViewModel(get(), get()) }
         viewModel { PersonalCodeViewModel(get(), get(), get(), get()) }
@@ -269,7 +276,7 @@ object KoinSetup {
         viewModel { (groupID: String) -> GroupDetailViewModel(groupID, get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
         viewModel { (groupID: String) -> GroupSettingsViewModel(groupID, get(), get(), get(), get(), get(), get(), get(), get()) }
         viewModel { MainViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
-        viewModel { VerifyEmailViewModel(get(), get(), get(), get()) }
+        viewModel { VerifyEmailViewModel(get(), get(), get(), get(), get()) }
         viewModel { ChangeEmailViewModel(get(), get(), get()) }
         viewModel { ChangePasswordViewModel(get(), get(), get(), get()) }
         viewModel { ConvertAccountViewModel(get(), get(), get()) }
@@ -285,9 +292,11 @@ object KoinSetup {
         viewModel { (groupID: String, zoneId: String?, editStep: CreatePrivacyZoneScreenStep?, lat: Double?, lng: Double?) -> CreatePrivacyZoneViewModel(groupId = groupID, zoneId = zoneId, editStep = editStep, lat = lat, lng = lng, get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
         viewModel { (rawDataType: RawPresentationDataType) -> RawDataPresentationViewModel(rawDataType, get(), get()) }
         viewModel { BlocklistViewModel(get()) }
-        viewModel { AppStatusDebugViewModel(get(), get(), get(), get(), get()) }
+        viewModel { UserDevicesViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(),) }
+        viewModel { AppStatusDebugViewModel(get(), get()) }
+        viewModel { AppStatusViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
         viewModel { SubscriptionViewModel(get(), get(), get(), get(), get(), get()) }
-        viewModel { (type: BillingScreenSourceType) -> PaywallViewModel(type, get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+        viewModel { (type: BillingScreenSourceType) -> PaywallViewModel(type, get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
         viewModel { LicenceCodeViewModel(get(), get()) }
         viewModel { PlanInfoViewModel(get(), get()) }
         viewModel { GeneralInfoViewModel(get(), get()) }
@@ -295,15 +304,17 @@ object KoinSetup {
         viewModel { WelcomeOnboardingViewModel(get(), get()) }
         viewModel { (groupID: String) -> GroupJoinWelcomeViewModel(groupID, get(), get(), get(), get(), get(), get()) }
         viewModel { (groupID: String) -> BatteryNotificationsViewModel(groupID, get(), get(), get(), get(), get()) }
+        viewModel { AppThemeViewModel(get()) }
         viewModel { MeasurementSystemViewModel(get(), get()) }
         viewModel { NotificationsGroupingViewModel(get()) }
         viewModel { MapInteractionsViewModel(get()) }
         viewModel { PlaceSearchSettingsViewModel(get(), get()) }
+        viewModel { PersonalSpaceFeatureSettingsViewModel(get()) }
         viewModel { NotificationSocketSettingsViewModel(get(), get(), get(), get(), get(), get(), get()) }
-        viewModel { MapsProviderViewModel(get(), get(), get(), get(), get()) }
+        viewModel { MapsProviderViewModel(get(), get(), get(), get(), get(), get()) }
         viewModel { (groupId: String) -> LocationHistoryDeleteViewModel(groupId = groupId.asGroupOrSpaceId(), get(), get(), get(), get(), get(), get()) }
         viewModel { PersonalSpaceViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
-        viewModel { PersonalSpaceSettingsViewModel(get()) }
+        viewModel { PersonalSpaceSettingsViewModel(get(), get()) }
         viewModel { (groupId: String, placeId: String) -> PlaceSensitivityViewModel(groupId = groupId, placeId = placeId, get(), get(), get(), get()) }
         viewModel { AppSettingsViewModel(get(), get()) }
     }

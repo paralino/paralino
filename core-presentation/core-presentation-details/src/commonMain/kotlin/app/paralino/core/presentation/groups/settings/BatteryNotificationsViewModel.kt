@@ -63,7 +63,7 @@ class BatteryNotificationsViewModel(
                     BatteryNotificationScreenState(
                         groupId = groupId.asGroupOrSpaceId(),
                         groupName = MR.strings.personalSpace_spaceTitle.localizedString(),
-                        groupImage = personal.user.data?.userImage
+                        groupImage = personal.user.data.data?.userImage
                             ?: ImageModel.emoji(Emojis.robot),
                         fullLoading = false,
                         isActive = currentSettings?.isActive != false,

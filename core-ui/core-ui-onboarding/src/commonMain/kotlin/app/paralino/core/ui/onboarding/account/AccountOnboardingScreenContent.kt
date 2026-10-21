@@ -12,7 +12,6 @@ import app.paralino.core.ui.CoreUiState
 import app.paralino.core.ui.components.BaseOnboardingScrollableContent
 import app.paralino.core.ui.components.BaseOnboardingHeaderContent
 import app.paralino.core.ui.components.BaseOnboardingScreen
-import app.paralino.core.ui.settings.WelcomeOnboardingPageLocationHistory
 import dev.icerock.moko.resources.compose.stringResource
 
 @Composable
@@ -53,9 +52,29 @@ fun AccountOnboardingScreenContent(
                     titleTag = step.titleTag?.let { stringResource(it) },
                     content = {
                         when (step) {
+
+                            AccountOnboardingContent.GroupOnboardingIntro -> {
+                                AccountOnboardingGroupsIntro()
+                            }
+
+                            AccountOnboardingContent.GroupChoice -> {
+                                AccountOnboardingGroupChoice(
+                                    title = stringResource(step.title),
+                                    info = step.infoText(),
+                                    onJoinGroup = {
+                                        onEvent(AccountOnboardingUiEvent.SelectJoinGroup)
+                                    },
+                                    onCreateGroup = {
+                                        onEvent(AccountOnboardingUiEvent.SelectCreateGroup)
+                                    }
+                                )
+                            }
+
                             is AccountOnboardingContent.ParalinoID -> {
                                 AccountOnboardingParalinoID(
                                     step = step,
+                                    title = stringResource(step.title),
+                                    info = step.infoText(),
                                     onSharePersonalCode = {
                                         onEvent(AccountOnboardingUiEvent.SharePersonalCode)
                                     },
@@ -65,37 +84,14 @@ fun AccountOnboardingScreenContent(
                                 )
                             }
 
-                            is AccountOnboardingContent.AccountOnboardingStart -> {
-                                AccountOnboardingStartPage(
-                                    isGroupChecked = step.isGroupChecked,
-                                    isPersonalSpaceChecked = step.isPersonalSpaceChecked,
-                                    onGroupModeClick = {
-                                        onEvent(AccountOnboardingUiEvent.GoWithGroupMode)
-                                    },
-                                    onPersonalSpaceModeClick = {
-                                        onEvent(AccountOnboardingUiEvent.GoWithPersonalSpaceMode)
-                                    },
+                            AccountOnboardingContent.GroupCreate -> {
+                                AccountOnboardingGroupCreateIntro(
+                                    title = stringResource(step.title)
                                 )
                             }
 
                             AccountOnboardingContent.PushNotifications -> {
                                 AccountOnboardingPushNotifications()
-                            }
-
-                            AccountOnboardingContent.GroupCreate -> {
-                                AccountOnboardingGroupCreate()
-                            }
-
-                            AccountOnboardingContent.PersonalSpaceCurrentUsersIntro -> {
-                                AccountOnboardingPersonalSpace()
-                            }
-
-                            AccountOnboardingContent.PersonalSpaceNewUsersIntro -> {
-                                AccountOnboardingPersonalSpace()
-                            }
-
-                            is AccountOnboardingContent.LocationHistoryIntro -> {
-                                WelcomeOnboardingPageLocationHistory()
                             }
 
                             AccountOnboardingContent.PrivacyZonesIntro -> {

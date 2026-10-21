@@ -10,14 +10,12 @@ import app.paralino.core.utils.ConditionErrorType
 data class AccountScreenState constructor(
     val userState: UserState,
     val canUseEmail: Boolean,
-    val canBoostLocation: Boolean,
-    val canAccessDebugScreen: Boolean,
     val logoutState: Payload<Unit>? = null,
     val deleteAccountState: Payload<Unit>? = null,
     val versionName: String,
     val alertDialog: MainAlertDialog? = null,
-    val boostTime: String? = null,
     val userPlan: PlanConfig,
+    val showUpgradeBanner: Boolean,
     val appReviewUrl: String,
     val isAppReviewExpanded: Boolean,
     val isAppReviewVisible: Boolean,
@@ -50,7 +48,6 @@ sealed class AccountScreenUiEvent() {
     data object Logout: AccountScreenUiEvent()
     data object DeleteAccount: AccountScreenUiEvent()
     data object SendEmailVerification: AccountScreenUiEvent()
-    data object ToggleLocationBoost: AccountScreenUiEvent()
     data object TryToOpenAppReview: AccountScreenUiEvent()
     data object OpenAppReview: AccountScreenUiEvent()
     data object CloseAppReview: AccountScreenUiEvent()

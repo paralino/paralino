@@ -1,12 +1,13 @@
 package app.paralino.core.repo.location
 
+import app.paralino.core.db.MainDatabaseHelper
 import app.paralino.core.domain.location.LocationUploadEngine
 import app.paralino.core.domain.notifications.processors.LocationRequestNotificationProcessor.LocationRequestNotificationPayload
 import app.paralino.core.logg
 import app.paralino.core.models.Payload
 import app.paralino.core.models.base.BackendDatabaseType
 import app.paralino.core.models.base.BackendResourceIDs
-import app.paralino.core.models.location.LocationDataModel
+import app.paralino.core.models.location.LocationUpdateDataFromDevice
 import app.paralino.core.models.raw.PushNotificationRaw
 import app.paralino.core.provider.CoroutineScopeProvider
 import app.paralino.core.repo.LocationSharingManager
@@ -20,8 +21,17 @@ class LocationRepositoryWrapper(
     private val locationRepo: LocationUploadEngine,
     private val locationSharingManager: LocationSharingManager,
     private val docApi: IDocumentsApi,
-    private val scopeProvider: CoroutineScopeProvider
+    private val scopeProvider: CoroutineScopeProvider,
+    private val databaseHelper: MainDatabaseHelper
 ) {
+    
+    fun startNewPushSession() {
+        try {
+            databaseHelper.reopen(scope = scopeProvider.userSessionIOScope)
+        } catch (e: Exception) {
+            logg.tag("location_service").w("Unable to start new push session: ${e.message}")
+        }
+    }
 
     fun startLocationUploadEngine() {
         locationRepo.startLocationUploadEngine()
@@ -75,7 +85,7 @@ class LocationRepositoryWrapper(
     }
 
     @OptIn(NativeRuntimeApi::class)
-    fun registerNewLocation(data: LocationDataModel): Payload<Unit> {
+    fun registerNewLocation(data: LocationUpdateDataFromDevice): Payload<Unit> {
         GC.collect()
         return try {
             locationRepo.registerNewLocation(data)

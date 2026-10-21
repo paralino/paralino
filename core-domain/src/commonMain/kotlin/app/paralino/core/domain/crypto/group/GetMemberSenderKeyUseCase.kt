@@ -21,7 +21,7 @@ class GetMemberSenderKeyUseCase(
     private val appPrefs: AppPrefs,
     private val appBuildConfig: AppBuildConfig
 ) {
-    suspend fun getCurrentUserDeviceSenderKey(
+    suspend fun getCurrentUserDeviceSenderKeyForReadWrite(
         groupId: String,
         locationId: String
     ): GroupMemberSenderKey {
@@ -36,7 +36,7 @@ class GetMemberSenderKeyUseCase(
             ?: let {
                 logg.tag("tag_crypto_key_group_member")
                     .d("member sender key not found for current user in group $groupId")
-                return getMemberSenderKey(
+                return getMemberSenderKeyForReadWrite(
                     groupId = groupId,
                     memberUserId = currentUserId,
                     locationId = locationId,
@@ -52,7 +52,7 @@ class GetMemberSenderKeyUseCase(
         )
     }
 
-    suspend fun getMemberSenderKey(
+    suspend fun getMemberSenderKeyForReadWrite(
         groupId: String,
         memberUserId: String,
         locationId: String
@@ -91,15 +91,17 @@ class GetMemberSenderKeyUseCase(
         if (memberUserId == currentUserId) {
             val key = local.getLocalGroupSenderKey(groupId = groupId)
                 ?.takeIf { key ->
+                    logg.tag("tag_crypto_key_group_member")
+                        .d("Loaded current device sender key ${key.deviceKeyVersion} from encrypted cache, actual key: ${keyRaw.deviceKeyVersion}")
                     key.locationId == locationId
                             && keyRaw.memberKeyVersion == key.memberKeyVersion
                             && keyRaw.deviceKeyVersion == key.deviceKeyVersion
                 }
                 ?.let { key ->
                     logg.tag("tag_crypto_key_group_member")
-                        .d("Try to load current device sender key from encrypted cache")
+                        .d("Try to unwrap current device sender key ${key.deviceKeyVersion} from encrypted cache")
                     try {
-                        GroupMemberSenderKey.Valid(
+                        GroupMemberSenderKey.ValidForReadWrite(
                             key = cryptoCore.decryptDataWithKey(
                                 data = key.encryptedSenderKey,
                                 key = userKeyRepository.personalKey(version = key.userKeyVersion).key
@@ -186,7 +188,7 @@ class GetMemberSenderKeyUseCase(
             }
         }
 
-        return GroupMemberSenderKey.Valid(
+        return GroupMemberSenderKey.ValidForReadWrite(
             key = memberKey,
             deviceKeyVersion = keyRaw.deviceKeyVersion,
             memberKeyVersion = keyRaw.memberKeyVersion

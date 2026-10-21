@@ -4,6 +4,8 @@ import androidx.core.location.LocationRequestCompat
 import app.paralino.core.models.location.LocationPerformanceType
 import app.paralino.core.repo.location.LocationPerformanceManager
 import app.paralino.core.repo.location.LocationPerformanceSettingsType
+import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Duration.Companion.seconds
 
 object LocationRequestModels {
 
@@ -13,6 +15,7 @@ object LocationRequestModels {
         batterySaverSettings: LocationPerformanceManager.LocationPerformanceSettingsBatterySaver,
     ): LocationRequestCompat {
         return when (type) {
+            LocationPerformanceType.HIGH,
             LocationPerformanceType.HIGHER_FOCUS,
             LocationPerformanceType.VERY_HIGH,
             LocationPerformanceType.MANUAL_BOOST -> {
@@ -22,16 +25,10 @@ object LocationRequestModels {
                     .build()
             }
 
-            LocationPerformanceType.HIGH -> {
-                LocationRequestCompat.Builder(3_000L)
-                    .setMinUpdateIntervalMillis(2_000L)
-                    .setQuality(LocationRequestCompat.QUALITY_HIGH_ACCURACY)
-                    .build()
-            }
-
             LocationPerformanceType.MEDIUM_HIGH -> {
-                LocationRequestCompat.Builder(5 * 60 * 1000L)
-                    .setMinUpdateIntervalMillis(10_000L)
+                LocationRequestCompat.Builder(10.seconds.inWholeMilliseconds)
+                    .setMinUpdateIntervalMillis(10.seconds.inWholeMilliseconds)
+                    .setMinUpdateDistanceMeters(300f)
                     .setQuality(LocationRequestCompat.QUALITY_HIGH_ACCURACY)
                     .build()
             }

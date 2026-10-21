@@ -4,6 +4,7 @@ import app.paralino.core.db.main.groups.GroupEntity
 import app.paralino.core.models.base.PlanConfig
 import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.raw.GroupDocumentRaw
+import app.paralino.core.utils.BaseRemoteModule
 import app.paralino.core.utils.extensions.isoWithOffsetToInstant
 
 class GroupsMapperLocal(
@@ -26,10 +27,14 @@ class GroupsMapperLocal(
             planType = model.planType,
             planExpiresAt = model.planExpiresAt?.isoWithOffsetToInstant(),
             provider = model.provider,
-            membersLimitOverride = model.membersLimitOverride,
-            devicesLimitOverride = model.devicesLimitOverride,
-            placesLimitOverride = model.placesLimitOverride,
-            fallbackPlanType = model.fallbackPlanType ?: PlanConfig.default.planType
+            fallbackPlanType = model.fallbackPlanType ?: PlanConfig.default.planType,
+            groupPlans = model.groupPlans?.let {
+                try {
+                    BaseRemoteModule.formatter.decodeFromString<List<String>>(it)
+                } catch (e: Exception) {
+                    null
+                }
+            }
         )
     }
 
@@ -45,10 +50,8 @@ class GroupsMapperLocal(
             planType = model.planType,
             planExpiresAt = model.planExpiresAt?.toString(),
             provider = model.provider,
-            membersLimitOverride = model.membersLimitOverride,
-            devicesLimitOverride = model.devicesLimitOverride,
-            placesLimitOverride = model.placesLimitOverride,
-            fallbackPlanType = model.fallbackPlanType
+            fallbackPlanType = model.fallbackPlanType,
+            groupPlans = model.groupPlans?.let { BaseRemoteModule.formatter.encodeToString(it) }
         )
     }
 }

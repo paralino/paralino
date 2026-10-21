@@ -58,7 +58,7 @@ fun SettingsScreenCore(
     openPersonalCodes: () -> Unit,
     openBlockList: () -> Unit,
     openGeneralInfo: () -> Unit,
-    openAppStatus: () -> Unit,
+    openStatus: () -> Unit,
     openSubscriptions: () -> Unit,
     openPaywall: () -> Unit,
     openLocationSettings: () -> Unit,
@@ -137,7 +137,7 @@ fun SettingsScreenCore(
             )
         }
 
-        AnimatedVisibility(visible = readyState?.userPlan?.isPremium == false) {
+        AnimatedVisibility(visible = readyState?.showUpgradeBanner == true) {
             PremiumPlanBanner(
                 modifier = Modifier.padding(top = 20.dp),
                 onClick = openPaywall
@@ -173,33 +173,6 @@ fun SettingsScreenCore(
                 icon = CoreAppIcons.ShareLocation.asPainterResource()
             ) {
                 openLocationSettings()
-            }
-
-            if (readyState.canBoostLocation) {
-                SettingsActionItem(
-                    name = stringResource(MR.strings.setting_title_locationBoost),
-                    description = when (readyState.boostTime != null) {
-                        true -> stringResource(
-                            MR.strings.setting_description_locationBoost_enabled,
-                            readyState.boostTime ?: ""
-                        )
-
-                        false -> stringResource(MR.strings.setting_description_locationBoost_disabled)
-                    },
-                    icon = CoreAppIcons.ShareLocation.asPainterResource(),
-                    type = SettingsActionItemType.Switch(readyState.boostTime != null)
-                ) {
-                    viewModel.onEvent(AccountScreenUiEvent.ToggleLocationBoost)
-                }
-            }
-        }
-
-        if (readyState?.canAccessDebugScreen == true) {
-            SettingsActionItem(
-                name = "App status",
-                icon = CoreAppIcons.Settings.asPainterResource()
-            ) {
-                openAppStatus()
             }
         }
 
@@ -283,6 +256,13 @@ fun SettingsScreenCore(
                     )
                 }
             }
+        }
+
+        SettingsActionItem(
+            name = stringResource(MR.strings.setting_status_title),
+            icon = CoreAppIcons.InfoCircle.asPainterResource()
+        ) {
+            openStatus()
         }
 
         SettingsActionItem(

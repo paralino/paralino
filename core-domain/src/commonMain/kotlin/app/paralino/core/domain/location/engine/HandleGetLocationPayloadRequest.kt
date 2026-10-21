@@ -5,8 +5,8 @@ import app.paralino.core.domain.location.LocationPayloadProvider
 import app.paralino.core.domain.location.LocationPayloadStatus
 import app.paralino.core.logg
 import app.paralino.core.models.base.GroupOrSpaceId
-import app.paralino.core.models.location.LocationDataModel
 import app.paralino.core.models.location.LocationSharingContract
+import app.paralino.core.models.location.LocationUpdateDataFromDevice
 import app.paralino.core.models.location.MemberGroupId
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.places.PlaceActivityDataSource
@@ -20,7 +20,7 @@ class HandleGetLocationPayloadRequest(
 ) {
     suspend fun getLocationPayload(
         groupId: GroupOrSpaceId,
-        data: LocationDataModel?,
+        data: LocationUpdateDataFromDevice?,
         contract: LocationSharingContract,
     ): MemberGroupId? {
 

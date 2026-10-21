@@ -16,7 +16,7 @@ data class PersonalSpaceScreenState(
     val sharingStatus: LocationSharingState?,
     val devicesWithSessions: List<UserDeviceOrSessionItemState>,
     val placesFeatureItems: List<GroupSpaceFocusedFeatureChildItem>,
-    val devicesLimit: Int,
+    val devicesLimit: Int?,
     val shouldShowPlanBanner: Boolean,
     val arePlacesOverLimit: Boolean?,
     val isSpaceOverLimit: Boolean?,
@@ -24,6 +24,7 @@ data class PersonalSpaceScreenState(
     val plan: PlanConfig,
     val alertDialog: MainAlertDialog?
 ) {
+    val isFabButtonActive: Boolean = plan.isPremium
     val activeDevices: List<UserDeviceOrSessionItemState> = devicesWithSessions
         .filter { it.device?.location != null }
 

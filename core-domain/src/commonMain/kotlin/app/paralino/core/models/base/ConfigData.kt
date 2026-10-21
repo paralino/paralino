@@ -20,7 +20,7 @@ data class ConfigData(
     val newSoftVersionIOS: Long = 0,
     val androidAppUrl: String? = null,
     val emailEnabled: Boolean = false,
-    val personalSpaceOnboardingMode: PersonalSpaceOnboardingMode,
+    val planGracePeriodFallbackSeconds: Long = 0,
     val freePlanPromoBillingId: String? = null,
     val defaultPremiumPlan: String,
     val plans: List<PlanConfig> = emptyList(),
@@ -55,9 +55,7 @@ data class ConfigData(
                 newSoftVersionIOS = map.get("newSoftVersionIOS")?.toLongOrNull() ?: 0,
                 androidAppUrl = map.get("androidAppUrl")?.takeIf { it.isNotBlank() },
                 emailEnabled = map.get("emailEnabled")?.toBooleanStrictOrNull() ?: false,
-                personalSpaceOnboardingMode = map.get("personalSpaceOnboardingMode")?.let {
-                    PersonalSpaceOnboardingMode.fromKey(key = it)
-                } ?: PersonalSpaceOnboardingMode.FALLBACK,
+                planGracePeriodFallbackSeconds = map.get("planGracePeriodFallbackSeconds")?.toLongOrNull() ?: 0,
                 freePlanPromoBillingId = map.get("freePlanPromoBillingId")?.takeIf { it.isNotBlank() },
                 defaultPremiumPlan = map.get("defaultPremiumPlan")
                     ?.let {
@@ -123,18 +121,3 @@ data class SubscriptionInfoNoticeValue(
     val plans: List<String>,
     val periods: List<String>,
 )
-
-@Serializable
-enum class PersonalSpaceOnboardingMode(
-    val key: String,
-) {
-    FULL(key = "full"),
-    FALLBACK(key = "fallback"),
-    DISABLED(key = "disabled");
-
-    companion object {
-        fun fromKey(key: String): PersonalSpaceOnboardingMode {
-            return entries.firstOrNull { it.key == key } ?: FALLBACK
-        }
-    }
-}

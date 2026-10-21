@@ -54,7 +54,7 @@ class GroupStateManager(
 
             is MapScreenViewSourceType.DefaultGroupOrSpace -> {
                 if (viewSource.id?.id.isNullOrBlank()) {
-                    if (appPrefs.isPersonalSpaceSelected) {
+                    if (appPrefs.isPersonalSpaceSelected && appPrefs.isPersonalSpaceEnabled) {
                         selectPersonalSpace()
                     } else {
                         selectGroup(groupId = appPrefs.selectedGroupId)
@@ -69,7 +69,11 @@ class GroupStateManager(
             }
 
             MapScreenViewSourceType.PersonalSpace -> {
-                selectPersonalSpace()
+                if (appPrefs.isPersonalSpaceEnabled) {
+                    selectPersonalSpace()
+                } else {
+                    selectGroup(groupId = appPrefs.selectedGroupId)
+                }
             }
         }
     }
@@ -114,6 +118,10 @@ class GroupStateManager(
     }
 
     private suspend fun selectPersonalSpace() {
+        if (!appPrefs.isPersonalSpaceEnabled) {
+            selectGroup(groupId = appPrefs.selectedGroupId)
+            return
+        }
         appPrefs.isPersonalSpaceSelected = true
         groupIdData.update { UserGroup.groupPersonalDevicesId.asGroupOrSpaceId() }
         val personalSpace = personalSpaceRepo.personalSpaceState.value.data
@@ -140,7 +148,7 @@ class GroupStateManager(
                 // This would need to be handled by the main ViewModel to update alertDialog
                 eventChannel.trySend(MapHomeScreenEvent.ShowPlanLimitAlert(limit))
             } else if (limit in 0..groupCount) {
-                eventChannel.trySend(MapHomeScreenEvent.OpenPaywall(type = BillingScreenSourceType.UPGRADE_DEFAULT))
+                eventChannel.trySend(MapHomeScreenEvent.OpenPaywall(type = BillingScreenSourceType.UPGRADE_MORE_GROUPS))
             } else {
                 eventChannel.trySend(MapHomeScreenEvent.OpenGroupCreateScreen)
             }

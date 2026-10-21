@@ -119,7 +119,9 @@ class PlacesActivityProcessor(
         val placeData = place.data.data ?: return
 
         val movementType = getMovementType(
-            location = mappedLocation,
+            locationLat = mappedLocation.lat,
+            locationLng = mappedLocation.lng,
+            locationAccuracy = mappedLocation.accuracy,
             place = place,
             placeData = placeData
         )
@@ -473,7 +475,9 @@ class PlacesActivityProcessor(
             val isLocationInaccurate = if (location != null && placeData != null) {
 
                 val movementType = getMovementType(
-                    location = location,
+                    locationLat = location.lat,
+                    locationLng = location.lng,
+                    locationAccuracy = location.adjustedHorizontalAccuracy,
                     place = place,
                     placeData = placeData
                 )
@@ -552,7 +556,7 @@ class PlacesActivityProcessor(
 
             when {
                 location == null -> true
-                location.accuracy.isLocationInaccurate() -> true
+                location.adjustedHorizontalAccuracy.isLocationInaccurate() -> true
                 location.timeUTCInstant?.isOlderThan(5.minutes) != false -> true
                 else -> false
             }
@@ -591,7 +595,7 @@ class PlacesActivityProcessor(
             requestType = IOneTimeLocationProvider.RequestType.CacheOnly
         )
         val isLocationVeryAccurate = location?.let {
-            it.accuracy < 30 && !it.isOlderThan(10.seconds)
+            it.adjustedHorizontalAccuracy < 30 && !it.isOlderThan(10.seconds)
         } ?: false
 
         return when (trigger) {
@@ -644,31 +648,29 @@ class PlacesActivityProcessor(
     }
 
     private fun getMovementType(
-        location: LocationDataModel,
+        locationLat: Double,
+        locationLng: Double,
+        locationAccuracy: Float,
         place: GroupPlace,
         placeData: GroupPlaceData
     ): PlaceActivityMovementType {
         val distance = geofenceManager.distanceBetweenPoints(
-            data = location,
-            geofence = GroupPlaceGeofenceData(
-                groupId = place.groupOrSpaceId,
-                placeId = place.id,
-                lat = placeData.lat,
-                lng = placeData.lng,
-                radiusMeters = placeData.radiusMeters
-            )
+            lat1 = locationLat,
+            lng1 = locationLng,
+            lat2 = placeData.lat,
+            lng2 = placeData.lng
         )
 
         // user entered place only if location (lat, lng) fully entered place circle
         // if user accuracy is not great, accept place enter only if user center is closer to place center
-        val accuracyThreshold = if (location.accuracy > 50) location.accuracy * 0.1f else 0f
+        val accuracyThreshold = if (locationAccuracy > 50) locationAccuracy * 0.1f else 0f
         val radiusMatch = when {
             // full user location fits inside place
-            placeData.radiusMeters > location.accuracy -> true
+            placeData.radiusMeters > locationAccuracy -> true
             // > 80% of area can overlap (place circle is at least 80% of user radius)
-            placeData.radiusMeters / location.accuracy > 0.8 -> {
+            placeData.radiusMeters / locationAccuracy > 0.8 -> {
                 // allow not so accurate location only if it has decent overlap
-                distance < location.accuracy - placeData.radiusMeters
+                distance < locationAccuracy - placeData.radiusMeters
             }
 
             else -> false
@@ -684,30 +686,30 @@ class PlacesActivityProcessor(
         // in that case accuracy tends to worsen so in order to check for place exit we want to make sure user definitely left place
         // also adding few meters of buffer to improve filter
         val exitThreshold = when {
-            location.accuracy > 500 -> {
+            locationAccuracy > 500 -> {
                 // if accuracy is quite bad, only consider exit if user is very far away
                 2000f
             }
 
-            location.accuracy >= 100 -> {
+            locationAccuracy >= 100 -> {
                 // if accuracy is not that great, only consider exit if user is  somewhat far away
                 if (place.alertSensitivity.ignoreInaccurate) {
-                    location.accuracy * 2
+                    locationAccuracy * 2
                 } else {
                     when (DeviceType.current) {
                         DeviceType.Android -> {
-                            when (location.accuracy) {
+                            when (locationAccuracy) {
                                 // "magic numbers" because android devices sometimes produce completely wrong locations
                                 // with round number accuracy in low hundreds, while actual accuracy should be at least double that
                                 // In case that reported location is actually within that circle
                                 // this won't cause an issue since it will just cause device to request better location
-                                100f, 200f, 300f, 400f, 500f -> location.accuracy * 2f
-                                else -> location.accuracy / 2
+                                100f, 200f, 300f, 400f, 500f -> locationAccuracy * 2f
+                                else -> locationAccuracy / 2
                             }
                         }
 
                         DeviceType.iOS -> {
-                            location.accuracy / 2
+                            locationAccuracy / 2
                         }
                     }
                 }
@@ -716,13 +718,13 @@ class PlacesActivityProcessor(
             else -> {
                 // if accuracy is decent,
                 if (place.alertSensitivity.ignoreInaccurate) {
-                    (location.accuracy / 10).coerceAtLeast(5f)
+                    (locationAccuracy / 10).coerceAtLeast(5f)
                 } else {
                     0f
                 }
             }
         }
-        val isExit = distance > placeData.radiusMeters + location.accuracy + exitThreshold
+        val isExit = distance > placeData.radiusMeters + locationAccuracy + exitThreshold
 
         if (isExit) {
             return PlaceActivityMovementType.EXIT

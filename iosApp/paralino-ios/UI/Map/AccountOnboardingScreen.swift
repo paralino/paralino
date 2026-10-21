@@ -44,6 +44,9 @@ struct AccountOnboardingScreen: View {
                         appDelegate.notificationPermissionHandler.requestNotificationPermission(
                             messageDispather: appState.vm
                         )
+                    },
+                    openGroupJoinWelcome: { groupId in
+                        path.append(.home(.groupJoinWelcome(groupId: groupId)))
                     }
                 )
             }

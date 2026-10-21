@@ -2,10 +2,14 @@ package app.paralino.core.repo.user
 
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.db.MainDatabaseHelper
+import app.paralino.core.domain.user.GetMapSDKProviderUseCase
+import app.paralino.core.models.raw.UserConfigPayload
+import app.paralino.core.models.settings.MapsSDKProvider
 import app.paralino.core.models.user.UserConfigModel
 import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.repo.api.IFunctionsApi
 import app.paralino.core.repo.api.ServerFunction
+import app.paralino.core.repo.api.runAndWait
 import app.paralino.core.repo.base.BaseRepository
 import app.paralino.core.repo.base.RemotePreference
 import app.paralino.core.utils.extensions.blocking
@@ -22,7 +26,8 @@ class UserConfigRepository(
     private val database: MainDatabaseHelper,
     private val functionsApi: IFunctionsApi,
     private val scopeProvider: ICoroutineScopeProvider,
-    private val appPrefs: AppPrefs
+    private val appPrefs: AppPrefs,
+    private val getMapSDKProvider: GetMapSDKProviderUseCase
 ) : BaseRepository() {
 
     val configState: StateFlow<UserConfigModel> = getConfig()
@@ -31,7 +36,8 @@ class UserConfigRepository(
             started = SharingStarted.Eagerly,
             initialValue = UserConfigModel.fromDatabase(
                 nodes = emptyList(),
-                mapTilerToken = null
+                mapTilerStyleToken = null,
+                mapTilerSatelliteToken = null
             )
         )
 
@@ -39,7 +45,10 @@ class UserConfigRepository(
         cacheTime: Duration?
     ): UserConfigModel? {
         if (cacheTime == null) {
-            configState.value.takeIf { it.isValid }?.let { config ->
+            configState.value.takeIf {
+                val isTokenStateCorrect = appPrefs.mapTilerTokenV1.isNullOrBlank()
+                it.isValid && isTokenStateCorrect
+            }?.let { config ->
                 return config
             }
         }
@@ -55,7 +64,9 @@ class UserConfigRepository(
         }
             ?.also { config ->
                 database.userConfigDao.recreateConfig(config.toDatabaseEntities())
-                appPrefs.mapTilerToken = config.mapTilerToken
+                appPrefs.mapTilerTokenV1 = null
+                appPrefs.mapTilerStylesToken = config.mapTilerStyleToken
+                appPrefs.mapTilerSatelliteToken = config.mapTilerSatelliteToken
             }
     }
 
@@ -81,16 +92,29 @@ class UserConfigRepository(
     }
 
     private fun getConfig(): Flow<UserConfigModel> {
-        return database.userConfigDao.getAll()
-            .map { UserConfigModel.fromDatabase(nodes = it, mapTilerToken = appPrefs.mapTilerToken) }
+        return database.observe { userConfigDao.getAll() }
+            .map {
+                UserConfigModel.fromDatabase(
+                    nodes = it,
+                    mapTilerStyleToken = appPrefs.mapTilerStylesToken,
+                    mapTilerSatelliteToken = appPrefs.mapTilerSatelliteToken
+                )
+            }
             .distinctUntilChanged()
     }
 
     private suspend fun getConfigFromRemote(): UserConfigModel {
         return blocking {
+            val premiumMapProvider = getMapSDKProvider.getProvider() as? MapsSDKProvider.MAPLIBRE.MAPLIBRE_PREMIUM
+            val payload = UserConfigPayload(
+                satelliteMaps = premiumMapProvider != null,
+                premiumMapStyles = premiumMapProvider != null &&
+                        (premiumMapProvider.lightStyle.isPremium || premiumMapProvider.darkStyle.isPremium)
+            )
+
             val execution = functionsApi.runAndWait(
                 function = ServerFunction.USER_CONFIG,
-                data = null
+                data = payload
             )
 
             if (!execution.isSuccess) {

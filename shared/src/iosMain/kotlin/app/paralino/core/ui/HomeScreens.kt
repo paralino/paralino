@@ -74,6 +74,7 @@ object HomeScreens {
         onSharePersonalCode: (String) -> Unit,
         openSharingScreen: (GroupOrSpaceId) -> Unit,
         askNotificationPermission: () -> Unit,
+        openGroupJoinWelcome: (String) -> Unit,
     ) = ComposeUIViewController {
         RootScreenIOS {
             AccountOnboardingScreenCore(
@@ -86,6 +87,7 @@ object HomeScreens {
                 onSharePersonalCode = onSharePersonalCode,
                 openSharingScreen = openSharingScreen,
                 askNotificationPermission = askNotificationPermission,
+                openGroupJoinWelcome = openGroupJoinWelcome,
             )
         }
     }
@@ -256,6 +258,7 @@ object HomeScreens {
         openRawDataScreen: () -> Unit,
         openBatteryNotificationsSettings: () -> Unit,
         openLocationHistorySettings: () -> Unit,
+        openMap: () -> Unit,
     ) = ComposeUIViewController {
         RootScreenIOS {
             PersonalSpaceSettingsScreenCore(
@@ -263,7 +266,8 @@ object HomeScreens {
                 vm = vm,
                 openRawDataScreen = openRawDataScreen,
                 openBatteryNotificationsSettings = openBatteryNotificationsSettings,
-                openLocationHistorySettings = openLocationHistorySettings
+                openLocationHistorySettings = openLocationHistorySettings,
+                openMap = openMap
             )
         }
     }
@@ -297,6 +301,7 @@ object HomeScreens {
                 askLocationPermission = askLocationPermission,
                 askBackgroundLocationPermission = askBackgroundLocationPermission,
                 askBackgroundAccessPermission = askBackgroundAccessPermission,
+                askPushNotificationService = {},
             )
         }
     }

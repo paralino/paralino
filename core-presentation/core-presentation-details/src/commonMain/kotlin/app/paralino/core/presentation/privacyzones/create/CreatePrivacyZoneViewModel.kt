@@ -480,7 +480,7 @@ class CreatePrivacyZoneViewModel(
                 memberId = "",
                 userId = "",
                 name = userRepo.cachedUser?.name ?: "",
-                image = userRepo.cachedUser?.data?.userImage ?: ImageModel.emoji(Emojis.robot),
+                image = userRepo.cachedUser?.data?.data?.userImage ?: ImageModel.emoji(Emojis.robot),
                 paralinoId = null,
                 isCurrentUser = true,
                 isVerified = true,

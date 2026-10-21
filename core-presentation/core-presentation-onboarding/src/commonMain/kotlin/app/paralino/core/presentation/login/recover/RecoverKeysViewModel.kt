@@ -7,15 +7,15 @@ import app.paralino.core.domain.user.AppAccountStateMonitor
 import app.paralino.core.domain.user.LogoutUseCase
 import app.paralino.core.domain.user.RecoverAccountUseCase
 import app.paralino.core.models.Payload
-import app.paralino.core.models.Resource
 import app.paralino.core.models.data
 import app.paralino.core.models.exception
 import app.paralino.core.models.mapSuccess
 import app.paralino.core.models.raw.UserCryptoKeyRaw
-import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.models.settings.FormValidation
-import app.paralino.core.provider.localizedString
+import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.presentation.common.MainAlertDialog
+import app.paralino.core.provider.localizedString
+import app.paralino.core.utils.exceptions.UnauthorizedException
 import app.paralino.core.utils.extensions.errorString
 import app.paralino.core.utils.extensions.getFormValidationErrorText
 import app.paralino.core.utils.extensions.mapToPayload
@@ -30,7 +30,6 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 
 class RecoverKeysViewModel(
     private val logoutUseCase: LogoutUseCase,
@@ -48,78 +47,101 @@ class RecoverKeysViewModel(
     private var keys = listOf<UserCryptoKeyRaw>()
 
     init {
-        coroutineScope.launch(Dispatchers.IO) {
-            val userKeys = try {
-                recoverAccountUseCase.getUserKeysFromRemote()
-            } catch (e: Exception) {
-                showSnackbar(e.errorString())
-                emptyList()
+        doFetchUserKeys()
+    }
+
+    private fun doFetchUserKeys() {
+        flow {
+            emit(recoverAccountUseCase.getUserKeysFromRemote())
+        }
+            .mapToPayload { it }
+            .onEach { result ->
+                if (result is Payload.Error) {
+                    showSnackbar(result.exception.errorString())
+                }
+
+                if (result is Payload.Success) {
+                    keys = result.data
+                }
+
+                val uiStep = when (result) {
+                    is Payload.Success -> getInitialUiStep(userKeys = result.data)
+                    is Payload.Error -> RecoverKeysUiStep.FetchKeysFailed
+                    Payload.Loading -> null
+                }
+
+                _uiState.update { payload ->
+                    val state = payload.data
+                    when {
+                        state == null -> {
+                            uiStep?.let { Payload.Success(RecoverKeysScreenState(uiStep = it)) } ?: payload
+                        }
+
+                        else -> Payload.Success(
+                            state.copy(
+                                uiStep = uiStep ?: state.uiStep,
+                                actionLoading = result is Payload.Loading
+                            )
+                        )
+                    }
+                }
+            }
+            .flowOn(Dispatchers.IO)
+            .launchIn(coroutineScope)
+    }
+
+    private fun getInitialUiStep(userKeys: List<UserCryptoKeyRaw>): RecoverKeysUiStep {
+        return when {
+            userKeys.isEmpty() -> {
+                if (appPrefs.hasGuestAccount()) {
+                    RecoverKeysUiStep.MissingKeysResetOnlyGuest
+                } else {
+                    RecoverKeysUiStep.ResetClassicAccount(canRecoverOldKeys = false)
+                }
             }
 
-            keys = userKeys
-
-            _uiState.update { uiState ->
-                Payload.Success(
-                    RecoverKeysScreenState(
-                        uiStep = when {
-                            userKeys.isEmpty() -> {
-                                if (appPrefs.hasGuestAccount()) {
-                                    RecoverKeysUiStep.Reset.ResetGuest
-                                } else {
-                                    RecoverKeysUiStep.Reset.ResetClassicAccount()
-                                }
-                            }
-
-                            else -> {
-                                if (appPrefs.hasGuestAccount()) {
-                                    RecoverKeysUiStep.Recover.RecoverGuest(
-                                        recoverState = Resource.NotInitialized
-                                    )
-                                } else {
-                                    RecoverKeysUiStep.Recover.RecoverClassicAccount(
-                                        recoverState = Resource.NotInitialized
-                                    )
-                                }
-                            }
-                        }
-                    )
-                )
+            else -> {
+                if (appPrefs.hasGuestAccount()) {
+                    RecoverKeysUiStep.TryRecoverGuestAccount
+                } else {
+                    RecoverKeysUiStep.TryRecoverClassicAccount()
+                }
             }
         }
     }
 
-    private fun recoverAccount() {
+    private fun doRecoverAccount() {
         val validState = (_uiState.value as? Payload.Success)?.data ?: return
 
-        val recoverFlow = when (validState.uiStep) {
-            is RecoverKeysUiStep.Recover.RecoverClassicAccount -> {
-                if (validateCurrentPassword() && validateOldPassword() && validState.uiStep.recoverState.data != null) {
+        val recoverOrResetFlow = when (validState.uiStep) {
+            RecoverKeysUiStep.FetchKeysFailed -> null
+            RecoverKeysUiStep.InvalidKeysResetGuestAccount -> null
+            RecoverKeysUiStep.MissingKeysResetOnlyGuest -> null
+            is RecoverKeysUiStep.ResetClassicAccount -> null
+            is RecoverKeysUiStep.TryRecoverClassicAccount -> null
+            RecoverKeysUiStep.TryRecoverGuestAccount -> null
+
+            is RecoverKeysUiStep.RecoverClassicAccountFinalStep -> {
+                if (validateCurrentPassword() && validateOldPassword()) {
                     recoverAccountUseCase.recoverUserAccount(
-                        oldPassword = validState.uiStep.oldPassword,
+                        oldPassword = validState.uiStep.confirmedOldPassword,
                         currentPassword = validState.uiStep.currentPassword,
-                        key = validState.uiStep.recoverState.data!!
+                        key = validState.uiStep.keys
                     )
                 } else {
                     null
                 }
             }
 
-            is RecoverKeysUiStep.Recover.RecoverGuest -> {
-                if (validState.uiStep.recoverState.data != null) {
-                    recoverAccountUseCase.recoverGuestAccount(
-                        key = validState.uiStep.recoverState.data!!
-                    )
-                } else {
-                    null
-                }
+            is RecoverKeysUiStep.RecoverGuestAccountFinalStep -> {
+                recoverAccountUseCase.recoverGuestAccount(
+                    key = validState.uiStep.keys
+                )
             }
-
-            is RecoverKeysUiStep.Reset.ResetClassicAccount -> null
-            RecoverKeysUiStep.Reset.ResetGuest -> null
         }
 
-        if (recoverFlow != null) {
-            recoverFlow
+        if (recoverOrResetFlow != null) {
+            recoverOrResetFlow
                 .mapToPayload { it }
                 .onEach { result ->
 
@@ -129,7 +151,31 @@ class RecoverKeysViewModel(
 
                     _uiState.update {
                         it.mapSuccess {
-                            it.copy(checkLoading = result is Payload.Loading)
+                            when (val step = it.uiStep) {
+                                is RecoverKeysUiStep.RecoverClassicAccountFinalStep -> {
+                                    it.copy(
+                                        actionLoading = result is Payload.Loading,
+                                        uiStep = when (result) {
+                                            is Payload.Success -> step
+
+                                            is Payload.Error -> {
+                                                step.copy(
+                                                    hasWrongCurrentPasswordError = result.exception is UnauthorizedException
+                                                )
+                                            }
+
+                                            Payload.Loading -> {
+                                                step.copy(
+                                                    hasCurrentPasswordError = false,
+                                                    hasWrongCurrentPasswordError = false
+                                                )
+                                            }
+                                        }
+                                    )
+                                }
+
+                                else -> it.copy(actionLoading = result is Payload.Loading)
+                            }
                         }
                     }
 
@@ -143,27 +189,16 @@ class RecoverKeysViewModel(
         }
     }
 
-    private fun resetAccount() {
+    private fun doResetAccount() {
         val validState = (_uiState.value as? Payload.Success)?.data ?: return
 
         val resetFlow = when (validState.uiStep) {
-            is RecoverKeysUiStep.Recover.RecoverClassicAccount -> {
-                if (validState.uiStep.recoverState.data == null && validateCurrentPassword()) {
-                    recoverAccountUseCase.resetUserAccount(validState.uiStep.currentPassword)
-                } else {
-                    null
-                }
+            RecoverKeysUiStep.InvalidKeysResetGuestAccount,
+            RecoverKeysUiStep.MissingKeysResetOnlyGuest -> {
+                recoverAccountUseCase.resetGuestAccount()
             }
 
-            is RecoverKeysUiStep.Recover.RecoverGuest -> {
-                if (validState.uiStep.recoverState.data == null) {
-                    recoverAccountUseCase.resetGuestAccount()
-                } else {
-                    null
-                }
-            }
-
-            is RecoverKeysUiStep.Reset.ResetClassicAccount -> {
+            is RecoverKeysUiStep.ResetClassicAccount -> {
                 if (validateCurrentPassword()) {
                     recoverAccountUseCase.resetUserAccount(validState.uiStep.currentPassword)
                 } else {
@@ -171,9 +206,11 @@ class RecoverKeysViewModel(
                 }
             }
 
-            RecoverKeysUiStep.Reset.ResetGuest -> {
-                recoverAccountUseCase.resetGuestAccount()
-            }
+            RecoverKeysUiStep.FetchKeysFailed -> null
+            is RecoverKeysUiStep.RecoverClassicAccountFinalStep -> null
+            is RecoverKeysUiStep.RecoverGuestAccountFinalStep -> null
+            is RecoverKeysUiStep.TryRecoverClassicAccount -> null
+            RecoverKeysUiStep.TryRecoverGuestAccount -> null
         }
 
         if (resetFlow != null) {
@@ -187,7 +224,31 @@ class RecoverKeysViewModel(
 
                     _uiState.update {
                         it.mapSuccess {
-                            it.copy(resetLoading = result is Payload.Loading)
+                            when (val step = it.uiStep) {
+                                is RecoverKeysUiStep.ResetClassicAccount -> {
+                                    it.copy(
+                                        actionLoading = result is Payload.Loading,
+                                        uiStep = when (result) {
+                                            is Payload.Success -> step
+
+                                            is Payload.Error -> {
+                                                step.copy(
+                                                    hasWrongCurrentPasswordError = result.exception is UnauthorizedException
+                                                )
+                                            }
+
+                                            Payload.Loading -> {
+                                                step.copy(
+                                                    hasCurrentPasswordError = false,
+                                                    hasWrongCurrentPasswordError = false
+                                                )
+                                            }
+                                        }
+                                    )
+                                }
+
+                                else -> it.copy(actionLoading = result is Payload.Loading)
+                            }
                         }
                     }
                 }
@@ -198,11 +259,18 @@ class RecoverKeysViewModel(
         }
     }
 
-    private fun checkForKey() {
+    private fun doCheckForKeyState() {
         val validState = (_uiState.value as? Payload.Success)?.data ?: return
 
         val checkFlow: Flow<GeneratedUserKeys?>? = when (validState.uiStep) {
-            is RecoverKeysUiStep.Recover.RecoverClassicAccount -> {
+            RecoverKeysUiStep.FetchKeysFailed -> null
+            RecoverKeysUiStep.InvalidKeysResetGuestAccount -> null
+            RecoverKeysUiStep.MissingKeysResetOnlyGuest -> null
+            is RecoverKeysUiStep.ResetClassicAccount -> null
+            is RecoverKeysUiStep.RecoverClassicAccountFinalStep -> null
+            is RecoverKeysUiStep.RecoverGuestAccountFinalStep -> null
+
+            is RecoverKeysUiStep.TryRecoverClassicAccount -> {
                 if (validateOldPassword()) {
                     flow {
                         val key = recoverAccountUseCase.getCorrectUserKeyForPassword(
@@ -216,55 +284,76 @@ class RecoverKeysViewModel(
                 }
             }
 
-            is RecoverKeysUiStep.Recover.RecoverGuest -> {
+            RecoverKeysUiStep.TryRecoverGuestAccount -> {
                 flow {
                     val key = recoverAccountUseCase.getCorrectGuestUserKey(keys = keys)
                     emit(key)
                 }
             }
-
-            is RecoverKeysUiStep.Reset.ResetClassicAccount -> null
-            RecoverKeysUiStep.Reset.ResetGuest -> null
         }
-
-
 
         if (checkFlow != null) {
             checkFlow
                 .mapToPayload { it }
                 .onEach { result ->
-                    val state = when (result) {
-                        Payload.Loading -> Resource.NotInitialized
-                        is Payload.Success -> {
-                            Resource.Ready(result.data)
-                        }
-
-                        is Payload.Error -> Resource.Ready(null)
+                    if (result is Payload.Error) {
+                        showSnackbar(result.exception.errorString())
                     }
 
                     _uiState.update {
-                        it.mapSuccess {
-                            when (it.uiStep) {
-                                is RecoverKeysUiStep.Recover.RecoverClassicAccount -> {
-                                    it.copy(
-                                        uiStep = it.uiStep.copy(recoverState = state),
-                                        checkLoading = result is Payload.Loading
+                        it.mapSuccess { state ->
+                            when (val step = state.uiStep) {
+                                RecoverKeysUiStep.FetchKeysFailed,
+                                RecoverKeysUiStep.InvalidKeysResetGuestAccount,
+                                RecoverKeysUiStep.MissingKeysResetOnlyGuest,
+                                is RecoverKeysUiStep.RecoverClassicAccountFinalStep,
+                                is RecoverKeysUiStep.RecoverGuestAccountFinalStep,
+                                is RecoverKeysUiStep.ResetClassicAccount -> {
+                                    state.copy(actionLoading = result is Payload.Loading)
+                                }
+
+                                is RecoverKeysUiStep.TryRecoverGuestAccount -> {
+                                    state.copy(
+                                        actionLoading = result is Payload.Loading,
+                                        uiStep = when (result) {
+                                            is Payload.Success -> {
+                                                val keys = result.data
+                                                if (keys != null) {
+                                                    RecoverKeysUiStep.RecoverGuestAccountFinalStep(keys = keys)
+                                                } else {
+                                                    RecoverKeysUiStep.InvalidKeysResetGuestAccount
+                                                }
+                                            }
+
+                                            else -> step
+                                        }
                                     )
                                 }
 
-                                is RecoverKeysUiStep.Recover.RecoverGuest -> {
-                                    it.copy(
-                                        uiStep = it.uiStep.copy(recoverState = state),
-                                        checkLoading = result is Payload.Loading
+                                is RecoverKeysUiStep.TryRecoverClassicAccount -> {
+                                    state.copy(
+                                        actionLoading = result is Payload.Loading,
+                                        uiStep = when (result) {
+                                            is Payload.Success -> {
+                                                val keys = result.data
+                                                if (keys != null) {
+                                                    RecoverKeysUiStep.RecoverClassicAccountFinalStep(
+                                                        confirmedOldPassword = state.uiStep.oldPassword,
+                                                        currentPassword = "",
+                                                        hasCurrentPasswordError = false,
+                                                        hasWrongCurrentPasswordError = false,
+                                                        keys = keys
+                                                    )
+                                                } else {
+                                                    state.uiStep.copy(
+                                                        hasWrongOldPasswordError = true
+                                                    )
+                                                }
+                                            }
+                                            is Payload.Error<*> -> step.copy(hasWrongOldPasswordError = false)
+                                            Payload.Loading -> step
+                                        }
                                     )
-                                }
-
-                                is RecoverKeysUiStep.Reset.ResetClassicAccount -> {
-                                    it.copy(checkLoading = result is Payload.Loading)
-                                }
-
-                                RecoverKeysUiStep.Reset.ResetGuest -> {
-                                    it.copy(checkLoading = result is Payload.Loading)
                                 }
                             }
                         }
@@ -278,20 +367,36 @@ class RecoverKeysViewModel(
     }
 
     private fun validateOldPassword(): Boolean {
-        val validState = (_uiState.value as? Payload.Success)?.data?.uiStep ?: return false
-        if (validState !is RecoverKeysUiStep.Recover.RecoverClassicAccount) return false
+        val password = when (val step = _uiState.value.data?.uiStep) {
+            is RecoverKeysUiStep.RecoverClassicAccountFinalStep -> step.confirmedOldPassword
+            is RecoverKeysUiStep.TryRecoverClassicAccount -> step.oldPassword
+            RecoverKeysUiStep.FetchKeysFailed,
+            RecoverKeysUiStep.MissingKeysResetOnlyGuest,
+            is RecoverKeysUiStep.ResetClassicAccount,
+            is RecoverKeysUiStep.RecoverGuestAccountFinalStep,
+            RecoverKeysUiStep.TryRecoverGuestAccount,
+            RecoverKeysUiStep.InvalidKeysResetGuestAccount,
+            null -> return false
+        }
 
-        val password = validState.oldPassword
         val passwordValidation = FormValidation.TextNotEmpty.validate(password)
 
         _uiState.update {
-            it.mapSuccess {
-                if (it.uiStep is RecoverKeysUiStep.Recover.RecoverClassicAccount) {
-                    it.copy(
-                        uiStep = it.uiStep.copy(hasOldPasswordError = !passwordValidation.result)
+            it.mapSuccess { state ->
+                when (val step = state.uiStep) {
+                    is RecoverKeysUiStep.TryRecoverClassicAccount -> state.copy(
+                        uiStep = step.copy(
+                            hasOldPasswordError = !passwordValidation.result
+                        )
                     )
-                } else {
-                    it
+
+                    is RecoverKeysUiStep.RecoverClassicAccountFinalStep,
+                    RecoverKeysUiStep.FetchKeysFailed,
+                    RecoverKeysUiStep.MissingKeysResetOnlyGuest,
+                    is RecoverKeysUiStep.ResetClassicAccount,
+                    is RecoverKeysUiStep.RecoverGuestAccountFinalStep,
+                    RecoverKeysUiStep.TryRecoverGuestAccount,
+                    RecoverKeysUiStep.InvalidKeysResetGuestAccount -> state
                 }
             }
         }
@@ -304,26 +409,41 @@ class RecoverKeysViewModel(
     }
 
     private fun validateCurrentPassword(): Boolean {
-        val validState = (_uiState.value as? Payload.Success)?.data?.uiStep ?: return false
+        val password = when (val step = _uiState.value.data?.uiStep) {
+            is RecoverKeysUiStep.RecoverClassicAccountFinalStep -> step.currentPassword
+            is RecoverKeysUiStep.ResetClassicAccount -> step.currentPassword
+            is RecoverKeysUiStep.TryRecoverClassicAccount,
+            RecoverKeysUiStep.FetchKeysFailed,
+            RecoverKeysUiStep.MissingKeysResetOnlyGuest,
+            is RecoverKeysUiStep.RecoverGuestAccountFinalStep,
+            RecoverKeysUiStep.TryRecoverGuestAccount,
+            RecoverKeysUiStep.InvalidKeysResetGuestAccount,
+            null -> return false
+        }
 
-        val password =
-            (validState as? RecoverKeysUiStep.Recover.RecoverClassicAccount)?.currentPassword
-                ?: (validState as? RecoverKeysUiStep.Reset.ResetClassicAccount)?.currentPassword
-                ?: return false
         val passwordValidation = FormValidation.TextNotEmpty.validate(password)
 
         _uiState.update {
-            it.mapSuccess {
-                when (it.uiStep) {
-                    is RecoverKeysUiStep.Recover.RecoverClassicAccount -> {
-                        it.copy(uiStep = it.uiStep.copy(hasCurrentPasswordError = !passwordValidation.result))
-                    }
+            it.mapSuccess { state ->
+                when (val step = state.uiStep) {
+                    is RecoverKeysUiStep.ResetClassicAccount -> state.copy(
+                        uiStep = step.copy(
+                            hasCurrentPasswordError = !passwordValidation.result
+                        )
+                    )
 
-                    is RecoverKeysUiStep.Reset.ResetClassicAccount -> {
-                        it.copy(uiStep = it.uiStep.copy(hasCurrentPasswordError = !passwordValidation.result))
-                    }
+                    is RecoverKeysUiStep.RecoverClassicAccountFinalStep -> state.copy(
+                        uiStep = step.copy(
+                            hasCurrentPasswordError = !passwordValidation.result
+                        )
+                    )
 
-                    else -> it
+                    is RecoverKeysUiStep.TryRecoverClassicAccount,
+                    RecoverKeysUiStep.FetchKeysFailed,
+                    RecoverKeysUiStep.MissingKeysResetOnlyGuest,
+                    is RecoverKeysUiStep.RecoverGuestAccountFinalStep,
+                    RecoverKeysUiStep.TryRecoverGuestAccount,
+                    RecoverKeysUiStep.InvalidKeysResetGuestAccount -> state
                 }
             }
         }
@@ -337,7 +457,7 @@ class RecoverKeysViewModel(
 
     private fun logout() {
         val validState = (_uiState.value as? Payload.Success)?.data ?: return
-        if (validState.actionLoading) return
+        if (validState.isInProgress) return
         flow {
             logoutUseCase.fullLogout(logoutLocallyOnError = false)
             emit(Unit)
@@ -356,15 +476,15 @@ class RecoverKeysViewModel(
 
     private fun onOldPasswordChange(password: String) {
         val validState = (_uiState.value as? Payload.Success)?.data ?: return
-        if (validState.actionLoading) return
+        if (validState.isInProgress) return
         _uiState.update {
             it.mapSuccess {
-                if (it.uiStep is RecoverKeysUiStep.Recover.RecoverClassicAccount) {
+                if (it.uiStep is RecoverKeysUiStep.TryRecoverClassicAccount) {
                     it.copy(
                         uiStep = it.uiStep.copy(
                             oldPassword = password,
                             hasOldPasswordError = false,
-                            recoverState = Resource.NotInitialized
+                            hasWrongOldPasswordError = false
                         )
                     )
                 } else {
@@ -376,24 +496,26 @@ class RecoverKeysViewModel(
 
     private fun onCurrentPasswordChange(password: String) {
         val validState = (_uiState.value as? Payload.Success)?.data ?: return
-        if (validState.actionLoading) return
+        if (validState.isInProgress) return
         _uiState.update {
             it.mapSuccess {
                 when (it.uiStep) {
-                    is RecoverKeysUiStep.Recover.RecoverClassicAccount -> {
+                    is RecoverKeysUiStep.ResetClassicAccount -> {
                         it.copy(
                             uiStep = it.uiStep.copy(
                                 currentPassword = password,
-                                hasCurrentPasswordError = false
+                                hasCurrentPasswordError = false,
+                                hasWrongCurrentPasswordError = false
                             )
                         )
                     }
 
-                    is RecoverKeysUiStep.Reset.ResetClassicAccount -> {
+                    is RecoverKeysUiStep.RecoverClassicAccountFinalStep -> {
                         it.copy(
                             uiStep = it.uiStep.copy(
                                 currentPassword = password,
-                                hasCurrentPasswordError = false
+                                hasCurrentPasswordError = false,
+                                hasWrongCurrentPasswordError = false,
                             )
                         )
                     }
@@ -411,48 +533,112 @@ class RecoverKeysViewModel(
         }
 
         when (event) {
-            RecoverKeysScreenUiEvent.HideDialog -> {
-                _uiState.update {
-                    it.mapSuccess { it.copy(alertDialog = null) }
-                }
-            }
-
             RecoverKeysScreenUiEvent.Logout -> {
                 _uiState.update {
                     it.mapSuccess { it.copy(alertDialog = MainAlertDialog.Logout) }
                 }
             }
 
-            RecoverKeysScreenUiEvent.RecoverAccount -> {
-                val shouldCheckForKey = when (val step = _uiState.value.data?.uiStep) {
-                    is RecoverKeysUiStep.Recover.RecoverClassicAccount -> step.recoverState.data == null
-                    is RecoverKeysUiStep.Recover.RecoverGuest -> step.recoverState.data == null
-                    is RecoverKeysUiStep.Reset.ResetClassicAccount,
-                    RecoverKeysUiStep.Reset.ResetGuest -> return
-
-                    null -> return
+            is RecoverKeysScreenUiEvent.EditOldPassword -> onOldPasswordChange(event.password)
+            is RecoverKeysScreenUiEvent.EditCurrentPassword -> onCurrentPasswordChange(event.password)
+            is RecoverKeysScreenUiEvent.DialogAction -> {
+                _uiState.update {
+                    it.mapSuccess { it.copy(alertDialog = null) }
                 }
+                when (event.action.dialog) {
+                    is MainAlertDialog.RecoveryResetAccount -> {
+                        if (event.action.isOk) {
+                            doResetAccount()
+                        }
+                    }
 
-                if (shouldCheckForKey) {
-                    checkForKey()
-                } else {
-                    _uiState.update {
-                        it.mapSuccess { it.copy(alertDialog = MainAlertDialog.RecoveryRecoverAccount) }
+                    is MainAlertDialog.RecoveryRecoverAccount -> {
+                        if (event.action.isOk) {
+                            doRecoverAccount()
+                        }
+                    }
+
+                    is MainAlertDialog.Logout -> {
+                        if (event.action.isOk) {
+                            logout()
+                        }
                     }
                 }
             }
 
-            RecoverKeysScreenUiEvent.ResetAccount -> {
-                _uiState.update {
-                    it.mapSuccess { it.copy(alertDialog = MainAlertDialog.RecoveryResetAccount) }
+            RecoverKeysScreenUiEvent.OnConfirmAction -> {
+                if (_uiState.value.data?.isInProgress != false) return
+                when (_uiState.value.data?.uiStep) {
+                    RecoverKeysUiStep.FetchKeysFailed -> doFetchUserKeys()
+
+                    RecoverKeysUiStep.InvalidKeysResetGuestAccount -> {
+                        updateSuccessState { it.copy(alertDialog = MainAlertDialog.RecoveryResetAccount) }
+                    }
+
+                    RecoverKeysUiStep.MissingKeysResetOnlyGuest -> {
+                        updateSuccessState { it.copy(alertDialog = MainAlertDialog.RecoveryResetAccount) }
+                    }
+
+                    is RecoverKeysUiStep.RecoverClassicAccountFinalStep -> {
+                        if (validateCurrentPassword() && validateOldPassword()) {
+                            updateSuccessState { it.copy(alertDialog = MainAlertDialog.RecoveryRecoverAccount) }
+                        }
+                    }
+
+                    is RecoverKeysUiStep.RecoverGuestAccountFinalStep -> {
+                        updateSuccessState { it.copy(alertDialog = MainAlertDialog.RecoveryRecoverAccount) }
+                    }
+
+                    is RecoverKeysUiStep.ResetClassicAccount -> {
+                        if (validateCurrentPassword()) {
+                            updateSuccessState { it.copy(alertDialog = MainAlertDialog.RecoveryResetAccount) }
+                        }
+                    }
+
+                    is RecoverKeysUiStep.TryRecoverClassicAccount -> doCheckForKeyState()
+                    RecoverKeysUiStep.TryRecoverGuestAccount -> doCheckForKeyState()
+
+                    null -> {}
                 }
             }
 
-            is RecoverKeysScreenUiEvent.EditOldPassword -> onOldPasswordChange(event.password)
-            is RecoverKeysScreenUiEvent.EditCurrentPassword -> onCurrentPasswordChange(event.password)
-            RecoverKeysScreenUiEvent.ConfirmLogout -> logout()
-            RecoverKeysScreenUiEvent.ConfirmResetAccount -> resetAccount()
-            RecoverKeysScreenUiEvent.ConfirmRecoverAccount -> recoverAccount()
+            RecoverKeysScreenUiEvent.OnSkipAction -> {
+                if (_uiState.value.data?.isInProgress != false) return
+                _uiState.update {
+                    it.mapSuccess { state ->
+                        when (state.uiStep) {
+                            is RecoverKeysUiStep.ResetClassicAccount -> {
+                                // without remote keys there is nothing to recover
+                                if (!state.uiStep.canRecoverOldKeys) return@mapSuccess state
+
+                                state.copy(
+                                    uiStep = RecoverKeysUiStep.TryRecoverClassicAccount(
+                                        oldPassword = "",
+                                        hasOldPasswordError = false,
+                                        hasWrongOldPasswordError = false
+                                    )
+                                )
+                            }
+
+                            is RecoverKeysUiStep.TryRecoverClassicAccount -> {
+                                state.copy(
+                                    uiStep = RecoverKeysUiStep.ResetClassicAccount(
+                                        currentPassword = "",
+                                        hasCurrentPasswordError = false,
+                                        canRecoverOldKeys = true
+                                    )
+                                )
+                            }
+
+                            else -> state
+                        }
+                    }
+                }
+            }
         }
+    }
+
+    private fun updateSuccessState(action: (RecoverKeysScreenState) -> RecoverKeysScreenState) {
+        _uiState.update { it.mapSuccess(action) }
     }
 }

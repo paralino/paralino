@@ -32,4 +32,28 @@
         <item quantity="one">Συσκευή</item>
         <item quantity="other">Συσκευές</item>
     </plurals>
+    <plurals name="paywall_summary_groups">
+        <item quantity="one">%d ομάδα</item>
+        <item quantity="other">%d ομάδες</item>
+    </plurals>
+    <plurals name="paywall_summary_history_days">
+        <item quantity="one">Ιστορικό %d ημέρας</item>
+        <item quantity="other">Ιστορικό %d ημερών</item>
+    </plurals>
+    <plurals name="paywall_summary_places">
+        <item quantity="one">%d μέρος</item>
+        <item quantity="other">%d μέρη</item>
+    </plurals>
+    <plurals name="paywall_summary_members">
+        <item quantity="one">%d μέλος</item>
+        <item quantity="other">%d μέλη</item>
+    </plurals>
+    <plurals name="paywall_summary_privacy_zones">
+        <item quantity="one">%d ζώνη απορρήτου</item>
+        <item quantity="other">%d ζώνες απορρήτου</item>
+    </plurals>
+    <plurals name="paywall_summary_devices">
+        <item quantity="one">%d συσκευή</item>
+        <item quantity="other">%d συσκευές</item>
+    </plurals>
 </resources>

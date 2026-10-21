@@ -18,12 +18,11 @@ data class GroupDocumentRaw constructor(
     val fallbackPlanType: String,
     val provider: String?,
     val planExpiresAt: Instant?,
-    val membersLimitOverride: Long?,
-    val devicesLimitOverride: Long?,
-    val placesLimitOverride: Long?
+    val groupPlans: List<String>?
 ) {
 
     companion object {
+        @Suppress("UNCHECKED_CAST")
         fun from(map: Map<String, Any>): GroupDocumentRaw {
             return GroupDocumentRaw(
                 id = map["\$id"] as String,
@@ -37,9 +36,7 @@ data class GroupDocumentRaw constructor(
                 fallbackPlanType = map["fallbackPlanType"] as String,
                 planExpiresAt = (map["planExpiresAt"] as? String)?.isoWithOffsetToInstant(),
                 provider = map["provider"] as? String,
-                membersLimitOverride = (map["membersLimitOverride"] as? Number?)?.toLong(),
-                devicesLimitOverride = (map["devicesLimitOverride"] as? Number?)?.toLong(),
-                placesLimitOverride = (map["placesLimitOverride"] as? Number?)?.toLong()
+                groupPlans = map["groupPlans"] as? List<String>?
             )
         }
     }

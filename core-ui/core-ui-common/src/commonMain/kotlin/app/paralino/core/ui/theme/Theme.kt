@@ -18,13 +18,18 @@ import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.luminance
+import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import app.paralino.core.db.AppPrefs
+import app.paralino.core.models.settings.DarkThemeStyleType
 import app.paralino.core.provider.ComposeLocalUriHandler
 import app.paralino.core.provider.ComposeUriHandler
 
@@ -56,6 +61,21 @@ private val DarkThemeColors = darkColors(
 	onError = AppColors.lightBackground,
 	onBackground = AppColors.lightBackground,
 	onSurface = AppColors.lightBackground
+)
+
+private val PitchBlackThemeColors = darkColors(
+	background = AppColors.pitchBlackBackground,
+	surface = AppColors.pitchBlackSurface,
+	primary = AppColors.pitchBlackThemePrimary,
+	secondary = AppColors.darkThemeSecondary,
+	error = AppColors.redMain,
+	primaryVariant = AppColors.lightSurface,
+	secondaryVariant = AppColors.darkThemeSecondary,
+	onPrimary = AppColors.pitchBlackOnBackground,
+	onSecondary = AppColors.pitchBlackOnBackground,
+	onError = AppColors.pitchBlackOnBackground,
+	onBackground = AppColors.pitchBlackOnBackground,
+	onSurface = AppColors.pitchBlackOnBackground
 )
 
 private val shapes = Shapes(
@@ -121,12 +141,13 @@ sealed interface ButtonStyle {
 @Composable
 fun AppTheme(
     useDarkTheme: Boolean = isSystemInDarkTheme(),
+    darkThemeStyle: DarkThemeStyleType = currentDarkThemeStyle(),
     content: @Composable() () -> Unit
 ) {
-    val colors = if (!useDarkTheme) {
-        LightThemeColors
-    } else {
-        DarkThemeColors
+    val colors = when {
+        !useDarkTheme -> LightThemeColors
+        darkThemeStyle == DarkThemeStyleType.PITCH_BLACK -> PitchBlackThemeColors
+        else -> DarkThemeColors
     }
 
 	CompositionLocalProvider(LocalRippleConfiguration provides AppRippleTheme.RippleConfig()) {
@@ -145,6 +166,16 @@ fun AppTheme(
 			}
 		}
 	}
+}
+
+@Composable
+private fun currentDarkThemeStyle(): DarkThemeStyleType {
+	// No prefs in previews
+	if (LocalInspectionMode.current) {
+		return DarkThemeStyleType.PARALINO
+	}
+	val darkThemeStyle by AppPrefs.instance.darkThemeStyleFlow.collectAsState()
+	return darkThemeStyle
 }
 
 private object AppRippleTheme  {

@@ -3,6 +3,8 @@ package app.paralino.core.presentation.settings.generic
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import app.paralino.core.models.location.LatLng
+import app.paralino.core.models.settings.AppThemeType
+import app.paralino.core.models.settings.DarkThemeStyleType
 import app.paralino.core.models.settings.MapsSDKProvider
 import app.paralino.core.presentation.common.AlertDialogAction
 import app.paralino.core.presentation.common.MainAlertDialog
@@ -144,6 +146,8 @@ sealed interface GenericSettingsScreenEvent {
     data object OpenNotificationSocketChannelSettings : GenericSettingsScreenEvent
     data object AskForNotificationPermission : GenericSettingsScreenEvent
     data object AskForBackgroundAccessPermission : GenericSettingsScreenEvent
+    data class ApplyAppTheme(val theme: AppThemeType) : GenericSettingsScreenEvent
+    data class ApplyDarkThemeStyle(val style: DarkThemeStyleType) : GenericSettingsScreenEvent
 }
 
 sealed interface GenericSettingsScreenUiEvent {

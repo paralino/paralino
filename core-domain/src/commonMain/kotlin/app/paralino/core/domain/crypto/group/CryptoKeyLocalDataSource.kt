@@ -3,12 +3,16 @@ package app.paralino.core.domain.crypto.group
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.db.MainDatabaseHelper
 import app.paralino.core.db.main.history.UnsyncedGroupHistoryKeyEntity
+import app.paralino.core.db.main.keys.ArchivedGroupDeviceKeyEntity
 import app.paralino.core.db.main.keys.GroupDeviceIntegrityEntity
 import app.paralino.core.db.main.keys.GroupDeviceKeysEntity
 import app.paralino.core.db.main.keys.GroupKeysEntity
 import app.paralino.core.db.main.keys.GroupLocalHistoryKeyEntity
 import app.paralino.core.db.main.keys.GroupMembersKeysEntity
 import app.paralino.core.db.main.keys.LocalGroupDeviceKeysEntity
+import app.paralino.core.db.main.keys.PendingKeyRefreshEntity
+import app.paralino.core.db.main.keys.PendingKeyRefreshState
+import app.paralino.core.db.main.keys.PendingKeyRefreshType
 import app.paralino.core.db.main.keys.PersonalGroupKeyEntity
 import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.AppHost
@@ -19,6 +23,9 @@ import app.paralino.core.models.raw.GroupMemberCryptoKeyDataRaw
 import app.paralino.core.models.raw.PersonalGroupKeyRaw
 import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlin.time.Duration.Companion.days
+import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Instant
 
 class CryptoKeyLocalDataSource constructor(
     private val database: MainDatabaseHelper,
@@ -123,7 +130,8 @@ class CryptoKeyLocalDataSource constructor(
         groupKeys: List<GroupCryptoKeyDataRaw>,
         memberKeys: List<GroupMemberCryptoKeyDataRaw>,
         deviceKeys: List<GroupDeviceCryptoKeyRaw>,
-        personalKeys: List<PersonalGroupKeyRaw>
+        personalKeys: List<PersonalGroupKeyRaw>,
+        refreshStartedAt: Instant
     ) {
         val mappedGroupKeys = groupKeys.map { keysMapper.remote2Local(it) }
         val mappedMemberKeys = memberKeys.map { keysMapper.remote2Local(it) }
@@ -141,6 +149,10 @@ class CryptoKeyLocalDataSource constructor(
             deviceKeys = mappedDeviceKeys,
             personalKeys = mappedPersonalKeys
         )
+        database.groupRelatedKeysDao.clearAllPendingKeyRefreshes(
+            refreshStartedAtMillis = refreshStartedAt.toEpochMilliseconds(),
+            staleStartedBeforeMillis = staleRotationStartedBeforeMillis()
+        )
     }
 
     suspend fun recreateGroupKeyForGroup(
@@ -148,7 +160,8 @@ class CryptoKeyLocalDataSource constructor(
         groupKeys: List<GroupCryptoKeyDataRaw>,
         memberKeys: List<GroupMemberCryptoKeyDataRaw>,
         deviceKeys: List<GroupDeviceCryptoKeyRaw>,
-        personalKeys: List<PersonalGroupKeyRaw>
+        personalKeys: List<PersonalGroupKeyRaw>,
+        refreshStartedAt: Instant
     ) {
         cachedGroupKeys.value = emptyList()
         cachedMemberKeys.value = emptyList()
@@ -162,16 +175,27 @@ class CryptoKeyLocalDataSource constructor(
             deviceKeys = deviceKeys.map { keysMapper.remote2Local(it) },
             personalKeys = personalKeys.map { keysMapper.remote2Local(it) }
         )
+        clearPendingKeyRefreshes(
+            groupId = groupId,
+            keyTypes = PendingKeyRefreshType.entries,
+            refreshStartedAt = refreshStartedAt
+        )
     }
 
     suspend fun recreateGroupKeyForGroup(
         groupId: String,
         keys: List<GroupCryptoKeyDataRaw>,
+        refreshStartedAt: Instant
     ) {
         cachedGroupKeys.value = emptyList()
         database.groupRelatedKeysDao.recreateGroupKeys(
             groupId = groupId,
             groupKeys = keys.map { keysMapper.remote2Local(it) }
+        )
+        clearPendingKeyRefreshes(
+            groupId = groupId,
+            keyTypes = listOf(PendingKeyRefreshType.GROUP),
+            refreshStartedAt = refreshStartedAt
         )
     }
 
@@ -179,6 +203,7 @@ class CryptoKeyLocalDataSource constructor(
         groupId: String,
         memberKeys: List<GroupMemberCryptoKeyDataRaw>,
         personalKeys: List<PersonalGroupKeyRaw>,
+        refreshStartedAt: Instant
     ) {
         cachedMemberKeys.value = emptyList()
         cachedPersonalGroupKeys.value = emptyList()
@@ -188,16 +213,104 @@ class CryptoKeyLocalDataSource constructor(
             memberKeys = memberKeys.map { keysMapper.remote2Local(it) },
             personalKeys = personalKeys.map { keysMapper.remote2Local(it) }
         )
+        clearPendingKeyRefreshes(
+            groupId = groupId,
+            keyTypes = listOf(PendingKeyRefreshType.MEMBER),
+            refreshStartedAt = refreshStartedAt
+        )
     }
 
     suspend fun recreateDeviceKeysForGroup(
         groupId: String,
         deviceKeys: List<GroupDeviceCryptoKeyRaw>,
+        refreshStartedAt: Instant
     ) {
         cachedGroupDeviceKeys.value = emptyList()
         database.groupRelatedKeysDao.recreateDeviceKeys(
             groupId = groupId,
             deviceKeys = deviceKeys.map { keysMapper.remote2Local(it) }
+        )
+        clearPendingKeyRefreshes(
+            groupId = groupId,
+            keyTypes = listOf(PendingKeyRefreshType.DEVICE),
+            refreshStartedAt = refreshStartedAt
+        )
+    }
+
+    suspend fun markKeyRotationStarted(groupId: String, keyType: PendingKeyRefreshType) {
+        savePendingKeyRefresh(groupId = groupId, keyType = keyType, state = PendingKeyRefreshState.STARTED)
+    }
+
+    suspend fun markKeyRotationDone(groupId: String, keyType: PendingKeyRefreshType) {
+        savePendingKeyRefresh(groupId = groupId, keyType = keyType, state = PendingKeyRefreshState.DONE)
+    }
+
+    suspend fun hasPendingKeyRefresh(groupId: String): Boolean {
+        return database.groupRelatedKeysDao.countPendingKeyRefreshes(
+            groupId = groupId,
+            staleStartedBeforeMillis = staleRotationStartedBeforeMillis()
+        ) > 0
+    }
+
+    private suspend fun savePendingKeyRefresh(
+        groupId: String,
+        keyType: PendingKeyRefreshType,
+        state: PendingKeyRefreshState
+    ) {
+        database.groupRelatedKeysDao.savePendingKeyRefresh(
+            PendingKeyRefreshEntity(
+                groupId = groupId,
+                keyType = keyType.key,
+                state = state.key,
+                updatedAtMillis = nowUTC().toEpochMilliseconds()
+            )
+        )
+    }
+
+    private suspend fun clearPendingKeyRefreshes(
+        groupId: String,
+        keyTypes: List<PendingKeyRefreshType>,
+        refreshStartedAt: Instant
+    ) {
+        database.groupRelatedKeysDao.clearPendingKeyRefreshes(
+            groupId = groupId,
+            keyTypes = keyTypes.map { it.key },
+            refreshStartedAtMillis = refreshStartedAt.toEpochMilliseconds(),
+            staleStartedBeforeMillis = staleRotationStartedBeforeMillis()
+        )
+    }
+
+    private fun staleRotationStartedBeforeMillis(): Long {
+        // if rotation started more than 5 minutes ago, but not done yet, treat it as done
+        return (nowUTC() - 5.minutes).toEpochMilliseconds()
+    }
+
+    private fun archivedDeviceKeysExpiredBeforeMillis(): Long {
+        // previous device keys are kept for 7 days after rotation
+        return (nowUTC() - 7.days).toEpochMilliseconds()
+    }
+
+    suspend fun getGroupDeviceKeysFromDatabase(): List<GroupDeviceKeysEntity> {
+        return getAllGroupDeviceKeys()
+    }
+
+    suspend fun archiveGroupDeviceKeys(keys: List<ArchivedGroupDeviceKeyEntity>) {
+        database.groupRelatedKeysDao.archiveGroupDeviceKeys(
+            keys = keys,
+            removeExpiredBeforeMillis = archivedDeviceKeysExpiredBeforeMillis()
+        )
+    }
+
+    suspend fun getArchivedGroupDeviceKey(
+        groupId: String,
+        ownerUserId: String,
+        locationId: String
+    ): ArchivedGroupDeviceKeyEntity? {
+        return database.groupRelatedKeysDao.getArchivedGroupDeviceKey(
+            groupId = groupId,
+            ownerUserId = ownerUserId,
+            locationId = locationId,
+            notExpiredAfterMillis = archivedDeviceKeysExpiredBeforeMillis()
         )
     }
 

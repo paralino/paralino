@@ -25,11 +25,13 @@ fun AppSettingsScreenCore(
     vm: AppSettingsViewModel,
     appState: CoreUiState,
     paddingValues: PaddingValues,
+    onAppThemeClick: () -> Unit,
     onMeasurementSystemClick: () -> Unit,
     onNotificationGroupingClick: () -> Unit,
     onMapInteractionsClick: () -> Unit,
     onNavigationAppClick: () -> Unit,
     onPlaceSearchSettingsClick: () -> Unit,
+    onPersonalSpaceSettingsClick: () -> Unit,
     onNotificationSocketSettingsClick: () -> Unit,
     onMapSourceSettingsClick: () -> Unit,
 ) {
@@ -45,6 +47,11 @@ fun AppSettingsScreenCore(
             .padding(top = 20.dp, bottom = 60.dp)
     ) {
         SettingsActionItem(
+            name = stringResource(MR.strings.setting_appTheme_title),
+            icon = CoreAppIcons.Contrast.asPainterResource(),
+            onClick = onAppThemeClick
+        )
+        SettingsActionItem(
             name = stringResource(MR.strings.setting_measurementSystem_title),
             icon = CoreAppIcons.Ruler.asPainterResource(),
             onClick = onMeasurementSystemClick
@@ -58,6 +65,11 @@ fun AppSettingsScreenCore(
             name = stringResource(MR.strings.setting_placeSearch_title),
             icon = CoreAppIcons.Search.asPainterResource(),
             onClick = onPlaceSearchSettingsClick
+        )
+        SettingsActionItem(
+            name = stringResource(MR.strings.setting_personalSpace_title),
+            icon = CoreAppIcons.PhoneAndroid.asPainterResource(),
+            onClick = onPersonalSpaceSettingsClick
         )
 
         if (uiState.showMapsProvider) {

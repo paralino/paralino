@@ -89,7 +89,7 @@ class LocationHistoryDeleteViewModel(
                             currentState.copy(
                                 groupId = groupId,
                                 groupName = MR.strings.personalSpace_spaceTitle.localizedString(),
-                                groupImage = space.user.data?.userImage ?: ImageModel.emoji(Emojis.robot),
+                                groupImage = space.user.data.data?.userImage ?: ImageModel.emoji(Emojis.robot),
                                 isContentLoading = false,
                                 devices = space.devices.map { device ->
                                     LocationHistoryDeleteDeviceState(

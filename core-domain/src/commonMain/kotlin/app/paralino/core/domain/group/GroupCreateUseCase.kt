@@ -7,6 +7,7 @@ import app.paralino.core.domain.crypto.user.CryptoUserKeysLocalSource
 import app.paralino.core.domain.LimitedExecutionRepository
 import app.paralino.core.logg
 import app.paralino.core.models.base.ImageModel
+import app.paralino.core.models.data
 import app.paralino.core.models.group.GroupIntegrity
 import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.group.UserGroupData
@@ -78,7 +79,7 @@ class GroupCreateUseCase(
         image: ImageModel,
     ): String {
         val user = userRepository.cachedUser!!
-        val userData = user.data!!
+        val userData = user.data.data!!
         val myData = MemberModelData(userData.userName, userData.userImage)
         val myIdentityKeys = userKeyRepo.signatureKeyPair()
 

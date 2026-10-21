@@ -14,6 +14,7 @@ import app.paralino.android.remote.sync.FullRefreshSyncWorker
 import app.paralino.android.remote.sync.PushNotificationsSyncWorker
 import app.paralino.core.logg
 import app.paralino.core.models.base.PushProvider
+import app.paralino.core.models.base.PushServiceConnectionState
 import app.paralino.core.models.data
 import app.paralino.core.models.user.PushProviderEndpointConfig
 import app.paralino.core.provider.AppLifecycleType
@@ -253,6 +254,7 @@ class NotificationSocketService : Service() {
     }
 
     private fun updateNotification() {
+        serviceManager.setConnectionState(websocketState)
         notificationHandler.notify(
             context = this,
             errors = getServiceErrors(),
@@ -297,6 +299,7 @@ class NotificationSocketService : Service() {
             message = "onDestroy - Killing notification socket service"
         )
         isServiceActive = false
+        serviceManager.setConnectionState(null)
         serviceDefaultScope.cancel()
         notificationHandler.removeNotification()
         webSocketManager.closeConnection()

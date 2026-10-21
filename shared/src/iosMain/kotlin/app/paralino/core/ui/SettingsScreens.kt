@@ -4,15 +4,19 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.ui.uikit.OnFocusBehavior
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.ComposeUIViewController
+import app.paralino.core.models.settings.AppThemeType
+import app.paralino.core.models.settings.DarkThemeStyleType
 import app.paralino.core.presentation.paralinoid.PersonalCodeViewModel
 import app.paralino.core.presentation.rawdata.RawDataPresentationViewModel
 import app.paralino.core.presentation.settings.SettingsViewModel
 import app.paralino.core.presentation.settings.appstatus.AppStatusDebugViewModel
+import app.paralino.core.presentation.settings.status.AppStatusViewModel
 import app.paralino.core.presentation.settings.billing.PaywallScreenEvent
 import app.paralino.core.presentation.settings.billing.PaywallViewModel
 import app.paralino.core.presentation.settings.billing.SubscriptionViewModel
 import app.paralino.core.presentation.settings.billing.licence.LicenceCodeViewModel
 import app.paralino.core.presentation.settings.blocklist.BlocklistViewModel
+import app.paralino.core.presentation.settings.userdevices.UserDevicesViewModel
 import app.paralino.core.presentation.settings.convertaccount.ConvertAccountViewModel
 import app.paralino.core.presentation.settings.editprofile.EditProfileViewModel
 import app.paralino.core.presentation.settings.emailchange.ChangeEmailViewModel
@@ -25,6 +29,7 @@ import app.paralino.core.presentation.common.BottomSheetPickerType
 import app.paralino.core.ui.invite.manage.PersonalCodeScreenCore
 import app.paralino.core.ui.settings.AppSettingsScreenCore
 import app.paralino.core.ui.settings.AppStatusDebugScreenCore
+import app.paralino.core.ui.settings.AppStatusScreenCore
 import app.paralino.core.ui.settings.BlocklistScreenCore
 import app.paralino.core.ui.settings.GeneralInfoScreenCore
 import app.paralino.core.ui.settings.GenericSettingsScreenCore
@@ -36,6 +41,7 @@ import app.paralino.core.ui.settings.billing.SubscriptionScreenCore
 import app.paralino.core.ui.settings.billing.licence.LicenceCodeScreenCore
 import app.paralino.core.ui.settings.location.LocationSettingsScreenCore
 import app.paralino.core.ui.settings.profile.AccountScreenCore
+import app.paralino.core.ui.settings.profile.UserDevicesScreenCore
 import app.paralino.core.ui.settings.profile.ChangeEmailScreenCore
 import app.paralino.core.ui.settings.profile.ChangePasswordScreenCore
 import app.paralino.core.ui.settings.profile.ConvertAccountScreenCore
@@ -50,7 +56,7 @@ object SettingsScreens {
         openPersonalCodes: () -> Unit,
         openBlockList: () -> Unit,
         openGeneralInfo: () -> Unit,
-        openAppStatus: () -> Unit,
+        openStatus: () -> Unit,
         openSubscriptions: () -> Unit,
         openPaywall: () -> Unit,
         openAppSettings: () -> Unit,
@@ -68,7 +74,7 @@ object SettingsScreens {
                 openPersonalCodes = openPersonalCodes,
                 openBlockList = openBlockList,
                 openGeneralInfo = openGeneralInfo,
-                openAppStatus = openAppStatus,
+                openStatus = openStatus,
                 openSubscriptions = openSubscriptions,
                 openPaywall = openPaywall,
                 openAppSettings = openAppSettings,
@@ -87,6 +93,7 @@ object SettingsScreens {
         openChangePassword: () -> Unit,
         openProfileRawScreen: () -> Unit,
         openBlockList: () -> Unit,
+        openUserDevices: () -> Unit,
         onShare: (String) -> Unit,
         askNotificationPermission: () -> Unit,
     ) = ComposeUIViewController {
@@ -100,8 +107,21 @@ object SettingsScreens {
                 openChangeEmail = openChangeEmail,
                 openProfileRawScreen = openProfileRawScreen,
                 openBlockList = openBlockList,
+                openUserDevices = openUserDevices,
                 onShare = onShare,
                 askNotificationPermission = askNotificationPermission
+            )
+        }
+    }
+
+    fun UserDevicesScreenVC(
+        vm: UserDevicesViewModel,
+    ) = ComposeUIViewController {
+        RootScreenIOS {
+            UserDevicesScreenCore(
+                appState = it,
+                vm = vm,
+                contentPadding = PaddingValues()
             )
         }
     }
@@ -288,6 +308,33 @@ object SettingsScreens {
         }
     }
 
+    fun AppStatusScreenVC(
+        vm: AppStatusViewModel,
+        askNotificationPermission: () -> Unit,
+        askLocationService: () -> Unit,
+        askLocationPermission: () -> Unit,
+        askBackgroundLocationPermission: () -> Unit,
+        askBackgroundAccessPermission: () -> Unit,
+        openLocationSettings: () -> Unit,
+        openDebugLogs: () -> Unit,
+    ) = ComposeUIViewController {
+        RootScreenIOS {
+            AppStatusScreenCore(
+                appState = it,
+                vm = vm,
+                paddingValues = PaddingValues(bottom = 30.dp),
+                askNotificationPermission = askNotificationPermission,
+                askLocationService = askLocationService,
+                askLocationPermission = askLocationPermission,
+                askBackgroundLocationPermission = askBackgroundLocationPermission,
+                askBackgroundAccessPermission = askBackgroundAccessPermission,
+                askPushNotificationService = {},
+                openLocationSettings = openLocationSettings,
+                openDebugLogs = openDebugLogs
+            )
+        }
+    }
+
     fun LicencesScreenVC() = ComposeUIViewController {
         RootScreenIOS {
             LicencesScreenCore(
@@ -331,22 +378,26 @@ object SettingsScreens {
 
     fun AppSettingsScreenVC(
         vm: AppSettingsViewModel,
+        openAppThemeScreen: () -> Unit,
         openMeasurementSystemScreen: () -> Unit,
         openNotificationGroupingScreen: () -> Unit,
         openMapInteractionsScreen: () -> Unit,
         openNavigationAppScreen: () -> Unit,
         openPlaceSearchSettings: () -> Unit,
+        openPersonalSpaceSettings: () -> Unit,
     ) = ComposeUIViewController {
         RootScreenIOS {
             AppSettingsScreenCore(
                 vm = vm,
                 appState = it,
                 paddingValues = PaddingValues(),
+                onAppThemeClick = openAppThemeScreen,
                 onMeasurementSystemClick = openMeasurementSystemScreen,
                 onNotificationGroupingClick = openNotificationGroupingScreen,
                 onMapInteractionsClick = openMapInteractionsScreen,
                 onNavigationAppClick = openNavigationAppScreen,
                 onPlaceSearchSettingsClick = openPlaceSearchSettings,
+                onPersonalSpaceSettingsClick = openPersonalSpaceSettings,
                 // not available in iOS
                 onMapSourceSettingsClick = {},
                 onNotificationSocketSettingsClick = {}
@@ -359,6 +410,8 @@ object SettingsScreens {
         openPaywall: () -> Unit,
         askNotificationPermission: () -> Unit,
         askBackgroundAccessPermission: () -> Unit,
+        applyAppTheme: (AppThemeType) -> Unit,
+        applyDarkThemeStyle: (DarkThemeStyleType) -> Unit,
     ) = ComposeUIViewController {
         RootScreenIOS {
             GenericSettingsScreenCore(
@@ -371,6 +424,8 @@ object SettingsScreens {
                 openNotificationSocketChannelSettings = {},
                 askNotificationPermission = askNotificationPermission,
                 askBackgroundAccessPermission = askBackgroundAccessPermission,
+                applyAppTheme = applyAppTheme,
+                applyDarkThemeStyle = applyDarkThemeStyle,
             )
         }
     }

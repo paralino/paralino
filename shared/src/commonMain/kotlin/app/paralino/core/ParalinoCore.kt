@@ -7,7 +7,9 @@ import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.LimitedExecutionParentManager
 import app.paralino.core.domain.crypto.RawCryptoPresentation
 import app.paralino.core.domain.crypto.group.CryptoKEKLocalRepository
+import app.paralino.core.domain.crypto.group.ArchiveMemberSenderKeyUseCase
 import app.paralino.core.domain.crypto.group.CryptoKEKRefreshUseCase
+import app.paralino.core.domain.crypto.group.GetMemberSenderKeyForReadUseCase
 import app.paralino.core.domain.crypto.group.CryptoKeyLocalDataSource
 import app.paralino.core.domain.crypto.group.CryptoKeyRemoteDataSource
 import app.paralino.core.domain.crypto.group.GetGroupHistoryKeyUseCase
@@ -88,10 +90,12 @@ import app.paralino.core.domain.user.ChangeCredentialsUseCase
 import app.paralino.core.domain.user.ConvertAccountUseCase
 import app.paralino.core.domain.user.CreateAccountUseCase
 import app.paralino.core.domain.user.DeactivatePersonalDeviceUseCase
+import app.paralino.core.domain.user.PersonalSpaceFeatureUseCase
 import app.paralino.core.domain.user.DeletePersonalDeviceUseCase
 import app.paralino.core.domain.user.ExpiredSessionHandler
 import app.paralino.core.domain.user.ExpiredSessionRecovery
 import app.paralino.core.domain.user.GetDirectCheckoutWebPortalUseCase
+import app.paralino.core.domain.user.GetMapSDKProviderUseCase
 import app.paralino.core.domain.user.LoginUseCase
 import app.paralino.core.domain.user.LogoutUseCase
 import app.paralino.core.domain.user.PasswordConfirmationUseCase
@@ -102,6 +106,7 @@ import app.paralino.core.domain.user.RecoverAccountUseCase
 import app.paralino.core.domain.user.RefreshEverythingUseCase
 import app.paralino.core.domain.user.ResetPasswordUseCase
 import app.paralino.core.domain.user.SessionRenewalHandler
+import app.paralino.core.domain.user.ServerConnectionTestUseCase
 import app.paralino.core.domain.user.StartDirectCheckoutUseCase
 import app.paralino.core.domain.user.UpdateUserDataUseCase
 import app.paralino.core.domain.user.UserCryptoKeyRefreshUseCase
@@ -323,7 +328,7 @@ val coreModule = module {
     factory { ConvertAccountUseCase(get(), get(), get()) }
     factory { ExpiredSessionRecovery(get(), get(), get(), get(), get(), get()) }
     factory { SessionRenewalHandler(get(), get(), get(), get()) }
-    factory { LocationRequestUseCase(get(), get(), get(), get()) }
+    factory { LocationRequestUseCase(get(), get(), get(), get(), get(), get()) }
     single { LocationUploadPayloadFactory(get(), get(), get(), get(), get(), get(), get(), get()) }
     single { SaveLocationUseCase(get(), get(), get(), get(), get(), get(), get()) }
     factory { SavePendingLocationUseCase(get(), get(), get(), get(), get()) }
@@ -361,6 +366,7 @@ val coreModule = module {
     single { PersonalSpaceRefreshUseCase(get(), get(), get(), get(), get(), get()) }
     single { DeletePersonalDeviceUseCase(get(), get()) }
     single { DeactivatePersonalDeviceUseCase(get(), get(), get(), get()) }
+    single { PersonalSpaceFeatureUseCase(get(), get(), get(), get(), get()) }
     single { PlaceAddressSearchUseCase(get(), get()) }
     factory { CreatePrivacyZoneUseCase(get(), get()) }
     factory { UpdatePrivacyZoneUseCase(get(), get(), get()) }
@@ -377,9 +383,11 @@ val coreModule = module {
     single { LocationCacheRepository() }
     single { PlacesRepository(get(), get(), get(), get(), get(), get()) }
     single { RemoteConfigRepository(get(), get(), get(), get()) }
-    single { UserConfigRepository(get(), get(), get(), get()) }
+    single { UserConfigRepository(get(), get(), get(), get(), get()) }
     single { AppConfigRepository(get(), get()) }
     single { PremiumStatusManager(get(), get(), get(), get(), get(), get(), get()) }
+    factory { GetMapSDKProviderUseCase(get(), get(), get()) }
+    factory { ServerConnectionTestUseCase(get(), get(), get(), get()) }
     single { StartDirectCheckoutUseCase(get()) }
     single { GetDirectCheckoutWebPortalUseCase(get()) }
 
@@ -402,11 +410,13 @@ val coreModule = module {
     single { GetPersonalGroupKeyUseCase(get(), get(), get()) }
     single { GetMemberPublicKeyUseCase(get(), get(), get(), get(), get()) }
     single { GetMemberSenderKeyUseCase(get(), get(), get(), get(), get(), get(), get()) }
+    single { GetMemberSenderKeyForReadUseCase(get(), get(), get(), get()) }
+    single { ArchiveMemberSenderKeyUseCase(get(), get(), get(), get(), get()) }
     single { GetGroupHistoryKeyUseCase(get(), get(), get()) }
     single { GetPersonalHistoryKeyUseCase(get(), get()) }
     single { CryptoKEKLocalRepository(get(), get(), get(), get(), get(), get(), get(), get()) }
     single { CryptoUserKeysLocalSource(get(), get(), get()) }
-    single { CryptoKEKRefreshUseCase(get(), get(), get()) }
+    single { CryptoKEKRefreshUseCase(get(), get(), get(), get()) }
 
     factory { NotificationPreCheckProcessor(get(), get(), get()) }
     factory { PushNotificationDeleteUseCase(get(), get()) }

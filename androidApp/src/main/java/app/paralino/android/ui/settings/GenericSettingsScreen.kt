@@ -18,6 +18,7 @@ import app.paralino.android.tracking.rememberLocationPermissionHandler
 import app.paralino.android.ui.main.MainAppState
 import app.paralino.android.ui.map.SimpleGenericMapComposable
 import app.paralino.android.ui.navigation.AppScreen
+import app.paralino.android.utils.extensions.applyAsNightMode
 import app.paralino.android.utils.extensions.openNotificationChannelSettings
 import app.paralino.core.presentation.settings.generic.BaseGenericSettingViewModel
 import app.paralino.core.presentation.settings.generic.GenericSettingsScreenUiEvent
@@ -105,6 +106,10 @@ fun GenericSettingsScreen(
                 locationPermissionHandler?.askUnrestrictedBackgroundAccess(
                     forcePrompt = true
                 )
+            },
+            applyAppTheme = { it.applyAsNightMode(context) },
+            applyDarkThemeStyle = {
+                // AppTheme is observing this with app prefs
             }
         )
     }

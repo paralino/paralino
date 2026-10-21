@@ -120,6 +120,7 @@ data class PlanConfig(
     val hasPremiumMapStyles: Boolean,
     val hasSharingAlerts: Boolean,
     val hasLowBatteryAlerts: Boolean,
+    val hasPersonalSpace: Boolean,
     val isPaid: Boolean,
     val isPremium: Boolean,
     val isActive: Boolean,
@@ -128,10 +129,24 @@ data class PlanConfig(
 ) {
 
     @Transient val planTypeEnum: PlanType = PlanType.fromKey(key = planType, order = planOrder)
-    val hasUnlimitedPersonalHistory: Boolean = personalHistoryDaysLimit < 0
+    val hasUnlimitedPersonalHistory: Boolean = hasPersonalSpace && personalHistoryDaysLimit < 0
     val hasUnlimitedGroupHistory: Boolean = historyDaysLimit < 0
-    val isPersonalHistoryEnabled: Boolean = personalHistoryDaysLimit != 0
+    val isPersonalHistoryEnabled: Boolean = hasPersonalSpace && personalHistoryDaysLimit != 0
     val isGroupHistoryEnabled: Boolean = historyDaysLimit != 0
+
+
+    // hasPersonalSpace should only apply if there are no created devices/places
+    // that is why we are checking for currentCount == 0
+    // if device/place is already created, it should still stay active
+    fun personalDevicesLimitForDisplay(currentCount: Int): Int? {
+        if (!hasPersonalSpace && currentCount == 0) return null
+        return personalDevicesLimit
+    }
+
+    fun personalPlacesLimitForDisplay(currentCount: Int): Int? {
+        if (!hasPersonalSpace && currentCount == 0) return null
+        return personalPlacesLimit.takeIf { it >= 0 }
+    }
 
     val adjustedPlanName: String = when (planTypeEnum) {
         PlanType.SILVER -> MR.strings.paywall_silver_plan_name.localizedString()
@@ -160,6 +175,7 @@ data class PlanConfig(
             hasPremiumMapStyles = false,
             hasSharingAlerts = false,
             hasLowBatteryAlerts = true,
+            hasPersonalSpace = false,
             isPaid = false,
             isPremium = false,
             isActive = true,

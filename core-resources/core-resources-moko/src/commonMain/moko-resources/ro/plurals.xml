@@ -40,4 +40,34 @@
         <item quantity="few">Dispozitive</item>
         <item quantity="other">Dispozitive</item>
     </plurals>
+    <plurals name="paywall_summary_groups">
+        <item quantity="one">%d grup</item>
+        <item quantity="few">%d grupuri</item>
+        <item quantity="other">%d de grupuri</item>
+    </plurals>
+    <plurals name="paywall_summary_history_days">
+        <item quantity="one">Istoric de %d zi</item>
+        <item quantity="few">Istoric de %d zile</item>
+        <item quantity="other">Istoric de %d de zile</item>
+    </plurals>
+    <plurals name="paywall_summary_places">
+        <item quantity="one">%d locație</item>
+        <item quantity="few">%d locații</item>
+        <item quantity="other">%d de locații</item>
+    </plurals>
+    <plurals name="paywall_summary_members">
+        <item quantity="one">%d membru</item>
+        <item quantity="few">%d membri</item>
+        <item quantity="other">%d de membri</item>
+    </plurals>
+    <plurals name="paywall_summary_privacy_zones">
+        <item quantity="one">%d zonă de confidențialitate</item>
+        <item quantity="few">%d zone de confidențialitate</item>
+        <item quantity="other">%d de zone de confidențialitate</item>
+    </plurals>
+    <plurals name="paywall_summary_devices">
+        <item quantity="one">%d dispozitiv</item>
+        <item quantity="few">%d dispozitive</item>
+        <item quantity="other">%d de dispozitive</item>
+    </plurals>
 </resources>

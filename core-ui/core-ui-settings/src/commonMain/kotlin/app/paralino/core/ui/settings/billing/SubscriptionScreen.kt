@@ -176,20 +176,22 @@ fun SubscriptionScreenCore(
 
             Spacer(Modifier.size(40.dp))
 
-            if (!uiState.hasPremiumPlan) {
-                Text(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 20.dp)
-                        .padding(bottom = 4.dp),
-                    text = stringResource(
+            Text(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp)
+                    .padding(bottom = 4.dp),
+                text = if (uiState.hasPremiumPlan) {
+                    stringResource(MR.strings.plans_management_activePlan_tag)
+                } else {
+                    stringResource(
                         MR.strings.paywall_current_plan_label,
                         uiState.currentPlanName
-                    ),
-                    textAlign = TextAlign.Center,
-                    style = MaterialTheme.typography.subtitle1.copy(fontWeight = FontWeight.Bold)
-                )
-            }
+                    )
+                },
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.subtitle1.copy(fontWeight = FontWeight.Bold)
+            )
 
             MembershipPlanFeatureTable(
                 modifier = Modifier,
@@ -285,13 +287,33 @@ private fun SubscriptionDetailsBox(
                 )
             }
 
-            if (!state.expiresAt.isNullOrBlank()) {
+            if (!state.expiredAt.isNullOrBlank()) {
                 Text(
                     text = stringResource(
                         MR.strings.plans_management_expiresAt_label,
-                        "**${state.expiresAt}**"
+                        "**${state.expiredAt}**"
                     ).annotatedBoldCompose(),
                     style = MaterialTheme.typography.caption,
+                    color = AppColors.redMain,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+
+            if (!state.expiresAt.isNullOrBlank()) {
+                Text(
+                    text = if (state.expiredAt.isNullOrBlank()) {
+                        stringResource(
+                            MR.strings.plans_management_expiresAt_label,
+                            "**${state.expiresAt}**"
+                        ).annotatedBoldCompose()
+                    } else {
+                        stringResource(
+                            MR.strings.plans_management_expired_label,
+                            "**${state.expiresAt}**"
+                        ).annotatedBoldCompose()
+                    },
+                    style = MaterialTheme.typography.caption,
+                    color = if (state.expiredAt.isNullOrBlank()) MaterialTheme.colors.onSurface else AppColors.redMain,
                     modifier = Modifier.fillMaxWidth()
                 )
             }

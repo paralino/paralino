@@ -5,9 +5,9 @@ import app.paralino.core.domain.location.SaveLocationUseCase
 import app.paralino.core.domain.location.history.SavePendingLocationUseCase
 import app.paralino.core.logg
 import app.paralino.core.models.AppHost
-import app.paralino.core.models.location.LocationDataModel
 import app.paralino.core.models.location.LocationPerformanceType
 import app.paralino.core.models.location.LocationSharingContract
+import app.paralino.core.models.location.LocationUpdateDataFromDevice
 import app.paralino.core.models.location.MemberGroupIdForUpload
 import app.paralino.core.provider.AppLifecycleType
 import app.paralino.core.provider.ICoroutineScopeProvider
@@ -47,14 +47,22 @@ class LocationUploadEventProcessingEngine(
                 AppHost.MAIN_APP,
                 AppHost.IOS_NOTIFICATION_EXTENSION -> {
                     when (locationPerformanceManager.locationPerformanceType.value.current) {
-                        LocationPerformanceType.HIGH_BATTERY_SAVER -> 120.seconds
-                        LocationPerformanceType.BATTERY_SAVER -> 90.seconds
+                        LocationPerformanceType.HIGH_BATTERY_SAVER -> 3.minutes
+                        LocationPerformanceType.BATTERY_SAVER -> 2.minutes
                         LocationPerformanceType.BALANCED -> {
                             when (deviceApiProvider.appLifecycleState.value.current) {
                                 AppLifecycleType.ACTIVE -> 40.seconds
                                 AppLifecycleType.INACTIVE,
                                 AppLifecycleType.BACKGROUND,
-                                AppLifecycleType.DESTROYED -> 90.seconds
+                                AppLifecycleType.DESTROYED -> {
+                                    when (locationPerformanceManager.locationPerformanceType.value.balancedPerformanceSettings.config) {
+                                        LocationPerformanceSettingsType.Balanced.Level1 -> 6.minutes
+                                        LocationPerformanceSettingsType.Balanced.Level2 -> 5.minutes
+                                        LocationPerformanceSettingsType.Balanced.Level3 -> 4.minutes
+                                        LocationPerformanceSettingsType.Balanced.Level4 -> 3.minutes
+                                        LocationPerformanceSettingsType.Balanced.Level5 -> 2.minutes
+                                    }
+                                }
                             }
                         }
 
@@ -125,7 +133,7 @@ class LocationUploadEventProcessingEngine(
             }
         }
 
-    override fun eventAction(locationData: LocationDataModel) {
+    override fun eventAction(locationData: LocationUpdateDataFromDevice) {
         scopeProvider.userSessionIOScope.launch {
             try {
                 checkAndUploadLocation(
@@ -144,7 +152,7 @@ class LocationUploadEventProcessingEngine(
     }
 
     suspend fun checkAndUploadLocation(
-        data: LocationDataModel?,
+        data: LocationUpdateDataFromDevice?,
         bypassFilter: Boolean,
         saveLocally: Boolean
     ) {

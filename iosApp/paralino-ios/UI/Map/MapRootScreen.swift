@@ -29,10 +29,12 @@ struct MapRootScreen: View {
                             case .changePassword: ChangePasswordScreen(path: $mainAppState.userReadyGraph)
                             case .convertAccount: ConvertAccountScreen(path: $mainAppState.userReadyGraph)
                             case .blocklist: BlockListScreen(path: $mainAppState.userReadyGraph)
+                            case .userDevices: UserDevicesScreen(path: $mainAppState.userReadyGraph)
                             case .rawData(let type):
                                 RawDataScreen(appState: RawDataScreen.createState(type: type))
                             case .editProfile: EditProfileScreen(path: $mainAppState.userReadyGraph)
                             case .appStatusDebug: AppStatusDebugScreen(path: $mainAppState.userReadyGraph)
+                            case .appStatus: AppStatusScreen(path: $mainAppState.userReadyGraph)
                             case .licences: LicencesScreen(path: $mainAppState.userReadyGraph)
                             case .subscriptions: SubscriptionsScreen(path: $mainAppState.userReadyGraph)
                             case .paywall(let groupId, let type): PaywallScreen(path: $mainAppState.userReadyGraph, state: PaywallScreenState(groupId: groupId, type: type))
@@ -45,11 +47,13 @@ struct MapRootScreen: View {
                                 }
                             ) 
                             case .appSettings: AppSettingsScreen(path: $mainAppState.userReadyGraph)
+                            case .appThemeSettings: GenericSettingsScreen(path: $mainAppState.userReadyGraph, appState: GenericSettingsScreenState(vm: KoinIOS.ViewModels.shared.appThemeVM))
                             case .measurementSystemSettings: GenericSettingsScreen(path: $mainAppState.userReadyGraph, appState: GenericSettingsScreenState(vm: KoinIOS.ViewModels.shared.measurementSystemVM))
                             case .notificationGroupingSettings: GenericSettingsScreen(path: $mainAppState.userReadyGraph, appState: GenericSettingsScreenState(vm: KoinIOS.ViewModels.shared.notificationGroupingVM))
                             case .mapInteractionsSettings: GenericSettingsScreen(path: $mainAppState.userReadyGraph, appState: GenericSettingsScreenState(vm: KoinIOS.ViewModels.shared.mapInteractionsVM))
                             case .navigationAppSettings: GenericSettingsScreen(path: $mainAppState.userReadyGraph, appState: GenericSettingsScreenState(vm: KoinIOS.ViewModels.shared.navigationAppVM))
                             case .placeSearchSettings: GenericSettingsScreen(path: $mainAppState.userReadyGraph, appState: GenericSettingsScreenState(vm: KoinIOS.ViewModels.shared.placeSearchSettingsVM))
+                            case .personalSpaceSettings: GenericSettingsScreen(path: $mainAppState.userReadyGraph, appState: GenericSettingsScreenState(vm: KoinIOS.ViewModels.shared.personalSpaceFeatureSettingsVM))
                             case .licenceCode: LicenceCodeScreen(path: $mainAppState.userReadyGraph)
                             }
                         case let .home(homeGraph):

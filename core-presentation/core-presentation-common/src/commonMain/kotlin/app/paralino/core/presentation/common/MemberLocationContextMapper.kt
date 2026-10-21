@@ -1,7 +1,7 @@
 package app.paralino.core.presentation.common
 
 import app.paralino.core.MR
-import app.paralino.core.models.location.LocationDataModel
+import app.paralino.core.models.location.LocationUpdateDataFromDevice
 import app.paralino.core.provider.DistanceType
 import app.paralino.core.provider.FormattingFractionsMode
 import app.paralino.core.provider.IValueFormatter
@@ -17,7 +17,7 @@ class MemberLocationContextMapper(
     fun enrichOneLocationMemberItems(
         members: List<GroupMemberItemStateWithOneLocation>,
         places: List<PlaceListItemData>,
-        myLocation: LocationDataModel?,
+        myLocation: LocationUpdateDataFromDevice?,
     ): List<GroupMemberItemStateWithOneLocation> {
         if (members.isEmpty()) return members
         val geofencePlaces = places.filter { it.lat != null && it.lng != null && it.radiusMeters > 0 }
@@ -31,7 +31,7 @@ class MemberLocationContextMapper(
     fun enrichMemberLocationState(
         location: GroupMemberItemLocationState,
         places: List<PlaceListItemData>,
-        myLocation: LocationDataModel?,
+        myLocation: LocationUpdateDataFromDevice?,
     ): List<GroupMemberItemLocationState> {
         return enrichMemberLocationStates(
             locations = listOf(location),
@@ -43,7 +43,7 @@ class MemberLocationContextMapper(
     fun enrichMemberLocationStates(
         locations: List<GroupMemberItemLocationState>,
         places: List<PlaceListItemData>,
-        myLocation: LocationDataModel?,
+        myLocation: LocationUpdateDataFromDevice?,
     ): List<GroupMemberItemLocationState> {
         if (locations.isEmpty()) return locations
         val geofencePlaces = places.filter { it.lat != null && it.lng != null && it.radiusMeters > 0 }
@@ -53,7 +53,7 @@ class MemberLocationContextMapper(
     private fun enrichLocationState(
         loc: GroupMemberItemLocationState,
         geofencePlaces: List<PlaceListItemData>,
-        myLocation: LocationDataModel?,
+        myLocation: LocationUpdateDataFromDevice?,
     ): GroupMemberItemLocationState {
         val atPlace = findTightestContainingPlaceName(
             lat = loc.lat,
@@ -91,7 +91,7 @@ class MemberLocationContextMapper(
     }
 
     private fun formatDistanceFromMe(
-        myLocation: LocationDataModel?,
+        myLocation: LocationUpdateDataFromDevice?,
         memberLat: Double?,
         memberLng: Double?,
     ): String? {

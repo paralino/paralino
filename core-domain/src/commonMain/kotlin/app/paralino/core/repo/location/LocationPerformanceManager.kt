@@ -20,6 +20,7 @@ import kotlinx.coroutines.launch
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.minus
 import kotlin.time.Duration
+import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.Instant
 
@@ -51,6 +52,14 @@ class LocationPerformanceManager constructor(
     private var performanceUpdateJob: Job? = null
     private var locationBoostTracker = mutableMapOf<Long, LocationPerformanceType>()
     private var performanceResetScheduleTime: Pair<Instant, Duration>? = null
+
+    private val veryHighBoostWindow = 10.minutes
+    private val highBoostWindow = 20.minutes
+
+    private val highPerformanceSettings: LocationPerformanceSettingsType.HighPerformance
+        get() = LocationPerformanceSettingsType
+            .HighPerformance
+            .fromKey(appPrefs.locationSettingsHighPerformanceDurationType ?: appPrefs.locationSettingsHighPerformanceDurationTypeFallback)
 
     /**
      * Used for subscription in iOS
@@ -114,17 +123,26 @@ class LocationPerformanceManager constructor(
         }
     }
 
+    fun resetTimestamps() {
+        locationBoostTracker = mutableMapOf()
+    }
+
     fun checkPerformanceResetState() {
         // fallback check in case reset gets canceled for whatever reason
         // here we give it enough buffer and reset
         performanceResetScheduleTime?.let {
-            if (it.first.plus(it.second).isOlderThan(20.seconds)) {
+            val currentType = locationPerformanceType.value.current
+            if (it.first.plus(it.second).isOlderThan(10.seconds)) {
                 logg.tag("location_performance")
                     .w("Device performance reset is overdue, schedule reset again")
                 schedulePerformanceReset(
                     type = LocationPerformanceType.BALANCED,
-                    resetDelay = 30.seconds
+                    resetDelay = 10.seconds
                 )
+            } else if (currentType > getCorrectType(type = currentType, logInfo = false)) {
+                performanceUpdateJob?.cancel()
+                setPerformance(type = LocationPerformanceType.BALANCED, allowDowngrade = true)
+                performanceResetScheduleTime = null
             }
         }
     }
@@ -212,69 +230,12 @@ class LocationPerformanceManager constructor(
         }
 
         val now = nowUTC().epochSeconds
-        val last10min = nowUTC().minus(10, DateTimeUnit.MINUTE).epochSeconds
-        val last20min = nowUTC().minus(20, DateTimeUnit.MINUTE).epochSeconds
         val last2Hours = nowUTC().minus(2, DateTimeUnit.HOUR).epochSeconds
 
         // keep only last few hours as record
         locationBoostTracker = locationBoostTracker.filter { it.key > last2Hours }.toMutableMap()
 
-        // take only recent period for optimization
-        val iterator10Min = locationBoostTracker.filter { it.key > last10min }.toList()
-        val iterator20Min = locationBoostTracker.filter { it.key > last20min }.toList()
-
-        var currentVeryHighBoostDuration = Duration.ZERO
-        var currentHighBoostDuration = Duration.ZERO
-        var currentMediumBoostDuration = Duration.ZERO
-
-        // sum duration of VERY_HIGH requests in 10 minutes
-        iterator10Min.forEachIndexed { index, pair ->
-            // don't consider user own boost
-            if (pair.second < LocationPerformanceType.MANUAL_BOOST) {
-                val next = iterator10Min.getOrNull(index + 1)
-                val durationInSec = ((next?.first ?: now) - pair.first).seconds
-
-                // consider very_high performance in the last 10 min
-                if (pair.second >= LocationPerformanceType.VERY_HIGH) {
-                    currentVeryHighBoostDuration += durationInSec
-                }
-            }
-        }
-
-        // sum duration of HIGH and MEDIUM_HIGH requests in last 20 min
-        iterator20Min.forEachIndexed { index, pair ->
-            // don't consider user own boost or location request
-            if (pair.second < LocationPerformanceType.VERY_HIGH) {
-                val next = iterator20Min.getOrNull(index + 1)
-                val durationInSec = ((next?.first ?: now) - pair.first).seconds
-
-                if (pair.second >= LocationPerformanceType.HIGH) {
-                    currentHighBoostDuration += durationInSec
-                }
-                if (pair.second >= LocationPerformanceType.MEDIUM_HIGH) {
-                    currentMediumBoostDuration += durationInSec
-                }
-            }
-        }
-
-        val newType = adjustPerformanceType(
-            type = type,
-            currentMediumBoostDuration = currentMediumBoostDuration,
-            currentHighBoostDuration = currentHighBoostDuration,
-            currentVeryHighBoostDuration = currentVeryHighBoostDuration,
-            batteryLevel = deviceStatus.batteryLevel,
-            lowPowerMode = deviceStatus.isLowPowerMode
-        )
-
-        logg.tag("location_performance")
-            .v(
-                "Performance - requested: $type, new: $newType, old: ${_locationPerformanceType.value.current} [${_locationPerformanceType.value}] - for: " +
-                        "BAT: ${deviceStatus.batteryLevel}%,\n" +
-                        "time: $now,\n" +
-                        "VERY_HIGH: $currentVeryHighBoostDuration,\n" +
-                        "HIGH: $currentHighBoostDuration,\n" +
-                        "MEDIUM: $currentMediumBoostDuration"
-            )
+        val newType = getCorrectType(type = type, logInfo = true)
 
         locationBoostTracker[now] = newType
         _locationPerformanceType.value = _locationPerformanceType.value.copy(
@@ -283,6 +244,113 @@ class LocationPerformanceManager constructor(
             current = newType
         )
     }
+
+    fun getPerformanceAllowances(): List<LocationPerformanceAllowance> {
+        val now = nowUTC()
+        val durations = calculateBoostDurations(now = now)
+        val settings = highPerformanceSettings
+        return listOf(
+            LocationPerformanceAllowance(
+                type = LocationPerformanceType.MEDIUM_HIGH,
+                window = highBoostWindow,
+                windowEnd = now,
+                allowed = settings.allowedMediumPerformanceDuration,
+                used = durations.medium,
+                usedIntervals = durations.mediumIntervals
+            ),
+            LocationPerformanceAllowance(
+                type = LocationPerformanceType.HIGH,
+                window = highBoostWindow,
+                windowEnd = now,
+                allowed = settings.allowedHighPerformanceDuration,
+                used = durations.high,
+                usedIntervals = durations.highIntervals
+            ),
+            LocationPerformanceAllowance(
+                type = LocationPerformanceType.VERY_HIGH,
+                window = veryHighBoostWindow,
+                windowEnd = now,
+                allowed = settings.allowedVeryHighPerformanceDuration,
+                used = durations.veryHigh,
+                usedIntervals = durations.veryHighIntervals
+            )
+        )
+    }
+
+    private fun getCorrectType(
+        type: LocationPerformanceType,
+        logInfo: Boolean
+    ): LocationPerformanceType {
+        val durations = calculateBoostDurations()
+
+        val newType = adjustPerformanceType(
+            type = type,
+            currentMediumBoostDuration = durations.medium,
+            currentHighBoostDuration = durations.high,
+            currentVeryHighBoostDuration = durations.veryHigh,
+            batteryLevel = deviceStatus.batteryLevel,
+            lowPowerMode = deviceStatus.isLowPowerMode
+        )
+
+        if (logInfo) {
+            logg.tag("location_performance")
+                .v(
+                    "Performance - requested: $type, new: $newType, old: ${_locationPerformanceType.value.current} [${_locationPerformanceType.value}] - for: " +
+                            "BAT: ${deviceStatus.batteryLevel}%,\n" +
+                            "time: ${nowUTC().epochSeconds},\n" +
+                            "VERY_HIGH: ${durations.veryHigh},\n" +
+                            "HIGH: ${durations.high},\n" +
+                            "MEDIUM: ${durations.medium}"
+                )
+        }
+
+        return newType
+    }
+
+    private fun calculateBoostDurations(now: Instant = nowUTC()): BoostDurations {
+        // sum duration of VERY_HIGH requests in 10 minutes, don't consider user own boost
+        val veryHighIntervals = calculateBoostIntervals(now = now, window = veryHighBoostWindow) {
+            it >= LocationPerformanceType.VERY_HIGH && it < LocationPerformanceType.MANUAL_BOOST
+        }
+        // sum duration of >HIGH and <VERY_HIGH requests in last 20 min, don't consider user own boost or location request
+        val highIntervals = calculateBoostIntervals(now = now, window = highBoostWindow) {
+            it >= LocationPerformanceType.HIGH && it < LocationPerformanceType.VERY_HIGH
+        }
+        val mediumIntervals = calculateBoostIntervals(now = now, window = highBoostWindow) {
+            it >= LocationPerformanceType.MEDIUM_HIGH && it < LocationPerformanceType.VERY_HIGH
+        }
+
+        return BoostDurations(
+            veryHigh = veryHighIntervals.totalDuration(),
+            high = highIntervals.totalDuration(),
+            medium = mediumIntervals.totalDuration(),
+            veryHighIntervals = veryHighIntervals,
+            highIntervals = highIntervals,
+            mediumIntervals = mediumIntervals
+        )
+    }
+
+    // Returns time intervals inside [window] (ending at [now]) during which tracked performance type matched [isCounted].
+    // Each tracked entry lasts until the next entry, or until [now] for the latest one.
+    private fun calculateBoostIntervals(
+        now: Instant,
+        window: Duration,
+        isCounted: (LocationPerformanceType) -> Boolean
+    ): List<ClosedRange<Instant>> {
+        val windowStart = now.minus(window).epochSeconds
+
+        // take only recent period for optimization
+        val entries = locationBoostTracker.filter { it.key > windowStart }.toList()
+
+        return entries.mapIndexedNotNull { index, (start, type) ->
+            if (!isCounted(type)) return@mapIndexedNotNull null
+            val end = entries.getOrNull(index + 1)?.first ?: now.epochSeconds
+            Instant.fromEpochSeconds(start)..Instant.fromEpochSeconds(end)
+        }
+    }
+
+    private fun List<ClosedRange<Instant>>.totalDuration(): Duration =
+        fold(Duration.ZERO) { total, interval -> total + (interval.endInclusive - interval.start) }
 
     private fun adjustPerformanceType(
         type: LocationPerformanceType,
@@ -294,9 +362,7 @@ class LocationPerformanceManager constructor(
     ): LocationPerformanceType {
 
         // allow only certain amount of boost per hour
-        val highPerformanceSettings = LocationPerformanceSettingsType
-            .HighPerformance
-            .fromKey(appPrefs.locationSettingsHighPerformanceDurationType ?: appPrefs.locationSettingsHighPerformanceDurationTypeFallback)
+        val highPerformanceSettings = this.highPerformanceSettings
         val balancedPerformanceSettings = LocationPerformanceSettingsType
             .Balanced
             .fromKey(appPrefs.locationSettingsBalancedPerformanceType)
@@ -442,5 +508,25 @@ class LocationPerformanceManager constructor(
 
     data class LocationPerformanceSettingsBatterySaver(
         val config: LocationPerformanceSettingsType.BatterySaver
+    )
+
+    data class LocationPerformanceAllowance(
+        val type: LocationPerformanceType,
+        val window: Duration,
+        val windowEnd: Instant,
+        val allowed: Duration,
+        val used: Duration,
+        val usedIntervals: List<ClosedRange<Instant>>
+    ) {
+        val remaining: Duration get() = (allowed - used).coerceAtLeast(Duration.ZERO)
+    }
+
+    private data class BoostDurations(
+        val veryHigh: Duration,
+        val high: Duration,
+        val medium: Duration,
+        val veryHighIntervals: List<ClosedRange<Instant>>,
+        val highIntervals: List<ClosedRange<Instant>>,
+        val mediumIntervals: List<ClosedRange<Instant>>
     )
 }

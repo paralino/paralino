@@ -14,6 +14,7 @@ import app.paralino.core.models.user.BlocklistType
 import app.paralino.core.models.user.UserMe
 import app.paralino.core.models.user.UserMeData
 import app.paralino.core.utils.BaseRemoteModule
+import app.paralino.core.utils.exceptions.MissingUserKeyException
 import app.paralino.core.utils.extensions.isoWithOffsetToInstant
 
 class UserMapperCore(
@@ -53,16 +54,25 @@ class UserMapperCore(
             emailVerification = model.emailVerification,
             emailVerificationSkipTime = appPrefs.emailVerificationSkipTime,
             passwordUpdate = model.passwordUpdate?.isoWithOffsetToInstant(),
-            data = model.data?.let { remote2Core(it) }
+            data = model.data?.let { remote2Core(it) } ?: CryptoResource.NotInitialized
         )
     }
 
-    suspend fun remote2Core(model: UserMeDataRaw): UserMeData {
-        val userKey = userKeyRepo.personalKey(version = model.userKeyVersion)
+    suspend fun remote2Core(model: UserMeDataRaw): CryptoResource<UserMeData> {
+        val userKey = try {
+            userKeyRepo.personalKey(version = model.userKeyVersion)
+        } catch (e: Exception) {
+            return if (e is MissingUserKeyException) {
+                CryptoResource.MissingKey
+            } else {
+                CryptoResource.WrongKeyOrData
+            }
+        }
+
         return UserMeData(
             userImage = model.userImage?.let {
                 try {
-                    cryptoCore.decryptDataWithKey(it, userKey.key)
+                    cryptoCore.decryptDataWithKey(data = it, key = userKey.key)
                 } catch (e: Exception) {
                     null
                 }
@@ -74,7 +84,9 @@ class UserMapperCore(
                     ""
                 }
             } ?: "",
-        )
+        ).let {
+            CryptoResource.Ready(it)
+        }
     }
 
     suspend fun core2Remote(model: UserMeData): UserMeDataRaw {

@@ -31,6 +31,7 @@ import app.paralino.core.resources.icons.ic_close
 import app.paralino.core.resources.icons.ic_code
 import app.paralino.core.resources.icons.ic_communication
 import app.paralino.core.resources.icons.ic_content_copy
+import app.paralino.core.resources.icons.ic_contrast
 import app.paralino.core.resources.icons.ic_delete
 import app.paralino.core.resources.icons.ic_delete_forever
 import app.paralino.core.resources.icons.ic_devices
@@ -195,6 +196,7 @@ object CoreAppIcons {
     val PersonAdd get() = Res.drawable.ic_person_add
     val Settings get() = Res.drawable.ic_settings
     val Ruler get() = Res.drawable.ic_ruler
+    val Contrast get() = Res.drawable.ic_contrast
     val Communication get() = Res.drawable.ic_communication
     val FilterTune get() = Res.drawable.ic_filter_tune
     val QuestionCircle get() = Res.drawable.ic_question_mark_circle

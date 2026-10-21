@@ -131,13 +131,14 @@ class MemberMapperCore constructor(
                 CryptoResource.MissingKey
             }
 
-            val memberKey = cryptoKEKRepo.getMemberSenderKey(
+            val memberKey = cryptoKEKRepo.getMemberSenderKeyForRead(
                 groupId = model.member.groupId,
                 memberUserId = model.member.ownerUserId,
-                locationId = location.id
+                locationId = location.id,
+                deviceKeyVersion = location.deviceKeyVersion
             )
 
-            val locationData = if (memberKey is GroupMemberSenderKey.Valid) {
+            val locationData = if (memberKey is GroupMemberSenderKey.ValidForRead) {
                 if (location.locationData.isNullOrBlank()) {
                     CryptoResource.NotInitialized
                 } else {
@@ -182,7 +183,7 @@ class MemberMapperCore constructor(
                 CryptoResource.MissingKey
             }
 
-            val status = if (memberKey is GroupMemberSenderKey.Valid) {
+            val status = if (memberKey is GroupMemberSenderKey.ValidForRead) {
                 if (location.status.isNullOrBlank()) {
                     CryptoResource.NotInitialized
                 } else {
@@ -225,7 +226,7 @@ class MemberMapperCore constructor(
                 CryptoResource.MissingKey
             }
 
-            val locationHistory = if (memberKey is GroupMemberSenderKey.Valid) {
+            val locationHistory = if (memberKey is GroupMemberSenderKey.ValidForRead) {
                 if (location.locationHistory.isNullOrBlank()) {
                     CryptoResource.NotInitialized
                 } else {

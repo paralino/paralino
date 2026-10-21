@@ -6,6 +6,7 @@ import app.paralino.core.domain.user.UserCryptoKeyState
 import app.paralino.core.domain.user.UserSessionMonitor
 import app.paralino.core.logg
 import app.paralino.core.models.Payload
+import app.paralino.core.models.data
 import app.paralino.core.models.user.UserMeData
 import app.paralino.core.models.user.UserPersonalCode
 import app.paralino.core.models.user.UserPersonalCodeData
@@ -173,7 +174,7 @@ class PersonalCodesRepository constructor(
                 remote.updateCodeUserData(
                     personalCode = code.cleanCode(),
                     userId = appPrefs.userId,
-                    userMeData = userRepo.cachedUser!!.data!!
+                    userMeData = userRepo.cachedUser!!.data.data!!
                 )
                 refreshPersonalCodes()
             }

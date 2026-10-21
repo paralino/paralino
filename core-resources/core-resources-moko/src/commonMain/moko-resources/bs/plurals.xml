@@ -30,16 +30,6 @@
         <item quantity="few">Dijeljenje lokacije sa %d grupe</item>
         <item quantity="other">Dijeljenje lokacije sa %d grupa</item>
     </plurals>
-    <plurals name="plan_benefit_group">
-        <item quantity="one">**%d grupa**</item>
-        <item quantity="few">**%d grupe**</item>
-        <item quantity="other">**%d grupa**</item>
-    </plurals>
-    <plurals name="plan_benefit_places">
-        <item quantity="one">**%d mjesto** s neograničenim obavijestima</item>
-        <item quantity="few">**%d mjesta** s neograničenim obavijestima</item>
-        <item quantity="other">**%d mjesta** s neograničenim obavijestima</item>
-    </plurals>
     <plurals name="paywall_feature_summary_groups">
         <item quantity="one">Grupa</item>
         <item quantity="few">Grupe</item>
@@ -49,5 +39,35 @@
         <item quantity="one">Uređaj</item>
         <item quantity="few">Uređaja</item>
         <item quantity="other">Uređaja</item>
+    </plurals>
+    <plurals name="paywall_summary_groups">
+        <item quantity="one">%d grupa</item>
+        <item quantity="few">%d grupe</item>
+        <item quantity="other">%d grupa</item>
+    </plurals>
+    <plurals name="paywall_summary_history_days">
+        <item quantity="one">%d dan historije</item>
+        <item quantity="few">%d dana historije</item>
+        <item quantity="other">%d dana historije</item>
+    </plurals>
+    <plurals name="paywall_summary_places">
+        <item quantity="one">%d mjesto</item>
+        <item quantity="few">%d mjesta</item>
+        <item quantity="other">%d mjesta</item>
+    </plurals>
+    <plurals name="paywall_summary_members">
+        <item quantity="one">%d član</item>
+        <item quantity="few">%d člana</item>
+        <item quantity="other">%d članova</item>
+    </plurals>
+    <plurals name="paywall_summary_privacy_zones">
+        <item quantity="one">%d zona privatnosti</item>
+        <item quantity="few">%d zone privatnosti</item>
+        <item quantity="other">%d zona privatnosti</item>
+    </plurals>
+    <plurals name="paywall_summary_devices">
+        <item quantity="one">%d uređaj</item>
+        <item quantity="few">%d uređaja</item>
+        <item quantity="other">%d uređaja</item>
     </plurals>
 </resources>

@@ -7,6 +7,7 @@ import app.paralino.core.app_rating.AppRatingSource
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.user.BillingRefreshMonitor
 import app.paralino.core.domain.user.GetDirectCheckoutWebPortalUseCase
+import app.paralino.core.domain.user.PremiumStatusManager
 import app.paralino.core.domain.user.RefreshEverythingUseCase
 import app.paralino.core.domain.user.StartDirectCheckoutUseCase
 import app.paralino.core.logg
@@ -18,8 +19,14 @@ import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.base.PlanBillingPeriod
 import app.paralino.core.models.base.PlanProvider
 import app.paralino.core.models.base.PlanType
+import app.paralino.core.models.data
+import app.paralino.core.models.raw.UserPlanRaw
 import app.paralino.core.models.user.UserPlans
 import app.paralino.core.presentation.CoreViewModel
+import app.paralino.core.presentation.billing.BillingScreenSourceType
+import app.paralino.core.presentation.billing.FeatureTableItemValue
+import app.paralino.core.presentation.billing.PlanBillingPeriodState
+import app.paralino.core.presentation.billing.PlanInfoState
 import app.paralino.core.presentation.common.AppSnackbarData
 import app.paralino.core.presentation.common.AppSnackbarPayload
 import app.paralino.core.presentation.common.MainAlertDialog
@@ -31,16 +38,12 @@ import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.base.AppConfigRepository
 import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.user.UserRepository
-import app.paralino.core.presentation.billing.BillingScreenSourceType
-import app.paralino.core.presentation.billing.FeatureTableItemValue
-import app.paralino.core.presentation.billing.PlanBillingPeriodState
-import app.paralino.core.presentation.billing.PlanInfoState
 import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.extensions.annotatedBold
 import app.paralino.core.utils.extensions.errorString
 import app.paralino.core.utils.extensions.isOlderThan
-import app.paralino.core.utils.extensions.nowUTC
 import app.paralino.core.utils.extensions.mapToPayload
+import app.paralino.core.utils.extensions.nowUTC
 import app.paralino.core.utils.poll
 import dev.icerock.moko.resources.StringResource
 import kotlinx.coroutines.channels.Channel
@@ -56,7 +59,6 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.days
-import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
 class PaywallViewModel(
@@ -72,7 +74,8 @@ class PaywallViewModel(
     val valueFormatter: IValueFormatter,
     val billingProvider: IBillingProvider,
     private val billingRefreshMonitor: BillingRefreshMonitor,
-    private val appPrefs: AppPrefs
+    private val appPrefs: AppPrefs,
+    private val premiumStatusManager: PremiumStatusManager
 ) : CoreViewModel() {
 
     private val _uiState = MutableStateFlow(
@@ -100,6 +103,7 @@ class PaywallViewModel(
             BillingScreenSourceType.UPGRADE_DEFAULT,
             BillingScreenSourceType.UPGRADE_MAP_SHEET,
             BillingScreenSourceType.UPGRADE_BILLING_PROMO,
+            BillingScreenSourceType.UPGRADE_MORE_GROUPS,
             BillingScreenSourceType.NORMAL -> {
             }
         }
@@ -188,7 +192,7 @@ class PaywallViewModel(
 
                 _uiState.update { it.copy(isPurchaseButtonLoading = true, isLoading = true) }
                 coroutineScope.launch {
-                    val currentPlan = userRepo.userPlans.value.highestValidPlan
+                    val plansBefore = userRepo.userPlans.value.purchaseChangeSnapshot()
                     try {
                         poll(
                             firstDelayMillis = 3.seconds.inWholeMilliseconds,
@@ -197,18 +201,26 @@ class PaywallViewModel(
                         ) {
                             userRepo.refreshUserMaybe(timeDelayMillis = 0)
                             delay(200)
-                            val newPlan = userRepo.userPlans.value.highestValidPlan
-                            if (newPlan != currentPlan) {
-                                newPlan
-                            } else {
-                                newPlan?.plan?.updatedAt?.takeIf { !it.isOlderThan(2.minutes) }
-                            }
+                            userRepo.userPlans.value.purchaseChangeSnapshot()
+                                .takeIf { it != plansBefore }
                         }
 
-                        // at this point plans are refreshed and are different
-                        // refresh groups as well and we can close the screen
-                        refreshUseCase.scheduleRefreshAllGroupsWithPlaces(cacheTimeMillis = 0)
-                        _eventChannel.send(PaywallScreenEvent.OnNavigateBack(isSuccess = true))
+                        _uiState.update {
+                            it.copy(screenStep = PaywallScreenStep.PURCHASE_CONFIRMATION)
+                        }
+                        try {
+                            refreshUseCase.scheduleRefreshAllGroupsWithPlaces(cacheTimeMillis = 0)
+                            premiumStatusManager.adjustDeviceSettingsForPlan()
+                        } catch (e: Exception) {
+                            logg.d(message = "Error refreshing groups after purchase", t = e)
+                        } finally {
+                            _uiState.update {
+                                it.copy(
+                                    isLoading = false,
+                                    isPurchaseButtonLoading = false
+                                )
+                            }
+                        }
                     } catch (e: Exception) {
                         _uiState.update {
                             it.copy(
@@ -283,6 +295,10 @@ class PaywallViewModel(
 
                     PaywallScreenStep.PERSONAL_LOCATION_HISTORY -> {
                         _uiState.update { it.copy(screenStep = PaywallScreenStep.PAYWALL) }
+                    }
+
+                    PaywallScreenStep.PURCHASE_CONFIRMATION -> {
+                        _eventChannel.trySend(PaywallScreenEvent.OnNavigateBack(isSuccess = true))
                     }
 
                     PaywallScreenStep.PAYWALL -> {
@@ -508,6 +524,7 @@ class PaywallViewModel(
                     }
                 }
                 BillingScreenSourceType.UPGRADE_DEFAULT,
+                BillingScreenSourceType.UPGRADE_MORE_GROUPS,
                 BillingScreenSourceType.NORMAL -> PaywallScreenStep.PAYWALL
             }
         }
@@ -523,6 +540,7 @@ class PaywallViewModel(
                     BillingScreenSourceType.SKIPPED_ONBOARDING,
                     BillingScreenSourceType.FREE_PLAN_NEW_GROUP_MEMBER,
                     BillingScreenSourceType.UPGRADE_DEFAULT,
+                    BillingScreenSourceType.UPGRADE_MORE_GROUPS,
                     BillingScreenSourceType.UPGRADE_MAP_SHEET,
                     BillingScreenSourceType.UPGRADE_BILLING_PROMO,
                     BillingScreenSourceType.NORMAL -> true
@@ -539,8 +557,8 @@ class PaywallViewModel(
             faq = currentState?.faq ?: getFaqSection(config),
             screenStep = screenStep,
             screenType = sourceType,
-            memberName = userRepo.cachedUser?.data?.userName ?: "Peter",
-            memberImageModel = userRepo.cachedUser?.data?.userImage
+            memberName = userRepo.cachedUser?.data?.data?.userName ?: "Peter",
+            memberImageModel = userRepo.cachedUser?.data?.data?.userImage
                 ?: ImageModel.emoji(Emojis.goat),
             memberDeviceName = deviceApiProvider.defaultDeviceName,
             locationHistoryStepMessage = locationHistoryMessage,
@@ -792,5 +810,9 @@ class PaywallViewModel(
                 }
                 .launchIn(coroutineScope)
         }
+    }
+
+    private fun UserPlans.purchaseChangeSnapshot(): Set<UserPlanRaw> {
+        return plans.map { it.plan }.toSet()
     }
 }

@@ -30,16 +30,6 @@
         <item quantity="many">Compartilhando localização com %d grupos</item>
         <item quantity="other">Compartilhando localização com %d grupos</item>
     </plurals>
-    <plurals name="plan_benefit_group">
-        <item quantity="one">**%d grupo**</item>
-        <item quantity="many">**%d grupos**</item>
-        <item quantity="other">**%d grupos**</item>
-    </plurals>
-    <plurals name="plan_benefit_places">
-        <item quantity="one">**%d local** com alertas ilimitados</item>
-        <item quantity="many">**%d locais** com alertas ilimitados</item>
-        <item quantity="other">**%d locais** com alertas ilimitados</item>
-    </plurals>
     <plurals name="paywall_feature_summary_groups">
         <item quantity="one">Grupo</item>
         <item quantity="many">Grupos</item>
@@ -49,5 +39,35 @@
         <item quantity="one">Dispositivo</item>
         <item quantity="many">Dispositivos</item>
         <item quantity="other">Dispositivos</item>
+    </plurals>
+    <plurals name="paywall_summary_groups">
+        <item quantity="one">%d grupo</item>
+        <item quantity="many">%d grupos</item>
+        <item quantity="other">%d grupos</item>
+    </plurals>
+    <plurals name="paywall_summary_history_days">
+        <item quantity="one">%d dia de histórico</item>
+        <item quantity="many">%d dias de histórico</item>
+        <item quantity="other">%d dias de histórico</item>
+    </plurals>
+    <plurals name="paywall_summary_places">
+        <item quantity="one">%d local</item>
+        <item quantity="many">%d locais</item>
+        <item quantity="other">%d locais</item>
+    </plurals>
+    <plurals name="paywall_summary_members">
+        <item quantity="one">%d membro</item>
+        <item quantity="many">%d membros</item>
+        <item quantity="other">%d membros</item>
+    </plurals>
+    <plurals name="paywall_summary_privacy_zones">
+        <item quantity="one">%d zona de privacidade</item>
+        <item quantity="many">%d zonas de privacidade</item>
+        <item quantity="other">%d zonas de privacidade</item>
+    </plurals>
+    <plurals name="paywall_summary_devices">
+        <item quantity="one">%d dispositivo</item>
+        <item quantity="many">%d dispositivos</item>
+        <item quantity="other">%d dispositivos</item>
     </plurals>
 </resources>

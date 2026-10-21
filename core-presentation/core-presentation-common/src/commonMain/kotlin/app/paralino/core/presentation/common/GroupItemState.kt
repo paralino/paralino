@@ -4,6 +4,7 @@ import app.paralino.core.models.base.ConfigData
 import app.paralino.core.models.base.GroupOrSpaceId
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.base.asGroupOrSpaceId
+import app.paralino.core.models.data
 import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.group.UserGroupWithMetadata
 import app.paralino.core.models.location.UserPersonalSpaceModel
@@ -59,7 +60,7 @@ data class GroupItemState constructor(
     ) : this(
         id = UserGroup.Companion.groupPersonalDevicesId.asGroupOrSpaceId(),
         name = "Personal space",
-        image = space.user.data?.userImage ?: ImageModel.Companion.emoji(Emojis.robot),
+        image = space.user.data.data?.userImage ?: ImageModel.Companion.emoji(Emojis.robot),
         membersCount = null,
         placesCount = space.placesCount,
         devicesCount = space.devices.size,

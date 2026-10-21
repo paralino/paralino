@@ -40,7 +40,7 @@ enum class ServerFunction constructor(
     LOCATION_REQUEST_DEVICE(method = "POST", path = "/refresh/device", functionId = "ping"),
     LOCATION_REQUEST_DEVICE_ALT(method = "POST", path = "/refresh/device", functionId = "api"),
 
-    HISTORY_CREATE(method = "POST", path = "/history"),
+    HISTORY_CREATE(method = "POST", path = "/history", functionId = "history-upload"),
     HISTORY_READ_GROUP(method = "POST", path = "/history/group/read"),
     HISTORY_READ_PERSONAL(method = "POST", path = "/history/personal/read"),
     HISTORY_UPDATE_GROUP(method = "PATCH", path = "/history/group"),
@@ -66,7 +66,7 @@ enum class ServerFunction constructor(
 
     BILLING_ID_UPDATE(method = "POST", path = "/user/create_billing_profile"),
     BILLING_REDEEM_CODE(method = "POST", path = "/redeem_code"),
-    USER_CONFIG(method = "GET", path = "/user/config"),
+    USER_CONFIG(method = "POST", path = "/v2/user/config"),
 
     EVENT_PLACES(method = "POST", path = "/events/places", functionId = "ping"),
     EVENT_BATTERY_GROUP(method = "POST", path = "/events/battery/group", functionId = "ping"),
@@ -86,6 +86,11 @@ enum class ServerFunction constructor(
 
     CREATE_WEB_CHECKOUT_SESSION(method = "POST", path = "/billing/web_checkout"),
     WEB_CHECKOUT_PORTAL_GET(method = "GET", path = "/billing/web_portal"),
+
+    TEST_API(method = "POST", path = "/api-test", functionId = "api"),
+    TEST_PING(method = "POST", path = "/api-test", functionId = "ping"),
+    TEST_LOCATION_UPLOAD(method = "POST", path = "/api-test", functionId = "location-upload"),
+    TEST_HISTORY_UPLOAD(method = "POST", path = "/api-test", functionId = "history-upload"),
 
     CONFIG(method = "GET", path = "/config", functionId = AppBuildConfig.instance.apiServerConfig.publicServerUrl, useSdk = false),
     BILLING_CONFIG(method = "GET", path = "/billing-config", functionId = AppBuildConfig.instance.apiServerConfig.publicServerUrl, useSdk = false),

@@ -14,6 +14,7 @@ import app.paralino.core.domain.location.history.GetLocationHistoryUseCase
 import app.paralino.core.domain.location.history.RefreshLocationHistoryUseCase
 import app.paralino.core.domain.privacyzone.GetPrivacyZonesUseCase
 import app.paralino.core.domain.user.AppAccountStateMonitor
+import app.paralino.core.domain.user.PersonalSpaceFeatureUseCase
 import app.paralino.core.domain.user.PersonalSpaceRefreshUseCase
 import app.paralino.core.domain.user.PremiumStatusManager
 import app.paralino.core.logg
@@ -100,6 +101,7 @@ class MapHomeViewModel constructor(
     private val premiumStatusManager: PremiumStatusManager,
     private val accountStateMonitor: AppAccountStateMonitor,
     private val pendingGroupJoinWelcome: PendingGroupJoinWelcomeUseCase,
+    private val personalSpaceFeature: PersonalSpaceFeatureUseCase,
 ) : CoreViewModel() {
 
     private val _uiState = MutableStateFlow<MapHomeScreenState>(
@@ -109,9 +111,10 @@ class MapHomeViewModel constructor(
             isCurrentUserOwnerOfSelectedGroup = false,
             selectedGroupOwnerId = null,
             selectedGroupImage = null,
-            isPersonalSpace = appPrefs.isPersonalSpaceSelected,
+            isPersonalSpace = appPrefs.isPersonalSpaceSelected && appPrefs.isPersonalSpaceEnabled,
+            isPersonalSpaceEnabled = appPrefs.isPersonalSpaceEnabled,
             isNewAppUpdateAvailable = remoteConfig.getNewAppVersionUpdateType().isNewVersionAvailable,
-            currentUserImage = userRepository.localUser.value.data?.data?.userImage
+            currentUserImage = userRepository.localUser.value.data?.data?.data?.userImage
                 ?: ImageModel.emoji(Emojis.robot),
             androidMapSDKProvider = premiumStatusManager.defaultMapProvider()
         )
@@ -123,7 +126,7 @@ class MapHomeViewModel constructor(
 
     private val uiFocusedStatus = MutableStateFlow(false)
     private val groupIdData = MutableStateFlow(
-        if (appPrefs.isPersonalSpaceSelected) {
+        if (appPrefs.isPersonalSpaceSelected && appPrefs.isPersonalSpaceEnabled) {
             UserGroup.groupPersonalDevicesId.asGroupOrSpaceId()
         } else {
             (appPrefs.selectedGroupId ?: "").asGroupOrSpaceId()
@@ -214,6 +217,7 @@ class MapHomeViewModel constructor(
         appPrefs = appPrefs,
         groupLocal = groupRepo,
         stopSharingLocationUseCase = stopSharingLocationUseCase,
+        personalSpaceFeature = personalSpaceFeature,
         messageDispatcher = messageDispatcher,
         uiFocusedStatus = uiFocusedStatus,
         updateUiState = { state -> _uiState.value = state },
@@ -292,7 +296,7 @@ class MapHomeViewModel constructor(
         allGroups.onEach { groupsData ->
             val selectedGroup = groupIdData.value.takeIf { it.id.isNotBlank() }
                 ?: let {
-                    if (appPrefs.isPersonalSpaceSelected) {
+                    if (appPrefs.isPersonalSpaceSelected && appPrefs.isPersonalSpaceEnabled) {
                         UserGroup.groupPersonalDevicesId.asGroupOrSpaceId()
                     } else {
                         appPrefs.selectedGroupId?.asGroupOrSpaceId()
@@ -399,7 +403,7 @@ class MapHomeViewModel constructor(
             .flatMapLatest {
                 if (it.id.isBlank()) {
                     combine(
-                        if (appPrefs.isPersonalSpaceSelected) {
+                        if (appPrefs.isPersonalSpaceSelected && appPrefs.isPersonalSpaceEnabled) {
                             flowOf(null)
                         } else {
                             groupsEmptyStateManager.getUiState()
@@ -413,9 +417,10 @@ class MapHomeViewModel constructor(
                             selectedGroupOwnerId = null,
                             isCurrentUserOwnerOfSelectedGroup = false,
                             selectedGroupImage = null,
-                            isPersonalSpace = appPrefs.isPersonalSpaceSelected,
+                            isPersonalSpace = appPrefs.isPersonalSpaceSelected && appPrefs.isPersonalSpaceEnabled,
+                            isPersonalSpaceEnabled = appPrefs.isPersonalSpaceEnabled,
                             isNewAppUpdateAvailable = remoteConfig.getNewAppVersionUpdateType().isNewVersionAvailable,
-                            currentUserImage = userData?.userImage ?: ImageModel.emoji(Emojis.robot),
+                            currentUserImage = userData?.data?.userImage ?: ImageModel.emoji(Emojis.robot),
                             androidMapSDKProvider = mapProvider,
                             isSatelliteModeEnabled = false
                         )
@@ -438,7 +443,7 @@ class MapHomeViewModel constructor(
             personalSpaceRepo.personalSpaceState.map { it.data },
             placesRepo.getPlacesForGroupLocally(groupId = appPrefs.userId),
             locationFocusManager.getSharingContracts(),
-            userRepository.localUser.map { it.data?.data }.distinctUntilChanged(),
+            userRepository.localUser.map { it.data?.data?.data }.distinctUntilChanged(),
             locationCacheRepository.lastLocationFlow,
         ) { _, locationStatus, space, places, sharingContracts, userData, myLocation ->
 
@@ -451,6 +456,7 @@ class MapHomeViewModel constructor(
                     selectedGroupOwnerId = _uiState.value.selectedGroupOwnerId,
                     isCurrentUserOwnerOfSelectedGroup = _uiState.value.isCurrentUserOwnerOfSelectedGroup,
                     isPersonalSpace = true,
+                    isPersonalSpaceEnabled = appPrefs.isPersonalSpaceEnabled,
                     isNewAppUpdateAvailable = remoteConfig.getNewAppVersionUpdateType().isNewVersionAvailable,
                     currentUserImage = ImageModel.emoji(Emojis.robot),
                     androidMapSDKProvider = mapProvider,
@@ -484,7 +490,7 @@ class MapHomeViewModel constructor(
             placesRepo.getPlacesForGroupLocally(groupId = groupId),
             getPrivacyZones.getPrivacyZonesForGroupLocally(groupId = groupId),
             locationFocusManager.getSharingContracts(),
-            userRepository.localUser.map { it.data?.data }.distinctUntilChanged(),
+            userRepository.localUser.map { it.data?.data?.data }.distinctUntilChanged(),
             locationCacheRepository.lastLocationFlow,
         ) { _, locationStatus, group, places, privacyZones, sharingContracts, userData, myLocation ->
 
@@ -497,6 +503,7 @@ class MapHomeViewModel constructor(
                     selectedGroupOwnerId = null,
                     isCurrentUserOwnerOfSelectedGroup = false,
                     isPersonalSpace = false,
+                    isPersonalSpaceEnabled = appPrefs.isPersonalSpaceEnabled,
                     isNewAppUpdateAvailable = remoteConfig.getNewAppVersionUpdateType().isNewVersionAvailable,
                     currentUserImage = ImageModel.emoji(Emojis.robot),
                     androidMapSDKProvider = mapProvider,

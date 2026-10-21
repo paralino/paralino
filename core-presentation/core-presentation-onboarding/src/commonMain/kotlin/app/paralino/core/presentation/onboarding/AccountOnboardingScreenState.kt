@@ -22,6 +22,7 @@ sealed interface AccountOnboardingScreenEvent {
     data object AskNotificationPermission: AccountOnboardingScreenEvent
     data object OpenPersonalCodes: AccountOnboardingScreenEvent
     data object OpenGroupCreate: AccountOnboardingScreenEvent
+    data class OpenGroupJoinWelcome(val groupId: String): AccountOnboardingScreenEvent
     data class OpenSharingStart(val groupId: GroupOrSpaceId): AccountOnboardingScreenEvent
     data class OpenPaywall(val type: BillingScreenSourceType): AccountOnboardingScreenEvent
     data class SharePersonalCode(val code: String): AccountOnboardingScreenEvent

@@ -48,4 +48,40 @@
         <item quantity="few">Naprave</item>
         <item quantity="other">Naprav</item>
     </plurals>
+    <plurals name="paywall_summary_groups">
+        <item quantity="one">%d skupina</item>
+        <item quantity="two">%d skupini</item>
+        <item quantity="few">%d skupine</item>
+        <item quantity="other">%d skupin</item>
+    </plurals>
+    <plurals name="paywall_summary_history_days">
+        <item quantity="one">Zgodovina za %d dan</item>
+        <item quantity="two">Zgodovina za %d dneva</item>
+        <item quantity="few">Zgodovina za %d dni</item>
+        <item quantity="other">Zgodovina za %d dni</item>
+    </plurals>
+    <plurals name="paywall_summary_places">
+        <item quantity="one">%d kraj</item>
+        <item quantity="two">%d kraja</item>
+        <item quantity="few">%d kraji</item>
+        <item quantity="other">%d krajev</item>
+    </plurals>
+    <plurals name="paywall_summary_members">
+        <item quantity="one">%d član</item>
+        <item quantity="two">%d člana</item>
+        <item quantity="few">%d člani</item>
+        <item quantity="other">%d članov</item>
+    </plurals>
+    <plurals name="paywall_summary_privacy_zones">
+        <item quantity="one">%d območje zasebnosti</item>
+        <item quantity="two">%d območji zasebnosti</item>
+        <item quantity="few">%d območja zasebnosti</item>
+        <item quantity="other">%d območij zasebnosti</item>
+    </plurals>
+    <plurals name="paywall_summary_devices">
+        <item quantity="one">%d naprava</item>
+        <item quantity="two">%d napravi</item>
+        <item quantity="few">%d naprave</item>
+        <item quantity="other">%d naprav</item>
+    </plurals>
 </resources>

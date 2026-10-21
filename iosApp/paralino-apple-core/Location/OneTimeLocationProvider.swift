@@ -24,7 +24,7 @@ class OneTimeLocationProvider: IOneTimeLocationProvider, CLLocationManagerDelega
         super.init(locationStatusProvider: locationStatusProvider, locationCacheRepo: locationCacheRepo)
     }
     
-    override func fetchLastLocation(requestType: IOneTimeLocationProviderRequestTypeFetch) async throws -> LocationDataModel? {
+    override func fetchLastLocation(requestType: IOneTimeLocationProviderRequestTypeFetch) async throws -> LocationUpdateDataFromDevice? {
         let manager = CLLocationManager()
         manager.allowsBackgroundLocationUpdates = true
         manager.showsBackgroundLocationIndicator = true
@@ -53,7 +53,7 @@ class OneTimeLocationProvider: IOneTimeLocationProvider, CLLocationManagerDelega
         let lastLocation = locationManager.lastLocation
         
         Logr.v(tag: "location_service", message: "iOS got new location from one time fetch: \(location != nil) - has lastLocation: \(lastLocation != nil)")
-        return LocationDataModel.companion.getBetter(
+        return LocationUpdateDataFromDevice.companion.getBetter(
             first: location?.toLocationModel(),
             second: lastLocation?.toLocationModel()
         )

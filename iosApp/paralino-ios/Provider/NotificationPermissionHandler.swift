@@ -32,7 +32,10 @@ class NotificationPermissionHandler {
                 if self.requested {
                     let handled = messageDispather.onMessageEvent(event: NotificationPermissionResultEvent(granted: granted))
                     if !handled {
+                        // request is finished once user returns from settings
                         self.openAppSettingsPage()
+                    } else {
+                        self.requestFinished(messageDispather: messageDispather)
                     }
                 } else {
                     let data = AppSnackbarData(
@@ -44,16 +47,24 @@ class NotificationPermissionHandler {
                     DispatchQueue.main.async {
                         messageDispather.showSnackbarForResult(data: data) { result, error in
                             if result?.result == AppSnackbarResultType.actionperformed {
+                                // request is finished once user returns from settings
                                 self.requested = true
                                 self.openAppSettingsPage()
+                            } else {
+                                self.requestFinished(messageDispather: messageDispather)
                             }
                         }
                     }
                 }
             } else {
                 messageDispather.onMessageEvent(event: NotificationPermissionResultEvent(granted: granted))
+                self.requestFinished(messageDispather: messageDispather)
             }
         }
+    }
+    
+    private func requestFinished(messageDispather: ICoreMessageDispatcher) {
+        messageDispather.onMessageEvent(event: ConditionRequestFinishedEvent(type: .notifications))
     }
     
     func openAppSettingsPage() {

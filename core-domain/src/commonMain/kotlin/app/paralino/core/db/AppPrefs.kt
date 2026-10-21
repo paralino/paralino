@@ -3,6 +3,8 @@ package app.paralino.core.db
 import app.paralino.core.models.base.ParalinoSocketConnectionType
 import app.paralino.core.models.base.PushProvider
 import app.paralino.core.models.places.GroupPlaceSensitivityData
+import app.paralino.core.models.settings.AppThemeType
+import app.paralino.core.models.settings.DarkThemeStyleType
 import app.paralino.core.models.settings.FormValidation
 import app.paralino.core.models.settings.IOSNavigationAppType
 import app.paralino.core.models.settings.MapInteractionsType
@@ -12,6 +14,9 @@ import app.paralino.core.models.settings.NotificationGroupingType
 import app.paralino.core.provider.MeasurementSystemType
 import app.paralino.core.utils.BaseRemoteModule
 import app.paralino.core.utils.extensions.isoWithOffsetToInstant
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlin.time.Instant
 
 class AppPrefs(
@@ -71,6 +76,7 @@ class AppPrefs(
         const val keyDeviceIDSeed = "prefs.device.ID.seed"
         const val keySelectedGroupID = "prefs.group.selectedGroupID"
         const val keyIsPersonalSpaceSelected = "prefs.device.isPersonalSpaceSelected"
+        const val keyIsPersonalSpaceEnabled = "prefs.device.isPersonalSpaceEnabled"
         const val keyDismissedAppVersionID = "prefs.device.dismissedAppVersion"
         const val keyDismissedFreePlanPromoBillingId = "prefs.device.dismissedFreePlanPromoBillingId"
         const val keyLastBillingPromoOnboardingNoHistoryTime = "prefs.user.billingPromo.onboardingNoHistoryTime"
@@ -105,6 +111,7 @@ class AppPrefs(
         const val keyMapInteractions = "prefs.device.mapInteractions"
         const val keyNavigatioApp = "prefs.device.navigationApp"
         const val keyDeviceTheme = "prefs.device.theme"
+        const val keyDarkThemeStyle = "prefs.device.theme.darkStyle"
         const val keyLocationHistoryPerformance = "prefs.location.history.performance"
         const val keyEmailVerificationSkipTime = "prefs.user.emailVerification.skipTime"
         const val keyFirstLoginTime = "prefs.user.firstLoginTime"
@@ -114,6 +121,8 @@ class AppPrefs(
         const val keyAppTappedOnReview = "prefs.device.appReviewOpened"
         const val keyPlaceSearchLocation = "prefs.device.pleaseSearchLocation"
         const val keyMapTilerToken = "prefs.device.mapsTilerToken"
+        const val keyMapTilerStylesToken = "prefs.device.mapTilerStylesToken"
+        const val keyMapTilerSatelliteToken = "prefs.device.mapsTilerSatelliteToken"
         const val keyMapSDKProviderLocation = "prefs.device.mapsSDK"
         const val keyMapSDKProviderLightStyle = "prefs.device.mapsSDK.lightStyle"
         const val keyMapSDKProviderDarkStyle = "prefs.device.mapsSDK.darkStyle"
@@ -338,6 +347,12 @@ class AppPrefs(
         get() = provider.userSettings.getBoolean(keyIsPersonalSpaceSelected, false)
         set(value) {
             provider.userSettings.putBoolean(keyIsPersonalSpaceSelected, value)
+        }
+
+    var isPersonalSpaceEnabled: Boolean
+        get() = provider.userSettings.getBoolean(keyIsPersonalSpaceEnabled, true)
+        set(value) {
+            provider.userSettings.putBoolean(keyIsPersonalSpaceEnabled, value)
         }
 
     var dismissedAppVersion: Long
@@ -609,10 +624,27 @@ class AppPrefs(
         }
 
 
-    var deviceTheme: String
+    var appTheme: AppThemeType
         get() = provider.appSettings.getString(keyDeviceTheme, "")
+            .let { AppThemeType.fromKey(it) }
+            ?: AppThemeType.SYSTEM
         set(value) {
-            provider.appSettings.putString(keyDeviceTheme, value)
+            provider.appSettings.putString(keyDeviceTheme, value.key)
+        }
+
+    private val _darkThemeStyleFlow = MutableStateFlow(
+        provider.appSettings.getString(keyDarkThemeStyle, "")
+            .let { DarkThemeStyleType.fromKey(it) }
+            ?: DarkThemeStyleType.PARALINO
+    )
+
+
+    val darkThemeStyleFlow: StateFlow<DarkThemeStyleType> = _darkThemeStyleFlow.asStateFlow()
+    var darkThemeStyle: DarkThemeStyleType
+        get() = _darkThemeStyleFlow.value
+        set(value) {
+            provider.appSettings.putString(keyDarkThemeStyle, value.key)
+            _darkThemeStyleFlow.value = value
         }
 
     fun setPlaceSensitivityForPlace(placeId: String, sensitivity: GroupPlaceSensitivityData?) {
@@ -667,8 +699,9 @@ class AppPrefs(
     fun getAndroidMapSDKProviderOrDefault(
         hasGoogleMaps: Boolean,
         canUseMapLibre: Boolean,
-        isPremiumPlan: Boolean,
-        mapTilerToken: String?
+        hasPremiumMapStyles: Boolean,
+        mapTilerStyleToken: String?,
+        mapTilerSatelliteToken: String?
     ): MapsSDKProvider {
         val settingKey = provider.userSettings.getString(keyMapSDKProviderLocation, "")
         val lightStyleKey = provider.userSettings.getString(keyMapSDKProviderLightStyle, "")
@@ -679,8 +712,11 @@ class AppPrefs(
 
         val default = when {
             hasGoogleMaps -> MapsSDKProvider.GOOGLE
-            canUseMapLibre && isPremiumPlan && !mapTilerToken.isNullOrBlank() -> {
-                MapsSDKProvider.MAPLIBRE.MAPLIBRE_PREMIUM(mapTilerToken = mapTilerToken)
+            canUseMapLibre && hasPremiumMapStyles && !mapTilerStyleToken.isNullOrBlank() -> {
+                MapsSDKProvider.MAPLIBRE.MAPLIBRE_PREMIUM(
+                    mapTilerStyleToken = mapTilerStyleToken,
+                    mapTilerSatelliteToken = mapTilerSatelliteToken ?: ""
+                )
             }
             canUseMapLibre -> MapsSDKProvider.MAPLIBRE.MAPLIBRE_FREE()
             else -> MapsSDKProvider.NONE
@@ -688,14 +724,15 @@ class AppPrefs(
 
         val setting = MapsSDKProvider.fromKey(
             key = settingKey,
-            mapTilerToken = mapTilerToken ?: "",
+            mapTilerStyleToken = mapTilerStyleToken ?: "",
+            mapTilerSatelliteToken = mapTilerSatelliteToken ?: "",
             lightStyle = lightStyle,
             darkStyle = darkStyle
         ) ?: default
 
         return if (setting is MapsSDKProvider.MAPLIBRE && !canUseMapLibre) {
             default
-        } else if (!isPremiumPlan && setting.isPremium) {
+        } else if (!hasPremiumMapStyles && setting.isPremium) {
             if (canUseMapLibre) {
                 MapsSDKProvider.MAPLIBRE.MAPLIBRE_FREE(
                     lightStyle = lightStyle,
@@ -704,7 +741,7 @@ class AppPrefs(
             } else {
                 default
             }
-        } else if (setting is MapsSDKProvider.MAPLIBRE.MAPLIBRE_PREMIUM && mapTilerToken.isNullOrBlank()) {
+        } else if (setting is MapsSDKProvider.MAPLIBRE.MAPLIBRE_PREMIUM && mapTilerStyleToken.isNullOrBlank()) {
             if (canUseMapLibre) {
                 MapsSDKProvider.MAPLIBRE.MAPLIBRE_FREE(
                     lightStyle = lightStyle,
@@ -730,13 +767,33 @@ class AppPrefs(
         }
     }
 
-    var mapTilerToken: String?
+    var mapTilerTokenV1: String?
         get() = provider.userSettings.getStringOrNull(keyMapTilerToken)
         set(value) {
             if (value == null) {
                 provider.userSettings.remove(keyMapTilerToken)
             } else {
                 provider.userSettings.putString(keyMapTilerToken, value)
+            }
+        }
+
+    var mapTilerStylesToken: String?
+        get() = provider.userSettings.getStringOrNull(keyMapTilerStylesToken)
+        set(value) {
+            if (value == null) {
+                provider.userSettings.remove(keyMapTilerStylesToken)
+            } else {
+                provider.userSettings.putString(keyMapTilerStylesToken, value)
+            }
+        }
+
+    var mapTilerSatelliteToken: String?
+        get() = provider.userSettings.getStringOrNull(keyMapTilerSatelliteToken)
+        set(value) {
+            if (value == null) {
+                provider.userSettings.remove(keyMapTilerSatelliteToken)
+            } else {
+                provider.userSettings.putString(keyMapTilerSatelliteToken, value)
             }
         }
 

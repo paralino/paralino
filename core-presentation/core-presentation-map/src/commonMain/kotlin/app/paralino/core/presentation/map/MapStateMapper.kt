@@ -10,8 +10,8 @@ import app.paralino.core.models.base.PlanConfig
 import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.models.data
 import app.paralino.core.models.group.UserGroup
-import app.paralino.core.models.location.LocationDataModel
 import app.paralino.core.models.location.LocationSharingContract
+import app.paralino.core.models.location.LocationUpdateDataFromDevice
 import app.paralino.core.models.location.MemberDeviceStatusType
 import app.paralino.core.models.location.MemberLocation
 import app.paralino.core.models.location.MemberModelWithLocations
@@ -73,7 +73,7 @@ class MapStateMapper(
         isSatelliteModeEnabled: Boolean,
         alertDialog: MainAlertDialog?,
         isFirstTimeInPersonalSpace: Boolean,
-        myLocation: LocationDataModel?,
+        myLocation: LocationUpdateDataFromDevice?,
         locationStatus: LocationConditionStatus
     ): MapHomeScreenState.Ready {
         val groupName = when (groupOrSpace) {
@@ -266,6 +266,7 @@ class MapStateMapper(
                 }
             },
             isNewAppUpdateAvailable = remoteConfig.getNewAppVersionUpdateType().isNewVersionAvailable,
+            isPersonalSpaceEnabled = appPrefs.isPersonalSpaceEnabled,
         )
     }
 

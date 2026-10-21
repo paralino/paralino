@@ -190,7 +190,7 @@ fun PersonalCodeItem(
 
                 FlowRow(
                     verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.Start),
+                    horizontalArrangement = Arrangement.SpaceEvenly,
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     FilledButton(
@@ -214,9 +214,9 @@ fun PersonalCodeItem(
                         Text(text = stringResource(MR.strings.invite_code_button_share))
                     }
 
-                    Spacer(modifier = Modifier.weight(1f))
 
                     if (hasDelete) {
+                        Spacer(modifier = Modifier.weight(1f))
                         IconButton(
                             onClick = { if (!deleteLoading) onDelete() }
                         ) {

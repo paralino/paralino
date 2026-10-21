@@ -188,6 +188,7 @@ fun MapHomeSheetContent(
             inactiveUserCount = readyState.inactiveUserCount,
             idleUserCount = readyState.idleUserCount,
             hasWarning = !readyState.allMembersVerified || readyState.errors.isNotEmpty(),
+            showDetailButton = !readyState.hasPersonalSpaceIntroBanner,
             interactionVisibilityFraction = contentAlpha,
             collapsedVisibilityFraction = contentCollapsedFraction,
             onGroupContentClick = onWholeContentClick,
@@ -280,6 +281,7 @@ fun MapHomeSheetContent(
                 MapSheetSelectedContentType.PLACES -> {
                     placesList(
                         isPersonalSpace = readyState.isPersonalSpace,
+                        showOpenOrCreateButton = !readyState.hasPersonalSpaceIntroBanner,
                         places = places,
                         onCreatePlace = {
                             onEvent(MapHomeScreenUiEvent.OnOpenCreatePlaceScreen(location = null))
@@ -314,7 +316,8 @@ fun MapHomeSheetContent(
                         canStopTracking = readyState.personalSpaceSharingContract != null && readyState.isPersonalSpace,
                         canStopSharing = readyState.selectedGroupSharingContract != null && !readyState.isPersonalSpace,
                         canAddNewMember = !readyState.isPersonalSpace && readyState.isCurrentUserOwnerOfSelectedGroup,
-                        hasUpgradeBanner = !readyState.groupPlanConfig.hasOngoingRealtime && (readyState.isPersonalSpace || readyState.isCurrentUserOwnerOfSelectedGroup),
+                        hasUpgradeBanner = !readyState.hasPersonalSpaceIntroBanner && !readyState.groupPlanConfig.hasOngoingRealtime && (readyState.isPersonalSpace || readyState.isCurrentUserOwnerOfSelectedGroup),
+                        showManageButton = !readyState.hasPersonalSpaceIntroBanner,
                         members = members,
                         memberEvent = {
                             onEvent(MapHomeScreenUiEvent.OnMemberItemEvent(it))
@@ -408,6 +411,7 @@ private fun LazyListScope.membersList(
     canStopTracking: Boolean,
     canAddNewMember: Boolean,
     hasUpgradeBanner: Boolean,
+    showManageButton: Boolean,
     members: List<GroupMemberItemState>,
     memberEvent: (GroupMemberItemEvent) -> Unit,
     onAddNewMember: () -> Unit,
@@ -506,68 +510,73 @@ private fun LazyListScope.membersList(
         }
     }
 
-    this.item(key = "settings_divider") {
-        Divider(
-            modifier = Modifier
-                .padding(top = 20.dp)
-                .padding(horizontal = 20.dp),
-            color = Color.Gray.copy(alpha = 0.2f),
-            thickness = 0.5.dp
-        )
-    }
-
-    this.item(key = "settings_row") {
-        FlowRow(
-            modifier = Modifier.fillMaxWidth().padding(top = 20.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.Start),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            GroupMemberActionButton(
-                modifier = Modifier,
-                startIcon = CoreAppIcons.Settings.asPainterResource(),
-                endIcon = CoreAppIcons.ChevronRight.asPainterResource(),
-                text = stringResource(
-                    if (isPersonalSpace) {
-                        MR.strings.button_manage
-                    } else {
-                        MR.strings.dashboard_groups_manage_button
-                    }
-                ),
-                onClick = onOpenSettings
+    val hasSettingsActions = showManageButton || canStopSharing || canStopTracking || (members.size > 1 && canAddNewMember)
+    if (hasSettingsActions) {
+        this.item(key = "settings_divider") {
+            Divider(
+                modifier = Modifier
+                    .padding(top = 20.dp)
+                    .padding(horizontal = 20.dp),
+                color = Color.Gray.copy(alpha = 0.2f),
+                thickness = 0.5.dp
             )
+        }
 
-            if (canStopSharing) {
-                GroupMemberActionButton(
-                    modifier = Modifier,
-                    startIcon = CoreAppIcons.StopCircle.asPainterResource(),
-                    endIcon = null,
-                    text = stringResource(MR.strings.location_sharing_button_stop_groups),
-                    backgroundColor = AppColors.errorBackground,
-                    contentColor = AppColors.redMain,
-                    onClick = stopLocationSharing
-                )
-            }
+        this.item(key = "settings_row") {
+            FlowRow(
+                modifier = Modifier.fillMaxWidth().padding(top = 20.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.Start),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                if (showManageButton) {
+                    GroupMemberActionButton(
+                        modifier = Modifier,
+                        startIcon = CoreAppIcons.Settings.asPainterResource(),
+                        endIcon = CoreAppIcons.ChevronRight.asPainterResource(),
+                        text = stringResource(
+                            if (isPersonalSpace) {
+                                MR.strings.button_manage
+                            } else {
+                                MR.strings.dashboard_groups_manage_button
+                            }
+                        ),
+                        onClick = onOpenSettings
+                    )
+                }
 
-            if (canStopTracking) {
-                GroupMemberActionButton(
-                    modifier = Modifier,
-                    startIcon = CoreAppIcons.StopCircle.asPainterResource(),
-                    endIcon = null,
-                    text = stringResource(MR.strings.location_sharing_button_stop_personal),
-                    backgroundColor = AppColors.errorBackground,
-                    contentColor = AppColors.redMain,
-                    onClick = stopLocationSharing
-                )
-            }
+                if (canStopSharing) {
+                    GroupMemberActionButton(
+                        modifier = Modifier,
+                        startIcon = CoreAppIcons.StopCircle.asPainterResource(),
+                        endIcon = null,
+                        text = stringResource(MR.strings.location_sharing_button_stop_groups),
+                        backgroundColor = AppColors.errorBackground,
+                        contentColor = AppColors.redMain,
+                        onClick = stopLocationSharing
+                    )
+                }
 
-            if (members.size > 1 && canAddNewMember) {
-                GroupMemberActionButton(
-                    modifier = Modifier,
-                    startIcon = CoreAppIcons.PersonAdd.asPainterResource(),
-                    endIcon = CoreAppIcons.ChevronRight.asPainterResource(),
-                    text = stringResource(MR.strings.invite_connect_screen_title),
-                    onClick = onAddNewMember
-                )
+                if (canStopTracking) {
+                    GroupMemberActionButton(
+                        modifier = Modifier,
+                        startIcon = CoreAppIcons.StopCircle.asPainterResource(),
+                        endIcon = null,
+                        text = stringResource(MR.strings.location_sharing_button_stop_personal),
+                        backgroundColor = AppColors.errorBackground,
+                        contentColor = AppColors.redMain,
+                        onClick = stopLocationSharing
+                    )
+                }
+
+                if (members.size > 1 && canAddNewMember) {
+                    GroupMemberActionButton(
+                        modifier = Modifier,
+                        startIcon = CoreAppIcons.PersonAdd.asPainterResource(),
+                        endIcon = CoreAppIcons.ChevronRight.asPainterResource(),
+                        text = stringResource(MR.strings.invite_connect_screen_title),
+                        onClick = onAddNewMember
+                    )
+                }
             }
         }
     }
@@ -575,6 +584,7 @@ private fun LazyListScope.membersList(
 
 private fun LazyListScope.placesList(
     isPersonalSpace: Boolean,
+    showOpenOrCreateButton: Boolean,
     places: List<PlaceListItemData>,
     onCreatePlace: () -> Unit,
     onOpenPlaces: () -> Unit,
@@ -589,11 +599,18 @@ private fun LazyListScope.placesList(
                     stringResource(MR.strings.places_list_screen_empty_info_group)
                 },
                 icon = CoreAppIcons.MapsHomeWork.asPainterResource(),
-                buttonText = stringResource(MR.strings.places_create_button_create),
-                buttonIcon = CoreAppIcons.Add.asPainterResource()
-            ) {
-                onCreatePlace()
-            }
+                buttonText = if (showOpenOrCreateButton) {
+                    stringResource(MR.strings.places_create_button_create)
+                } else {
+                    null
+                },
+                buttonIcon = if (showOpenOrCreateButton) {
+                    CoreAppIcons.Add.asPainterResource()
+                } else {
+                    null
+                },
+                onClick = if (showOpenOrCreateButton) onCreatePlace else null,
+            )
         }
     } else {
         this.itemsIndexed(
@@ -609,12 +626,14 @@ private fun LazyListScope.placesList(
                 onClick = { onPlaceClick(itemState) }
             )
         }
-        this.item(key = "places_list") {
-            AddNewActionButton(
-                modifier = Modifier,
-                text = stringResource(MR.strings.button_showAll),
-                action = onOpenPlaces
-            )
+        if (showOpenOrCreateButton) {
+            this.item(key = "places_list") {
+                AddNewActionButton(
+                    modifier = Modifier,
+                    text = stringResource(MR.strings.button_showAll),
+                    action = onOpenPlaces
+                )
+            }
         }
     }
 }

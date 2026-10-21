@@ -28,8 +28,9 @@ class SharingContractsLocalDataSource(
             .map { it?.let { model -> mapper.local2Remote(model) } }
     }
 
+    // collected eagerly by LocationSharingManager, so it has to survive database reopening
     fun getAllContracts(): Flow<List<LocationSharingContract>> {
-        return database.sharingContractsDao.getAllContracts()
+        return database.observe { sharingContractsDao.getAllContracts() }
             .distinctFlowOfList()
             .map { it.map { mapper.local2Remote(it) } }
     }

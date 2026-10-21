@@ -5,6 +5,7 @@ import app.paralino.core.crypto.GroupMemberMainPublicKey
 import app.paralino.core.crypto.UserGroupPersonalKeyPair
 import app.paralino.core.domain.crypto.user.CryptoUserKeysLocalSource
 import app.paralino.core.db.AppPrefs
+import app.paralino.core.db.main.keys.PendingKeyRefreshType
 import app.paralino.core.domain.LimitedExecution
 import app.paralino.core.logg
 import app.paralino.core.models.data
@@ -102,7 +103,9 @@ class GroupCryptoKeyRotation constructor(
         remoteGroup: UserGroupWithMembersAndPlaces
     ) {
         // 1. rotate group key
-        rotateGroupKeys(group = remoteGroup)
+        cryptoKEKRepository.trackKeyRotation(groupId = remoteGroup.id, keyType = PendingKeyRefreshType.GROUP) {
+            rotateGroupKeys(group = remoteGroup)
+        }
         // new group key is required first since we are re-encrypting user data with it
         cryptoKEKRefreshUseCase.refreshGroupKeysForGroup(groupId = remoteGroup.id)
 

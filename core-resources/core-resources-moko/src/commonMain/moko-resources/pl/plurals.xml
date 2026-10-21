@@ -40,4 +40,34 @@
         <item quantity="few">Urządzenia</item>
         <item quantity="other">Urządzeń</item>
     </plurals>
+    <plurals name="paywall_summary_groups">
+        <item quantity="one">%d grupa</item>
+        <item quantity="few">%d grupy</item>
+        <item quantity="other">%d grup</item>
+    </plurals>
+    <plurals name="paywall_summary_history_days">
+        <item quantity="one">Historia z %d dnia</item>
+        <item quantity="few">Historia z %d dni</item>
+        <item quantity="other">Historia z %d dni</item>
+    </plurals>
+    <plurals name="paywall_summary_places">
+        <item quantity="one">%d miejsce</item>
+        <item quantity="few">%d miejsca</item>
+        <item quantity="other">%d miejsc</item>
+    </plurals>
+    <plurals name="paywall_summary_members">
+        <item quantity="one">%d członek</item>
+        <item quantity="few">%d członków</item>
+        <item quantity="other">%d członków</item>
+    </plurals>
+    <plurals name="paywall_summary_privacy_zones">
+        <item quantity="one">%d strefa prywatności</item>
+        <item quantity="few">%d strefy prywatności</item>
+        <item quantity="other">%d stref prywatności</item>
+    </plurals>
+    <plurals name="paywall_summary_devices">
+        <item quantity="one">%d urządzenie</item>
+        <item quantity="few">%d urządzenia</item>
+        <item quantity="other">%d urządzeń</item>
+    </plurals>
 </resources>

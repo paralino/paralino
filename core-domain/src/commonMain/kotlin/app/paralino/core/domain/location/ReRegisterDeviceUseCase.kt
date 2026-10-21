@@ -5,20 +5,20 @@ import app.paralino.core.domain.notifications.IInfoMessagesNotificationPresenter
 import app.paralino.core.domain.notifications.IPushNotificationPresenter
 import app.paralino.core.logg
 import app.paralino.core.models.base.GroupOrSpaceId
-import app.paralino.core.models.location.LocationDataModel
 import app.paralino.core.models.location.LocationSharingContract
+import app.paralino.core.models.location.LocationUpdateDataFromDevice
 import app.paralino.core.provider.localizedString
 import app.paralino.core.utils.exceptions.DeviceSafetySignatureCorrupted
 import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
-import kotlin.time.Instant
 import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Instant
 
 abstract class IReRegisterDeviceUseCase {
     abstract suspend fun tryRegisterDeviceAgain(
         groupId: GroupOrSpaceId,
-        data: LocationDataModel?,
+        data: LocationUpdateDataFromDevice?,
         contract: LocationSharingContract,
     ): Boolean
 
@@ -28,7 +28,7 @@ abstract class IReRegisterDeviceUseCase {
 class NoOpReRegisterDeviceUseCase: IReRegisterDeviceUseCase() {
     override suspend fun tryRegisterDeviceAgain(
         groupId: GroupOrSpaceId,
-        data: LocationDataModel?,
+        data: LocationUpdateDataFromDevice?,
         contract: LocationSharingContract
     ): Boolean {
         return false
@@ -47,7 +47,7 @@ class ReRegisterDeviceUseCase(
 
     override suspend fun tryRegisterDeviceAgain(
         groupId: GroupOrSpaceId,
-        data: LocationDataModel?,
+        data: LocationUpdateDataFromDevice?,
         contract: LocationSharingContract,
     ): Boolean {
         try {

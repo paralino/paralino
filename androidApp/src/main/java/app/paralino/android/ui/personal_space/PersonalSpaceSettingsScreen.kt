@@ -52,6 +52,12 @@ fun PersonalSpaceSettingsScreen(
                 appState.navController.navigate(
                     AppScreen.MainHome.LocationHistoryDelete.route(groupId = UserGroup.groupPersonalDevicesId)
                 )
+            },
+            openMap = {
+                appState.navController.navigate(AppScreen.MainHome.MainMap.route(null)) {
+                    popUpTo(AppScreen.MainHome.MainMap.routeSignature) { inclusive = true }
+                    this.launchSingleTop = true
+                }
             }
         )
     }

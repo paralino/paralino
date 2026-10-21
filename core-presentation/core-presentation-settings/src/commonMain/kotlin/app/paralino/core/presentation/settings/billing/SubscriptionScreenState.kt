@@ -33,6 +33,7 @@ data class SubscriptionDetailsState(
     val billingPeriod: String?,
     val nextRenewal: String?,
     val expiresAt: String?,
+    val expiredAt: String?,
     val planProviderText: String?,
 )
 

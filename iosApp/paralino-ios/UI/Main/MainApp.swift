@@ -57,6 +57,8 @@ struct MainApp: App {
                 
                 switch newScene {
                 case .active:
+                    AppThemeManager.apply()
+                    AppThemeManager.applyDarkThemeStyle()
                     isOrWasActive = true
                     appDelegate.appInForeground()
                 case .inactive:

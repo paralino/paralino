@@ -19,6 +19,7 @@ import app.paralino.core.repo.api.runAndWait
 import app.paralino.core.repo.base.BaseRepository
 import app.paralino.core.repo.base.RemotePreference
 import app.paralino.core.repo.location.LocationPerformanceManager
+import app.paralino.core.repo.location.LocationRemoteSource
 import app.paralino.core.repo.user.UserPersonalSpaceLocalDataSource
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
@@ -33,7 +34,9 @@ class LocationRequestUseCase constructor(
     private val functionsApi: IFunctionsApi,
     private val locationPerformanceManager: LocationPerformanceManager,
     private val personalSpaceLocal: UserPersonalSpaceLocalDataSource,
-    private val locationSharingManager: LocationSharingManager
+    private val locationSharingManager: LocationSharingManager,
+    private val locationRemote: LocationRemoteSource,
+    private val saveLocationUseCase: SaveLocationUseCase
 ) : BaseRepository() {
 
     fun keepLocationBoost(
@@ -247,6 +250,23 @@ class LocationRequestUseCase constructor(
                 if (!responseOne.isSuccess) {
                     throw response.remoteException
                 }
+            }
+        }
+    }
+
+    suspend fun refreshMemberDeviceLocation(
+        groupId: GroupOrSpaceId,
+        locationId: String
+    ) {
+        triggerRemoteOnly {
+            if (groupId.isPersonalSpace) {
+                saveLocationUseCase.savePersonalLocationLocally(
+                    locationRemote.getPersonalLocation(locationId = locationId)
+                )
+            } else {
+                saveLocationUseCase.saveGroupLocationLocally(
+                    locationRemote.getGroupLocation(locationId = locationId)
+                )
             }
         }
     }

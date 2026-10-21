@@ -32,6 +32,12 @@ struct GenericSettingsScreen: View {
                         appDelegate.locationPermissionHandler.requestBackgroundRefreshPermission(
                             messageDispather: appState.vm.messageDispatcher
                         )
+                    },
+                    applyAppTheme: { theme in
+                        AppThemeManager.apply(theme: theme)
+                    },
+                    applyDarkThemeStyle: { style in
+                        AppThemeManager.applyDarkThemeStyle(style)
                     }
                 )
             }

@@ -2,11 +2,11 @@ package app.paralino.core.domain.user
 
 import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.GeneratedUserKeys
+import app.paralino.core.db.AppPrefs
+import app.paralino.core.domain.LimitedExecution
 import app.paralino.core.domain.crypto.user.CryptoAccountOperationV1
 import app.paralino.core.domain.crypto.user.CryptoAccountOperationV2
 import app.paralino.core.domain.crypto.user.CryptoUserKeysRemoteSource
-import app.paralino.core.db.AppPrefs
-import app.paralino.core.domain.LimitedExecution
 import app.paralino.core.models.mappers.UserKeyMapperCore
 import app.paralino.core.models.raw.SchemeVersion
 import app.paralino.core.models.raw.UserCryptoKeyRaw
@@ -156,6 +156,20 @@ class RecoverAccountUseCase(
         password: String
     ): Flow<Unit> {
         return flow {
+            val loginAlg = userRepo.getLoginDetails(key = appPrefs.email).loginAlg
+            val authKey = cryptoAccountOperationV2.deriveUserAuthKey(
+                email = appPrefs.email,
+                password = password,
+                alg = loginAlg
+            )
+
+            // using same password here to confirm reset
+            // login credentials should not change, this will just throw error if current password is wrong
+            userRepo.changePassword(
+                oldPassword = authKey.loginKey,
+                newPassword = authKey.loginKey
+            )
+
             val newKey = cryptoAccountOperationV2.generateNewKeysForUser(
                 loginAlg = cryptoCore.getDefaultLoginKDFAlg(),
                 password = password,

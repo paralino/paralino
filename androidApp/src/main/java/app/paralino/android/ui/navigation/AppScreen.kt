@@ -337,6 +337,10 @@ sealed class AppScreen {
             override val routeSignature: String = "blocklist"
         }
 
+        object UserDevices : AppScreen() {
+            override val routeSignature: String = "user-devices"
+        }
+
         object Subscriptions : Common.Subscriptions("settings")
         object BillingPaywall : Common.BillingPaywall("settings")
 
@@ -374,6 +378,10 @@ sealed class AppScreen {
             override val routeSignature: String = "app-status"
         }
 
+        object AppStatus : AppScreen() {
+            override val routeSignature: String = "status"
+        }
+
         object GeneralInfo : AppScreen() {
             override val routeSignature: String = "general-info"
         }
@@ -390,12 +398,20 @@ sealed class AppScreen {
             override val routeSignature: String = "app-settings"
         }
 
+        object AppTheme : AppScreen() {
+            override val routeSignature: String = "settings-app-theme"
+        }
+
         object MeasurementSystem : AppScreen() {
             override val routeSignature: String = "settings-measurement-system"
         }
 
         object PlaceSearch : AppScreen() {
             override val routeSignature: String = "settings-place-search"
+        }
+
+        object PersonalSpace : AppScreen() {
+            override val routeSignature: String = "settings-personal-space"
         }
 
         object NotificationSocket : AppScreen() {

@@ -112,11 +112,11 @@ class LocationUploadPayloadFactory(
             key = deviceKey.key
             deviceKeyVersion = null
         } else {
-            val memberKey = getMemberSenderKey.getCurrentUserDeviceSenderKey(
+            val memberKey = getMemberSenderKey.getCurrentUserDeviceSenderKeyForReadWrite(
                 groupId = data.groupId.id,
                 locationId = data.locationId
             )
-            if (memberKey !is GroupMemberSenderKey.Valid) {
+            if (memberKey !is GroupMemberSenderKey.ValidForReadWrite) {
                 throw MissingMemberKeyException(
                     groupId = data.groupId.id,
                     memberId = appPrefs.userId
@@ -248,8 +248,8 @@ class LocationUploadPayloadFactory(
         return when (locationPerformanceManager.locationPerformanceType.value.current) {
             LocationPerformanceType.HIGH_BATTERY_SAVER,
             LocationPerformanceType.BATTERY_SAVER,
-            LocationPerformanceType.BALANCED -> 1.minutes
-            LocationPerformanceType.MEDIUM_HIGH -> 30.seconds
+            LocationPerformanceType.BALANCED -> 2.minutes
+            LocationPerformanceType.MEDIUM_HIGH -> 1.minutes
             LocationPerformanceType.HIGH -> {
                 when (locationPerformanceManager.locationPerformanceType.value.balancedPerformanceSettings.config) {
                     LocationPerformanceSettingsType.Balanced.Level1 -> 30.seconds

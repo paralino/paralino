@@ -56,10 +56,11 @@ class LocationHistoryDateMapper(
         }
 
         val earliestDate = if (isPersonalHistory) {
-            if (!planConfig.hasUnlimitedPersonalHistory) {
-                today.minus(DatePeriod(days = planConfig.personalHistoryDaysLimit))
-            } else {
+            if (planConfig.hasUnlimitedPersonalHistory) {
                 null
+            } else {
+                val days = planConfig.personalHistoryDaysLimit.takeIf { planConfig.isPersonalHistoryEnabled } ?: 0
+                today.minus(DatePeriod(days = days))
             }
         } else {
             if (!planConfig.hasUnlimitedGroupHistory) {
