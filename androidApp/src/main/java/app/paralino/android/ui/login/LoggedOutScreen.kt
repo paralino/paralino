@@ -45,11 +45,11 @@ fun LoggedOutScreen(
         vm = vm,
         paddingValues = WindowInsets.safeDrawing.asPaddingValues(),
         onLoginClick = {
-            appState.navController.navigate(AppScreen.LoggedOut.Login.route(LoginScreenUiType.SIGNUP))
+            appState.navController.navigate(AppScreen.LoggedOut.Login(LoginScreenUiType.SIGNUP))
         },
         onStartClick = {
             appState.navController.navigate(
-                AppScreen.LoggedOut.WelcomeOnboarding.routeSignature
+                AppScreen.LoggedOut.WelcomeOnboarding
             )
         }
     )

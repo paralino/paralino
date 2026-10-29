@@ -65,7 +65,7 @@ class PushNotificationServicePermissionHandlerState constructor(
             )?.result
 
             if (result == AppSnackbarResultType.ActionPerformed) {
-                appState.navController.navigate(AppScreen.Settings.NotificationSocket.routeSignature)
+                appState.navController.navigate(AppScreen.Settings.NotificationSocket)
             } else {
                 requestFinished()
             }

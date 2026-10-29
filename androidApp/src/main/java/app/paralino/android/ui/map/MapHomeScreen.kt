@@ -206,11 +206,11 @@ private fun MapHomeContent(
                     }
 
                     GroupPickerAction.JoinGroup -> {
-                        appState.navController.navigate(AppScreen.Settings.PersonalCodes.routeSignature)
+                        appState.navController.navigate(AppScreen.Settings.PersonalCodes)
                     }
 
                     GroupPickerAction.OpenSubscriptions -> {
-                        appState.navController.navigate(AppScreen.MainHome.BillingPaywall.route())
+                        appState.navController.navigate(AppScreen.Common.BillingPaywall())
                     }
 
                     GroupPickerAction.Close -> {}

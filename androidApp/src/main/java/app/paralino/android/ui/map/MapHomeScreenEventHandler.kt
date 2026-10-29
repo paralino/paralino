@@ -67,16 +67,16 @@ internal fun MapHomeScreenEventHandler(
         vm.events.collectLatest { event ->
             when (event) {
                 MapHomeScreenEvent.OpenGroupCreateScreen -> {
-                    appState.navController.navigate(AppScreen.MainHome.GroupCreate.route())
+                    appState.navController.navigate(AppScreen.MainHome.GroupCreate())
                 }
 
                 is MapHomeScreenEvent.OpenPaywall -> {
-                    appState.navController.navigate(AppScreen.MainHome.BillingPaywall.route(type = event.type))
+                    appState.navController.navigate(AppScreen.Common.BillingPaywall(type = event.type))
                 }
 
                 is MapHomeScreenEvent.OpenCreatePlace -> {
                     appState.navController.navigate(
-                        AppScreen.MainHome.PlaceCreate.route(
+                        AppScreen.MainHome.PlaceCreate(
                             groupId = event.groupId,
                             placeId = null,
                             editStep = null,
@@ -88,7 +88,7 @@ internal fun MapHomeScreenEventHandler(
 
                 is MapHomeScreenEvent.OpenCreatePrivacyZone -> {
                     appState.navController.navigate(
-                        AppScreen.MainHome.PrivacyZoneCreate.route(
+                        AppScreen.MainHome.PrivacyZoneCreate(
                             groupId = event.groupId,
                             zoneId = null,
                             lat = event.location?.lat,
@@ -99,7 +99,7 @@ internal fun MapHomeScreenEventHandler(
 
                 is MapHomeScreenEvent.OpenGroupDetails -> {
                     appState.navController.navigate(
-                        AppScreen.MainHome.GroupDetails.route(
+                        AppScreen.MainHome.GroupDetails(
                             groupId = event.groupId
                         )
                     )
@@ -112,7 +112,7 @@ internal fun MapHomeScreenEventHandler(
 
                 is MapHomeScreenEvent.OpenPlaceDetails -> {
                     appState.navController.navigate(
-                        AppScreen.MainHome.PlaceDetail.route(
+                        AppScreen.MainHome.PlaceDetail(
                             groupId = event.groupId,
                             placeId = event.placeId
                         )
@@ -121,7 +121,7 @@ internal fun MapHomeScreenEventHandler(
 
                 is MapHomeScreenEvent.OpenPrivacyZoneDetails -> {
                     appState.navController.navigate(
-                        AppScreen.MainHome.PrivacyZoneDetail.route(
+                        AppScreen.MainHome.PrivacyZoneDetail(
                             groupId = event.groupId,
                             zoneId = event.zoneId
                         )
@@ -130,7 +130,7 @@ internal fun MapHomeScreenEventHandler(
 
                 is MapHomeScreenEvent.OpenPlaces -> {
                     appState.navController.navigate(
-                        AppScreen.MainHome.PlacesList.route(
+                        AppScreen.MainHome.PlacesList(
                             groupId = event.groupId
                         )
                     )
@@ -138,7 +138,7 @@ internal fun MapHomeScreenEventHandler(
 
                 is MapHomeScreenEvent.OpenPrivacyZones -> {
                     appState.navController.navigate(
-                        AppScreen.MainHome.PrivacyZonesList.route(
+                        AppScreen.MainHome.PrivacyZonesList(
                             groupId = event.groupId
                         )
                     )
@@ -146,23 +146,23 @@ internal fun MapHomeScreenEventHandler(
 
                 is MapHomeScreenEvent.OpenMemberInviteScreen -> {
                     appState.navController.navigate(
-                        AppScreen.MainHome.GroupMemberAdd.route(
+                        AppScreen.MainHome.GroupMemberAdd(
                             groupId = event.groupId
                         )
                     )
                 }
 
                 MapHomeScreenEvent.OpenSettings -> {
-                    appState.navController.navigate(AppScreen.Settings.routeSignature)
+                    appState.navController.navigate(AppScreen.Settings.SettingsRoot)
                 }
 
                 MapHomeScreenEvent.OpenMapProviderSettings -> {
-                    appState.navController.navigate(AppScreen.Settings.MapsProvider.routeSignature)
+                    appState.navController.navigate(AppScreen.Settings.MapsProvider)
                 }
 
                 is MapHomeScreenEvent.OpenSharingStart -> {
                     appState.navController.navigate(
-                        AppScreen.MainHome.SharingStart.route(event.groupId)
+                        AppScreen.MainHome.SharingStart(event.groupId)
                     )
                 }
 
@@ -173,12 +173,12 @@ internal fun MapHomeScreenEventHandler(
                 is MapHomeScreenEvent.ShowPlanLimitAlert -> {
                     // This would need to be handled by showing an alert dialog
                     // For now, we'll just navigate to paywall
-                    appState.navController.navigate(AppScreen.MainHome.BillingPaywall.route())
+                    appState.navController.navigate(AppScreen.Common.BillingPaywall())
                 }
 
                 MapHomeScreenEvent.OpenPersonalSpace -> {
                     appState.navController.navigate(
-                        AppScreen.MainHome.PersonalSpace.route()
+                        AppScreen.MainHome.PersonalSpace
                     )
                 }
 
@@ -203,12 +203,12 @@ internal fun MapHomeScreenEventHandler(
                 }
 
                 MapHomeScreenEvent.OpenPersonalCodes -> {
-                    appState.navController.navigate(AppScreen.Settings.PersonalCodes.routeSignature)
+                    appState.navController.navigate(AppScreen.Settings.PersonalCodes)
                 }
 
                 is MapHomeScreenEvent.OpenGroupJoinWelcome -> {
                     appState.navController.navigate(
-                        AppScreen.MainHome.GroupJoinWelcome.route(event.groupId)
+                        AppScreen.MainHome.GroupJoinWelcome(event.groupId)
                     )
                 }
 

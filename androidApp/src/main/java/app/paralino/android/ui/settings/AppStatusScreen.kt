@@ -63,10 +63,10 @@ fun AppStatusScreen(
             },
             askPushNotificationService = { pushServiceHandler.askPushNotificationService() },
             openLocationSettings = {
-                appState.navController.navigate(AppScreen.Settings.LocationSettings.routeSignature)
+                appState.navController.navigate(AppScreen.Settings.LocationSettings)
             },
             openDebugLogs = {
-                appState.navController.navigate(AppScreen.Settings.AppStatusDebug.routeSignature)
+                appState.navController.navigate(AppScreen.Settings.AppStatusDebug)
             }
         )
     }

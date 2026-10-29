@@ -72,54 +72,51 @@ private fun GroupDetailScreen(
             contentPadding = remember { PaddingValues() },
             openMemberAdd = {
                 appState.navController.navigate(
-                    AppScreen.MainHome.GroupMemberAdd.route(groupId = groupId)
+                    AppScreen.MainHome.GroupMemberAdd(groupId = groupId)
                 )
             },
             openMap = {
-                appState.navController.navigate(AppScreen.MainHome.MainMap.route(groupId)) {
-                    popUpTo(AppScreen.MainHome.MainMap.routeSignature) { inclusive = true }
-                    this.launchSingleTop = true
-                }
+                appState.navController.navigate(AppScreen.MainHome.MainMap(groupId), popUpTo = AppScreen.MainHome.MainMap::class, inclusive = true)
             },
             openPlaces = {
                 appState.navController.navigate(
-                    AppScreen.MainHome.PlacesList.route(groupId)
+                    AppScreen.MainHome.PlacesList(groupId)
                 )
             },
             openPlace = {
                 appState.navController.navigate(
-                    AppScreen.MainHome.PlaceDetail.route(groupId = it.groupOrSpaceId.id, placeId = it.itemId)
+                    AppScreen.MainHome.PlaceDetail(groupId = it.groupOrSpaceId.id, placeId = it.itemId)
                 )
             },
             openPrivacyZones = {
                 appState.navController.navigate(
-                    AppScreen.MainHome.PrivacyZonesList.route(groupId = groupId)
+                    AppScreen.MainHome.PrivacyZonesList(groupId = groupId)
                 )
             },
             openPrivacyZone = {
                 appState.navController.navigate(
-                    AppScreen.MainHome.PrivacyZoneDetail.route(groupId = it.groupOrSpaceId.id, zoneId = it.itemId)
+                    AppScreen.MainHome.PrivacyZoneDetail(groupId = it.groupOrSpaceId.id, zoneId = it.itemId)
                 )
             },
             openGroupSettings = {
                 appState.navController.navigate(
-                    AppScreen.MainHome.GroupSettings.route(groupId)
+                    AppScreen.MainHome.GroupSettings(groupId)
                 )
             },
             openMemberRawData = {
                 appState.navController.navigate(
-                    AppScreen.MainHome.RawDataScreen.route(
+                    AppScreen.Common.RawDataScreen(
                         RawPresentationDataType.GroupMemberPresentation(it)
                     )
                 )
             },
             openSharing = {
                 appState.navController.navigate(
-                    AppScreen.MainHome.SharingStart.route(groupId)
+                    AppScreen.MainHome.SharingStart(groupId)
                 )
             },
             openPaywall = {
-                appState.navController.navigate(AppScreen.MainHome.BillingPaywall.route())
+                appState.navController.navigate(AppScreen.Common.BillingPaywall())
             },
             onNavigateBack = { appState.navController.popBackStack() },
             askNotificationPermission = { notificationPermissionHandler.askNotificationPermission() },

@@ -34,7 +34,7 @@ fun LocationSettingsScreen(
             vm = vm,
             paddingValues = it,
             openPaywall = {
-                appState.navController.navigate(AppScreen.Settings.BillingPaywall.route())
+                appState.navController.navigate(AppScreen.Common.BillingPaywall())
             }
         )
     }

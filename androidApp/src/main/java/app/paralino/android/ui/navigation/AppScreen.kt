@@ -1,521 +1,233 @@
 package app.paralino.android.ui.navigation
 
-import app.paralino.core.presentation.login.LoginScreenUiType
+import androidx.navigation3.runtime.NavKey
 import app.paralino.core.models.settings.RawPresentationDataType
-import app.paralino.core.utils.DeeplinkType
 import app.paralino.core.presentation.billing.BillingScreenSourceType
+import app.paralino.core.presentation.login.LoginScreenUiType
 import app.paralino.core.presentation.places.create.CreatePlaceScreenStep
 import app.paralino.core.presentation.privacyzones.create.CreatePrivacyZoneScreenStep
-import app.paralino.core.utils.BaseRemoteModule
 import app.paralino.core.presentation.share.SharingStartPresentationType
+import app.paralino.core.utils.DeeplinkType
+import kotlinx.serialization.Serializable
 
-sealed class AppScreen {
+sealed interface AppScreen : NavKey {
 
-    val argumentGroupId: String = "groupId"
+    object LoggedOut {
 
-    abstract val routeSignature: String
+        @Serializable
+        data object Welcome : AppScreen
 
-    object LoggedOut : AppScreen() {
-        override val routeSignature: String = "appStart"
+        @Serializable
+        data object WelcomeOnboarding : AppScreen
 
-        object Welcome : AppScreen() {
-            override val routeSignature: String = "welcome"
-        }
+        @Serializable
+        data class Login(val screenUiType: LoginScreenUiType? = null) : AppScreen
 
-        object WelcomeOnboarding : AppScreen() {
-            override val routeSignature: String = "welcome-onboarding"
-        }
+        @Serializable
+        data object ProfileSetup : AppScreen
 
-        object Login : AppScreen() {
+        @Serializable
+        data object EmailVerification : AppScreen
 
-            val argumentStartScreenType: String = "startScreenType"
+        @Serializable
+        data object ChangeEmail : AppScreen
 
-            override val routeSignature: String =
-                "login?$argumentStartScreenType={$argumentStartScreenType}"
+        @Serializable
+        data object AccountRecovery : AppScreen
 
-            fun route(screenUiType: LoginScreenUiType? = null): String {
-                if (screenUiType == null)
-                    return "login"
-                return "login?$argumentStartScreenType=${screenUiType.name}"
-            }
-        }
+        @Serializable
+        data object PasswordConfirmation : AppScreen
 
-        object ProfileSetup : AppScreen() {
-            override val routeSignature: String = "setup-profile"
-        }
-
-        object EmailVerification : AppScreen() {
-            override val routeSignature: String = "email-verification"
-        }
-
-        object ChangeEmail : AppScreen() {
-            override val routeSignature: String = "setup-change-email"
-        }
-
-        object AccountRecovery : AppScreen() {
-            override val routeSignature: String = "recover-account"
-        }
-
-        object PasswordConfirmation : AppScreen() {
-            override val routeSignature: String = "password-confirmation"
-        }
-
-        object PasswordReset : AppScreen() {
-            val argumentUserId: String = DeeplinkType.PasswordReset.argumentUserId
-            val argumentSecret: String = DeeplinkType.PasswordReset.argumentSecret
-            val argumentExpire: String = DeeplinkType.PasswordReset.argumentExpire
-            override val routeSignature: String = "password-reset?$argumentUserId={$argumentUserId}&$argumentSecret={$argumentSecret}&$argumentExpire={$argumentExpire}"
-
-            fun route(deeplink: DeeplinkType.PasswordReset): String {
-                val args = arrayOf(
-                    "$argumentUserId=${deeplink.userId}",
-                    "$argumentSecret=${deeplink.secret}",
-                    deeplink.expire?.let { "$argumentExpire=$it" }
-                )
-                    .filterNotNull()
-                    .joinToString(separator = "&")
-
-                return "password-reset?$args"
-            }
+        @Serializable
+        data class PasswordReset(
+            val userId: String,
+            val secret: String,
+            val expire: String?,
+        ) : AppScreen {
+            constructor(deeplink: DeeplinkType.PasswordReset) : this(
+                userId = deeplink.userId,
+                secret = deeplink.secret,
+                expire = deeplink.expire
+            )
         }
     }
 
-    object MainHome : AppScreen() {
-        override val routeSignature: String = "home"
+    object MainHome {
 
-        object MainMap : AppScreen() {
-            override val routeSignature: String = "map-mainMap?$argumentGroupId={$argumentGroupId}"
-            fun route(groupId: String? = null): String {
-                if (groupId == null)
-                    return "map-mainMap"
-                return "map-mainMap?$argumentGroupId=$groupId"
-            }
-        }
+        @Serializable
+        data class MainMap(val groupId: String? = null) : AppScreen
 
-        object SharingStart : AppScreen() {
-            val argumentPresentation: String = "presentation"
-            override val routeSignature: String = "home-share?$argumentGroupId={$argumentGroupId}&$argumentPresentation={$argumentPresentation}"
-            fun route(
-                groupId: String? = null,
-                presentation: SharingStartPresentationType = SharingStartPresentationType.FULL
-            ): String {
-                val args = arrayOf(
-                    groupId?.let { "$argumentGroupId=$groupId" },
-                    "$argumentPresentation=${presentation.name}",
-                )
-                    .filterNotNull()
-                    .joinToString(separator = "&")
+        @Serializable
+        data class SharingStart(
+            val groupId: String? = null,
+            val presentation: SharingStartPresentationType = SharingStartPresentationType.FULL
+        ) : AppScreen
 
-                if (args.isEmpty())
-                    return "home-share"
-                return "home-share?$args"
-            }
-        }
+        @Serializable
+        data object PersonalSpace : AppScreen
 
-        object PersonalSpace : AppScreen() {
-            override val routeSignature: String = "home-personal-space"
-            fun route(): String {
-                return "home-personal-space"
-            }
-        }
+        @Serializable
+        data object PersonalSpaceSettings : AppScreen
 
-        object PersonalSpaceSettings : AppScreen() {
-            override val routeSignature: String = "home-personal-space-settings"
-            fun route(): String {
-                return "home-personal-space-settings"
-            }
-        }
+        @Serializable
+        data class GroupDetails(val groupId: String) : AppScreen
 
-        object GroupDetails : AppScreen() {
-            override val routeSignature: String = "home-group/{$argumentGroupId}"
-            fun route(groupId: String): String {
-                return "home-group/$groupId"
-            }
-        }
+        @Serializable
+        data class GroupSettings(val groupId: String) : AppScreen
 
-        object GroupSettings : AppScreen() {
-            override val routeSignature: String = "group-settings/{$argumentGroupId}"
-            fun route(groupId: String): String {
-                return "group-settings/$groupId"
-            }
-        }
+        @Serializable
+        data class BatteryNotificationSettings(val groupId: String) : AppScreen
 
-        data object BatteryNotificationSettings : AppScreen() {
-            override val routeSignature: String = "battery-notifications-settings/{$argumentGroupId}"
-            fun route(groupId: String): String {
-                return "battery-notifications-settings/$groupId"
-            }
-        }
+        @Serializable
+        data class GroupCreate(val groupId: String? = null) : AppScreen
 
-        object GroupCreate : AppScreen() {
-            override val routeSignature: String = "group-create?$argumentGroupId={$argumentGroupId}"
-            fun route(groupId: String? = null): String {
-                if (groupId == null)
-                    return "group-create"
-                return "group-create?$argumentGroupId=$groupId"
-            }
-        }
+        @Serializable
+        data class GroupJoinWelcome(val groupId: String) : AppScreen
 
-        object GroupJoinWelcome : AppScreen() {
-            override val routeSignature: String = "group-join-welcome/{$argumentGroupId}"
-            fun route(groupId: String): String {
-                return "group-join-welcome/$groupId"
-            }
-        }
+        @Serializable
+        data class GroupMemberAdd(
+            val groupId: String? = null,
+            val code: String? = null,
+            val isOnboarding: Boolean = false
+        ) : AppScreen
 
-        object GroupMemberAdd : AppScreen() {
-            val argumentCode: String = "code"
-            val argumentOnboarding: String = "onboarding"
-            override val routeSignature: String =
-                "group-member-add?$argumentGroupId={$argumentGroupId}&$argumentCode={$argumentCode}&$argumentOnboarding={$argumentOnboarding}"
+        @Serializable
+        data class PlacesList(val groupId: String, val isOnboarding: Boolean = false) : AppScreen
 
-            fun route(groupId: String? = null, code: String? = null, isOnboarding: Boolean = false): String {
-                val args = arrayOf(
-                    groupId?.let { "$argumentGroupId=$groupId" },
-                    code?.let { "$argumentCode=$code" },
-                    "$argumentOnboarding=$isOnboarding",
-                )
-                    .filterNotNull()
-                    .joinToString(separator = "&")
+        @Serializable
+        data class PrivacyZonesList(val groupId: String, val isOnboarding: Boolean = false) : AppScreen
 
-                if (args.isEmpty())
-                    return "group-member-add"
-                return "group-member-add?$args"
-            }
-        }
+        @Serializable
+        data class PrivacyZoneCreate(
+            val groupId: String,
+            val zoneId: String?,
+            val editStep: CreatePrivacyZoneScreenStep? = null,
+            val lat: Double? = null,
+            val lng: Double? = null
+        ) : AppScreen
 
-        object PlacesList : AppScreen() {
-            val argumentOnboarding: String = "onboarding"
-            override val routeSignature: String = "places-list?$argumentGroupId={$argumentGroupId}&${argumentOnboarding}={$argumentOnboarding}"
-            fun route(groupId: String, isOnboarding: Boolean = false): String {
-                val args = arrayOf(
-                    groupId?.let { "$argumentGroupId=$groupId" },
-                    "${argumentOnboarding}=$isOnboarding",
-                )
-                    .filterNotNull()
-                    .joinToString(separator = "&")
+        @Serializable
+        data class PrivacyZoneDetail(val groupId: String, val zoneId: String) : AppScreen
 
-                if (args.isEmpty())
-                    return "places-list"
-                return "places-list?$args"
-            }
-        }
+        @Serializable
+        data class PlaceCreate(
+            val groupId: String,
+            val placeId: String?,
+            val editStep: CreatePlaceScreenStep?,
+            val lat: Double? = null,
+            val lng: Double? = null
+        ) : AppScreen
 
-        object PrivacyZonesList : AppScreen() {
-            val argumentOnboarding: String = "onboarding"
-            override val routeSignature: String =
-                "privacy-zones-list?$argumentGroupId={$argumentGroupId}&${argumentOnboarding}={$argumentOnboarding}"
+        @Serializable
+        data class PlaceDetail(val groupId: String, val placeId: String) : AppScreen
 
-            fun route(groupId: String, isOnboarding: Boolean = false): String {
-                val args = arrayOf(
-                    "$argumentGroupId=$groupId",
-                    "${argumentOnboarding}=$isOnboarding",
-                ).joinToString(separator = "&")
-                return "privacy-zones-list?$args"
-            }
-        }
+        @Serializable
+        data class PlaceAlerts(val groupId: String, val placeId: String) : AppScreen
 
-        object PrivacyZoneCreate : AppScreen() {
-            val argumentZoneId: String = "zoneId"
-            val argumentEditStep: String = "editStep"
-            val argumentLat: String = "lat"
-            val argumentLng: String = "lng"
-            override val routeSignature: String =
-                "privacy-zone-create?$argumentGroupId={$argumentGroupId}&$argumentZoneId={$argumentZoneId}&$argumentEditStep={$argumentEditStep}&$argumentLat={$argumentLat}&$argumentLng={$argumentLng}"
+        @Serializable
+        data class PlaceSensitivity(val groupId: String, val placeId: String) : AppScreen
 
-            fun route(
-                groupId: String,
-                zoneId: String?,
-                editStep: CreatePrivacyZoneScreenStep? = null,
-                lat: Double? = null,
-                lng: Double? = null
-            ): String {
-                val args = arrayOf(
-                    "$argumentGroupId=$groupId",
-                    zoneId?.let { "$argumentZoneId=$it" },
-                    editStep?.let { "$argumentEditStep=${editStep.key}" },
-                    lat?.let { "${argumentLat}=$lat" },
-                    lng?.let { "${argumentLng}=$lng" }
-                )
-                    .filterNotNull()
-                    .joinToString(separator = "&")
-                return "privacy-zone-create?$args"
-            }
-        }
+        @Serializable
+        data class LocationHistoryDelete(val groupId: String) : AppScreen
 
-        object PrivacyZoneDetail : AppScreen() {
-            val argumentZoneId: String = "zoneId"
-            override val routeSignature: String =
-                "privacy-zone-detail?$argumentGroupId={$argumentGroupId}&$argumentZoneId={$argumentZoneId}"
-
-            fun route(groupId: String, zoneId: String): String {
-                val args = arrayOf(
-                    "$argumentGroupId=$groupId",
-                    "$argumentZoneId=$zoneId",
-                ).joinToString(separator = "&")
-                return "privacy-zone-detail?$args"
-            }
-        }
-
-        object PlaceCreate : AppScreen() {
-            val argumentPlaceId: String = "placeId"
-            val argumentEditStep: String = "editStep"
-            val argumentLat: String = "lat"
-            val argumentLng: String = "lng"
-            override val routeSignature: String =
-                "places-create?$argumentGroupId={$argumentGroupId}&$argumentPlaceId={$argumentPlaceId}&$argumentEditStep={$argumentEditStep}&$argumentLat={$argumentLat}&$argumentLng={$argumentLng}"
-
-            fun route(
-                groupId: String,
-                placeId: String?,
-                editStep: CreatePlaceScreenStep?,
-                lat: Double? = null,
-                lng: Double? = null
-            ): String {
-                val args = arrayOf(
-                    "$argumentGroupId=$groupId",
-                    placeId?.let { "$argumentPlaceId=$placeId" },
-                    editStep?.let { "$argumentEditStep=${editStep.key}" },
-                    lat?.let { "$argumentLat=$lat" },
-                    lng?.let { "$argumentLng=$lng" }
-                )
-                    .filterNotNull()
-                    .joinToString(separator = "&")
-                return "places-create?$args"
-            }
-        }
-
-        object PlaceDetail : Common.PlaceDetail("home")
-        object PlaceAlerts : Common.PlaceDetail("place-alerts")
-        object PlaceSensitivity : Common.PlaceDetail("place-sensitivity")
-
-        object LocationHistoryDelete : AppScreen() {
-            override val routeSignature: String =
-                "location-history-delete?$argumentGroupId={$argumentGroupId}"
-
-            fun route(groupId: String): String {
-                val args = arrayOf(
-                    "$argumentGroupId=$groupId"
-                )
-                    .joinToString(separator = "&")
-                return "location-history-delete?$args"
-            }
-        }
-
-        object RawDataScreen : Common.RawDataScreen("home")
-
-        object Subscriptions : Common.Subscriptions("home")
-        object BillingPaywall : Common.BillingPaywall("home")
-        object FreePlanNoticeScreen : AppScreen() {
-            override val routeSignature: String = "free-plan-notice?$argumentGroupId={$argumentGroupId}"
-            fun route(groupId: String? = null): String {
-                val args = arrayOf(
-                    groupId?.let { "$argumentGroupId=$groupId" }
-                )
-                    .filterNotNull()
-                    .joinToString(separator = "&")
-
-                if (args.isEmpty())
-                    return "free-plan-notice"
-                return "free-plan-notice?$args"
-            }
-        }
+        @Serializable
+        data class FreePlanNoticeScreen(val groupId: String? = null) : AppScreen
     }
 
-    object Settings : AppScreen() {
-        override val routeSignature: String = "settings"
+    object Settings {
 
-        object SettingsRoot : AppScreen() {
-            override val routeSignature: String = "settings-main"
+        @Serializable
+        data object SettingsRoot : AppScreen
+
+        @Serializable
+        data object PersonalCodes : AppScreen
+
+        @Serializable
+        data object BlockList : AppScreen
+
+        @Serializable
+        data object UserDevices : AppScreen
+
+        @Serializable
+        data object ProfileDetails : AppScreen {
+
+            @Serializable
+            data object EditProfile : AppScreen
+
+            @Serializable
+            data object ChangeEmail : AppScreen
+
+            @Serializable
+            data object ChangePassword : AppScreen
+
+            @Serializable
+            data object ConvertAccount : AppScreen
         }
 
-        object PersonalCodes : AppScreen() {
-            override val routeSignature: String = "personal-codes"
-        }
+        @Serializable
+        data object Licences : AppScreen
 
-        object BlockList : AppScreen() {
-            override val routeSignature: String = "blocklist"
-        }
+        @Serializable
+        data object LicenceCode : AppScreen
 
-        object UserDevices : AppScreen() {
-            override val routeSignature: String = "user-devices"
-        }
+        @Serializable
+        data object AppStatusDebug : AppScreen
 
-        object Subscriptions : Common.Subscriptions("settings")
-        object BillingPaywall : Common.BillingPaywall("settings")
+        @Serializable
+        data object AppStatus : AppScreen
 
-        object ProfileDetails : AppScreen() {
-            override val routeSignature: String = "profile"
+        @Serializable
+        data object GeneralInfo : AppScreen
 
-            object EditProfile : AppScreen() {
-                override val routeSignature: String = "profile-edit"
-            }
+        @Serializable
+        data object LocationSettings : AppScreen
 
-            object ChangeEmail : AppScreen() {
-                override val routeSignature: String = "change-email"
-            }
+        @Serializable
+        data object WelcomeOnboarding : AppScreen
 
-            object ChangePassword : AppScreen() {
-                override val routeSignature: String = "change-password"
-            }
+        @Serializable
+        data object AppSettings : AppScreen
 
-            object ConvertAccount : AppScreen() {
-                override val routeSignature: String = "convert-account"
-            }
+        @Serializable
+        data object AppTheme : AppScreen
 
-            object RawDataScreen : Common.RawDataScreen("profile")
-        }
+        @Serializable
+        data object MeasurementSystem : AppScreen
 
-        object Licences : AppScreen() {
-            override val routeSignature: String = "licences"
-        }
+        @Serializable
+        data object PlaceSearch : AppScreen
 
-        object LicenceCode : AppScreen() {
-            override val routeSignature: String = "licence-code"
-        }
+        @Serializable
+        data object PersonalSpaceFeature : AppScreen
 
-        object AppStatusDebug : AppScreen() {
-            override val routeSignature: String = "app-status"
-        }
+        @Serializable
+        data object NotificationSocket : AppScreen
 
-        object AppStatus : AppScreen() {
-            override val routeSignature: String = "status"
-        }
+        @Serializable
+        data object NotificationGrouping : AppScreen
 
-        object GeneralInfo : AppScreen() {
-            override val routeSignature: String = "general-info"
-        }
+        @Serializable
+        data object MapInteractions : AppScreen
 
-        object LocationSettings : AppScreen() {
-            override val routeSignature: String = "location-settings"
-        }
-
-        object WelcomeOnboarding : AppScreen() {
-            override val routeSignature: String = "settings-onboarding"
-        }
-
-        object AppSettings : AppScreen() {
-            override val routeSignature: String = "app-settings"
-        }
-
-        object AppTheme : AppScreen() {
-            override val routeSignature: String = "settings-app-theme"
-        }
-
-        object MeasurementSystem : AppScreen() {
-            override val routeSignature: String = "settings-measurement-system"
-        }
-
-        object PlaceSearch : AppScreen() {
-            override val routeSignature: String = "settings-place-search"
-        }
-
-        object PersonalSpace : AppScreen() {
-            override val routeSignature: String = "settings-personal-space"
-        }
-
-        object NotificationSocket : AppScreen() {
-            override val routeSignature: String = "settings-notification-socket"
-        }
-
-        object NotificationGrouping : AppScreen() {
-            override val routeSignature: String = "settings-notification-grouping"
-        }
-
-        object MapInteractions : AppScreen() {
-            override val routeSignature: String = "settings-map-interactions"
-        }
-
-        object MapsProvider : AppScreen() {
-            override val routeSignature: String = "settings-maps-provider"
-        }
+        @Serializable
+        data object MapsProvider : AppScreen
     }
 
+    /**
+     * Screens opened from both home and settings.
+     */
     object Common {
-        open class RawDataScreen(private val parent: String) : AppScreen() {
-            val argumentDataType: String = "dataType"
-            val argumentDataId: String = "dataId"
-            override val routeSignature: String =
-                "${parent}-raw-data-screen?$argumentDataType={$argumentDataType}&$argumentDataId={$argumentDataId}"
 
-            fun route(type: RawPresentationDataType): String {
+        @Serializable
+        data class RawDataScreen(val type: RawPresentationDataType) : AppScreen
 
-                val dataPayload = when (type) {
-                    is RawPresentationDataType.GroupMemberPresentation -> type.memberId
-                    is RawPresentationDataType.GroupPlacePresentation -> type.placeId
-                    is RawPresentationDataType.GroupPresentation -> type.groupId
-                    is RawPresentationDataType.GroupPrivacyZonePresentation -> type.privacyZoneId
-                    is RawPresentationDataType.LocationHistoryPointPresentation -> {
-                        BaseRemoteModule.formatter.encodeToString(type)
-                    }
-                    RawPresentationDataType.UserPresentation -> ""
-                    RawPresentationDataType.PersonalSpacePresentation -> ""
-                }
+        @Serializable
+        data object Subscriptions : AppScreen
 
-                val args = arrayOf(
-                    "$argumentDataType=${type.key}",
-                    "$argumentDataId=$dataPayload"
-                ).joinToString(separator = "&")
-
-                return "${parent}-raw-data-screen?$args"
-            }
-        }
-
-        open class PlaceDetail(private val parent: String) : AppScreen() {
-            val argumentPlaceId: String = "placeId"
-            override val routeSignature: String =
-                "$parent-places-detail?$argumentGroupId={$argumentGroupId}&$argumentPlaceId={$argumentPlaceId}"
-
-            fun route(groupId: String, placeId: String): String {
-                val args = arrayOf(
-                    "$argumentGroupId=$groupId",
-                    "${argumentPlaceId}=$placeId"
-                )
-                    .joinToString(separator = "&")
-                return "$parent-places-detail?$args"
-            }
-        }
-
-        open class Subscriptions(private val parent: String) : AppScreen() {
-            override val routeSignature: String = "$parent-subscriptions-manage"
-            fun route(): String {
-                return "$parent-subscriptions-manage"
-            }
-        }
-
-        open class BillingPaywall(private val parent: String) : AppScreen() {
-            val argumentSourceType: String = "type"
-            override val routeSignature: String = "$parent-subscriptions-paywall?$argumentGroupId={$argumentGroupId}&$argumentSourceType={$argumentSourceType}"
-            fun route(groupId: String? = null, type: BillingScreenSourceType = BillingScreenSourceType.UPGRADE_DEFAULT): String {
-                val args = arrayOf(
-                    groupId?.let { "$argumentGroupId=$groupId" },
-                    "$argumentSourceType=${type.key}"
-                )
-                    .filterNotNull()
-                    .joinToString(separator = "&")
-
-                if (args.isEmpty())
-                    return "$parent-subscriptions-paywall"
-                return "$parent-subscriptions-paywall?$args"
-            }
-        }
-
-        open class LocationHistory(private val parent: String) : AppScreen() {
-            val argumentMemberUserId: String = "memberUserId"
-            val argumentDeviceId: String = "deviceId"
-            override val routeSignature: String =
-                "$parent-location-history?$argumentGroupId={$argumentGroupId}&$argumentMemberUserId={$argumentMemberUserId}&$argumentDeviceId={$argumentDeviceId}"
-
-            fun route(groupId: String, memberUserId: String, deviceId: String?): String {
-                val args = arrayOf(
-                    "$argumentGroupId=$groupId",
-                    "${argumentMemberUserId}=$memberUserId",
-                    deviceId?.let { "${argumentDeviceId}=$it" }
-                )
-                    .filterNotNull()
-                    .joinToString(separator = "&")
-                return "$parent-location-history?$args"
-            }
-        }
+        @Serializable
+        data class BillingPaywall(
+            val groupId: String? = null,
+            val type: BillingScreenSourceType = BillingScreenSourceType.UPGRADE_DEFAULT
+        ) : AppScreen
     }
 }

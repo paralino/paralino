@@ -40,29 +40,26 @@ fun GroupSettingsScreen(
             appState = appState,
             vm = vm,
             openEditGroup = {
-                appState.navController.navigate(AppScreen.MainHome.GroupCreate.route(vm.groupId))
+                appState.navController.navigate(AppScreen.MainHome.GroupCreate(vm.groupId))
             },
             openBatteryNotificationsSettings = {
                 appState.navController.navigate(
-                    AppScreen.MainHome.BatteryNotificationSettings.route(groupId = vm.groupId)
+                    AppScreen.MainHome.BatteryNotificationSettings(groupId = vm.groupId)
                 )
             },
             onGroupDeleted = {
-                appState.navController.navigate(AppScreen.MainHome.MainMap.route()) {
-                    popUpTo(AppScreen.MainHome.MainMap.routeSignature) { inclusive = true }
-                    this.launchSingleTop = true
-                }
+                appState.navController.navigate(AppScreen.MainHome.MainMap(), popUpTo = AppScreen.MainHome.MainMap::class, inclusive = true)
             },
             openRawDataScreen = {
                 appState.navController.navigate(
-                    AppScreen.MainHome.RawDataScreen.route(
+                    AppScreen.Common.RawDataScreen(
                         RawPresentationDataType.GroupPresentation(vm.groupId)
                     )
                 )
             },
             openLocationHistorySettings = {
                 appState.navController.navigate(
-                    AppScreen.MainHome.LocationHistoryDelete.route(groupId = vm.groupId)
+                    AppScreen.MainHome.LocationHistoryDelete(groupId = vm.groupId)
                 )
             }
         )

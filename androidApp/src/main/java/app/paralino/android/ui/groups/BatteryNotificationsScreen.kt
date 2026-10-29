@@ -37,7 +37,7 @@ fun BatteryNotificationsScreen(
             contentPadding = it,
             openPaywall = {
                 appState.navController.navigate(
-                    AppScreen.MainHome.BillingPaywall.route(
+                    AppScreen.Common.BillingPaywall(
                         groupId = groupId,
                         type = BillingScreenSourceType.UPGRADE_DEFAULT
                     )

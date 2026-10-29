@@ -46,30 +46,30 @@ fun AccountScreen(
             viewModel = vm,
             openConvertAccount = {
                 appState.navController.navigate(
-                    AppScreen.Settings.ProfileDetails.ConvertAccount.routeSignature
+                    AppScreen.Settings.ProfileDetails.ConvertAccount
                 )
             },
             openProfileRawScreen = {
                 appState.navController.navigate(
-                    AppScreen.Settings.ProfileDetails.RawDataScreen.route(
+                    AppScreen.Common.RawDataScreen(
                         RawPresentationDataType.UserPresentation
                     )
                 )
             },
             openEditProfile = {
-                appState.navController.navigate(AppScreen.Settings.ProfileDetails.EditProfile.routeSignature)
+                appState.navController.navigate(AppScreen.Settings.ProfileDetails.EditProfile)
             },
             openBlockList = {
-                appState.navController.navigate(AppScreen.Settings.BlockList.routeSignature)
+                appState.navController.navigate(AppScreen.Settings.BlockList)
             },
             openUserDevices = {
-                appState.navController.navigate(AppScreen.Settings.UserDevices.routeSignature)
+                appState.navController.navigate(AppScreen.Settings.UserDevices)
             },
             openChangeEmail = {
-                appState.navController.navigate(AppScreen.Settings.ProfileDetails.ChangeEmail.routeSignature)
+                appState.navController.navigate(AppScreen.Settings.ProfileDetails.ChangeEmail)
             },
             openChangePassword = {
-                appState.navController.navigate(AppScreen.Settings.ProfileDetails.ChangePassword.routeSignature)
+                appState.navController.navigate(AppScreen.Settings.ProfileDetails.ChangePassword)
             },
             askNotificationPermission = {
                 notificationPermissionHandler.askNotificationPermission()

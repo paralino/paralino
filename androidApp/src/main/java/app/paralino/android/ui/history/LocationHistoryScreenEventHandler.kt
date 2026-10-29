@@ -37,13 +37,13 @@ fun LocationHistoryScreenEventHandler(
 
                 LocationHistoryScreenEvent.OpenHistorySettings -> {
                     appState.navController.navigate(
-                        AppScreen.MainHome.LocationHistoryDelete.route(groupId = uiState.groupOrSpaceId.id)
+                        AppScreen.MainHome.LocationHistoryDelete(groupId = uiState.groupOrSpaceId.id)
                     )
                 }
 
                 LocationHistoryScreenEvent.OpenPaywall -> {
                     appState.navController.navigate(
-                        AppScreen.MainHome.BillingPaywall.route(
+                        AppScreen.Common.BillingPaywall(
                             type = BillingScreenSourceType.UPGRADE_DEFAULT
                         )
                     )
@@ -51,7 +51,7 @@ fun LocationHistoryScreenEventHandler(
 
                 is LocationHistoryScreenEvent.OpenRawDataScreen -> {
                     appState.navController.navigate(
-                        AppScreen.MainHome.RawDataScreen.route(
+                        AppScreen.Common.RawDataScreen(
                             type = event.type
                         )
                     )
@@ -59,7 +59,7 @@ fun LocationHistoryScreenEventHandler(
 
                 is LocationHistoryScreenEvent.OpenCreatePlace -> {
                     appState.navController.navigate(
-                        AppScreen.MainHome.PlaceCreate.route(
+                        AppScreen.MainHome.PlaceCreate(
                             groupId = event.groupId,
                             placeId = null,
                             editStep = null,
@@ -71,7 +71,7 @@ fun LocationHistoryScreenEventHandler(
 
                 is LocationHistoryScreenEvent.OpenCreatePrivacyZone -> {
                     appState.navController.navigate(
-                        AppScreen.MainHome.PrivacyZoneCreate.route(
+                        AppScreen.MainHome.PrivacyZoneCreate(
                             groupId = event.groupId,
                             zoneId = null,
                             lat = event.location?.lat,

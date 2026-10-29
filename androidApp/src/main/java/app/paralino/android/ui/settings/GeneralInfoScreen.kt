@@ -37,10 +37,10 @@ fun GeneralInfoScreen(
             vm = vm,
             paddingValues = it,
             onLicencesClick = {
-                appState.navController.navigate(AppScreen.Settings.Licences.routeSignature)
+                appState.navController.navigate(AppScreen.Settings.Licences)
             },
             onShowOnboarding = {
-                appState.navController.navigate(AppScreen.Settings.WelcomeOnboarding.routeSignature)
+                appState.navController.navigate(AppScreen.Settings.WelcomeOnboarding)
             },
             onContactSupport = {
                 context.contactSupport()

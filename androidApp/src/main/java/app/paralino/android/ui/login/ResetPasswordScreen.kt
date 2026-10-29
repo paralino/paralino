@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.navigation.navOptions
 import app.paralino.android.ui.main.MainAppState
 import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.core.resources.moko.*
@@ -40,13 +39,10 @@ fun ResetPasswordScreen(
             appState = appState,
             vm = vm,
             openLoginScreen = {
-                appState.navController.navController.navigate(
-                    route = AppScreen.LoggedOut.Login.route(LoginScreenUiType.LOGIN),
-                    navOptions = navOptions {
-                        popUpTo(AppScreen.LoggedOut.PasswordReset.routeSignature) {
-                            inclusive = true
-                        }
-                    }
+                appState.navController.navigate(
+                    screen = AppScreen.LoggedOut.Login(LoginScreenUiType.LOGIN),
+                    popUpTo = AppScreen.LoggedOut.PasswordReset::class,
+                    inclusive = true
                 )
             }
         )

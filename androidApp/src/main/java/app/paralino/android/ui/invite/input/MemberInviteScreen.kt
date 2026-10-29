@@ -55,7 +55,7 @@ fun MemberInviteScreen(
             onMemberAdded = {
                 if (isOnboarding && groupId != null) {
                     appState.navController.navigate(
-                        AppScreen.MainHome.PlacesList.route(
+                        AppScreen.MainHome.PlacesList(
                             groupId = groupId, isOnboarding = isOnboarding
                         )
                     )
@@ -66,7 +66,7 @@ fun MemberInviteScreen(
             onSkipOnboarding = {
                 if (groupId != null) {
                     appState.navController.navigate(
-                        AppScreen.MainHome.PlacesList.route(
+                        AppScreen.MainHome.PlacesList(
                             groupId = groupId, isOnboarding = isOnboarding
                         )
                     )
@@ -74,12 +74,9 @@ fun MemberInviteScreen(
             },
             openPaywall = {
                 appState.navController.navigate(
-                    AppScreen.MainHome.BillingPaywall.route(groupId = vm.currentGroupId, type = it)
-                ) {
-                    this.popUpTo(route = AppScreen.MainHome.MainMap.routeSignature) {
-                        this.inclusive = false
-                    }
-                }
+                    AppScreen.Common.BillingPaywall(groupId = vm.currentGroupId, type = it),
+                    popUpTo = AppScreen.MainHome.MainMap::class
+                )
             }
         )
     }

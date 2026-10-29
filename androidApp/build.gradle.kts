@@ -303,7 +303,9 @@ dependencies {
 
     // region compose
     implementation(libs.constraintlayout.compose)
-    implementation(libs.navigation.compose)
+    implementation(libs.navigation3.runtime)
+    implementation(libs.navigation3.ui)
+    implementation(libs.lifecycle.viewmodel.navigation3)
 
     implementation(platform(libs.compose.bom))
     implementation(libs.compose.foundation)
@@ -322,7 +324,6 @@ dependencies {
     implementation(libs.koin.core)
     implementation(libs.koin.android)
     implementation(libs.koin.compose)
-    implementation(libs.koin.navigation)
     // endregion
 
     // region utils

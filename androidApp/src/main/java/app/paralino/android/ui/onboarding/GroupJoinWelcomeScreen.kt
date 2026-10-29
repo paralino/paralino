@@ -32,17 +32,14 @@ fun GroupJoinWelcomeScreen(
             paddingValues = paddingValues,
             openSharing = {
                 appState.navController.navigate(
-                    AppScreen.MainHome.SharingStart.route(
+                    AppScreen.MainHome.SharingStart(
                         groupId = groupId,
                         presentation = SharingStartPresentationType.GROUP_JOIN
                     )
                 )
             },
             openMap = {
-                appState.navController.navigate(AppScreen.MainHome.MainMap.route(groupId)) {
-                    popUpTo(AppScreen.MainHome.MainMap.routeSignature) { inclusive = true }
-                    this.launchSingleTop = true
-                }
+                appState.navController.navigate(AppScreen.MainHome.MainMap(groupId), popUpTo = AppScreen.MainHome.MainMap::class, inclusive = true)
             }
         )
     }

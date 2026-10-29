@@ -79,7 +79,7 @@ fun PlacesScreen(
             },
             addNewPlace = {
                 appState.navController.navigate(
-                    AppScreen.MainHome.PlaceCreate.route(
+                    AppScreen.MainHome.PlaceCreate(
                         groupId = groupId,
                         placeId = null,
                         editStep = null
@@ -88,7 +88,7 @@ fun PlacesScreen(
             },
             onSkipOnboarding = {
                 appState.navController.navigate(
-                    AppScreen.MainHome.SharingStart.route(
+                    AppScreen.MainHome.SharingStart(
                         groupId = groupId,
                         presentation = if (isOnboarding) {
                             SharingStartPresentationType.GROUP_CREATE_ONBOARDING
@@ -100,14 +100,14 @@ fun PlacesScreen(
             },
             openPlaceDetails = { place ->
                 appState.navController.navigate(
-                    AppScreen.MainHome.PlaceDetail.route(
+                    AppScreen.MainHome.PlaceDetail(
                         groupId = place.groupOrSpaceId.id,
                         placeId = place.id
                     )
                 )
             },
             openPaywall = {
-                appState.navController.navigate(AppScreen.MainHome.BillingPaywall.route())
+                appState.navController.navigate(AppScreen.Common.BillingPaywall())
             },
             mapContent = { state ->
                 SimpleGenericMapComposable(

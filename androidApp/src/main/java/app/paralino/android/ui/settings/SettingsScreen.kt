@@ -55,35 +55,35 @@ fun SettingsScreen(
             onShareApp = { context.share(it) },
             openConvertAccount = {
                 appState.navController.navigate(
-                    AppScreen.Settings.ProfileDetails.ConvertAccount.routeSignature
+                    AppScreen.Settings.ProfileDetails.ConvertAccount
                 )
             },
             openProfileDetails = {
-                appState.navController.navigate(AppScreen.Settings.ProfileDetails.routeSignature)
+                appState.navController.navigate(AppScreen.Settings.ProfileDetails)
             },
             openPersonalCodes = {
-                appState.navController.navigate(AppScreen.Settings.PersonalCodes.routeSignature)
+                appState.navController.navigate(AppScreen.Settings.PersonalCodes)
             },
             openBlockList = {
-                appState.navController.navigate(AppScreen.Settings.BlockList.routeSignature)
+                appState.navController.navigate(AppScreen.Settings.BlockList)
             },
             openGeneralInfo = {
-                appState.navController.navigate(AppScreen.Settings.GeneralInfo.routeSignature)
+                appState.navController.navigate(AppScreen.Settings.GeneralInfo)
             },
             openStatus = {
-                appState.navController.navigate(AppScreen.Settings.AppStatus.routeSignature)
+                appState.navController.navigate(AppScreen.Settings.AppStatus)
             },
             openSubscriptions = {
-                appState.navController.navigate(AppScreen.Settings.Subscriptions.route())
+                appState.navController.navigate(AppScreen.Common.Subscriptions)
             },
             openPaywall = {
-                appState.navController.navigate(AppScreen.Settings.BillingPaywall.route(type = BillingScreenSourceType.NORMAL))
+                appState.navController.navigate(AppScreen.Common.BillingPaywall(type = BillingScreenSourceType.NORMAL))
             },
             openAppSettings = {
-                appState.navController.navigate(AppScreen.Settings.AppSettings.routeSignature)
+                appState.navController.navigate(AppScreen.Settings.AppSettings)
             },
             openLocationSettings = {
-                appState.navController.navigate(AppScreen.Settings.LocationSettings.routeSignature)
+                appState.navController.navigate(AppScreen.Settings.LocationSettings)
             },
             askNotificationPermission = {
                 notificationPermissionHandler.askNotificationPermission()

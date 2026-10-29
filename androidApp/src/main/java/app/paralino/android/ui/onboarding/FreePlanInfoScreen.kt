@@ -21,12 +21,9 @@ fun FreePlanInfoScreen(
         paddingValues = WindowInsets.safeDrawing.asPaddingValues(),
         onContinue = {
             appState.navController.navigate(
-                AppScreen.MainHome.GroupCreate.route(groupId = null)
-            ) {
-                this.popUpTo(route = AppScreen.MainHome.MainMap.routeSignature) {
-                    this.inclusive = false
-                }
-            }
+                AppScreen.MainHome.GroupCreate(groupId = null),
+                popUpTo = AppScreen.MainHome.MainMap::class
+            )
         }
     )
 }

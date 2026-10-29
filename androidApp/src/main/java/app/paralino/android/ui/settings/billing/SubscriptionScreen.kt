@@ -44,10 +44,10 @@ fun SubscriptionScreen(
                 uriHandler.openUri(BackendResourceIDs.subscriptionUrlGooglePlay)
             },
             openPaywall = {
-                appState.navController.navigate(AppScreen.Settings.BillingPaywall.route(type = BillingScreenSourceType.NORMAL))
+                appState.navController.navigate(AppScreen.Common.BillingPaywall(type = BillingScreenSourceType.NORMAL))
             },
             openLicenceScreen = {
-                appState.navController.navigate(AppScreen.Settings.LicenceCode.routeSignature)
+                appState.navController.navigate(AppScreen.Settings.LicenceCode)
             }
         )
     }

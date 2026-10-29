@@ -53,30 +53,24 @@ fun PersonalSpaceScreen(
             contentPadding = padding,
             openSettings = {
                 appState.navController.navigate(
-                    AppScreen.MainHome.PersonalSpaceSettings.route()
+                    AppScreen.MainHome.PersonalSpaceSettings
                 )
             },
             openTimeline = {
                 // TODO deeplink to history
-                appState.navController.navigate(AppScreen.MainHome.MainMap.route(UserGroup.groupPersonalDevicesId)) {
-                    popUpTo(AppScreen.MainHome.MainMap.routeSignature) { inclusive = true }
-                    this.launchSingleTop = true
-                }
+                appState.navController.navigate(AppScreen.MainHome.MainMap(UserGroup.groupPersonalDevicesId), popUpTo = AppScreen.MainHome.MainMap::class, inclusive = true)
             },
             openMap = {
-                appState.navController.navigate(AppScreen.MainHome.MainMap.route(UserGroup.groupPersonalDevicesId)) {
-                    popUpTo(AppScreen.MainHome.MainMap.routeSignature) { inclusive = true }
-                    this.launchSingleTop = true
-                }
+                appState.navController.navigate(AppScreen.MainHome.MainMap(UserGroup.groupPersonalDevicesId), popUpTo = AppScreen.MainHome.MainMap::class, inclusive = true)
             },
             openPlaces = {
                 appState.navController.navigate(
-                    AppScreen.MainHome.PlacesList.route(groupId = UserGroup.groupPersonalDevicesId)
+                    AppScreen.MainHome.PlacesList(groupId = UserGroup.groupPersonalDevicesId)
                 )
             },
             openPlace = {
                 appState.navController.navigate(
-                    AppScreen.MainHome.PlaceDetail.route(
+                    AppScreen.MainHome.PlaceDetail(
                         groupId = UserGroup.groupPersonalDevicesId,
                         placeId = it.itemId
                     )
@@ -84,11 +78,11 @@ fun PersonalSpaceScreen(
             },
             openSharing = {
                 appState.navController.navigate(
-                    AppScreen.MainHome.SharingStart.route(UserGroup.groupPersonalDevicesId)
+                    AppScreen.MainHome.SharingStart(UserGroup.groupPersonalDevicesId)
                 )
             },
             openPaywall = {
-                appState.navController.navigate(AppScreen.MainHome.BillingPaywall.route())
+                appState.navController.navigate(AppScreen.Common.BillingPaywall())
             },
             askNotificationPermission = { notificationPermissionHandler.askNotificationPermission() },
             askLocationService = { locationPermissionHandler.askLocationService() },
