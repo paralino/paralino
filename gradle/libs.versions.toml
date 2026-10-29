@@ -37,9 +37,9 @@ mokoResources = "0.27.1"
 okhttp = "5.5.1"
 ktor = "3.6.0"
 revenuecat-android = "11.0.1"
-androidx-room = "2.8.4"
-sqlite = "2.6.2"
-ksp = "2.3.9"
+androidx-room3 = "3.0.3"
+sqlite = "2.7.1"
+ksp = "2.3.12"
 googlePlayReview = "2.0.2"
 unifiedPushConnector = "3.3.5"
 
@@ -112,8 +112,8 @@ network-ktor-serialization = { module = "io.ktor:ktor-serialization-kotlinx-json
 network-ktor-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
 
 revenuecat-android = { module = "com.revenuecat.purchases:purchases", version.ref = "revenuecat-android" }
-androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "androidx-room" }
-androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "androidx-room" }
+androidx-room3-compiler = { group = "androidx.room3", name = "room3-compiler", version.ref = "androidx-room3" }
+androidx-room3-runtime = { group = "androidx.room3", name = "room3-runtime", version.ref = "androidx-room3" }
 sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sqlite" }
 play-review = { module = "com.google.android.play:review-ktx", version.ref = "googlePlayReview" }
 
@@ -130,4 +130,4 @@ compose-multiplatform = { id = "org.jetbrains.compose", version.ref = "composeMu
 aboutlibraries = { id = "com.mikepenz.aboutlibraries.plugin", version.ref = "aboutLibraries" }
 moko-resources = { id = "dev.icerock.mobile.multiplatform-resources", version.ref = "mokoResources" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
-androidx-room = { id = "androidx.room", version.ref = "androidx-room" }
+androidx-room3 = { id = "androidx.room3", version.ref = "androidx-room3" }
