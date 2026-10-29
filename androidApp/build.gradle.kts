@@ -315,7 +315,6 @@ dependencies {
     implementation(libs.compose.ui.tooling.preview)
 
     implementation(libs.accompanist.permissions)
-    implementation(libs.accompanist.systemuicontroller)
     // endregion
 
     // region di
