@@ -1,6 +1,6 @@
 package app.paralino.core.models.settings
 
-import app.paralino.core.MR
+import app.paralino.core.resources.moko.*
 import app.paralino.core.provider.ComposeUriHandler
 import io.ktor.http.encodeURLParameter
 

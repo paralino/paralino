@@ -2,7 +2,7 @@ package app.paralino.core.presentation.settings.billing
 
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.intl.Locale
-import app.paralino.core.MR
+import app.paralino.core.resources.moko.*
 import app.paralino.core.models.AppFlavor
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.base.PlanBillingPeriod

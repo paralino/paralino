@@ -24,7 +24,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import app.paralino.core.MR
+import app.paralino.core.resources.moko.*
 import app.paralino.core.presentation.places.detail.PlaceSettingsState
 import app.paralino.core.ui.components.AppButtonState
 import app.paralino.core.resources.CoreAppIcons

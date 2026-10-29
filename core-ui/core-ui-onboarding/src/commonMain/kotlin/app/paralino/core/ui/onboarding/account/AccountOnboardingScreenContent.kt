@@ -5,7 +5,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import app.paralino.core.MR
+import app.paralino.core.resources.moko.*
 import app.paralino.core.presentation.onboarding.AccountOnboardingContent
 import app.paralino.core.presentation.onboarding.AccountOnboardingUiEvent
 import app.paralino.core.ui.CoreUiState

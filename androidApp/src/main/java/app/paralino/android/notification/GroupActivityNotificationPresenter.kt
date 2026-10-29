@@ -16,7 +16,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import app.paralino.android.R
 import app.paralino.android.ui.main.MainActivity
-import app.paralino.core.MR
+import app.paralino.core.resources.moko.*
 import app.paralino.core.domain.notifications.IGroupActivityNotificationPresenter
 import app.paralino.core.logg
 import app.paralino.core.provider.InAppLogger

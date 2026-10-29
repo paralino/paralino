@@ -17,7 +17,7 @@ import androidx.compose.ui.platform.LocalContext
 import app.paralino.android.provider.hasUnrestrictedBackgroundAccess
 import app.paralino.android.provider.isLocationOn
 import app.paralino.android.ui.main.MainAppState
-import app.paralino.core.MR
+import app.paralino.core.resources.moko.*
 import app.paralino.core.presentation.common.ICoreMessageDispatcher
 import app.paralino.core.provider.ConditionRequestFinishedEvent
 import app.paralino.core.provider.ConditionRequestType

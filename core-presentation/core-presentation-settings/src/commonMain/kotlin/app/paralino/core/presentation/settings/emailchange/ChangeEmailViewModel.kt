@@ -1,6 +1,6 @@
 package app.paralino.core.presentation.settings.emailchange
 
-import app.paralino.core.MR
+import app.paralino.core.resources.moko.*
 import app.paralino.core.domain.user.ChangeCredentialsStep
 import app.paralino.core.domain.user.ChangeCredentialsUseCase
 import app.paralino.core.models.Payload

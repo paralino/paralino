@@ -22,7 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import app.paralino.core.MR
+import app.paralino.core.resources.moko.*
 import app.paralino.core.presentation.settings.location.LocationSettingsScreenEvent
 import app.paralino.core.presentation.settings.location.LocationSettingsScreenUiEvent
 import app.paralino.core.presentation.settings.location.LocationSettingsViewModel

@@ -4,7 +4,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import app.paralino.core.MR
+import app.paralino.core.resources.moko.*
 import app.paralino.core.ui.components.BaseOnboardingHeaderContent
 import app.paralino.core.ui.components.BaseOnboardingScreen
 import app.paralino.core.ui.components.BaseOnboardingScrollableContent

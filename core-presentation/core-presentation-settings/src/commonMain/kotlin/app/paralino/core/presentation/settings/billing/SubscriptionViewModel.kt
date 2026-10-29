@@ -1,6 +1,6 @@
 package app.paralino.core.presentation.settings.billing
 
-import app.paralino.core.MR
+import app.paralino.core.resources.moko.*
 import app.paralino.core.domain.user.GetDirectCheckoutWebPortalUseCase
 import app.paralino.core.logg
 import app.paralino.core.models.AppFlavor

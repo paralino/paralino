@@ -1,7 +1,7 @@
 package app.paralino.core.presentation.places.detail
 
 import androidx.compose.ui.unit.dp
-import app.paralino.core.MR
+import app.paralino.core.resources.moko.*
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.models.Payload
 import app.paralino.core.models.data

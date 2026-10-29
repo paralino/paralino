@@ -29,7 +29,7 @@ import app.paralino.android.app_rating.AppRatingPresenter
 import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.android.ui.navigation.MainNavHost
 import app.paralino.android.ui.navigation.loggedOutGraph
-import app.paralino.core.MR
+import app.paralino.core.resources.moko.*
 import app.paralino.core.app_update.AppUpdateStatus
 import app.paralino.core.domain.user.AppAccountState
 import app.paralino.core.logg

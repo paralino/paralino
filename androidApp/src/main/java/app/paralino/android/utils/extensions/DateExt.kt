@@ -4,7 +4,7 @@ import android.content.Context
 import android.text.format.DateFormat
 import androidx.compose.ui.res.stringResource
 import app.paralino.android.R
-import app.paralino.core.MR
+import app.paralino.core.resources.moko.*
 import java.time.*
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle

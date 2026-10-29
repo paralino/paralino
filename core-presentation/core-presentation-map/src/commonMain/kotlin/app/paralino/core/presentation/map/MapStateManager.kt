@@ -1,6 +1,6 @@
 package app.paralino.core.presentation.map
 
-import app.paralino.core.MR
+import app.paralino.core.resources.moko.*
 import app.paralino.core.models.map.MapHomeScreenFocusType
 import app.paralino.core.presentation.common.ICoreMessageDispatcher
 import app.paralino.core.provider.localizedString

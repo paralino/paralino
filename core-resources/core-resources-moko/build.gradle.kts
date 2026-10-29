@@ -32,7 +32,7 @@ kotlin {
 }
 
 multiplatformResources {
-    resourcesPackage.set("app.paralino.core")
+    resourcesPackage.set("app.paralino.core.resources.moko")
     resourcesClassName.set("MokoResources")
     resourcesVisibility.set(dev.icerock.gradle.MRVisibility.Public)
     iosBaseLocalizationRegion.set("en")

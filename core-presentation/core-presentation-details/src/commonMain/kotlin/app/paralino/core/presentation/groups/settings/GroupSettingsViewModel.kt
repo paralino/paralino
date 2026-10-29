@@ -1,6 +1,6 @@
 package app.paralino.core.presentation.groups.settings
 
-import app.paralino.core.MR
+import app.paralino.core.resources.moko.*
 import app.paralino.core.domain.group.GroupCreateUseCase
 import app.paralino.core.domain.group.GroupPreRefreshUseCase
 import app.paralino.core.domain.group.GroupRemoveUseCase

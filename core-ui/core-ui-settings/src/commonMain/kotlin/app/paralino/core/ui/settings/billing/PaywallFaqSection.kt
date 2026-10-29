@@ -22,7 +22,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import app.paralino.core.MR
+import app.paralino.core.resources.moko.*
 import app.paralino.core.presentation.settings.billing.FaqSectionItem
 import app.paralino.core.ui.components.SettingsSectionHeader
 import dev.icerock.moko.resources.compose.stringResource

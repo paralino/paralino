@@ -17,7 +17,7 @@ import androidx.core.app.TaskStackBuilder
 import app.paralino.android.R
 import app.paralino.android.ui.main.MainActivity
 import app.paralino.android.utils.extensions.attributedBold
-import app.paralino.core.MR
+import app.paralino.core.resources.moko.*
 import app.paralino.core.presentation.common.nameRes
 import app.paralino.core.provider.localizedString
 import app.paralino.core.ui.theme.AppColors

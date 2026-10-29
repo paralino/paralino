@@ -6,7 +6,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import app.paralino.android.ui.main.MainAppState
 import app.paralino.android.ui.navigation.AppScreen
-import app.paralino.core.MR
+import app.paralino.core.resources.moko.*
 import app.paralino.core.presentation.common.AppSnackbarData
 import app.paralino.core.presentation.common.AppSnackbarResultType
 import app.paralino.core.presentation.common.ICoreMessageDispatcher

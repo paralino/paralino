@@ -1,6 +1,6 @@
 package app.paralino.core.provider
 
-import app.paralino.core.MR
+import app.paralino.core.resources.moko.*
 import app.paralino.core.models.PlaceZoneExpirationStatus
 import app.paralino.core.models.data
 import app.paralino.core.models.location.MemberLocation

@@ -1,6 +1,6 @@
 package app.paralino.core.presentation.history
 
-import app.paralino.core.MR
+import app.paralino.core.resources.moko.*
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.location.history.DeleteLocationHistoryPeriodUseCase
 import app.paralino.core.models.base.GroupOrSpaceId

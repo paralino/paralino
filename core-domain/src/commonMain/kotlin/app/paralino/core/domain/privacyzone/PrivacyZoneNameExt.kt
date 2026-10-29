@@ -1,6 +1,6 @@
 package app.paralino.core.domain.privacyzone
 
-import app.paralino.core.MR
+import app.paralino.core.resources.moko.*
 import app.paralino.core.models.privacyzones.GroupPrivacyZone
 import app.paralino.core.provider.localizedString
 

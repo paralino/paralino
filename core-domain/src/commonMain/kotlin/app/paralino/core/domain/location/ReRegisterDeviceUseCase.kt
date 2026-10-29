@@ -1,6 +1,6 @@
 package app.paralino.core.domain.location
 
-import app.paralino.core.MR
+import app.paralino.core.resources.moko.*
 import app.paralino.core.domain.notifications.IInfoMessagesNotificationPresenter
 import app.paralino.core.domain.notifications.IPushNotificationPresenter
 import app.paralino.core.logg

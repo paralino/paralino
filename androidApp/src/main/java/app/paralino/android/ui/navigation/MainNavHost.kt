@@ -56,7 +56,7 @@ import app.paralino.android.ui.settings.profile.ConvertAccountScreen
 import app.paralino.android.ui.settings.profile.EditProfileScreen
 import app.paralino.android.ui.settings.profile.UserDevicesScreen
 import app.paralino.android.ui.share.SharingStartScreen
-import app.paralino.core.MR
+import app.paralino.core.resources.moko.*
 import app.paralino.core.presentation.login.LoginScreenState
 import app.paralino.core.presentation.login.LoginScreenUiType
 import app.paralino.core.presentation.places.detail.PlaceSensitivityViewModel
