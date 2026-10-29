@@ -239,6 +239,10 @@ android {
         compose = true
         buildConfig = true
     }
+    // required for AGP 9.5+ Compose Preview
+    testOptions {
+        unitTests.isIncludeAndroidResources = true
+    }
     packaging {
         resources.excludes += "/META-INF/{AL2.0,LGPL2.1}"
         // from coroutines
