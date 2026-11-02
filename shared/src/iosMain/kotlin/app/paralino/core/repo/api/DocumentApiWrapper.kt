@@ -8,20 +8,11 @@ class DocumentApiWrapper(
     private val api: IDocumentApiIOS
 ) : IDocumentsApi {
 
-    override suspend fun createDocument(
-        databaseType: BackendDatabaseType,
-        collectionId: String,
-        docId: String?,
-        data: Any
-    ): Map<String, Any> {
-        return api.createDocument(databaseType, collectionId, docId, data).getOrThrow()
-    }
-
     override suspend fun updateDocument(
         databaseType: BackendDatabaseType,
         collectionId: String,
         docId: String,
-        data: Any
+        data: Map<String, Any>
     ): Map<String, Any> {
         return api.updateDocument(databaseType, collectionId, docId, data).getOrThrow()
     }
@@ -54,18 +45,12 @@ class DocumentApiWrapper(
 }
 
 interface IDocumentApiIOS {
-    suspend fun createDocument(
-        databaseType: BackendDatabaseType,
-        collectionId: String,
-        docId: String?,
-        data: Any
-    ): Payload<Map<String, Any>>
 
     suspend fun updateDocument(
         databaseType: BackendDatabaseType,
         collectionId: String,
         docId: String,
-        data: Any
+        data: Map<String, Any>
     ): Payload<Map<String, Any>>
 
     suspend fun getDocument(
