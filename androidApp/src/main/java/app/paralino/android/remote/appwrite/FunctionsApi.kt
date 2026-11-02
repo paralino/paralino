@@ -60,7 +60,7 @@ class FunctionsApi constructor(
 
             FunctionExecutionRaw(
                 id = execution.id,
-                functionId = execution.functionId,
+                functionId = execution.resourceId,
                 status = execution.status.value,
                 statusCode = execution.responseStatusCode.toInt(),
                 response = execution.responseBody,

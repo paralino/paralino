@@ -4,18 +4,11 @@ import app.paralino.core.models.base.BackendDatabaseType
 
 interface IDocumentsApi {
 
-    suspend fun createDocument(
-        databaseType: BackendDatabaseType,
-        collectionId: String,
-        docId: String? = null,
-        data: Any
-    ): Map<String, Any>
-
     suspend fun updateDocument(
         databaseType: BackendDatabaseType,
         collectionId: String,
         docId: String,
-        data: Any
+        data: Map<String, Any>
     ): Map<String, Any>
 
     suspend fun getDocument(databaseType: BackendDatabaseType, collectionId: String, documentId: String): Map<String, Any>
