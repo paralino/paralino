@@ -17,8 +17,6 @@ import app.paralino.core.presentation.history.LocationHistoryUiEvent
 import app.paralino.core.presentation.map.MapHomeScreenState
 import app.paralino.core.presentation.map.MapHomeScreenUiEvent
 import app.paralino.core.models.location.LatLng
-import org.maplibre.compose.camera.rememberCameraState
-
 
 @Composable
 fun HomeScreenMapLibreMapComposable(
@@ -31,11 +29,30 @@ fun HomeScreenMapLibreMapComposable(
     onHistoryEvent: (LocationHistoryUiEvent) -> Unit
 ) {
     var isMapLoaded by remember { mutableStateOf(false) }
-    val cameraState = rememberCameraState()
+    val isDarkTheme = isSystemInDarkTheme()
+    val mapState = rememberMapLibreMapState(
+        mapsSDKProvider = uiState.androidMapSDKProvider,
+        isSatelliteMode = uiState.isSatelliteModeActive,
+        isSystemInDarkTheme = isDarkTheme,
+        content = {
+            if (historyUiState != null) {
+                MapLibreLocationHistoryMapContent(
+                    uiState = historyUiState,
+                    isSatelliteMode = uiState.isSatelliteModeActive,
+                    onEvent = onHistoryEvent
+                )
+            } else {
+                MapLibreMainHomeMapContent(
+                    uiState = readyState,
+                    onEvent = onMainEvent
+                )
+            }
+        }
+    )
 
     val homeMapController = rememberMapLibreHomeMapController(
         uiState = uiState,
-        cameraState = cameraState,
+        mapState = mapState,
         mapContentPadding = mapContentPadding,
         isMapLoaded = isMapLoaded,
         onMapTouch = {
@@ -46,12 +63,10 @@ fun HomeScreenMapLibreMapComposable(
     val mapController = if (historyUiState != null) {
         rememberMapLibreLocationHistoryMapController(
             uiState = historyUiState,
-            cameraState = cameraState,
+            mapState = mapState,
             mapContentPadding = mapContentPadding,
             isMapLoaded = isMapLoaded,
             animateFirstContent = true,
-            isSatelliteMode = uiState.isSatelliteModeActive,
-            mapsSDKProvider = uiState.androidMapSDKProvider,
             onMapTouch = {
                 onHistoryEvent(LocationHistoryUiEvent.OnMapTouch)
             }
@@ -64,7 +79,6 @@ fun HomeScreenMapLibreMapComposable(
         GenericMapLibreMapWrapper(
             modifier = Modifier.fillMaxSize(),
             mapData = mapController,
-            isSystemInDarkTheme = isSystemInDarkTheme(),
             onMapClick = {
                 onMainEvent(MapHomeScreenUiEvent.OnMapClick(it))
             },
@@ -76,20 +90,6 @@ fun HomeScreenMapLibreMapComposable(
             },
             onMapAttributionExpanded = {
                 onMainEvent(MapHomeScreenUiEvent.OnMapAttributionExpanded(it))
-            },
-            content = {
-                if (historyUiState != null) {
-                    MapLibreLocationHistoryMapContent(
-                        uiState = historyUiState,
-                        isSatelliteMode = uiState.isSatelliteModeActive,
-                        onEvent = onHistoryEvent
-                    )
-                } else {
-                    MapLibreMainHomeMapContent(
-                        uiState = readyState,
-                        onEvent = onMainEvent
-                    )
-                }
             }
         )
 
@@ -99,7 +99,7 @@ fun HomeScreenMapLibreMapComposable(
                 MapLibreTapActionOverlay(
                     modifier = Modifier.fillMaxSize(),
                     tappedState = tappedState,
-                    cameraState = cameraState,
+                    mapState = mapState,
                     showPrivacyZoneButton = !historyUiState.isPersonalHistory,
                     onCreatePlace = {
                         onHistoryEvent(
@@ -123,7 +123,7 @@ fun HomeScreenMapLibreMapComposable(
                 MapLibreTapActionOverlay(
                     modifier = Modifier.fillMaxSize(),
                     tappedState = tappedState,
-                    cameraState = cameraState,
+                    mapState = mapState,
                     showPrivacyZoneButton = !readyState.isPersonalSpace,
                     onCreatePlace = {
                         onMainEvent(

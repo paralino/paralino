@@ -11,8 +11,11 @@ import app.paralino.core.presentation.map.MapPinData
 import app.paralino.core.presentation.map.MapPinType
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import org.maplibre.compose.camera.CameraAnimation
+import org.maplibre.compose.camera.CameraFit
 import org.maplibre.compose.camera.CameraPosition
-import org.maplibre.compose.camera.CameraState
+import org.maplibre.compose.map.MapState
+import org.maplibre.compose.util.toDpPadding
 import org.maplibre.spatialk.geojson.BoundingBox
 import org.maplibre.spatialk.geojson.Position
 import kotlin.math.abs
@@ -55,7 +58,7 @@ fun boundsForMarkers(markers: List<MapPinData>, ignoreAccuracy: Boolean): Boundi
     )
 }
 
-fun CameraState.refocus(
+fun MapState.refocus(
     scope: CoroutineScope,
     markers: List<MapPinData>,
     forceZoom: Boolean = true,
@@ -78,80 +81,83 @@ fun CameraState.refocus(
             latitude = (box.southwest.latitude + box.northeast.latitude) / 2
         )
 
-        val effectiveDuration = durationMs.coerceAtLeast(1).milliseconds
+        val animation = CameraAnimation.Fly {
+            duration = durationMs.coerceAtLeast(1).milliseconds
+        }
+        val boundsFit = CameraFit(fitPadding = padding.toDpPadding(LayoutDirection.Ltr))
 
-        val currentVisibleBounds = this@refocus.viewport?.visibleBoundingBox
+        val currentVisibleBounds = this@refocus.viewport?.visibleBounds?.toBoundingBox()
         if (currentVisibleBounds != null) {
             val fitBounds = currentVisibleBounds.canFitBounds(box)
             if (forceZoom) {
                 // When forceZoom is true, zoom to bounds OR zoom to center if bounds are small
                 if (fitBounds && boundsDistance < 500) {
                     // Bounds are small and fit - zoom to center with high zoom level
-                    this@refocus.animateTo(
-                        finalPosition = cameraPositionCenteredInPadding(
-                            target = boundsCenter,
+                    this@refocus.animateCamera(
+                        update = cameraPositionCenteredInPadding(
+                            center = boundsCenter,
                             zoom = 16.0,
                             padding = padding,
-                            bearing = this@refocus.position.bearing,
-                            tilt = this@refocus.position.tilt,
-                        ),
-                        duration = effectiveDuration
+                            bearing = this@refocus.cameraPosition.bearing,
+                            pitch = this@refocus.cameraPosition.pitch,
+                        ).toCameraUpdate(),
+                        animation = animation
                     )
                 } else {
                     // Zoom to fit bounds with padding
-                    this@refocus.animateTo(
+                    this@refocus.animateCameraToBounds(
                         boundingBox = box,
-                        padding = padding,
-                        duration = effectiveDuration
+                        fit = boundsFit,
+                        animation = animation
                     )
                 }
             } else {
                 // When forceZoom is false, only adjust position if needed
                 if (fitBounds) {
                     // Bounds fit in current view - just move to center without changing zoom
-                    this@refocus.animateTo(
-                        finalPosition = cameraPositionCenteredInPadding(
-                            target = boundsCenter,
-                            zoom = this@refocus.position.zoom,
+                    this@refocus.animateCamera(
+                        update = cameraPositionCenteredInPadding(
+                            center = boundsCenter,
+                            zoom = this@refocus.cameraPosition.zoom,
                             padding = padding,
-                            bearing = this@refocus.position.bearing,
-                            tilt = this@refocus.position.tilt,
-                        ),
-                        duration = effectiveDuration
+                            bearing = this@refocus.cameraPosition.bearing,
+                            pitch = this@refocus.cameraPosition.pitch,
+                        ).toCameraUpdate(),
+                        animation = animation
                     )
                 } else {
                     // Bounds don't fit - need to zoom out to show all
-                    this@refocus.animateTo(
+                    this@refocus.animateCameraToBounds(
                         boundingBox = box,
-                        padding = padding,
-                        duration = effectiveDuration
+                        fit = boundsFit,
+                        animation = animation
                     )
                 }
             }
         } else {
             // No viewport yet (map not initialized) - default behavior
             if (boundsDistance < 500) {
-                this@refocus.animateTo(
-                    finalPosition = CameraPosition(
-                        target = boundsCenter,
+                this@refocus.animateCamera(
+                    update = CameraPosition(
+                        center = boundsCenter,
                         zoom = 16.0,
                         bearing = 0.0,
-                        tilt = 0.0,
-                    ),
-                    duration = effectiveDuration
+                        pitch = 0.0,
+                    ).toCameraUpdate(),
+                    animation = animation
                 )
             } else {
-                this@refocus.animateTo(
+                this@refocus.animateCameraToBounds(
                     boundingBox = box,
-                    padding = padding,
-                    duration = effectiveDuration
+                    fit = boundsFit,
+                    animation = animation
                 )
             }
         }
     }
 }
 
-fun CameraState.focusOnMap(
+fun MapState.focusOnMap(
     scope: CoroutineScope,
     focusType: MapHomeScreenFocusType?,
     markers: List<MapPinData>,
@@ -222,21 +228,21 @@ fun CameraState.focusOnMap(
 }
 
 /**
- * MapLibre 0.15 dropped [CameraPosition] padding.
- * Now we are shifting target position so the point sits at the center of usable map, not the full map.
+ * [CameraPosition] padding stays on the camera and would apply to later moves too.
+ * So we are shifting center position so the point sits at the center of usable map, not the full map.
  */
-private fun CameraState.cameraPositionCenteredInPadding(
-    target: Position,
+private fun MapState.cameraPositionCenteredInPadding(
+    center: Position,
     zoom: Double,
     padding: PaddingValues,
     bearing: Double,
-    tilt: Double,
+    pitch: Double,
     layoutDirection: LayoutDirection = LayoutDirection.Ltr,
 ): CameraPosition {
-    val metersPerDpAtCurrentZoom = viewport?.metersPerDpAtTarget?.takeIf { it > 0.0 }
-        ?: return CameraPosition(target = target, zoom = zoom, bearing = bearing, tilt = tilt)
+    val metersPerDpAtCurrentZoom = viewport?.metersPerDpAtCenter?.takeIf { it > 0.0 }
+        ?: return CameraPosition(center = center, zoom = zoom, bearing = bearing, pitch = pitch)
 
-    val metersPerDpAtDestination = metersPerDpAtCurrentZoom * 2.0.pow(position.zoom - zoom)
+    val metersPerDpAtDestination = metersPerDpAtCurrentZoom * 2.0.pow(cameraPosition.zoom - zoom)
     val offsetXDp = padding.calculateLeftPadding(layoutDirection)
         .minus(padding.calculateRightPadding(layoutDirection))
         .value / 2f
@@ -244,7 +250,7 @@ private fun CameraState.cameraPositionCenteredInPadding(
         .minus(padding.calculateBottomPadding())
         .value / 2f
 
-    val origin = LatLng(lat = target.latitude, lng = target.longitude)
+    val origin = LatLng(lat = center.latitude, lng = center.longitude)
     val shiftedEastWest = MapLibreMapUtils.computeOffset(
         from = origin,
         distance = abs(offsetXDp) * metersPerDpAtDestination,
@@ -257,10 +263,10 @@ private fun CameraState.cameraPositionCenteredInPadding(
     )
 
     return CameraPosition(
-        target = Position(longitude = shifted.lng, latitude = shifted.lat),
+        center = Position(longitude = shifted.lng, latitude = shifted.lat),
         zoom = zoom,
         bearing = bearing,
-        tilt = tilt,
+        pitch = pitch,
     )
 }
 

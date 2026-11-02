@@ -16,14 +16,14 @@ import androidx.compose.ui.unit.IntOffset
 import app.paralino.core.presentation.map.MapTappedCoordinateState
 import app.paralino.core.ui.components.MapActionBubbleMarkerContent
 import kotlinx.coroutines.flow.collectLatest
-import org.maplibre.compose.camera.CameraState
+import org.maplibre.compose.map.MapState
 import org.maplibre.spatialk.geojson.Position
 
 @Composable
 fun MapLibreTapActionOverlay(
     modifier: Modifier = Modifier,
     tappedState: MapTappedCoordinateState,
-    cameraState: CameraState,
+    mapState: MapState,
     showPrivacyZoneButton: Boolean,
     onCreatePlace: () -> Unit,
     onCreatePrivacyZone: () -> Unit,
@@ -31,10 +31,10 @@ fun MapLibreTapActionOverlay(
     var anchorOffset by remember { mutableStateOf<IntOffset?>(null) }
     val density = LocalDensity.current
 
-    LaunchedEffect(tappedState, cameraState) {
-        snapshotFlow { cameraState.position }
+    LaunchedEffect(tappedState, mapState) {
+        snapshotFlow { mapState.cameraPosition }
             .collectLatest {
-                val screenOffset = cameraState.screenLocationFromPosition(
+                val screenOffset = mapState.screenLocationFromPosition(
                     Position(
                         latitude = tappedState.lat,
                         longitude = tappedState.lng

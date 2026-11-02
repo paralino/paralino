@@ -314,9 +314,18 @@ internal fun HomeScreenMapWithElements(
                         )
                     }
 
+                val horizontalPadding = when (uiState.androidMapSDKProvider) {
+                    is MapsSDKProvider.MAPLIBRE -> 8.dp
+                    MapsSDKProvider.GOOGLE,
+                    MapsSDKProvider.NONE,
+                    null -> 4.dp
+                }
+
                 PaddingValues(
                     top = topPadding,
-                    bottom = bottomPadding
+                    bottom = bottomPadding,
+                    start = horizontalPadding,
+                    end = horizontalPadding
                 )
             }
         }
