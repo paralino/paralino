@@ -1983,7 +1983,7 @@
 			repositoryURL = "https://github.com/getsentry/sentry-cocoa.git";
 			requirement = {
 				kind = exactVersion;
-				version = 9.24.0;
+				version = 9.32.0;
 			};
 			traits = (
 			);
