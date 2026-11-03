@@ -33,9 +33,11 @@ struct ConvertAccountScreen: View {
     }
 }
 
+@MainActor
 class ConvertAccountState: ObservableObject {
     
-    let vm: ConvertAccountViewModel
+    // Read by the nonisolated deinit to clean up the view model.
+    nonisolated(unsafe) let vm: ConvertAccountViewModel
     @Published var canNavigateBack: Bool = true
     
     init () {

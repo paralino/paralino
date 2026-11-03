@@ -70,7 +70,8 @@ class PlacesState: BaseMapObservableObject {
     
     let groupId: String
     let isOnboarding: Bool
-    let vm: PlacesViewModel
+    // Read by the nonisolated deinit to clean up the view model.
+    nonisolated(unsafe) let vm: PlacesViewModel
     
     init(groupId: String, isOnboarding: Bool) {
         self.groupId = groupId

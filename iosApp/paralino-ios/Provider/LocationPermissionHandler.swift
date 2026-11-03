@@ -8,7 +8,7 @@
 import shared
 import UIKit
 
-class LocationPermissionHandler {
+class LocationPermissionHandler: @unchecked Sendable {
 
     private var requestedInUse: Bool = false
     private var requestedFinePermission: Bool = false
@@ -25,6 +25,7 @@ class LocationPermissionHandler {
     func requestLocationServices(
         messageDispather: ICoreMessageDispatcher
     ) {
+        nonisolated(unsafe) let messageDispather = messageDispather
         let data = AppSnackbarData(
             text: MR.shared.strings.error_location_service_missing_sheet_message.localizedString(),
             actionText: nil,
@@ -166,6 +167,7 @@ class LocationPermissionHandler {
         message: String,
         requestType: ConditionRequestType = .locationPermission
     ) {
+        nonisolated(unsafe) let messageDispather = messageDispather
         let data = AppSnackbarData(
             text: message,
             actionText: MR.shared.strings.button_open_settings.localizedString(),

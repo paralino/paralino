@@ -11,7 +11,7 @@ import shared
 import UIKit
 import UserNotifications
 
-public class LocationManager: NSObject, ObservableObject, CoreLocationManagerDelegate {
+public class LocationManager: NSObject, ObservableObject, CoreLocationManagerDelegate, @unchecked Sendable {
     
     public let manager = CLLocationManager()
     private var liveHandoffObserverRegistered = false

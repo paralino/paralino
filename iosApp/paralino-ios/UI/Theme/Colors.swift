@@ -38,6 +38,7 @@ struct AppColors {
     }
     
     /// Observable, so SwiftUI views reading Color.theme colors can re-render when style changes
+    @MainActor
     @Observable
     final class DarkPalette {
         static let shared = DarkPalette()
@@ -94,32 +95,32 @@ extension Color {
     static let darkThemePrimary = Color(withAlphaRGB: AppColors.Raw.darkThemePrimary)
     static let darkThemeSecondary = Color(withAlphaRGB: AppColors.Raw.darkThemeSecondary)
     
-    static var themePrimary: Color {
+    @MainActor static var themePrimary: Color {
         getColor(lightArgb: AppColors.Raw.lightThemePrimary, darkArgb: AppColors.DarkPalette.shared.primary)
     }
     static var themeSecondary: Color {
         getColor(lightArgb: AppColors.Raw.lightThemeSecondary, darkArgb: AppColors.Raw.darkThemeSecondary)
     }
-    static var themebackground: Color {
+    @MainActor static var themebackground: Color {
         getColor(lightArgb: AppColors.Raw.lightBackground, darkArgb: AppColors.DarkPalette.shared.background)
     }
-    static var themeSurface: Color {
+    @MainActor static var themeSurface: Color {
         getColor(lightArgb: AppColors.Raw.lightSurface, darkArgb: AppColors.DarkPalette.shared.surface)
     }
     static var themeErrorBackground: Color {
         getColor(lightArgb: AppColors.Raw.errorBackground, darkArgb: AppColors.Raw.errorBackground)
     }
     
-    static var themeOnPrimary: Color {
+    @MainActor static var themeOnPrimary: Color {
         getColor(lightArgb: AppColors.Raw.lightBackground, darkArgb: AppColors.DarkPalette.shared.onBackground)
     }
-    static var themeOnSecondary: Color {
+    @MainActor static var themeOnSecondary: Color {
         getColor(lightArgb: AppColors.Raw.darkBackground, darkArgb: AppColors.DarkPalette.shared.onBackground)
     }
-    static var themeOnBackground: Color {
+    @MainActor static var themeOnBackground: Color {
         getColor(lightArgb: AppColors.Raw.darkBackground, darkArgb: AppColors.DarkPalette.shared.onBackground)
     }
-    static var themeOnSurface: Color {
+    @MainActor static var themeOnSurface: Color {
         getColor(lightArgb: AppColors.Raw.darkBackground, darkArgb: AppColors.DarkPalette.shared.onBackground)
     }
     static var themeOnError: Color {

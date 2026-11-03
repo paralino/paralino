@@ -9,7 +9,7 @@ import UserNotifications
 import paralino_apple_core
 import shared
 
-class NotificationService: UNNotificationServiceExtension {
+class NotificationService: UNNotificationServiceExtension, @unchecked Sendable {
     
     var contentHandler: ((UNNotificationContent) -> Void)?
     var bestAttemptContent: UNMutableNotificationContent?
@@ -35,46 +35,46 @@ class NotificationService: UNNotificationServiceExtension {
         
         Logr.w(tag: "notification", message: "Received alert notification (\(DeviceUtil.getMemoryPrintString()))")
         
-        if let bestAttemptContent = bestAttemptContent {
-            DispatchQueue.main.async { [weak self] in
-                Task {
-                    Logr.v(tag: "notification", message: "Try to parse notification ID")
-                    let notificationId = bestAttemptContent.userInfo["notificationId"] as? String
-                    if let notificationId, let pushHandler = self?.pushHandler {
-                        Logr.v(tag: "notification", message: "Try to fetch new alert notification (\(DeviceUtil.getMemoryPrintString()))")
-                        let payload = try? await pushHandler.retrievePushPresenterPayload(notificationId: notificationId, force: true)
-                        
-                        Logr.v(tag: "notification", message: "Got push payload: \(payload != nil) - (\(DeviceUtil.getMemoryPrintString()))")
-                        
-                        if let payload = payload {
-                            self?.inAppLogger.logNotificationPayload(payload: payload)
-                        }
-                        
-                        if let content = payload?.notificationContent() {
-                            try? await pushHandler.deletePushNotification(notificationId: notificationId)
-                            Logr.v(tag: "notification", message: "Display new alert notification (\(DeviceUtil.getMemoryPrintString()))")
-                            
-                            if self?.appConfig.isInAppDevMode == true {
-                                content.title = "NSE: \(content.title)"
-                            }
-                            
-                            contentHandler(content)
-                        } else {
-                            Logr.w(tag: "notification", message: "Notification not fetched")
-                            if self?.appConfig.isInAppDevMode == true {
-                                bestAttemptContent.title = "NSE: \(bestAttemptContent.title)"
-                                bestAttemptContent.body = "Not fetched: \(bestAttemptContent.body)"
-                            }
-                            self?.suppressNotification(contentHandler, content: bestAttemptContent)
-                        }
-                    } else {
-                        Logr.w(tag: "notification", message: "No notification id")
-                        if self?.appConfig.isInAppDevMode == true {
-                            bestAttemptContent.title = "NSE: \(bestAttemptContent.title)"
-                            bestAttemptContent.body = "Missing ID: \(bestAttemptContent.body)"
-                        }
-                        self?.suppressNotification(contentHandler, content: bestAttemptContent)
+        if bestAttemptContent != nil {
+            Task { [weak self] in
+                guard let self, let contentHandler = self.contentHandler, let bestAttemptContent = self.bestAttemptContent else { return }
+
+                Logr.v(tag: "notification", message: "Try to parse notification ID")
+                let notificationId = bestAttemptContent.userInfo["notificationId"] as? String
+                if let notificationId {
+                    Logr.v(tag: "notification", message: "Try to fetch new alert notification (\(DeviceUtil.getMemoryPrintString()))")
+                    let payload = try? await self.pushHandler.retrievePushPresenterPayload(notificationId: notificationId, force: true)
+
+                    Logr.v(tag: "notification", message: "Got push payload: \(payload != nil) - (\(DeviceUtil.getMemoryPrintString()))")
+
+                    if let payload = payload {
+                        self.inAppLogger.logNotificationPayload(payload: payload)
                     }
+
+                    if let content = payload?.notificationContent() {
+                        try? await self.pushHandler.deletePushNotification(notificationId: notificationId)
+                        Logr.v(tag: "notification", message: "Display new alert notification (\(DeviceUtil.getMemoryPrintString()))")
+
+                        if self.appConfig.isInAppDevMode {
+                            content.title = "NSE: \(content.title)"
+                        }
+
+                        contentHandler(content)
+                    } else {
+                        Logr.w(tag: "notification", message: "Notification not fetched")
+                        if self.appConfig.isInAppDevMode {
+                            bestAttemptContent.title = "NSE: \(bestAttemptContent.title)"
+                            bestAttemptContent.body = "Not fetched: \(bestAttemptContent.body)"
+                        }
+                        self.suppressNotification(contentHandler, content: bestAttemptContent)
+                    }
+                } else {
+                    Logr.w(tag: "notification", message: "No notification id")
+                    if self.appConfig.isInAppDevMode {
+                        bestAttemptContent.title = "NSE: \(bestAttemptContent.title)"
+                        bestAttemptContent.body = "Missing ID: \(bestAttemptContent.body)"
+                    }
+                    self.suppressNotification(contentHandler, content: bestAttemptContent)
                 }
             }
         } else {

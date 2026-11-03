@@ -258,7 +258,7 @@ private extension StoreProduct {
 
 }
 
-open class PurchaseError : Swift.Error {
+final class PurchaseError : Swift.Error, @unchecked Sendable {
     public let sharedError: PurchaseErrorException
     init(sharedError: PurchaseErrorException) {
         self.sharedError = sharedError

@@ -48,10 +48,12 @@ struct GenericSettingsScreen: View {
     }
 }
 
+@MainActor
 class GenericSettingsScreenState: ObservableObject {
     
     @Published var screenTitle: String?
-    let vm: BaseGenericSettingViewModel
+    // Read by the nonisolated deinit to clean up the view model.
+    nonisolated(unsafe) let vm: BaseGenericSettingViewModel
     
     init (vm: BaseGenericSettingViewModel) {
         self.vm = vm

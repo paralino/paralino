@@ -32,9 +32,11 @@ struct ChangeEmailScreen: View {
     }
 }
 
+@MainActor
 class ChangeEmailState: ObservableObject {
     
-    let vm: ChangeEmailViewModel
+    // Read by the nonisolated deinit to clean up the view model.
+    nonisolated(unsafe) let vm: ChangeEmailViewModel
     @Published var canNavigateBack: Bool = true
     
     init () {

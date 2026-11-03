@@ -77,11 +77,13 @@ struct PaywallScreen: View {
 
 }
 
+@MainActor
 class PaywallScreenState: ObservableObject {
     
     let groupId: String?
     let type: BillingScreenSourceType
-    let vm: PaywallViewModel
+    // Read by the nonisolated deinit to clean up the view model.
+    nonisolated(unsafe) let vm: PaywallViewModel
     
     init (groupId: String?, type: BillingScreenSourceType) {
         self.groupId = groupId
@@ -90,38 +92,34 @@ class PaywallScreenState: ObservableObject {
     }
     
     func startPurchase(_ event: PaywallScreenEvent.OnStartPurchase) {
-        DispatchQueue.main.async { [weak self] in
-            Task {
-                do {
-                    guard let billingProvider = self?.vm.billingProvider as? BillingProviderIOS else { return }
-                    try await billingProvider.startPurchase(planType: event.planType, newProductPlanId: event.newPlanProductId)
-                    self?.vm.onEvent(event: PaywallScreenUiEvent.RefreshPlans())
-                } catch {
-                    if let error = error as? PurchaseError {
-                        self?.vm.onEvent(event: PaywallScreenUiEvent.OnPurchaseError(error: error.sharedError))
-                    } else {
-                        let sharedError = PurchaseErrorException(errorCode: 0, errorMessage: "Unknown error", userCancelled: false)
-                        self?.vm.onEvent(event: PaywallScreenUiEvent.OnPurchaseError(error: sharedError))
-                    }
+        Task { [weak self] in
+            do {
+                guard let billingProvider = self?.vm.billingProvider as? BillingProviderIOS else { return }
+                try await billingProvider.startPurchase(planType: event.planType, newProductPlanId: event.newPlanProductId)
+                self?.vm.onEvent(event: PaywallScreenUiEvent.RefreshPlans())
+            } catch {
+                if let error = error as? PurchaseError {
+                    self?.vm.onEvent(event: PaywallScreenUiEvent.OnPurchaseError(error: error.sharedError))
+                } else {
+                    let sharedError = PurchaseErrorException(errorCode: 0, errorMessage: "Unknown error", userCancelled: false)
+                    self?.vm.onEvent(event: PaywallScreenUiEvent.OnPurchaseError(error: sharedError))
                 }
             }
         }
     }
     
     func restorePurchase(_ event: PaywallScreenEvent.OnRestorePurchase) {
-        DispatchQueue.main.async { [weak self] in
-            Task {
-                do {
-                    guard let billingProvider = self?.vm.billingProvider as? BillingProviderIOS else { return }
-                    try await billingProvider.restorePurchase()
-                    self?.vm.onEvent(event: PaywallScreenUiEvent.RefreshPlans())
-                } catch {
-                    if let error = error as? PurchaseError {
-                        self?.vm.onEvent(event: PaywallScreenUiEvent.OnPurchaseError(error: error.sharedError))
-                    } else {
-                        let sharedError = PurchaseErrorException(errorCode: 0, errorMessage: "Unknown error", userCancelled: false)
-                        self?.vm.onEvent(event: PaywallScreenUiEvent.OnPurchaseError(error: sharedError))
-                    }
+        Task { [weak self] in
+            do {
+                guard let billingProvider = self?.vm.billingProvider as? BillingProviderIOS else { return }
+                try await billingProvider.restorePurchase()
+                self?.vm.onEvent(event: PaywallScreenUiEvent.RefreshPlans())
+            } catch {
+                if let error = error as? PurchaseError {
+                    self?.vm.onEvent(event: PaywallScreenUiEvent.OnPurchaseError(error: error.sharedError))
+                } else {
+                    let sharedError = PurchaseErrorException(errorCode: 0, errorMessage: "Unknown error", userCancelled: false)
+                    self?.vm.onEvent(event: PaywallScreenUiEvent.OnPurchaseError(error: sharedError))
                 }
             }
         }
