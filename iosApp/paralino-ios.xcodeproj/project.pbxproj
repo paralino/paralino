@@ -34,7 +34,6 @@
 		254EFF7A2CB545AB00818618 /* paralino_apple_core.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 257DCAD32CB4407700402562 /* paralino_apple_core.framework */; };
 		2556E2472ACFFC7500A1BACE /* NotificationPermissionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2556E2462ACFFC7500A1BACE /* NotificationPermissionHandler.swift */; };
 		2558D4B32F96A6EF0027A529 /* Appwrite in Frameworks */ = {isa = PBXBuildFile; productRef = 2558D4B22F96A6EF0027A529 /* Appwrite */; };
-		2558D4B62F96AFCB0027A529 /* AsyncHTTPClient in Frameworks */ = {isa = PBXBuildFile; productRef = 2558D4B52F96AFCB0027A529 /* AsyncHTTPClient */; };
 		25592FB02D11E370003EECCB /* AppRatingPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25592FAF2D11E370003EECCB /* AppRatingPresenter.swift */; };
 		25592FB22D11EAA7003EECCB /* WelcomeOnboardingScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25592FB12D11EAA0003EECCB /* WelcomeOnboardingScreen.swift */; };
 		255B0CA12E203D95001426C3 /* HistoryMapMarker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 255B0CA02E203D95001426C3 /* HistoryMapMarker.swift */; };
@@ -433,7 +432,6 @@
 				257B6E0B2CB5717B004F5438 /* Atomics in Frameworks */,
 				2558D4B32F96A6EF0027A529 /* Appwrite in Frameworks */,
 				257DCAE62CB441BB00402562 /* Sodium in Frameworks */,
-				2558D4B62F96AFCB0027A529 /* AsyncHTTPClient in Frameworks */,
 				254729E62CB5967000172F55 /* Sentry in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -822,7 +820,6 @@
 				254729E52CB5967000172F55 /* Sentry */,
 				250BB6A92CB9391800CCAB64 /* Appwrite */,
 				2558D4B22F96A6EF0027A529 /* Appwrite */,
-				2558D4B52F96AFCB0027A529 /* AsyncHTTPClient */,
 			);
 			productName = "paralino-apple-core";
 			productReference = 257DCAD32CB4407700402562 /* paralino_apple_core.framework */;
@@ -922,7 +919,6 @@
 				257B6E092CB5717B004F5438 /* XCRemoteSwiftPackageReference "swift-atomics" */,
 				2508BC132CD50FEE007919B8 /* XCRemoteSwiftPackageReference "purchases-ios-spm" */,
 				2558D4B12F96A6EF0027A529 /* XCLocalSwiftPackageReference "appwrite-apple" */,
-				2558D4B42F96AFCB0027A529 /* XCLocalSwiftPackageReference "async-http-client" */,
 			);
 			productRefGroup = 25C03A6529CCE77100646364 /* Products */;
 			projectDirPath = "";
@@ -1965,10 +1961,6 @@
 			isa = XCLocalSwiftPackageReference;
 			relativePath = "appwrite-apple";
 		};
-		2558D4B42F96AFCB0027A529 /* XCLocalSwiftPackageReference "async-http-client" */ = {
-			isa = XCLocalSwiftPackageReference;
-			relativePath = "async-http-client";
-		};
 /* End XCLocalSwiftPackageReference section */
 
 /* Begin XCRemoteSwiftPackageReference section */
@@ -2029,10 +2021,6 @@
 		2558D4B22F96A6EF0027A529 /* Appwrite */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = Appwrite;
-		};
-		2558D4B52F96AFCB0027A529 /* AsyncHTTPClient */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = AsyncHTTPClient;
 		};
 		257B6E0A2CB5717B004F5438 /* Atomics */ = {
 			isa = XCSwiftPackageProductDependency;
