@@ -47,16 +47,13 @@ fun GroupCreateScreen(
             groupUpdated = { newGroupId ->
                 if (vm.isGroupCreate()) {
                     appState.navController.navigate(
-                        route = AppScreen.MainHome.GroupMemberAdd.route(
+                        screen = AppScreen.MainHome.GroupMemberAdd(
                             groupId = newGroupId,
                             code = null,
                             isOnboarding = true
-                        )
-                    ) {
-                        this.popUpTo(route = AppScreen.MainHome.MainMap.routeSignature) {
-                            this.inclusive = false
-                        }
-                    }
+                        ),
+                        popUpTo = AppScreen.MainHome.MainMap::class
+                    )
                 } else {
                     appState.navController.popBackStack()
                 }

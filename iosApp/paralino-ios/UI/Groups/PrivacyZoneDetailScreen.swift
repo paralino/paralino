@@ -65,7 +65,8 @@ class PrivacyZoneDetailState: BaseMapObservableObject {
 
     let groupId: String
     let zoneId: String
-    let vm: PrivacyZoneDetailViewModel
+    // Read by the nonisolated deinit to clean up the view model.
+    nonisolated(unsafe) let vm: PrivacyZoneDetailViewModel
 
     init(groupId: String, zoneId: String) {
         self.groupId = groupId

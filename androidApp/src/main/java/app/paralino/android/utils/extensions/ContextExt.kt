@@ -15,7 +15,7 @@ import android.os.BatteryManager
 import android.os.PowerManager
 import android.provider.Settings
 import androidx.core.content.ContextCompat
-import app.paralino.core.MR
+import app.paralino.core.resources.moko.*
 import app.paralino.core.models.base.BackendResourceIDs
 
 

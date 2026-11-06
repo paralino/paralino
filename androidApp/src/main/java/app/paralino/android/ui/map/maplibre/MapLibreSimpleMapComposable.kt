@@ -12,7 +12,6 @@ import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -29,13 +28,9 @@ import app.paralino.core.presentation.map.MapPinData
 import app.paralino.core.ui.theme.LocalScreenDimensionType
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
-import org.maplibre.compose.camera.CameraState
-import org.maplibre.compose.camera.rememberCameraState
-import org.maplibre.compose.map.GestureOptions
-import org.maplibre.compose.map.MapOptions
-import org.maplibre.compose.map.RenderOptions
+import org.maplibre.compose.map.LocalMapState
+import org.maplibre.compose.map.MapState
 import org.maplibre.compose.sources.GeoJsonData
-import org.maplibre.compose.sources.GeoJsonOptions
 import org.maplibre.compose.sources.rememberGeoJsonSource
 import org.maplibre.spatialk.geojson.Point
 import org.maplibre.spatialk.geojson.Position
@@ -60,14 +55,6 @@ fun MapLibreSimpleMapComposable(
     val scope = rememberCoroutineScope()
     var mapLoaded by remember { mutableStateOf(false) }
 
-    val cameraPositionState = rememberCameraState()
-    val mapController = rememberMapLibreSimpleMapController(
-        mapContentPadding = remember { PaddingValues() },
-        cameraState = cameraPositionState,
-        isSatelliteMode = isSatelliteMode,
-        mapsSDKProvider = mapsSDKProvider
-    )
-
     val isSmallScreenSize = LocalScreenDimensionType.current.isSmall
     val screenPadding = remember(isSmallScreenSize) {
         PaddingValues(
@@ -75,18 +62,91 @@ fun MapLibreSimpleMapComposable(
         )
     }
 
+    val mapState = rememberMapLibreMapState(
+        mapsSDKProvider = mapsSDKProvider,
+        isSatelliteMode = isSatelliteMode,
+        isSystemInDarkTheme = isSystemInDarkTheme,
+        content = {
+            val currentMapState = checkNotNull(LocalMapState.current)
+            markers.forEach { model ->
+                val latValue = animateFloatAsState(
+                    targetValue = model.lat.toFloat(),
+                    animationSpec = tween(durationMillis = 300, easing = LinearEasing),
+                    label = "latAnim"
+                ).value.toDouble()
+                val lngValue = animateFloatAsState(
+                    targetValue = model.lng.toFloat(),
+                    animationSpec = tween(durationMillis = 300, easing = LinearEasing),
+                    label = "lngAnim"
+                ).value.toDouble()
+                val accuracyAnim = animateFloatAsState(
+                    targetValue = model.accuracy,
+                    animationSpec = tween(durationMillis = 300, easing = LinearEasing),
+                    label = "accuracyAnim"
+                ).value
+
+                if (model.shouldShowApproximateCircle) {
+                    MapLibreMapCircle(
+                        markerId = model.markerId,
+                        lat = latValue,
+                        lng = lngValue,
+                        accuracy = accuracyAnim,
+                        pinType = model.pinType,
+                        isFocused = model.focused,
+                        isSatelliteMode = isSatelliteMode,
+                        onClick = {
+                            currentMapState.refocus(
+                                scope = scope,
+                                markers = markers,
+                                padding = screenPadding
+                            )
+                        }
+                    )
+                }
+
+                val source = rememberGeoJsonSource(
+                    data = remember(latValue, lngValue) {
+                        GeoJsonData.Features(
+                            Point(longitude = lngValue, latitude = latValue)
+                        )
+                    }
+                )
+
+                MapLibreMarkerComposable(
+                    state = model,
+                    source = source,
+                    canTapOnMarker = true,
+                    zIndex = 20f,
+                    onClick = {
+                        currentMapState.refocus(
+                            scope = scope,
+                            markers = markers,
+                            padding = screenPadding
+                        )
+                    }
+                )
+            }
+        }
+    )
+    val mapController = rememberMapLibreSimpleMapController(
+        mapContentPadding = remember { PaddingValues() },
+        mapState = mapState
+    )
+
     if (mapLoaded) {
         LaunchedEffect(screenPadding) {
             if (markers.isEmpty() && fallbackCenterLatLng != null) {
-                cameraPositionState.position = cameraPositionState.position.copy(
-                    target = Position(
-                        latitude = fallbackCenterLatLng.lat,
-                        longitude = fallbackCenterLatLng.lng,
-                    ),
-                    zoom = zoomLevel
+                mapState.setCameraPosition(
+                    mapState.cameraPosition.copy(
+                        center = Position(
+                            latitude = fallbackCenterLatLng.lat,
+                            longitude = fallbackCenterLatLng.lng,
+                        ),
+                        zoom = zoomLevel
+                    )
                 )
             } else {
-                cameraPositionState.refocus(
+                mapState.refocus(
                     scope = scope,
                     markers = markers,
                     padding = screenPadding,
@@ -98,19 +158,19 @@ fun MapLibreSimpleMapComposable(
 
     LaunchedEffect(key1 = markers) {
         if (mapLoaded) {
-            cameraPositionState.refocus(scope = scope, markers = markers, padding = screenPadding)
+            mapState.refocus(scope = scope, markers = markers, padding = screenPadding)
         }
     }
 
-    LaunchedEffect(key1 = cameraPositionState) {
-        snapshotFlow { cameraPositionState.isCameraMoving }
+    LaunchedEffect(key1 = mapState) {
+        snapshotFlow { mapState.isCameraMoving }
             .distinctUntilChanged()
             .collectLatest {
                 try {
                     onMapCameraSettled(
                         LatLng(
-                            lat = cameraPositionState.position.target.latitude,
-                            lng = cameraPositionState.position.target.longitude,
+                            lat = mapState.cameraPosition.center.latitude,
+                            lng = mapState.cameraPosition.center.longitude,
                         )
                     )
                 } catch (e: Exception) {
@@ -136,7 +196,6 @@ fun MapLibreSimpleMapComposable(
         GenericMapLibreMapWrapper(
             modifier = Modifier.fillMaxSize(),
             mapData = mapController,
-            isSystemInDarkTheme = isSystemInDarkTheme,
             onMapLongClick = {
                 onMapLongPress(it.lat, it.lng)
             },
@@ -154,67 +213,6 @@ fun MapLibreSimpleMapComposable(
                     strokeWidth = 2.dp,
                     color = MaterialTheme.colors.onBackground
                 )
-            },
-            content = {
-                markers.forEach { model ->
-                    val latValue = animateFloatAsState(
-                        targetValue = model.lat.toFloat(),
-                        animationSpec = tween(durationMillis = 300, easing = LinearEasing),
-                        label = "latAnim"
-                    ).value.toDouble()
-                    val lngValue = animateFloatAsState(
-                        targetValue = model.lng.toFloat(),
-                        animationSpec = tween(durationMillis = 300, easing = LinearEasing),
-                        label = "lngAnim"
-                    ).value.toDouble()
-                    val accuracyAnim = animateFloatAsState(
-                        targetValue = model.accuracy,
-                        animationSpec = tween(durationMillis = 300, easing = LinearEasing),
-                        label = "accuracyAnim"
-                    ).value
-
-                    if (model.shouldShowApproximateCircle) {
-                        MapLibreMapCircle(
-                            markerId = model.markerId,
-                            lat = latValue,
-                            lng = lngValue,
-                            accuracy = accuracyAnim,
-                            pinType = model.pinType,
-                            isFocused = model.focused,
-                            isSatelliteMode = isSatelliteMode,
-                            onClick = {
-                                cameraPositionState.refocus(
-                                    scope = scope,
-                                    markers = markers,
-                                    padding = screenPadding
-                                )
-                            }
-                        )
-                    }
-
-                    val source = rememberGeoJsonSource(
-                        data = remember(latValue, lngValue) {
-                            GeoJsonData.Features(
-                                Point(longitude = lngValue, latitude = latValue)
-                            )
-                        },
-                        options = remember { GeoJsonOptions() }
-                    )
-
-                    MapLibreMarkerComposable(
-                        state = model,
-                        source = source,
-                        canTapOnMarker = true,
-                        zIndex = 20f,
-                        onClick = {
-                            cameraPositionState.refocus(
-                                scope = scope,
-                                markers = markers,
-                                padding = screenPadding
-                            )
-                        }
-                    )
-                }
             }
         )
     }
@@ -223,25 +221,13 @@ fun MapLibreSimpleMapComposable(
 @Composable
 private fun rememberMapLibreSimpleMapController(
     mapContentPadding: PaddingValues,
-    cameraState: CameraState,
-    isSatelliteMode: Boolean,
-    mapsSDKProvider: MapsSDKProvider?
+    mapState: MapState
 ): MapLibreMapUiControlledData {
-    return remember(mapContentPadding, isSatelliteMode, mapsSDKProvider) {
-        derivedStateOf {
-            val options = MapOptions(
-                renderOptions = RenderOptions(),
-                gestureOptions = GestureOptions()
-            )
-
-            MapLibreMapUiControlledData(
-                options = options,
-                isSatelliteMode = isSatelliteMode,
-                cameraState = cameraState,
-                contentPadding = mapContentPadding,
-                mapsSDKProvider = mapsSDKProvider,
-                isCompactAttribution = true
-            )
-        }
-    }.value
+    return remember(mapState, mapContentPadding) {
+        MapLibreMapUiControlledData(
+            mapState = mapState,
+            contentPadding = mapContentPadding,
+            isCompactAttribution = true
+        )
+    }
 }

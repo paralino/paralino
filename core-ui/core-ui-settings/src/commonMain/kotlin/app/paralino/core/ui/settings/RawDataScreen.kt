@@ -31,7 +31,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import app.paralino.core.MR
+import app.paralino.core.resources.moko.*
 import app.paralino.core.domain.crypto.ContentIdItem
 import app.paralino.core.models.Payload
 import app.paralino.core.presentation.rawdata.RawDataPresentationViewModel

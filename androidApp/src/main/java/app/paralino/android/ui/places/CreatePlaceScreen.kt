@@ -12,7 +12,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import app.paralino.android.ui.main.MainAppState
 import app.paralino.android.ui.map.SimpleGenericMapComposable
-import app.paralino.core.MR
+import app.paralino.core.resources.moko.*
 import app.paralino.core.models.location.LatLng
 import app.paralino.core.presentation.map.MapPinData
 import app.paralino.core.presentation.places.create.CreatePlaceScreenState

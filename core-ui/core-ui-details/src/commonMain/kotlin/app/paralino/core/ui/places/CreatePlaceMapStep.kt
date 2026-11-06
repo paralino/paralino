@@ -37,7 +37,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import app.paralino.core.MR
+import app.paralino.core.resources.moko.*
 import app.paralino.core.presentation.places.create.CreatePlaceScreenState
 import app.paralino.core.presentation.places.create.CreatePlaceScreenUiEvent
 import app.paralino.core.presentation.places.create.PlaceAddressSearchUiMode
@@ -53,7 +53,7 @@ import dev.icerock.moko.resources.compose.stringResource
 
 @Composable
 fun CreatePlaceMapStep(
-    modifier: Modifier = Modifier.Companion,
+    modifier: Modifier = Modifier,
     focusManager: FocusManager,
     focusRequester: FocusRequester,
     state: CreatePlaceScreenState,

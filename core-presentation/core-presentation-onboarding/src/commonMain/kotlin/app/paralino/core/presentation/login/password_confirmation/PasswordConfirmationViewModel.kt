@@ -1,6 +1,6 @@
 package app.paralino.core.presentation.login.password_confirmation
 
-import app.paralino.core.MR
+import app.paralino.core.resources.moko.*
 import app.paralino.core.domain.user.AppAccountStateMonitor
 import app.paralino.core.domain.user.LogoutUseCase
 import app.paralino.core.domain.user.PasswordConfirmationUseCase

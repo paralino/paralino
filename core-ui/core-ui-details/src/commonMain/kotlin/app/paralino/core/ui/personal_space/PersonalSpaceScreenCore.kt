@@ -30,7 +30,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
-import app.paralino.core.MR
+import app.paralino.core.resources.moko.*
 import app.paralino.core.presentation.common.AlertDialogAction
 import app.paralino.core.presentation.groups.detail.GroupSpaceFocusedFeatureChildItem
 import app.paralino.core.presentation.personal_space.PersonalSpaceScreenEvent

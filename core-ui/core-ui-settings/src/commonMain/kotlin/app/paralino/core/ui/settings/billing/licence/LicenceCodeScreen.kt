@@ -31,7 +31,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import app.paralino.core.MR
+import app.paralino.core.resources.moko.*
 import app.paralino.core.presentation.settings.billing.licence.LicenceCodeEvent
 import app.paralino.core.presentation.settings.billing.licence.LicenceCodeUiEvent
 import app.paralino.core.presentation.settings.billing.licence.LicenceCodeViewModel

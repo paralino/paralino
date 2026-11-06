@@ -1,12 +1,18 @@
 package app.paralino.android.ui.navigation
 
 import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.ContentTransform
+import androidx.compose.animation.togetherWith
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.navigation.NavGraphBuilder
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.navigation
+import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
+import androidx.navigation3.runtime.EntryProviderScope
+import androidx.navigation3.runtime.NavEntryDecorator
+import androidx.navigation3.runtime.NavKey
+import androidx.navigation3.runtime.entryProvider
+import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
+import androidx.navigation3.ui.NavDisplay
+import app.paralino.android.presentation.settings.generic.NotificationSocketSettingsViewModel
 import app.paralino.android.ui.groups.BatteryNotificationsScreen
 import app.paralino.android.ui.groups.GroupCreateScreen
 import app.paralino.android.ui.groups.GroupDetailScreen
@@ -35,7 +41,6 @@ import app.paralino.android.ui.places.PlacesScreen
 import app.paralino.android.ui.privacyzones.CreatePrivacyZoneScreen
 import app.paralino.android.ui.privacyzones.PrivacyZoneDetailScreen
 import app.paralino.android.ui.privacyzones.PrivacyZonesScreen
-import app.paralino.core.ui.components.DefaultEmptyState
 import app.paralino.android.ui.settings.AppSettingsScreen
 import app.paralino.android.ui.settings.AppStatusDebugScreen
 import app.paralino.android.ui.settings.AppStatusScreen
@@ -56,24 +61,16 @@ import app.paralino.android.ui.settings.profile.ConvertAccountScreen
 import app.paralino.android.ui.settings.profile.EditProfileScreen
 import app.paralino.android.ui.settings.profile.UserDevicesScreen
 import app.paralino.android.ui.share.SharingStartScreen
-import app.paralino.core.MR
 import app.paralino.core.presentation.login.LoginScreenState
 import app.paralino.core.presentation.login.LoginScreenUiType
 import app.paralino.core.presentation.places.detail.PlaceSensitivityViewModel
-import app.paralino.core.models.settings.RawPresentationDataType
-import dev.icerock.moko.resources.compose.stringResource
-import app.paralino.core.presentation.settings.generic.maps.MapsProviderViewModel
-import app.paralino.core.presentation.settings.generic.maps.MapInteractionsViewModel
 import app.paralino.core.presentation.settings.generic.AppThemeViewModel
 import app.paralino.core.presentation.settings.generic.MeasurementSystemViewModel
 import app.paralino.core.presentation.settings.generic.NotificationsGroupingViewModel
 import app.paralino.core.presentation.settings.generic.PersonalSpaceFeatureSettingsViewModel
 import app.paralino.core.presentation.settings.generic.PlaceSearchSettingsViewModel
-import app.paralino.android.presentation.settings.generic.NotificationSocketSettingsViewModel
-import app.paralino.core.presentation.billing.BillingScreenSourceType
-import app.paralino.core.presentation.share.SharingStartPresentationType
-import app.paralino.core.presentation.places.create.CreatePlaceScreenStep
-import app.paralino.core.presentation.privacyzones.create.CreatePrivacyZoneScreenStep
+import app.paralino.core.presentation.settings.generic.maps.MapInteractionsViewModel
+import app.paralino.core.presentation.settings.generic.maps.MapsProviderViewModel
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -84,391 +81,289 @@ fun MainNavHost(
     appState: MainAppState,
     onAppClose: () -> Unit
 ) {
-    NavHost(
+    NavDisplay(
         modifier = modifier,
-        navController = appState.navController.navController,
-        startDestination = AppScreen.MainHome.routeSignature,
-        enterTransition = { this.slideIntoContainer(towards = AnimatedContentTransitionScope.SlideDirection.Start) },
-        exitTransition = { this.slideOutOfContainer(towards = AnimatedContentTransitionScope.SlideDirection.Start, targetOffset = { it / 4 }) },
-        popEnterTransition = { this.slideIntoContainer(towards = AnimatedContentTransitionScope.SlideDirection.Start, initialOffset = { -it / 4 }) },
-        popExitTransition = { this.slideOutOfContainer(towards = AnimatedContentTransitionScope.SlideDirection.End) },
-        predictivePopEnterTransition = { this.slideIntoContainer(towards = AnimatedContentTransitionScope.SlideDirection.Start, initialOffset = { -it / 4 }) },
-        predictivePopExitTransition = { this.slideOutOfContainer(towards = AnimatedContentTransitionScope.SlideDirection.End) },
-    ) {
-        homeGraph(appState = appState, onAppClose = onAppClose)
-        settingsGraph(appState)
-    }
+        backStack = appState.navController.backStack,
+        onBack = { appState.navController.popBackStack() },
+        entryDecorators = rememberAppEntryDecorators(),
+        transitionSpec = { slidePushTransition() },
+        popTransitionSpec = { slidePopTransition() },
+        predictivePopTransitionSpec = { slidePopTransition() },
+        entryProvider = entryProvider {
+            homeEntries(appState = appState, onAppClose = onAppClose)
+            settingsEntries(appState)
+            commonEntries(appState)
+        }
+    )
 }
 
-fun NavGraphBuilder.homeGraph(
+@Composable
+fun rememberAppEntryDecorators(): List<NavEntryDecorator<NavKey>> = listOf(
+    rememberSaveableStateHolderNavEntryDecorator(),
+    rememberViewModelStoreNavEntryDecorator(),
+)
+
+private fun AnimatedContentTransitionScope<*>.slidePushTransition(): ContentTransform =
+    slideIntoContainer(towards = AnimatedContentTransitionScope.SlideDirection.Start) togetherWith
+            slideOutOfContainer(towards = AnimatedContentTransitionScope.SlideDirection.Start, targetOffset = { it / 4 })
+
+private fun AnimatedContentTransitionScope<*>.slidePopTransition(): ContentTransform =
+    slideIntoContainer(towards = AnimatedContentTransitionScope.SlideDirection.Start, initialOffset = { -it / 4 }) togetherWith
+            slideOutOfContainer(towards = AnimatedContentTransitionScope.SlideDirection.End)
+
+private val slideTransitionMetadata: Map<String, Any> =
+    NavDisplay.transitionSpec { slidePushTransition() } +
+            NavDisplay.popTransitionSpec { slidePopTransition() } +
+            NavDisplay.predictivePopTransitionSpec { slidePopTransition() }
+
+fun EntryProviderScope<NavKey>.homeEntries(
     appState: MainAppState,
     onAppClose: () -> Unit,
 ) {
-    navigation(
-        startDestination = AppScreen.MainHome.MainMap.routeSignature,
-        route = AppScreen.MainHome.routeSignature
-    ) {
-        composable(AppScreen.MainHome.MainMap.routeSignature) {
-            val groupId =
-                it.arguments?.getString(AppScreen.MainHome.MainMap.argumentGroupId)
-            MapHomeScreen(appState = appState, groupId = groupId, onClose = onAppClose)
-        }
-        composable(AppScreen.MainHome.GroupDetails.routeSignature) {
-            val groupId =
-                it.arguments!!.getString(AppScreen.MainHome.GroupDetails.argumentGroupId)
-            GroupDetailScreen(appState = appState, groupId = groupId)
-        }
-        composable(AppScreen.MainHome.GroupSettings.routeSignature) {
-            val groupId = it.arguments!!.getString(AppScreen.MainHome.GroupSettings.argumentGroupId)
-            GroupSettingsScreen(appState = appState, groupId = groupId)
-        }
-        composable(AppScreen.MainHome.BatteryNotificationSettings.routeSignature) {
-            val groupId = it.arguments!!.getString(AppScreen.MainHome.BatteryNotificationSettings.argumentGroupId)!!
-            BatteryNotificationsScreen(appState = appState, groupId = groupId)
-        }
-        composable(AppScreen.MainHome.GroupCreate.routeSignature) {
-            val groupId =
-                it.arguments?.getString(AppScreen.MainHome.GroupCreate.argumentGroupId)
-            GroupCreateScreen(appState = appState, groupId = groupId)
-        }
-        composable(AppScreen.MainHome.GroupJoinWelcome.routeSignature) {
-            val groupId =
-                it.arguments!!.getString(AppScreen.MainHome.GroupJoinWelcome.argumentGroupId)!!
-            GroupJoinWelcomeScreen(appState = appState, groupId = groupId)
-        }
-        composable(AppScreen.MainHome.GroupMemberAdd.routeSignature) {
-            val groupId =
-                it.arguments?.getString(AppScreen.MainHome.GroupMemberAdd.argumentGroupId)
-            val code =
-                it.arguments?.getString(AppScreen.MainHome.GroupMemberAdd.argumentCode)
-            val onboarding =
-                it.arguments?.getString(AppScreen.MainHome.GroupMemberAdd.argumentOnboarding)?.toBoolean() ?: false
-            MemberInviteScreen(appState = appState, groupId = groupId, code = code, isOnboarding = onboarding)
-        }
-        composable(AppScreen.MainHome.SharingStart.routeSignature) {
-            val groupId =
-                it.arguments?.getString(AppScreen.MainHome.SharingStart.argumentGroupId)
-            val presentation = SharingStartPresentationType.fromRouteArgument(
-                it.arguments?.getString(AppScreen.MainHome.SharingStart.argumentPresentation)
-            )
-            SharingStartScreen(appState = appState, groupId = groupId, presentationType = presentation)
-        }
-        composable(AppScreen.MainHome.PlacesList.routeSignature) {
-            val groupId =
-                it.arguments?.getString(AppScreen.MainHome.PlacesList.argumentGroupId)!!
-            val onboarding =
-                it.arguments?.getString(AppScreen.MainHome.PlacesList.argumentOnboarding)?.toBoolean() ?: false
-            PlacesScreen(appState = appState, groupId = groupId, isOnboarding = onboarding)
-        }
-        composable(AppScreen.MainHome.PrivacyZonesList.routeSignature) {
-            val groupId =
-                it.arguments?.getString(AppScreen.MainHome.PrivacyZonesList.argumentGroupId)!!
-            val onboarding =
-                it.arguments?.getString(AppScreen.MainHome.PrivacyZonesList.argumentOnboarding)?.toBoolean() ?: false
-            PrivacyZonesScreen(appState = appState, groupId = groupId, isOnboarding = onboarding)
-        }
-        composable(AppScreen.MainHome.PrivacyZoneCreate.routeSignature) {
-            val groupId = it.arguments?.getString(AppScreen.MainHome.PrivacyZoneCreate.argumentGroupId)!!
-            val zoneId = it.arguments?.getString(AppScreen.MainHome.PrivacyZoneCreate.argumentZoneId)
-            val editStep = it.arguments?.getString(AppScreen.MainHome.PrivacyZoneCreate.argumentEditStep)?.let {
-                CreatePrivacyZoneScreenStep.fromKey(it)
-            }
-            val lat = it.arguments?.takeIf { it.containsKey(AppScreen.MainHome.PrivacyZoneCreate.argumentLat) }
-                ?.getString(AppScreen.MainHome.PrivacyZoneCreate.argumentLat)?.toDoubleOrNull()
-            val lng = it.arguments?.takeIf { it.containsKey(AppScreen.MainHome.PrivacyZoneCreate.argumentLng) }
-                ?.getString(AppScreen.MainHome.PrivacyZoneCreate.argumentLng)?.toDoubleOrNull()
-            CreatePrivacyZoneScreen(
-                appState = appState,
-                groupId = groupId,
-                zoneId = zoneId,
-                editStep = editStep,
-                lat = lat,
-                lng = lng
-            )
-        }
-        composable(AppScreen.MainHome.PrivacyZoneDetail.routeSignature) {
-            val groupId = it.arguments?.getString(AppScreen.MainHome.PrivacyZoneDetail.argumentGroupId)!!
-            val zoneId = it.arguments?.getString(AppScreen.MainHome.PrivacyZoneDetail.argumentZoneId)!!
-            PrivacyZoneDetailScreen(
-                appState = appState,
-                groupId = groupId,
-                zoneId = zoneId
-            )
-        }
-        composable(AppScreen.MainHome.PlaceDetail.routeSignature) {
-            val groupId =
-                it.arguments?.getString(AppScreen.MainHome.PlaceDetail.argumentGroupId)!!
-            val placeId =
-                it.arguments?.getString(AppScreen.MainHome.PlaceDetail.argumentPlaceId)!!
-            PlaceDetailScreen(appState = appState, groupId = groupId, placeId = placeId)
-        }
-        composable(AppScreen.MainHome.PlaceAlerts.routeSignature) {
-            val groupId =
-                it.arguments?.getString(AppScreen.MainHome.PlaceAlerts.argumentGroupId)!!
-            val placeId =
-                it.arguments?.getString(AppScreen.MainHome.PlaceAlerts.argumentPlaceId)!!
-            PlaceAlertsSettingsScreen(appState = appState, groupId = groupId, placeId = placeId)
-        }
-        composable(AppScreen.MainHome.PlaceCreate.routeSignature) {
-            val groupId = it.arguments?.getString(AppScreen.MainHome.PlaceCreate.argumentGroupId)!!
-            val placeId = it.arguments?.getString(AppScreen.MainHome.PlaceCreate.argumentPlaceId)
-            val editStep = it.arguments?.getString(AppScreen.MainHome.PlaceCreate.argumentEditStep)?.let {
-                CreatePlaceScreenStep.fromKey(it)
-            }
-            val lat = it.arguments?.takeIf { it.containsKey(AppScreen.MainHome.PlaceCreate.argumentLat) }
-                ?.getString(AppScreen.MainHome.PlaceCreate.argumentLat)?.toDoubleOrNull()
-            val lng = it.arguments?.takeIf { it.containsKey(AppScreen.MainHome.PlaceCreate.argumentLng) }
-                ?.getString(AppScreen.MainHome.PlaceCreate.argumentLng)?.toDoubleOrNull()
-            CreatePlaceScreen(
-                appState = appState,
-                groupId = groupId,
-                placeId = placeId,
-                editStep = editStep,
-                lat = lat.takeIf { lng != null },
-                lng = lng.takeIf { lat != null }
-            )
-        }
-        composable(AppScreen.MainHome.RawDataScreen.routeSignature) {
-            val type =
-                it.arguments?.getString(AppScreen.MainHome.RawDataScreen.argumentDataType)!!
-            val id =
-                it.arguments?.getString(AppScreen.MainHome.RawDataScreen.argumentDataId)
-            val rawDataType = RawPresentationDataType.fromKey(type, id ?: "")
-            RawDataScreen(appState = appState, type = rawDataType!!)
-        }
-        composable(AppScreen.MainHome.Subscriptions.routeSignature) {
-            SubscriptionScreen(appState)
-        }
-        composable(AppScreen.MainHome.BillingPaywall.routeSignature) {
-            val groupId =
-                it.arguments?.getString(AppScreen.MainHome.BillingPaywall.argumentGroupId)
-            val type = it.arguments?.getString(AppScreen.MainHome.BillingPaywall.argumentSourceType)
-                .let { BillingScreenSourceType.fromKey(it) }
-            PaywallScreen(appState, groupId = groupId, type = type)
-        }
-        composable(AppScreen.MainHome.FreePlanNoticeScreen.routeSignature) {
-            val groupId =
-                it.arguments?.getString(AppScreen.MainHome.FreePlanNoticeScreen.argumentGroupId)
-            FreePlanInfoScreen(appState)
-        }
-        composable(AppScreen.MainHome.LocationHistoryDelete.routeSignature) {
-            val groupId =
-                it.arguments?.getString(AppScreen.MainHome.LocationHistoryDelete.argumentGroupId)!!
-            LocationHistoryDeleteScreen(
-                appState = appState,
-                groupId = groupId
-            )
-        }
-        composable(AppScreen.MainHome.PersonalSpace.routeSignature) {
-            PersonalSpaceScreen(appState = appState)
-        }
-        composable(AppScreen.MainHome.PersonalSpaceSettings.routeSignature) {
-            PersonalSpaceSettingsScreen(appState = appState)
-        }
-        composable(AppScreen.MainHome.PlaceSensitivity.routeSignature) {
-            val groupId = it.arguments?.getString(AppScreen.MainHome.PlaceSensitivity.argumentGroupId)!!
-            val placeId = it.arguments?.getString(AppScreen.MainHome.PlaceSensitivity.argumentPlaceId)!!
-            GenericSettingsScreen(
-                appState = appState,
-                vm = koinViewModel<PlaceSensitivityViewModel> { parametersOf(groupId, placeId) }
-            )
-        }
+    entry<AppScreen.MainHome.MainMap> {
+        MapHomeScreen(appState = appState, groupId = it.groupId, onClose = onAppClose)
+    }
+    entry<AppScreen.MainHome.GroupDetails> {
+        GroupDetailScreen(appState = appState, groupId = it.groupId)
+    }
+    entry<AppScreen.MainHome.GroupSettings> {
+        GroupSettingsScreen(appState = appState, groupId = it.groupId)
+    }
+    entry<AppScreen.MainHome.BatteryNotificationSettings> {
+        BatteryNotificationsScreen(appState = appState, groupId = it.groupId)
+    }
+    entry<AppScreen.MainHome.GroupCreate> {
+        GroupCreateScreen(appState = appState, groupId = it.groupId)
+    }
+    entry<AppScreen.MainHome.GroupJoinWelcome> {
+        GroupJoinWelcomeScreen(appState = appState, groupId = it.groupId)
+    }
+    entry<AppScreen.MainHome.GroupMemberAdd> {
+        MemberInviteScreen(appState = appState, groupId = it.groupId, code = it.code, isOnboarding = it.isOnboarding)
+    }
+    entry<AppScreen.MainHome.SharingStart> {
+        SharingStartScreen(appState = appState, groupId = it.groupId, presentationType = it.presentation)
+    }
+    entry<AppScreen.MainHome.PlacesList> {
+        PlacesScreen(appState = appState, groupId = it.groupId, isOnboarding = it.isOnboarding)
+    }
+    entry<AppScreen.MainHome.PrivacyZonesList> {
+        PrivacyZonesScreen(appState = appState, groupId = it.groupId, isOnboarding = it.isOnboarding)
+    }
+    entry<AppScreen.MainHome.PrivacyZoneCreate> {
+        CreatePrivacyZoneScreen(
+            appState = appState,
+            groupId = it.groupId,
+            zoneId = it.zoneId,
+            editStep = it.editStep,
+            lat = it.lat,
+            lng = it.lng
+        )
+    }
+    entry<AppScreen.MainHome.PrivacyZoneDetail> {
+        PrivacyZoneDetailScreen(
+            appState = appState,
+            groupId = it.groupId,
+            zoneId = it.zoneId
+        )
+    }
+    entry<AppScreen.MainHome.PlaceDetail> {
+        PlaceDetailScreen(appState = appState, groupId = it.groupId, placeId = it.placeId)
+    }
+    entry<AppScreen.MainHome.PlaceAlerts> {
+        PlaceAlertsSettingsScreen(appState = appState, groupId = it.groupId, placeId = it.placeId)
+    }
+    entry<AppScreen.MainHome.PlaceCreate> { key ->
+        CreatePlaceScreen(
+            appState = appState,
+            groupId = key.groupId,
+            placeId = key.placeId,
+            editStep = key.editStep,
+            // both lat & lng have to be valid
+            lat = key.lat.takeIf { key.lng != null },
+            lng = key.lng.takeIf { key.lat != null }
+        )
+    }
+    entry<AppScreen.MainHome.FreePlanNoticeScreen> {
+        FreePlanInfoScreen(appState)
+    }
+    entry<AppScreen.MainHome.LocationHistoryDelete> {
+        LocationHistoryDeleteScreen(
+            appState = appState,
+            groupId = it.groupId
+        )
+    }
+    entry<AppScreen.MainHome.PersonalSpace> {
+        PersonalSpaceScreen(appState = appState)
+    }
+    entry<AppScreen.MainHome.PersonalSpaceSettings> {
+        PersonalSpaceSettingsScreen(appState = appState)
+    }
+    entry<AppScreen.MainHome.PlaceSensitivity> {
+        GenericSettingsScreen(
+            appState = appState,
+            vm = koinViewModel<PlaceSensitivityViewModel> { parametersOf(it.groupId, it.placeId) }
+        )
     }
 }
 
-fun NavGraphBuilder.settingsGraph(appState: MainAppState) {
-    navigation(
-        startDestination = AppScreen.Settings.SettingsRoot.routeSignature,
-        route = AppScreen.Settings.routeSignature
-    ) {
-        composable(AppScreen.Settings.SettingsRoot.routeSignature) {
-            SettingsScreen(appState)
-        }
-        composable(AppScreen.Settings.ProfileDetails.routeSignature) {
-            AccountScreen(appState)
-        }
-        composable(AppScreen.Settings.PersonalCodes.routeSignature) {
-            PersonalCodeScreen(appState)
-        }
-        composable(AppScreen.Settings.BlockList.routeSignature) {
-            BlocklistScreen(appState)
-        }
-        composable(AppScreen.Settings.UserDevices.routeSignature) {
-            UserDevicesScreen(appState)
-        }
-        composable(AppScreen.Settings.ProfileDetails.EditProfile.routeSignature) {
-            EditProfileScreen(appState)
-        }
-        composable(AppScreen.Settings.ProfileDetails.ChangeEmail.routeSignature) {
-            ChangeEmailScreen(
-                appState = appState,
-                onNavigateBack = {
-                    // do nothing, email verification will trigger new graph
-                }
-            )
-        }
-        composable(AppScreen.Settings.ProfileDetails.ChangePassword.routeSignature) {
-            ChangePasswordScreen(appState)
-        }
-        composable(AppScreen.Settings.ProfileDetails.ConvertAccount.routeSignature) {
-            ConvertAccountScreen(appState)
-        }
-        composable(AppScreen.Settings.Licences.routeSignature) {
-            LicencesScreen(appState)
-        }
-        composable(AppScreen.Settings.LicenceCode.routeSignature) {
-            LicenceCodeScreen(appState)
-        }
-        composable(AppScreen.Settings.AppStatusDebug.routeSignature) {
-            AppStatusDebugScreen(appState)
-        }
-        composable(AppScreen.Settings.AppStatus.routeSignature) {
-            AppStatusScreen(appState)
-        }
-        composable(AppScreen.Settings.Subscriptions.routeSignature) {
-            SubscriptionScreen(appState)
-        }
-        composable(AppScreen.Settings.LocationSettings.routeSignature) {
-            LocationSettingsScreen(appState)
-        }
-        composable(AppScreen.Settings.GeneralInfo.routeSignature) {
-            GeneralInfoScreen(appState)
-        }
-        composable(AppScreen.Settings.BillingPaywall.routeSignature) {
-            val type = it.arguments?.getString(AppScreen.Settings.BillingPaywall.argumentSourceType)
-                .let { BillingScreenSourceType.fromKey(it) }
-            PaywallScreen(appState, groupId = null, type = type)
-        }
-        composable(AppScreen.Settings.ProfileDetails.RawDataScreen.routeSignature) {
-            val type =
-                it.arguments?.getString(AppScreen.Settings.ProfileDetails.RawDataScreen.argumentDataType)!!
-            val id =
-                it.arguments?.getString(AppScreen.Settings.ProfileDetails.RawDataScreen.argumentDataId)
-            val rawDataType = RawPresentationDataType.fromKey(type, id ?: "")
-            RawDataScreen(appState = appState, type = rawDataType!!)
-        }
-        composable(AppScreen.Settings.WelcomeOnboarding.routeSignature) {
-            WelcomeOnboardingScreen(
-                isDemo = true,
-                onFinish = { appState.navController.popBackStack() }
-            )
-        }
-        composable(AppScreen.Settings.AppSettings.routeSignature) {
-            AppSettingsScreen(appState)
-        }
-        composable(AppScreen.Settings.AppTheme.routeSignature) {
-            GenericSettingsScreen(
-                appState = appState,
-                vm = koinViewModel<AppThemeViewModel>()
-            )
-        }
-        composable(AppScreen.Settings.MeasurementSystem.routeSignature) {
-            GenericSettingsScreen(
-                appState = appState,
-                vm = koinViewModel<MeasurementSystemViewModel>()
-            )
-        }
-        composable(AppScreen.Settings.NotificationGrouping.routeSignature) {
-            GenericSettingsScreen(
-                appState = appState,
-                vm = koinViewModel<NotificationsGroupingViewModel>()
-            )
-        }
-        composable(AppScreen.Settings.MapInteractions.routeSignature) {
-            GenericSettingsScreen(
-                appState = appState,
-                vm = koinViewModel<MapInteractionsViewModel>()
-            )
-        }
-        composable(AppScreen.Settings.PlaceSearch.routeSignature) {
-            GenericSettingsScreen(
-                appState = appState,
-                vm = koinViewModel<PlaceSearchSettingsViewModel>()
-            )
-        }
-        composable(AppScreen.Settings.PersonalSpace.routeSignature) {
-            GenericSettingsScreen(
-                appState = appState,
-                vm = koinViewModel<PersonalSpaceFeatureSettingsViewModel>()
-            )
-        }
-        composable(AppScreen.Settings.NotificationSocket.routeSignature) {
-            GenericSettingsScreen(
-                appState = appState,
-                vm = koinViewModel<NotificationSocketSettingsViewModel>()
-            )
-        }
-        composable(AppScreen.Settings.MapsProvider.routeSignature) {
-            GenericSettingsScreen(
-                appState = appState,
-                vm = koinViewModel<MapsProviderViewModel>()
-            )
-        }
+fun EntryProviderScope<NavKey>.settingsEntries(appState: MainAppState) {
+    entry<AppScreen.Settings.SettingsRoot> {
+        SettingsScreen(appState)
+    }
+    entry<AppScreen.Settings.ProfileDetails> {
+        AccountScreen(appState)
+    }
+    entry<AppScreen.Settings.PersonalCodes> {
+        PersonalCodeScreen(appState)
+    }
+    entry<AppScreen.Settings.BlockList> {
+        BlocklistScreen(appState)
+    }
+    entry<AppScreen.Settings.UserDevices> {
+        UserDevicesScreen(appState)
+    }
+    entry<AppScreen.Settings.ProfileDetails.EditProfile> {
+        EditProfileScreen(appState)
+    }
+    entry<AppScreen.Settings.ProfileDetails.ChangeEmail> {
+        ChangeEmailScreen(
+            appState = appState,
+            onNavigateBack = {
+                // do nothing, email verification will trigger new graph
+            }
+        )
+    }
+    entry<AppScreen.Settings.ProfileDetails.ChangePassword> {
+        ChangePasswordScreen(appState)
+    }
+    entry<AppScreen.Settings.ProfileDetails.ConvertAccount> {
+        ConvertAccountScreen(appState)
+    }
+    entry<AppScreen.Settings.Licences> {
+        LicencesScreen(appState)
+    }
+    entry<AppScreen.Settings.LicenceCode> {
+        LicenceCodeScreen(appState)
+    }
+    entry<AppScreen.Settings.AppStatusDebug> {
+        AppStatusDebugScreen(appState)
+    }
+    entry<AppScreen.Settings.AppStatus> {
+        AppStatusScreen(appState)
+    }
+    entry<AppScreen.Settings.LocationSettings> {
+        LocationSettingsScreen(appState)
+    }
+    entry<AppScreen.Settings.GeneralInfo> {
+        GeneralInfoScreen(appState)
+    }
+    entry<AppScreen.Settings.WelcomeOnboarding> {
+        WelcomeOnboardingScreen(
+            isDemo = true,
+            onFinish = { appState.navController.popBackStack() }
+        )
+    }
+    entry<AppScreen.Settings.AppSettings> {
+        AppSettingsScreen(appState)
+    }
+    entry<AppScreen.Settings.AppTheme> {
+        GenericSettingsScreen(
+            appState = appState,
+            vm = koinViewModel<AppThemeViewModel>()
+        )
+    }
+    entry<AppScreen.Settings.MeasurementSystem> {
+        GenericSettingsScreen(
+            appState = appState,
+            vm = koinViewModel<MeasurementSystemViewModel>()
+        )
+    }
+    entry<AppScreen.Settings.NotificationGrouping> {
+        GenericSettingsScreen(
+            appState = appState,
+            vm = koinViewModel<NotificationsGroupingViewModel>()
+        )
+    }
+    entry<AppScreen.Settings.MapInteractions> {
+        GenericSettingsScreen(
+            appState = appState,
+            vm = koinViewModel<MapInteractionsViewModel>()
+        )
+    }
+    entry<AppScreen.Settings.PlaceSearch> {
+        GenericSettingsScreen(
+            appState = appState,
+            vm = koinViewModel<PlaceSearchSettingsViewModel>()
+        )
+    }
+    entry<AppScreen.Settings.PersonalSpaceFeature> {
+        GenericSettingsScreen(
+            appState = appState,
+            vm = koinViewModel<PersonalSpaceFeatureSettingsViewModel>()
+        )
+    }
+    entry<AppScreen.Settings.NotificationSocket> {
+        GenericSettingsScreen(
+            appState = appState,
+            vm = koinViewModel<NotificationSocketSettingsViewModel>()
+        )
+    }
+    entry<AppScreen.Settings.MapsProvider> {
+        GenericSettingsScreen(
+            appState = appState,
+            vm = koinViewModel<MapsProviderViewModel>()
+        )
     }
 }
 
-fun NavGraphBuilder.loggedOutGraph(
-    appState: MainAppState,
-    start: AppScreen
-) {
-    navigation(
-        startDestination = start.routeSignature,
-        route = AppScreen.LoggedOut.routeSignature
-    ) {
-        composable(AppScreen.LoggedOut.Welcome.routeSignature) {
-            LoggedOutScreen(appState)
-        }
-        composable(AppScreen.LoggedOut.WelcomeOnboarding.routeSignature) {
-            WelcomeOnboardingScreen(
-                isDemo = false,
-                onFinish = {
-                    appState.navController.navController.navigate(
-                        AppScreen.LoggedOut.Login.route(LoginScreenUiType.SIGNUP)
-                    ) {
-                        this.popUpTo(route = AppScreen.LoggedOut.WelcomeOnboarding.routeSignature) {
-                            this.inclusive = true
-                        }
-                    }
-                }
-            )
-        }
-        composable(AppScreen.LoggedOut.Login.routeSignature) {
-            val startScreen = it.arguments?.getString(AppScreen.LoggedOut.Login.argumentStartScreenType)
-                ?.let { screenName -> LoginScreenUiType.values().firstOrNull { it.name == screenName } }
-                ?: LoginScreenState.defaultStartScreen
-            LoginScreen(appState, startScreen)
-        }
-        composable(AppScreen.LoggedOut.ProfileSetup.routeSignature) {
-            ProfileSetupScreen(appState)
-        }
-        composable(AppScreen.LoggedOut.AccountRecovery.routeSignature) {
-            RecoverKeysScreen(appState)
-        }
-        composable(AppScreen.LoggedOut.PasswordConfirmation.routeSignature) {
-            PasswordConfirmationScreen(appState)
-        }
-        composable(
-            route = AppScreen.LoggedOut.EmailVerification.routeSignature,
-            enterTransition = { this.slideIntoContainer(towards = AnimatedContentTransitionScope.SlideDirection.Start) },
-            exitTransition = { this.slideOutOfContainer(towards = AnimatedContentTransitionScope.SlideDirection.Start, targetOffset = { it / 4 }) },
-            popEnterTransition = { this.slideIntoContainer(towards = AnimatedContentTransitionScope.SlideDirection.Start, initialOffset = { -it / 4 }) },
-            popExitTransition = { this.slideOutOfContainer(towards = AnimatedContentTransitionScope.SlideDirection.End) },
-        ) {
-            VerifyEmailScreen(appState)
-        }
-        composable(
-            route = AppScreen.LoggedOut.ChangeEmail.routeSignature,
-            enterTransition = { this.slideIntoContainer(towards = AnimatedContentTransitionScope.SlideDirection.Start) },
-            exitTransition = { this.slideOutOfContainer(towards = AnimatedContentTransitionScope.SlideDirection.Start, targetOffset = { it / 4 }) },
-            popEnterTransition = { this.slideIntoContainer(towards = AnimatedContentTransitionScope.SlideDirection.Start, initialOffset = { -it / 4 }) },
-            popExitTransition = { this.slideOutOfContainer(towards = AnimatedContentTransitionScope.SlideDirection.End) },
-        ) {
-            ChangeEmailScreen(appState, onNavigateBack = { appState.navController.popBackStack() })
-        }
-        composable(AppScreen.LoggedOut.PasswordReset.routeSignature) {
-            val userId = it.arguments?.getString(AppScreen.LoggedOut.PasswordReset.argumentUserId)
-            val secret = it.arguments?.getString(AppScreen.LoggedOut.PasswordReset.argumentSecret)
-            ResetPasswordScreen(appState, userId = userId!!, secret = secret!!)
-        }
+fun EntryProviderScope<NavKey>.commonEntries(appState: MainAppState) {
+    entry<AppScreen.Common.RawDataScreen> {
+        RawDataScreen(appState = appState, type = it.type)
+    }
+    entry<AppScreen.Common.Subscriptions> {
+        SubscriptionScreen(appState)
+    }
+    entry<AppScreen.Common.BillingPaywall> {
+        PaywallScreen(appState, groupId = it.groupId, type = it.type)
+    }
+}
+
+fun EntryProviderScope<NavKey>.loggedOutEntries(appState: MainAppState) {
+    entry<AppScreen.LoggedOut.Welcome> {
+        LoggedOutScreen(appState)
+    }
+    entry<AppScreen.LoggedOut.WelcomeOnboarding> {
+        WelcomeOnboardingScreen(
+            isDemo = false,
+            onFinish = {
+                appState.navController.navigate(
+                    screen = AppScreen.LoggedOut.Login(LoginScreenUiType.SIGNUP),
+                    popUpTo = AppScreen.LoggedOut.WelcomeOnboarding::class,
+                    inclusive = true
+                )
+            }
+        )
+    }
+    entry<AppScreen.LoggedOut.Login> {
+        LoginScreen(appState, it.screenUiType ?: LoginScreenState.defaultStartScreen)
+    }
+    entry<AppScreen.LoggedOut.ProfileSetup> {
+        ProfileSetupScreen(appState)
+    }
+    entry<AppScreen.LoggedOut.AccountRecovery> {
+        RecoverKeysScreen(appState)
+    }
+    entry<AppScreen.LoggedOut.PasswordConfirmation> {
+        PasswordConfirmationScreen(appState)
+    }
+    entry<AppScreen.LoggedOut.EmailVerification>(metadata = slideTransitionMetadata) {
+        VerifyEmailScreen(appState)
+    }
+    entry<AppScreen.LoggedOut.ChangeEmail>(metadata = slideTransitionMetadata) {
+        ChangeEmailScreen(appState, onNavigateBack = { appState.navController.popBackStack() })
+    }
+    entry<AppScreen.LoggedOut.PasswordReset> {
+        ResetPasswordScreen(appState, userId = it.userId, secret = it.secret)
     }
 }

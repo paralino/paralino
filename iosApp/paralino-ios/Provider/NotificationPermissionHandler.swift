@@ -11,7 +11,7 @@ import shared
 import UserNotifications
 import paralino_apple_core
 
-class NotificationPermissionHandler {
+class NotificationPermissionHandler: @unchecked Sendable {
     
     private var requested: Bool = false
     let notificationStatusProvider: INotificationStatusProvider
@@ -23,6 +23,7 @@ class NotificationPermissionHandler {
     func requestNotificationPermission(
         messageDispather: ICoreMessageDispatcher
     ) {
+        nonisolated(unsafe) let messageDispather = messageDispather
         let center = UNUserNotificationCenter.current()
         center.requestAuthorization(options: [.alert, .sound, .badge]) { granted, error in
             Logr.d(tag: "permission_request", message: "Notification result: \(granted)", t: KotlinThrowable(message: error?.localizedDescription))

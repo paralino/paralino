@@ -10,7 +10,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import app.paralino.core.MR
+import app.paralino.core.resources.moko.*
 import dev.icerock.moko.resources.compose.stringResource
 
 @Composable

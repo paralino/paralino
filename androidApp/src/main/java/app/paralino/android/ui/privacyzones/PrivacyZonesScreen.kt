@@ -17,7 +17,7 @@ import androidx.compose.ui.Modifier
 import app.paralino.android.ui.main.MainAppState
 import app.paralino.android.ui.map.SimpleGenericMapComposable
 import app.paralino.android.ui.navigation.AppScreen
-import app.paralino.core.MR
+import app.paralino.core.resources.moko.*
 import app.paralino.core.presentation.privacyzones.list.PrivacyZonesViewModel
 import app.paralino.core.presentation.share.SharingStartPresentationType
 import app.paralino.core.ui.components.DefaultToolbar
@@ -57,7 +57,7 @@ fun PrivacyZonesScreen(
             contentPadding = PaddingValues(),
             addNewPrivacyZone = {
                 appState.navController.navigate(
-                    AppScreen.MainHome.PrivacyZoneCreate.route(
+                    AppScreen.MainHome.PrivacyZoneCreate(
                         groupId = groupId,
                         zoneId = null
                     )
@@ -65,7 +65,7 @@ fun PrivacyZonesScreen(
             },
             onSkipOnboarding = {
                 appState.navController.navigate(
-                    AppScreen.MainHome.SharingStart.route(
+                    AppScreen.MainHome.SharingStart(
                         groupId = groupId,
                         presentation = if (isOnboarding) {
                             SharingStartPresentationType.GROUP_CREATE_ONBOARDING
@@ -77,14 +77,14 @@ fun PrivacyZonesScreen(
             },
             openPrivacyZoneDetails = { zone ->
                 appState.navController.navigate(
-                    AppScreen.MainHome.PrivacyZoneDetail.route(
+                    AppScreen.MainHome.PrivacyZoneDetail(
                         groupId = zone.groupOrSpaceId.id,
                         zoneId = zone.id
                     )
                 )
             },
             openPaywall = {
-                appState.navController.navigate(AppScreen.MainHome.BillingPaywall.route())
+                appState.navController.navigate(AppScreen.Common.BillingPaywall())
             },
             mapContent = { state ->
                 SimpleGenericMapComposable(

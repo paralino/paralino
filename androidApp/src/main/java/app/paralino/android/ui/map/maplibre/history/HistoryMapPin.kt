@@ -12,20 +12,19 @@ import org.maplibre.compose.expressions.dsl.asBoolean
 import org.maplibre.compose.expressions.dsl.condition
 import org.maplibre.compose.expressions.dsl.const
 import org.maplibre.compose.expressions.dsl.image
-import org.maplibre.compose.expressions.dsl.nil
 import org.maplibre.compose.expressions.dsl.switch
 import org.maplibre.compose.expressions.value.BooleanValue
 import org.maplibre.compose.expressions.value.SymbolAnchor
 import org.maplibre.compose.layers.SymbolLayer
-import org.maplibre.compose.sources.Source
-import org.maplibre.compose.util.ClickResult
+import org.maplibre.compose.sources.VectorSource
+import org.maplibre.compose.interaction.ClickResult
 
 @Composable
 fun MapLibreHistoryMarkerComposable(
-    source: Source,
+    source: VectorSource,
     canTapOnMarker: Boolean,
     zIndex: Float,
-    filter: Expression<BooleanValue> = nil(),
+    filter: Expression<BooleanValue>? = null,
     onClick: (String) -> Unit
 ) {
     SymbolLayer(
@@ -82,10 +81,10 @@ fun MapLibreHistoryMarkerComposable(
 
 @Composable
 fun MapLibreHistoryStartStopMarkerComposable(
-    source: Source,
+    source: VectorSource,
     canTapOnMarker: Boolean,
     zIndex: Float,
-    filter: Expression<BooleanValue> = nil(),
+    filter: Expression<BooleanValue>? = null,
     onClick: (String) -> Unit
 ) {
     SymbolLayer(

@@ -16,7 +16,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -38,7 +37,6 @@ import app.paralino.android.ui.map.maplibre.MapLibreMarkerComposable
 import app.paralino.android.ui.map.maplibre.refocus
 import app.paralino.android.ui.map.maplibre.rememberComposeImageBitmap
 import app.paralino.core.models.location.LocationHistoryPointState
-import app.paralino.core.models.settings.MapsSDKProvider
 import app.paralino.core.presentation.history.LocationHistoryDataViewType
 import app.paralino.core.presentation.history.LocationHistoryScreenUiState
 import app.paralino.core.presentation.history.LocationHistoryUiEvent
@@ -54,8 +52,6 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.jsonPrimitive
 import org.maplibre.compose.camera.CameraMoveReason
-import org.maplibre.compose.camera.CameraState
-import org.maplibre.compose.camera.rememberCameraState
 import org.maplibre.compose.expressions.dsl.Feature.get
 import org.maplibre.compose.expressions.dsl.Feature.has
 import org.maplibre.compose.expressions.dsl.asNumber
@@ -68,14 +64,11 @@ import org.maplibre.compose.expressions.value.LineCap
 import org.maplibre.compose.expressions.value.LineJoin
 import org.maplibre.compose.layers.LineLayer
 import org.maplibre.compose.layers.SymbolLayer
-import org.maplibre.compose.map.GestureOptions
-import org.maplibre.compose.map.MapOptions
-import org.maplibre.compose.map.RenderOptions
+import org.maplibre.compose.map.MapState
 import org.maplibre.compose.sources.GeoJsonData
 import org.maplibre.compose.sources.GeoJsonOptions
-import org.maplibre.compose.sources.SourceDefaults
 import org.maplibre.compose.sources.rememberGeoJsonSource
-import org.maplibre.compose.util.ClickResult
+import org.maplibre.compose.interaction.ClickResult
 import org.maplibre.spatialk.geojson.Feature
 import org.maplibre.spatialk.geojson.FeatureCollection
 import org.maplibre.spatialk.geojson.LineString
@@ -85,12 +78,10 @@ import org.maplibre.spatialk.geojson.toJson
 
 @Composable
 fun rememberMapLibreLocationHistoryMapController(
-    cameraState: CameraState = rememberCameraState(),
+    mapState: MapState,
     uiState: LocationHistoryScreenUiState,
     mapContentPadding: PaddingValues,
-    isSatelliteMode: Boolean,
     isMapLoaded: Boolean,
-    mapsSDKProvider: MapsSDKProvider?,
     animateFirstContent: Boolean,
     onMapTouch: () -> Unit
 ): MapLibreMapUiControlledData {
@@ -126,7 +117,7 @@ fun rememberMapLibreLocationHistoryMapController(
 //                if (!canAnimateMapFocus && shouldAnimateMapFocus) {
 //                    delay(20)
 //                }
-                cameraState.refocus(
+                mapState.refocus(
                     scope = scope,
                     markers = stateData.selectedLocations.mapNotNull {
                         when (it) {
@@ -187,7 +178,7 @@ fun rememberMapLibreLocationHistoryMapController(
                     delay(50)
                 }
 
-                cameraState.refocus(
+                mapState.refocus(
                     scope = scope,
                     markers = listOfNotNull(stateData.selectedMapPinData),
                     ignoreAccuracy = false,
@@ -198,30 +189,20 @@ fun rememberMapLibreLocationHistoryMapController(
             }
     }
 
-    LaunchedEffect(key1 = cameraState) {
-        snapshotFlow { cameraState.isCameraMoving }
+    LaunchedEffect(key1 = mapState) {
+        snapshotFlow { mapState.isCameraMoving }
             .distinctUntilChanged()
-            .filter { it && cameraState.moveReason == CameraMoveReason.GESTURE }
+            .filter { it && mapState.cameraMoveReason == CameraMoveReason.Gesture }
             .collectLatest { onMapTouch() }
     }
 
-    return remember(mapContentPadding, isSatelliteMode, mapsSDKProvider) {
-        derivedStateOf {
-            val options = MapOptions(
-                renderOptions = RenderOptions(),
-                gestureOptions = GestureOptions()
-            )
-
-            MapLibreMapUiControlledData(
-                options = options,
-                isSatelliteMode = isSatelliteMode,
-                cameraState = cameraState,
-                contentPadding = mapContentPadding,
-                mapsSDKProvider = mapsSDKProvider,
-                isCompactAttribution = false
-            )
-        }
-    }.value
+    return remember(mapState, mapContentPadding) {
+        MapLibreMapUiControlledData(
+            mapState = mapState,
+            contentPadding = mapContentPadding,
+            isCompactAttribution = false
+        )
+    }
 }
 
 @Composable
@@ -277,8 +258,7 @@ private fun HistoryPolyline(
                         }
                     )
                 )
-            },
-            options = remember { GeoJsonOptions() }
+            }
         )
 
         LineLayer(
@@ -344,8 +324,7 @@ private fun HistoryStartStopPointPins(
     }
 
     val startStopSource = rememberGeoJsonSource(
-        data = startStopPoints,
-        options = remember { GeoJsonOptions() }
+        data = startStopPoints
     )
     MapLibreHistoryStartStopMarkerComposable(
         source = startStopSource,
@@ -389,8 +368,7 @@ private fun SelectedHistoryPointMarker(
                         GeoJsonData.Features(
                             Point(longitude = lngValue, latitude = latValue)
                         )
-                    },
-                    options = remember { GeoJsonOptions() }
+                    }
                 )
 
                 if (point.shouldShowApproximateCircle) {
@@ -487,20 +465,19 @@ private fun ClusteredHistoryPins(
 ) {
     val clusterSource = rememberGeoJsonSource(
         data = geoData,
-        options = remember {
-            GeoJsonOptions(
-                cluster = true,
-                clusterRadius = 32,
-//                        clusterMinPoints = 1,
-//                        clusterMaxZoom = 24,
-                maxZoom = SourceDefaults.MAX_ZOOM,
+        from = remember {
+            GeoJsonOptions {
+                cluster = true
+                clusterRadius = 32
+//                        clusterMinPoints = 1
+//                        clusterMaxZoom = 24
                 clusterProperties = mapOf(
                     "pointId" to GeoJsonOptions.ClusterPropertyAggregator(
-                        mapper = get("pointId"),
-                        reducer = get("pointId")
+                        mapper = get("pointId").asString(),
+                        reducer = get("pointId").asString()
                     )
                 )
-            )
+            }
         }
     )
 
@@ -559,8 +536,7 @@ private fun UnclusteredHistoryPins(
     onEvent: (LocationHistoryUiEvent) -> Unit,
 ) {
     val source = rememberGeoJsonSource(
-        data = geoData,
-        options = remember { GeoJsonOptions() }
+        data = geoData
     )
     MapLibreHistoryMarkerComposable(
         source = source,

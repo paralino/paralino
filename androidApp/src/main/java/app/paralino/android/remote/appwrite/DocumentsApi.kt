@@ -11,27 +11,11 @@ class DocumentsApi constructor(
     private val remoteModule: AppWriteRemoteModule
 ) : IDocumentsApi {
 
-    override suspend fun createDocument(
-        databaseType: BackendDatabaseType,
-        collectionId: String,
-        docId: String?,
-        data: Any
-    ): Map<String, Any> {
-        return remoteModule.execute {
-            tablesDB.createRow(
-                databaseId = databaseType.id,
-                tableId = collectionId,
-                rowId = docId ?: this.appConfig.resourceIds.uniqueIdPlaceholder,
-                data = data
-            ).parseDocument()
-        }
-    }
-
     override suspend fun updateDocument(
         databaseType: BackendDatabaseType,
         collectionId: String,
         docId: String,
-        data: Any
+        data: Map<String, Any>
     ): Map<String, Any> {
         return remoteModule.execute {
             tablesDB.updateRow(

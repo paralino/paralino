@@ -11,7 +11,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import app.paralino.core.MR
+import app.paralino.core.resources.moko.*
 import app.paralino.core.presentation.common.AlertDialogAction
 import app.paralino.core.presentation.personal_space.settings.PersonalSpaceSettingsEvent
 import app.paralino.core.presentation.personal_space.settings.PersonalSpaceSettingsUiEvent

@@ -29,7 +29,7 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import app.paralino.core.MR
+import app.paralino.core.resources.moko.*
 import app.paralino.core.models.base.BackendResourceIDs
 import app.paralino.core.presentation.settings.SettingsActionItemType
 import app.paralino.core.presentation.settings.general.GeneralInfoScreenStateUiEvent

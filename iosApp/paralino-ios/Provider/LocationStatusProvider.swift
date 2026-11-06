@@ -9,7 +9,7 @@ import shared
 import CoreLocation
 import UIKit
 
-class LocationStatusProvider: ILocationStatusProvider {
+class LocationStatusProvider: ILocationStatusProvider, @unchecked Sendable {
     
     // backgroundRefreshStatus for isUnrestrictedBackgroundPermissionAllowed can only be read on main thread, so we have to cache it
     // and updated on main, which allows creating status from any thread
@@ -53,7 +53,7 @@ class LocationStatusProvider: ILocationStatusProvider {
         // backgroundRefreshStatus can only be read on main thread
         guard Thread.isMainThread else { return }
 
-        let isAllowed = UIApplication.shared.backgroundRefreshStatus != .denied
+        let isAllowed = MainActor.assumeIsolated { UIApplication.shared.backgroundRefreshStatus != .denied }
         guard isAllowed != isBackgroundRefreshAllowed else { return }
         isBackgroundRefreshAllowed = isAllowed
         refreshLocationStatus()

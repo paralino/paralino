@@ -1,19 +1,19 @@
 package app.paralino.core.db.logs
 
-import androidx.room.migration.Migration
+import androidx.room3.migration.Migration
 import androidx.sqlite.SQLiteConnection
 import androidx.sqlite.execSQL
 
 object LogsDatabaseMigrations {
 
     private val MIGRATION_1_2 = object : Migration(1, 2) {
-        override fun migrate(connection: SQLiteConnection) {
+        override suspend fun migrate(connection: SQLiteConnection) {
             connection.execSQL("ALTER TABLE debugLogsEntity ADD COLUMN host TEXT DEFAULT NULL")
         }
     }
 
     private val MIGRATION_2_3 = object : Migration(2, 3) {
-        override fun migrate(connection: SQLiteConnection) {
+        override suspend fun migrate(connection: SQLiteConnection) {
             connection.execSQL("""
                     CREATE TABLE IF NOT EXISTS `access_logs` (
                         `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,

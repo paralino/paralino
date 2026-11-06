@@ -1,6 +1,6 @@
 package app.paralino.core.presentation.groups.edit
 
-import app.paralino.core.MR
+import app.paralino.core.resources.moko.*
 import app.paralino.core.domain.group.GroupCreateUseCase
 import app.paralino.core.domain.user.RefreshEverythingUseCase
 import app.paralino.core.models.CryptoResource

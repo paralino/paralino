@@ -1,6 +1,6 @@
 package app.paralino.core.presentation.personal_space
 
-import app.paralino.core.MR
+import app.paralino.core.resources.moko.*
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.user.DeactivatePersonalDeviceUseCase
 import app.paralino.core.domain.user.DeletePersonalDeviceUseCase

@@ -140,7 +140,7 @@ public class CoreKoinSetup {
 
 }
 
-private var _koin: Koin_coreKoin?
+nonisolated(unsafe) private var _koin: Koin_coreKoin?
 var koin: Koin_coreKoin {
     return _koin!
 }

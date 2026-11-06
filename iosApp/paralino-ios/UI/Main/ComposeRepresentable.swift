@@ -18,8 +18,10 @@ struct ComposeRepresentable: UIViewControllerRepresentable {
     func updateUIViewController(_ uiViewController: UIViewController, context: Context) {}
 }
 
+@MainActor
 class ViewModelFactoryIOS<T: CoreViewModel> : ObservableObject {
-    let vm: T
+    // Read by the nonisolated deinit to clean up the view model.
+    nonisolated(unsafe) let vm: T
     
     init(vm: T) {
         self.vm = vm

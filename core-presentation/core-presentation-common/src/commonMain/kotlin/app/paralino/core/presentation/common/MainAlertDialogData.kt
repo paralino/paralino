@@ -2,7 +2,7 @@ package app.paralino.core.presentation.common
 
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.graphics.Color
-import app.paralino.core.MR
+import app.paralino.core.resources.moko.*
 import app.paralino.core.models.base.GroupOrSpaceId
 import app.paralino.core.models.base.SubscriptionOfferDialogContent
 import app.paralino.core.models.location.UserDeviceModel

@@ -96,7 +96,7 @@ fun GenericSettingsScreen(
                 }
             },
             openPaywall = {
-                appState.navController.navigate(AppScreen.Settings.BillingPaywall.route(type = BillingScreenSourceType.UPGRADE_DEFAULT))
+                appState.navController.navigate(AppScreen.Common.BillingPaywall(type = BillingScreenSourceType.UPGRADE_DEFAULT))
             },
             openNotificationSocketChannelSettings = {
                 context.openNotificationChannelSettings(PushServiceNotificationHandler.channelId)

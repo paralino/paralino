@@ -1,24 +1,23 @@
 package app.paralino.android.ui.login
 
+import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.view.WindowCompat
 import app.paralino.android.ui.main.MainAppState
 import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.core.presentation.login.LoggedOutViewModel
 import app.paralino.core.presentation.login.LoginScreenUiType
 import app.paralino.core.ui.login.WelcomeScreen
-import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.ui.theme.AppTheme
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -27,20 +26,18 @@ fun LoggedOutScreen(
     vm: LoggedOutViewModel = koinViewModel()
 ) {
 
-    val systemUiController = rememberSystemUiController()
-    val defaultColor = MaterialTheme.colors.background
+    val activity = LocalActivity.current
     val darkIconsDefault = !isSystemInDarkTheme()
 
-    DisposableEffect(systemUiController) {
-        systemUiController.setSystemBarsColor(
-            color = AppColors.darkBackground,
-            darkIcons = false
-        )
+    // Edge-to-edge keeps the system bars transparent, so only the icon appearance needs to change
+    DisposableEffect(activity) {
+        val window = activity?.window ?: return@DisposableEffect onDispose {}
+        val insetsController = WindowCompat.getInsetsController(window, window.decorView)
+        insetsController.isAppearanceLightStatusBars = false
+        insetsController.isAppearanceLightNavigationBars = false
         onDispose {
-            systemUiController.setSystemBarsColor(
-                color = defaultColor,
-                darkIcons = darkIconsDefault
-            )
+            insetsController.isAppearanceLightStatusBars = darkIconsDefault
+            insetsController.isAppearanceLightNavigationBars = darkIconsDefault
         }
     }
 
@@ -48,11 +45,11 @@ fun LoggedOutScreen(
         vm = vm,
         paddingValues = WindowInsets.safeDrawing.asPaddingValues(),
         onLoginClick = {
-            appState.navController.navigate(AppScreen.LoggedOut.Login.route(LoginScreenUiType.SIGNUP))
+            appState.navController.navigate(AppScreen.LoggedOut.Login(LoginScreenUiType.SIGNUP))
         },
         onStartClick = {
             appState.navController.navigate(
-                AppScreen.LoggedOut.WelcomeOnboarding.routeSignature
+                AppScreen.LoggedOut.WelcomeOnboarding
             )
         }
     )

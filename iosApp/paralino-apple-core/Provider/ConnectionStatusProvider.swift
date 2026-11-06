@@ -10,7 +10,7 @@ import shared
 import Network
 import CoreTelephony
 
-class ConnectionStatusProvider: IConnectionStatusProvider {
+class ConnectionStatusProvider: IConnectionStatusProvider, @unchecked Sendable {
     
     private var monitor: NWPathMonitor? = nil
     
@@ -26,10 +26,8 @@ class ConnectionStatusProvider: IConnectionStatusProvider {
         monitor?.pathUpdateHandler = { [weak self] update in
             self?.connectionActive = update.status == .satisfied ? true : false
             self?.mobileNetwork = update.isExpensive ? true : false
-            DispatchQueue.main.async { [weak self] in
-                Task {
-                    try? await self?.doInitAndGetStatus(forceCheck: false)
-                }
+            Task { [weak self] in
+                _ = try? await self?.doInitAndGetStatus(forceCheck: false)
             }
         }
         

@@ -69,7 +69,8 @@ class PlaceDetailState: BaseMapObservableObject {
     
     let groupId: String
     let placeId: String
-    let vm: PlaceDetailViewModel
+    // Read by the nonisolated deinit to clean up the view model.
+    nonisolated(unsafe) let vm: PlaceDetailViewModel
     
     init(groupId: String, placeId: String) {
         self.groupId = groupId

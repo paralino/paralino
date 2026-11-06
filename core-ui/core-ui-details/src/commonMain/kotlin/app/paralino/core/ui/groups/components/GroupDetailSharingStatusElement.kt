@@ -16,7 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import app.paralino.core.MR
+import app.paralino.core.resources.moko.*
 import app.paralino.core.presentation.groups.detail.LocationSharingState
 import app.paralino.core.resources.CoreAppIcons
 import app.paralino.core.resources.CoreAppIcons.asPainterResource

@@ -26,7 +26,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
-import app.paralino.core.MR
+import app.paralino.core.resources.moko.*
 import app.paralino.core.presentation.common.MainAlertDialog
 import app.paralino.core.presentation.settings.blocklist.BlockListScreenUiEvent
 import app.paralino.core.presentation.settings.blocklist.BlocklistElementState

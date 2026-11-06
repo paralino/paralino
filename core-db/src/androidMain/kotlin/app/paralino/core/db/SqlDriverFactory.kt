@@ -1,9 +1,8 @@
 package app.paralino.core.db
 
 import android.content.Context
-import androidx.room.Room
-import androidx.room.RoomDatabase
-import androidx.sqlite.driver.AndroidSQLiteDriver
+import androidx.room3.Room
+import androidx.room3.RoomDatabase
 import app.paralino.core.db.logs.AppLogsDatabase
 import app.paralino.core.db.main.AppMainDatabase
 

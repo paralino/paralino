@@ -1,6 +1,6 @@
 package app.paralino.core.models.settings
 
-import app.paralino.core.MR
+import app.paralino.core.resources.moko.*
 
 enum class NotificationGroupingType(val key: String) {
     NONE("none"),

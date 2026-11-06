@@ -47,7 +47,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
-import app.paralino.core.MR
+import app.paralino.core.resources.moko.*
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.presentation.paralinoid.PersonalCodeScreenCodeData
 import app.paralino.core.ui.components.ConditionErrorItem

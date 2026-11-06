@@ -8,7 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import app.paralino.android.ui.main.MainAppState
-import app.paralino.core.MR
+import app.paralino.core.resources.moko.*
 import app.paralino.core.presentation.places.detail.PlaceDetailViewModel
 import app.paralino.core.ui.components.DefaultToolbar
 import app.paralino.core.ui.components.ToolbarButtons

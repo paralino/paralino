@@ -12,9 +12,9 @@ import shared
 
 class BackgroundRefresh {
     
-    static var refreshEverything: RefreshEverythingUseCase = { KoinIOS.Instances.shared.refreshEverything }()
-    static var pushProvider: IPushProviderManager = { KoinIOS.Instances.shared.pushProvider }()
-    static var placeActivityUploadEngine: PlaceActivityUploadEngine = { KoinIOS.Instances.shared.placeActivityUploadEngine }()
+    static var refreshEverything: RefreshEverythingUseCase { KoinIOS.Instances.shared.refreshEverything }
+    static var pushProvider: IPushProviderManager { KoinIOS.Instances.shared.pushProvider }
+    static var placeActivityUploadEngine: PlaceActivityUploadEngine { KoinIOS.Instances.shared.placeActivityUploadEngine }
     
     static func scheduleAppRefresh() {
         let request = BGAppRefreshTaskRequest(identifier: "app.paralino.ios.task.refresh.full")
@@ -40,14 +40,13 @@ class BackgroundRefresh {
             
             placeActivityUploadEngine.syncPendingEventsInBackground()
             
-            DispatchQueue.main.async {
-                Task {
-                    Logr.i(tag:"delegate_tasks", message: "App refresh async task start")
-                    try? await self.refreshEverything.refreshEverything(forceGroupRefresh: false, minimumDelayMillis: 4 * 60 * 60 * 1000)
-                    Logr.i(tag:"delegate_tasks", message: "App refresh task done")
-                    
-                    task.setTaskCompleted(success: true)
-                }
+            nonisolated(unsafe) let task = task
+            Task {
+                Logr.i(tag:"delegate_tasks", message: "App refresh async task start")
+                try? await self.refreshEverything.refreshEverything(forceGroupRefresh: false, minimumDelayMillis: 4 * 60 * 60 * 1000)
+                Logr.i(tag:"delegate_tasks", message: "App refresh task done")
+                
+                task.setTaskCompleted(success: true)
             }
         }
     }

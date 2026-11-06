@@ -3,7 +3,6 @@ package app.paralino.android.ui.map.maplibre
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -19,15 +18,11 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import org.maplibre.compose.camera.CameraMoveReason
-import org.maplibre.compose.camera.CameraState
-import org.maplibre.compose.camera.rememberCameraState
-import org.maplibre.compose.map.GestureOptions
-import org.maplibre.compose.map.MapOptions
-import org.maplibre.compose.map.RenderOptions
+import org.maplibre.compose.map.MapState
 
 @Composable
 fun rememberMapLibreHomeMapController(
-    cameraState: CameraState = rememberCameraState(),
+    mapState: MapState,
     uiState: MapHomeScreenState,
     mapContentPadding: PaddingValues,
     isMapLoaded: Boolean,
@@ -54,7 +49,7 @@ fun rememberMapLibreHomeMapController(
                     if (!canAnimateMapFocus && shouldAnimateMapFocus) {
                         delay(20)
                     }
-                    cameraState.focusOnMap(
+                    mapState.focusOnMap(
                         scope = scope,
                         focusType = it,
                         markers = stateData?.visibleMarkers ?: emptyList(),
@@ -72,7 +67,7 @@ fun rememberMapLibreHomeMapController(
                     if (!canAnimateMapFocus && shouldAnimateMapFocus) {
                         delay(20)
                     }
-                    cameraState.focusOnMap(
+                    mapState.focusOnMap(
                         scope = scope,
                         focusType = it,
                         markers = stateData?.visibleMarkers ?: emptyList(),
@@ -83,29 +78,19 @@ fun rememberMapLibreHomeMapController(
                 }
         }
 
-        LaunchedEffect(key1 = cameraState) {
-            snapshotFlow { cameraState.isCameraMoving }
+        LaunchedEffect(key1 = mapState) {
+            snapshotFlow { mapState.isCameraMoving }
                 .distinctUntilChanged()
-                .filter { it && cameraState.moveReason == CameraMoveReason.GESTURE }
+                .filter { it && mapState.cameraMoveReason == CameraMoveReason.Gesture }
                 .collectLatest { onMapTouch() }
         }
     }
 
-    return remember(mapContentPadding, uiState.isSatelliteModeActive, uiState.androidMapSDKProvider) {
-        derivedStateOf {
-            val options = MapOptions(
-                renderOptions = RenderOptions(),
-                gestureOptions = GestureOptions()
-            )
-
-            MapLibreMapUiControlledData(
-                options = options,
-                isSatelliteMode = uiState.isSatelliteModeActive,
-                cameraState = cameraState,
-                contentPadding = mapContentPadding,
-                mapsSDKProvider = uiState.androidMapSDKProvider,
-                isCompactAttribution = false
-            )
-        }
-    }.value
+    return remember(mapState, mapContentPadding) {
+        MapLibreMapUiControlledData(
+            mapState = mapState,
+            contentPadding = mapContentPadding,
+            isCompactAttribution = false
+        )
+    }
 }

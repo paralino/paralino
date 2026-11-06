@@ -1,6 +1,6 @@
 package app.paralino.core.presentation.share
 
-import app.paralino.core.MR
+import app.paralino.core.resources.moko.*
 import app.paralino.core.domain.location.RegisterDeviceForSharingUseCase
 import app.paralino.core.domain.location.StopSharingLocationUseCase
 import app.paralino.core.domain.location.UserMemberIdUseCase

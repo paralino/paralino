@@ -1,6 +1,6 @@
 package app.paralino.core.presentation.common
 
-import app.paralino.core.MR
+import app.paralino.core.resources.moko.*
 import app.paralino.core.models.base.DeviceType
 import app.paralino.core.provider.current
 import app.paralino.core.utils.ConditionErrorType

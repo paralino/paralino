@@ -1,6 +1,6 @@
 package app.paralino.core.presentation.personal_space
 
-import app.paralino.core.MR
+import app.paralino.core.resources.moko.*
 import app.paralino.core.provider.localizedString
 
 sealed class UserDeviceOrSessionItemState {

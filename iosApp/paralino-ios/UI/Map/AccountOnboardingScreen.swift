@@ -59,10 +59,12 @@ struct AccountOnboardingScreen: View {
     }
 }
 
+@MainActor
 class GroupInitState: ObservableObject {
     
     @Published var groupState: State = .loading
-    let vm: AccountOnboardingViewModel
+    // Read by the nonisolated deinit to clean up the view model.
+    nonisolated(unsafe) let vm: AccountOnboardingViewModel
     
     init() {
         self.vm = KoinIOS.ViewModels.shared.accountOnboardingVM

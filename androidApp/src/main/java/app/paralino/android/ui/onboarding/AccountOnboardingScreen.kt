@@ -30,18 +30,18 @@ fun AccountOnboardingScreen(
         appState = appState,
         vm = vm,
         onCreateGroup = {
-            appState.navController.navigate(AppScreen.MainHome.GroupCreate.route(null))
+            appState.navController.navigate(AppScreen.MainHome.GroupCreate(null))
         },
         openPaywall = {
             appState.navController.navigate(
-                AppScreen.MainHome.BillingPaywall.route(groupId = null, type = it)
+                AppScreen.Common.BillingPaywall(groupId = null, type = it)
             )
         },
-        openPersonalCodes = { appState.navController.navigate(AppScreen.Settings.PersonalCodes.routeSignature) },
+        openPersonalCodes = { appState.navController.navigate(AppScreen.Settings.PersonalCodes) },
         onSharePersonalCode = { context.share(it) },
         openSharingScreen = {
             appState.navController.navigate(
-                AppScreen.MainHome.SharingStart.route(
+                AppScreen.MainHome.SharingStart(
                     groupId = it.id,
                     presentation = SharingStartPresentationType.GROUP_CREATE_ONBOARDING
                 )
@@ -49,7 +49,7 @@ fun AccountOnboardingScreen(
         },
         askNotificationPermission = { notificationPermissionHandler.askNotificationPermission() },
         openGroupJoinWelcome = { groupId ->
-            appState.navController.navigate(AppScreen.MainHome.GroupJoinWelcome.route(groupId))
+            appState.navController.navigate(AppScreen.MainHome.GroupJoinWelcome(groupId))
         },
     )
 }

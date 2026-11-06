@@ -7,7 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import app.paralino.android.ui.main.MainAppState
 import app.paralino.android.ui.navigation.AppScreen
-import app.paralino.core.MR
+import app.paralino.core.resources.moko.*
 import app.paralino.core.presentation.settings.generic.AppSettingsViewModel
 import app.paralino.core.ui.components.DefaultToolbar
 import app.paralino.core.ui.components.ToolbarButtons
@@ -34,29 +34,29 @@ fun AppSettingsScreen(
             appState = appState,
             paddingValues = it,
             onAppThemeClick = {
-                appState.navController.navigate(AppScreen.Settings.AppTheme.routeSignature)
+                appState.navController.navigate(AppScreen.Settings.AppTheme)
             },
             onMeasurementSystemClick = {
-                appState.navController.navigate(AppScreen.Settings.MeasurementSystem.routeSignature)
+                appState.navController.navigate(AppScreen.Settings.MeasurementSystem)
             },
             onNotificationGroupingClick = {
-                appState.navController.navigate(AppScreen.Settings.NotificationGrouping.routeSignature)
+                appState.navController.navigate(AppScreen.Settings.NotificationGrouping)
             },
             onMapInteractionsClick = {
-                appState.navController.navigate(AppScreen.Settings.MapInteractions.routeSignature)
+                appState.navController.navigate(AppScreen.Settings.MapInteractions)
             },
             onNavigationAppClick = {},
             onPlaceSearchSettingsClick = {
-                appState.navController.navigate(AppScreen.Settings.PlaceSearch.routeSignature)
+                appState.navController.navigate(AppScreen.Settings.PlaceSearch)
             },
             onPersonalSpaceSettingsClick = {
-                appState.navController.navigate(AppScreen.Settings.PersonalSpace.routeSignature)
+                appState.navController.navigate(AppScreen.Settings.PersonalSpaceFeature)
             },
             onNotificationSocketSettingsClick = {
-                appState.navController.navigate(AppScreen.Settings.NotificationSocket.routeSignature)
+                appState.navController.navigate(AppScreen.Settings.NotificationSocket)
             },
             onMapSourceSettingsClick = {
-                appState.navController.navigate(AppScreen.Settings.MapsProvider.routeSignature)
+                appState.navController.navigate(AppScreen.Settings.MapsProvider)
             }
         )
     }

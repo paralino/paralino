@@ -4,7 +4,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewModelScope
 import app.paralino.android.provider.IUnifiedPushManager
 import app.paralino.android.provider.UnifiedPushError
-import app.paralino.core.MR
+import app.paralino.core.resources.moko.*
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.logg
 import app.paralino.core.models.AppFlavor

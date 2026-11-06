@@ -8,7 +8,7 @@
 import shared
 import UserNotifications
 
-class NotificationStatusProvider: INotificationStatusProvider {
+class NotificationStatusProvider: INotificationStatusProvider, @unchecked Sendable {
     
     private var hasNotificationPermission: Bool = false
     

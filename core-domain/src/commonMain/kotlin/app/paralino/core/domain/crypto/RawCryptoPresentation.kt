@@ -1,6 +1,6 @@
 package app.paralino.core.domain.crypto
 
-import app.paralino.core.MR
+import app.paralino.core.resources.moko.*
 import app.paralino.core.domain.crypto.user.CryptoUserKeysLocalSource
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.location.history.GetLocationHistoryUseCase

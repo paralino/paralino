@@ -1,6 +1,6 @@
 package app.paralino.core.presentation.settings
 
-import app.paralino.core.MR
+import app.paralino.core.resources.moko.*
 import app.paralino.core.app_rating.AppRatingManager
 import app.paralino.core.app_rating.AppRatingSource
 import app.paralino.core.app_update.IAppUpdateManager

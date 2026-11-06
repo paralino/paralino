@@ -69,7 +69,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import app.paralino.core.MR
+import app.paralino.core.resources.moko.*
 import app.paralino.core.logg
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.location.MemberDeviceOnlineStatusType

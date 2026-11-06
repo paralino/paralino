@@ -9,7 +9,7 @@ import CoreLocation
 import paralino_apple_core
 import shared
 
-class LocationPushService: NSObject, CLLocationPushServiceExtension, CLLocationManagerDelegate {
+class LocationPushService: NSObject, CLLocationPushServiceExtension, CLLocationManagerDelegate, @unchecked Sendable {
     
     private lazy var locationRepo: LocationRepositoryWrapper = { KoinIOS.Instances.shared.locationRepo }()
     private lazy var sharingContractFilter: LocationSharingContractFilter = { KoinIOS.Instances.shared.sharingContractFilter }()
@@ -40,26 +40,24 @@ class LocationPushService: NSObject, CLLocationPushServiceExtension, CLLocationM
         self.locationManager?.desiredAccuracy = kCLLocationAccuracyBest
         self.locationManager?.delegate = self
         
-        DispatchQueue.main.async { [weak self] in
-            Task {
-                let groupId: String?
-                if let directGroupId = directGroupId {
-                    groupId = directGroupId
-                } else {
-                    groupId = try? await self?.locationRepo.getGroupIdFromNotificationId(notificationId: notificationId)
-                }
-                
-                if let groupId = groupId {
-                    Logr.i(tag: "location_service", message: "LSE: Allowing only group \(groupId) for 60 seconds")
-                    self?.sharingContractFilter.setAsAllowedForSeconds(groupOrSpaceId: GroupOrSpaceIdHelper.shared.wrap(id: groupId), seconds: 60)
-                } else {
-                    Logr.i(tag: "location_service", message: "LSE: No new sharing contract filter to add")
-                    self?.sharingContractFilter.clearFilter()
-                }
-                
-                self?.locationRepo.startLocationUploadEngine()
-                self?.handleMainAppHandoff()
+        Task { [weak self] in
+            let groupId: String?
+            if let directGroupId = directGroupId {
+                groupId = directGroupId
+            } else {
+                groupId = try? await self?.locationRepo.getGroupIdFromNotificationId(notificationId: notificationId)
             }
+            
+            if let groupId = groupId {
+                Logr.i(tag: "location_service", message: "LSE: Allowing only group \(groupId) for 60 seconds")
+                self?.sharingContractFilter.setAsAllowedForSeconds(groupOrSpaceId: GroupOrSpaceIdHelper.shared.wrap(id: groupId), seconds: 60)
+            } else {
+                Logr.i(tag: "location_service", message: "LSE: No new sharing contract filter to add")
+                self?.sharingContractFilter.clearFilter()
+            }
+            
+            self?.locationRepo.startLocationUploadEngine()
+            self?.handleMainAppHandoff()
         }
     }
     
@@ -68,12 +66,10 @@ class LocationPushService: NSObject, CLLocationPushServiceExtension, CLLocationM
         LocationLiveHandoffCoordinator.shared.handleLocationPushExtension(
             startLseLocationManager: { [weak self] in
                 guard let self = self else { return }
-                DispatchQueue.main.async {
-                    Task {
-                        try? await Task.sleep(nanoseconds: 500 * 1_000_000)
-                        Logr.i(tag: "location_service", message: "Start location updates")
-                        self.locationManager?.startUpdatingLocation()
-                    }
+                Task {
+                    try? await Task.sleep(nanoseconds: 500 * 1_000_000)
+                    Logr.i(tag: "location_service", message: "Start location updates")
+                    self.locationManager?.startUpdatingLocation()
                 }
             },
             completion: { [weak self] in

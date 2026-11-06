@@ -34,7 +34,7 @@ import androidx.compose.ui.draw.dropShadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.unit.dp
-import app.paralino.core.MR
+import app.paralino.core.resources.moko.*
 import app.paralino.core.models.Payload
 import app.paralino.core.models.PlaceZoneExpirationStatus
 import app.paralino.core.models.PlaceZoneType

@@ -1,6 +1,6 @@
 package app.paralino.core.presentation.privacyzones.detail
 
-import app.paralino.core.MR
+import app.paralino.core.resources.moko.*
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.privacyzone.DeletePrivacyZoneUseCase
 import app.paralino.core.domain.privacyzone.GetPrivacyZonesUseCase

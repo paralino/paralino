@@ -1,7 +1,7 @@
 package app.paralino.core.presentation.settings.generic.maps
 
 import androidx.compose.ui.unit.dp
-import app.paralino.core.MR
+import app.paralino.core.resources.moko.*
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.models.settings.MapInteractionsType
 import app.paralino.core.presentation.settings.generic.BaseGenericSettingViewModel

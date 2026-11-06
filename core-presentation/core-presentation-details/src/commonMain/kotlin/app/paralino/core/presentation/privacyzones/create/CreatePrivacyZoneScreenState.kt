@@ -2,7 +2,7 @@ package app.paralino.core.presentation.privacyzones.create
 
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.input.TextFieldValue
-import app.paralino.core.MR
+import app.paralino.core.resources.moko.*
 import app.paralino.core.models.PlaceZoneExpirationStatus
 import app.paralino.core.models.base.DeviceType
 import app.paralino.core.models.base.GroupOrSpaceId

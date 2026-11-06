@@ -11,6 +11,7 @@ import SwiftUI
 import shared
 import paralino_apple_core
 
+@MainActor
 class BaseMapObservableObject : ObservableObject {
     
     @Published var markers: [MapAnnotatedItem] = []

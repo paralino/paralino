@@ -6,7 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import app.paralino.android.ui.main.MainAppState
 import app.paralino.android.ui.navigation.AppScreen
-import app.paralino.core.MR
+import app.paralino.core.resources.moko.*
 import app.paralino.core.presentation.groups.settings.BatteryNotificationsViewModel
 import app.paralino.core.ui.components.DefaultToolbar
 import app.paralino.core.ui.components.ToolbarButtons
@@ -37,7 +37,7 @@ fun BatteryNotificationsScreen(
             contentPadding = it,
             openPaywall = {
                 appState.navController.navigate(
-                    AppScreen.MainHome.BillingPaywall.route(
+                    AppScreen.Common.BillingPaywall(
                         groupId = groupId,
                         type = BillingScreenSourceType.UPGRADE_DEFAULT
                     )

@@ -9,7 +9,7 @@ import CoreLocation
 import Foundation
 import shared
 
-public final class LocationLiveHandoffCoordinator {
+public final class LocationLiveHandoffCoordinator: @unchecked Sendable {
     
     public static let shared = LocationLiveHandoffCoordinator()
     
@@ -74,8 +74,8 @@ public final class LocationLiveHandoffCoordinator {
     }
     
     public func handleLocationPushExtension(
-        startLseLocationManager: @escaping () -> Void,
-        completion: @escaping () -> Void
+        startLseLocationManager: @escaping @Sendable () -> Void,
+        completion: @escaping @Sendable () -> Void
     ) {
         Self.recordLSEHandoffPing()
         Self.postHandoffNotification()

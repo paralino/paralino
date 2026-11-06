@@ -62,7 +62,8 @@ struct PlaceCreateScreen: View {
 
 class PlaceCreateState: BaseMapObservableObject {
     
-    let vm: CreatePlaceViewModel
+    // Read by the nonisolated deinit to clean up the view model.
+    nonisolated(unsafe) let vm: CreatePlaceViewModel
     @Published var isNewPlace: Bool? = nil
     @Published var screenTitle: String = ""
     

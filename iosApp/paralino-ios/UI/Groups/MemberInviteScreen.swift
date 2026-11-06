@@ -65,12 +65,14 @@ struct MemberInviteScreen: View {
     }
 }
 
+@MainActor
 class MemberInviteState: ObservableObject {
     
     let groupId: String?
     let code: String?
     let isOnboarding: Bool
-    let vm: MemberInviteViewModel
+    // Read by the nonisolated deinit to clean up the view model.
+    nonisolated(unsafe) let vm: MemberInviteViewModel
     
     init (groupId: String?, code: String?, isOnboarding: Bool) {
         self.groupId = groupId

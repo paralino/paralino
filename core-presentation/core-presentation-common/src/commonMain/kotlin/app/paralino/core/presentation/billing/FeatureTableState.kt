@@ -2,7 +2,7 @@ package app.paralino.core.presentation.billing
 
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import app.paralino.core.MR
+import app.paralino.core.resources.moko.*
 import app.paralino.core.models.base.DeviceType
 import app.paralino.core.models.base.PlanType
 import app.paralino.core.provider.current

@@ -32,9 +32,11 @@ struct ChangePasswordScreen: View {
     }
 }
 
+@MainActor
 class ChangePasswordState: ObservableObject {
     
-    let vm: ChangePasswordViewModel
+    // Read by the nonisolated deinit to clean up the view model.
+    nonisolated(unsafe) let vm: ChangePasswordViewModel
     @Published var canNavigateBack: Bool = true
     
     init () {

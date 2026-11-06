@@ -11,7 +11,7 @@ import androidx.compose.ui.platform.LocalContext
 import app.paralino.android.notification.rememberNotificationsPermissionHandler
 import app.paralino.android.ui.main.MainAppState
 import app.paralino.android.utils.extensions.share
-import app.paralino.core.MR
+import app.paralino.core.resources.moko.*
 import app.paralino.core.presentation.paralinoid.PersonalCodeViewModel
 import app.paralino.core.ui.components.DefaultToolbar
 import app.paralino.core.ui.components.ToolbarButtons

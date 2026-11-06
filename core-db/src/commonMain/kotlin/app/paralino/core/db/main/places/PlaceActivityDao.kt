@@ -1,6 +1,6 @@
 package app.paralino.core.db.main.places
 
-import androidx.room.*
+import androidx.room3.*
 
 @Dao
 interface PlaceActivityDao {

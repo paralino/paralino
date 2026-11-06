@@ -11,7 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import app.paralino.core.MR
+import app.paralino.core.resources.moko.*
 import app.paralino.core.resources.CoreAppIcons
 import app.paralino.core.resources.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.NoticeInfoChip

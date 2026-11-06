@@ -1,6 +1,6 @@
 package app.paralino.core.presentation.history
 
-import app.paralino.core.MR
+import app.paralino.core.resources.moko.*
 import app.paralino.core.logg
 import app.paralino.core.models.CryptoResource
 import app.paralino.core.models.data

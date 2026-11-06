@@ -36,7 +36,7 @@ fun PaywallScreen(
         when (type) {
             BillingScreenSourceType.PERSONAL_SPACE_ONBOARDING -> {
                 appState.navController.popBackStack(
-                    route = AppScreen.MainHome.MainMap.routeSignature,
+                    popUpTo = AppScreen.MainHome.MainMap::class,
                     inclusive = false
                 )
             }
@@ -44,15 +44,12 @@ fun PaywallScreen(
             BillingScreenSourceType.GROUP_ONBOARDING,
             BillingScreenSourceType.FREE_PLAN_NEW_GROUP_MEMBER -> {
                 if (groupId.isNullOrBlank()) {
-                    appState.navController.navigate(AppScreen.MainHome.MainMap.routeSignature)
+                    appState.navController.navigate(AppScreen.MainHome.MainMap())
                 } else {
                     appState.navController.navigate(
-                        AppScreen.MainHome.GroupDetails.route(groupId = groupId)
-                    ) {
-                        this.popUpTo(route = AppScreen.MainHome.MainMap.routeSignature) {
-                            this.inclusive = false
-                        }
-                    }
+                        AppScreen.MainHome.GroupDetails(groupId = groupId),
+                        popUpTo = AppScreen.MainHome.MainMap::class
+                    )
                 }
             }
 
@@ -124,7 +121,7 @@ fun PaywallScreen(
             }
         },
         openLicenceScreen = {
-            appState.navController.navigate(AppScreen.Settings.LicenceCode.routeSignature)
+            appState.navController.navigate(AppScreen.Settings.LicenceCode)
         },
         openBillingStore = {
             uriHandler.openUri(BackendResourceIDs.subscriptionUrlGooglePlay)

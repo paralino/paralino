@@ -5,7 +5,7 @@ plugins {
     alias(libs.plugins.android.multiplatformLibrary)
     alias(libs.plugins.moko.resources)
     alias(libs.plugins.ksp)
-    alias(libs.plugins.androidx.room)
+    alias(libs.plugins.androidx.room3)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.compose.multiplatform)
     alias(libs.plugins.compose.compiler)
@@ -36,7 +36,7 @@ kotlin {
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.multiplatform.settings.coroutines)
             implementation(libs.multiplatform.settings)
-            implementation(libs.androidx.room.runtime)
+            implementation(libs.androidx.room3.runtime)
             implementation(libs.sqlite.bundled)
             implementation(project(":core-base"))
         }
@@ -51,11 +51,18 @@ kotlin {
 }
 
 dependencies {
-    add("kspAndroid", libs.androidx.room.compiler)
-    add("kspIosSimulatorArm64", libs.androidx.room.compiler)
-    add("kspIosArm64", libs.androidx.room.compiler)
+    add("kspAndroid", libs.androidx.room3.compiler)
+    add("kspIosSimulatorArm64", libs.androidx.room3.compiler)
+    add("kspIosArm64", libs.androidx.room3.compiler)
 }
 
-room {
+room3 {
     schemaDirectory("$projectDir/schemas")
+}
+
+ksp {
+    // Fix for JVM 64KB method limit since room3 uses suspend functions everywhere,
+    // and it can throw Method to Large errors
+    // Issue: https://issuetracker.google.com/issues/493708172
+    arg("room.validationSplitSize", "100") // default is 300
 }
