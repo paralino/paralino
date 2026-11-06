@@ -8,17 +8,14 @@ import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
 import org.unifiedpush.android.connector.UnifiedPush
 import kotlin.time.Duration.Companion.days
-import kotlin.time.Instant
 
 class UnifiedPushManager(
     private val appClass: AppClass,
     private val appPrefs: AppPrefs
 ) : IUnifiedPushManager {
 
-    private val _refreshTime = MutableStateFlow<Instant?>(null)
     private val _errorState = MutableStateFlow<UnifiedPushError?>(null)
     override val errorState: StateFlow<UnifiedPushError?> = _errorState.asStateFlow()
 
@@ -33,7 +30,7 @@ class UnifiedPushManager(
             appPrefs.selectedUnifiedPushDistributor = distributor
             UnifiedPush.saveDistributor(context = appClass, distributor = distributor)
             UnifiedPush.register(context = appClass, messageForDistributor = "Paralino")
-            _refreshTime.update { nowUTC() }
+            appPrefs.unifiedPushRegistrationTime = nowUTC()
             return true
         } catch (e: Exception) {
             logg.tag("push_notifications").i("Error registering distributor: ${e.message}")
@@ -46,6 +43,7 @@ class UnifiedPushManager(
         try {
             logg.tag("push_notifications").i("Deregister unifiedPush distributor ${appPrefs.selectedUnifiedPushDistributor}")
             appPrefs.selectedUnifiedPushDistributor = null
+            appPrefs.unifiedPushRegistrationTime = null
             UnifiedPush.unregister(context = appClass)
         } catch (e: Exception) {
             logg.tag("push_notifications").i("Error unregistering distributor: ${e.message}")
@@ -59,9 +57,8 @@ class UnifiedPushManager(
             val savedDistributor = appPrefs.selectedUnifiedPushDistributor
             logg.tag("push_notifications").i("Refresh unifiedPush distributor, current: ${currentDistributor}, saved: $savedDistributor")
             if (currentDistributor == savedDistributor && !savedDistributor.isNullOrBlank()) {
-                if (_refreshTime.value?.isOlderThan(2.days) != false) {
+                if (appPrefs.unifiedPushRegistrationTime?.isOlderThan(2.days) != false) {
                     logg.tag("push_notifications").i("Distributors match, refresh registration")
-                    _refreshTime.update { nowUTC() }
                     registerApp(distributor = savedDistributor)
                 } else {
                     logg.tag("push_notifications").i("Distributors match, no need to refresh")

@@ -132,6 +132,7 @@ class AppPrefs(
         const val keySelectedPushProvider = "prefs.device.pushProvider"
         const val keyUnifiedPushEndpointConfigUnsynced = "prefs.device.unifiedPushEndpointConfig.unsynced"
         const val keyUnifiedPushEndpointConfigSynced = "prefs.device.unifiedPushEndpointConfig.synced"
+        const val keyUnifiedPushRegistrationTime = "prefs.device.unifiedPushRegistrationTime"
         const val keyiOSLastLSEHandoffPingTime = "prefs.device.iOSLastLSEHandoffPingTime"
         const val keyiOSLastMainAppHeartbeatTime = "prefs.device.iOSLastMainAppHeartbeatTime"
     }
@@ -312,6 +313,16 @@ class AppPrefs(
                 provider.userSettings.remove(keyUnifiedPushEndpointConfigSynced)
             } else {
                 provider.userSettings.putString(keyUnifiedPushEndpointConfigSynced, value)
+            }
+        }
+
+    var unifiedPushRegistrationTime: Instant?
+        get() = provider.userSettings.getString(keyUnifiedPushRegistrationTime, "").isoWithOffsetToInstant()
+        set(value) {
+            if (value != null) {
+                provider.userSettings.putString(keyUnifiedPushRegistrationTime, value.toString())
+            } else {
+                provider.userSettings.remove(keyUnifiedPushRegistrationTime)
             }
         }
 
