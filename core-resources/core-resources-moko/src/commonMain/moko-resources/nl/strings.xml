@@ -1093,6 +1093,9 @@
     <string name="setting_notificationSocket_connectionType_periodic3_info">Meldingen worden periodiek elke paar uur ververst.</string>
     <string name="setting_notificationSocket_connectionType_periodic3_tag">Batterijgebruik: Laag</string>
     <string name="setting_notificationSocket_registration_error_message">Verbinding kon niet worden bevestigd, probeer het alstublieft opnieuw!</string>
+    <string name="setting_notificationSocket_persistRegistration_title">Permanent eindpunt</string>
+    <string name="setting_notificationSocket_persistRegistration_info_off">UnifiedPush-registratie en -eindpunt worden om de paar dagen vernieuwd, zoals aanbevolen door distributeurs.</string>
+    <string name="setting_notificationSocket_persistRegistration_info_on">UnifiedPush-registratie en -eindpunt veranderen niet. Dit kan handig zijn als u uw abonnementen wilt ordenen, maar u moet de registratie handmatig opnieuw aanmaken als uw UnifiedPush-distributeur deze verwijdert.</string>
     <string name="notifications_socketService_message_lastSync">Laatste update: %s</string>
     <string name="licence_screen_title">Licentiesleutel</string>
     <string name="licence_screen_info">Als u een licentiesleutel heeft, voer deze hier in om een premium abonnement aan uw Paralino-account te koppelen.</string>

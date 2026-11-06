@@ -1093,6 +1093,9 @@
     <string name="setting_notificationSocket_connectionType_periodic3_info">Οι ειδοποιήσεις ανανεώνονται περιοδικά κάθε λίγες ώρες</string>
     <string name="setting_notificationSocket_connectionType_periodic3_tag">Χρήση Μπαταρίας: Χαμηλή</string>
     <string name="setting_notificationSocket_registration_error_message">Η σύνδεση δεν μπόρεσε να επιβεβαιωθεί, παρακαλώ δοκιμάστε ξανά!</string>
+    <string name="setting_notificationSocket_persistRegistration_title">Μόνιμο τελικό σημείο</string>
+    <string name="setting_notificationSocket_persistRegistration_info_off">Η εγγραφή και το τελικό σημείο UnifiedPush θα ανανεώνονται κάθε λίγες ημέρες, όπως συνιστούν οι διανομείς.</string>
+    <string name="setting_notificationSocket_persistRegistration_info_on">Η εγγραφή και το τελικό σημείο UnifiedPush δεν θα αλλάζουν. Αυτό μπορεί να είναι χρήσιμο αν χρειάζεται να οργανώσετε τις συνδρομές σας, αλλά θα πρέπει να δημιουργήσετε ξανά την εγγραφή χειροκίνητα αν ο διανομέας UnifiedPush την αφαιρέσει.</string>
     <string name="notifications_socketService_message_lastSync">Τελευταία ενημέρωση: %s</string>
     <string name="licence_screen_title">Κλειδί άδειας</string>
     <string name="licence_screen_info">Εάν έχετε ένα κλειδί άδειας, εισάγετέ το εδώ για να συνδέσετε ένα premium σχέδιο με τον λογαριασμό σας Paralino.</string>

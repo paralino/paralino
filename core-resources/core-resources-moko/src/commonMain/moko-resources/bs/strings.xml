@@ -1093,6 +1093,9 @@
     <string name="setting_notificationSocket_connectionType_periodic3_info">Obavještenja se periodično osvježavaju svakih nekoliko sati.</string>
     <string name="setting_notificationSocket_connectionType_periodic3_tag">Potrošnja baterije: Niska</string>
     <string name="setting_notificationSocket_registration_error_message">Veza nije mogla biti potvrđena, molimo pokušajte ponovo!</string>
+    <string name="setting_notificationSocket_persistRegistration_title">Trajna krajnja tačka</string>
+    <string name="setting_notificationSocket_persistRegistration_info_off">UnifiedPush registracija i krajnja tačka obnavljaće se svakih nekoliko dana, kako preporučuju distributeri.</string>
+    <string name="setting_notificationSocket_persistRegistration_info_on">UnifiedPush registracija i krajnja tačka neće se mijenjati. Ovo može biti korisno ako trebate organizovati svoje pretplate, ali ćete morati ručno ponovo kreirati registraciju ako je vaš UnifiedPush distributer ukloni.</string>
     <string name="notifications_socketService_message_lastSync">Posljednje ažuriranje: %s</string>
     <string name="licence_screen_title">Ključ licence</string>
     <string name="licence_screen_info">Ako imate ključ licence, unesite ga ovdje da povežete premium plan sa vašim Paralino računom.</string>

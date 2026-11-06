@@ -1093,6 +1093,9 @@
     <string name="setting_notificationSocket_connectionType_periodic3_info">Les notificacions es refresquen periòdicament cada pocs hores.</string>
     <string name="setting_notificationSocket_connectionType_periodic3_tag">Consum de bateria: baix</string>
     <string name="setting_notificationSocket_registration_error_message">La connexió no es va poder confirmar, se si us plau, torneu-ho a intentar!</string>
+    <string name="setting_notificationSocket_persistRegistration_title">Endpoint permanent</string>
+    <string name="setting_notificationSocket_persistRegistration_info_off">El registre i l\'endpoint d\'UnifiedPush es renovaran cada pocs dies, tal com recomanen els distribuïdors.</string>
+    <string name="setting_notificationSocket_persistRegistration_info_on">El registre i l\'endpoint d\'UnifiedPush no canviaran. Pot ser útil si necessites organitzar les teves subscripcions, però hauràs de tornar a crear el registre manualment si el teu distribuïdor d\'UnifiedPush l\'elimina.</string>
     <string name="notifications_socketService_message_lastSync">Última actualització: %s</string>
     <string name="licence_screen_title">Codi de llicència</string>
     <string name="licence_screen_info">Si teniu un codi de llicència, entreu-lo aquí per connectar un pla premium amb el vostre compte de Paralino.</string>

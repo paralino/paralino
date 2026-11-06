@@ -1093,6 +1093,9 @@
     <string name="setting_notificationSocket_connectionType_periodic3_info">Ilmoituksia päivitetään aikavälein joka muutama tunti</string>
     <string name="setting_notificationSocket_connectionType_periodic3_tag">Akun käyttö: Matala</string>
     <string name="setting_notificationSocket_registration_error_message">Yhteyttä ei voitu vahvistaa, yritä uudelleen!</string>
+    <string name="setting_notificationSocket_persistRegistration_title">Pysyvä päätepiste</string>
+    <string name="setting_notificationSocket_persistRegistration_info_off">UnifiedPush-rekisteröinti ja -päätepiste uusitaan muutaman päivän välein jakelijoiden suosituksen mukaisesti.</string>
+    <string name="setting_notificationSocket_persistRegistration_info_on">UnifiedPush-rekisteröinti ja -päätepiste eivät muutu. Tästä voi olla hyötyä, jos haluat järjestellä tilauksiasi, mutta sinun on luotava rekisteröinti uudelleen manuaalisesti, jos UnifiedPush-jakelijasi poistaa sen.</string>
     <string name="notifications_socketService_message_lastSync">Viimeisin päivitys: %s</string>
     <string name="licence_screen_title">Lisenssiavain</string>
     <string name="licence_screen_info">Jos sinulla on lisenssiavain, syötä se tänne yhdistääksesi premium-suunnitelman Paralino-tiliisi.</string>

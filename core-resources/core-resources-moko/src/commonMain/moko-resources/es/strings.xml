@@ -1093,6 +1093,9 @@
     <string name="setting_notificationSocket_connectionType_periodic3_info">Las notificaciones se actualizan periódicamente cada pocas horas.</string>
     <string name="setting_notificationSocket_connectionType_periodic3_tag">Uso de batería: Bajo</string>
     <string name="setting_notificationSocket_registration_error_message">¡No se pudo confirmar la conexión, intente nuevamente!</string>
+    <string name="setting_notificationSocket_persistRegistration_title">Endpoint permanente</string>
+    <string name="setting_notificationSocket_persistRegistration_info_off">El registro y el endpoint de UnifiedPush se renovarán cada pocos días, tal como recomiendan los distribuidores.</string>
+    <string name="setting_notificationSocket_persistRegistration_info_on">El registro y el endpoint de UnifiedPush no cambiarán. Puede ser útil si necesita organizar sus suscripciones, pero tendrá que volver a crear el registro manualmente si su distribuidor de UnifiedPush lo elimina.</string>
     <string name="notifications_socketService_message_lastSync">Última actualización: %s</string>
     <string name="licence_screen_title">Clave de licencia</string>
     <string name="licence_screen_info">Si tiene una clave de licencia, ingrésela aquí para conectar un plan premium con su cuenta de Paralino.</string>

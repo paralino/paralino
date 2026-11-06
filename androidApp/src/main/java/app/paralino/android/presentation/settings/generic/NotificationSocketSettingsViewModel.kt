@@ -211,6 +211,28 @@ class NotificationSocketSettingsViewModel(
                 )
             )
 
+            if (!selectedDistributor.isNullOrBlank()) {
+                val isRegistrationPersisted = appPrefs.isUnifiedPushRegistrationPersisted
+                items.add(GenericSettingListItem.Spacer(20.dp, keyId = "persist_registration_space"))
+                items.add(
+                    GenericSettingListItem.Switch(
+                        key = "switchPersistUnifiedPushRegistration",
+                        keyId = "switchPersistUnifiedPushRegistration",
+                        title = MR.strings.setting_notificationSocket_persistRegistration_title.localizedString(),
+                        description = if (isRegistrationPersisted) {
+                            MR.strings.setting_notificationSocket_persistRegistration_info_on.localizedString()
+                        } else {
+                            MR.strings.setting_notificationSocket_persistRegistration_info_off.localizedString()
+                        },
+                        icon = CoreAppIcons.Key,
+                        isChecked = isRegistrationPersisted,
+                        isEnabled = true,
+                        isLoading = false,
+                        isVisible = true
+                    )
+                )
+            }
+
             items.add(GenericSettingListItem.Spacer(20.dp, keyId = "provider_space"))
         }
 
@@ -375,6 +397,10 @@ class NotificationSocketSettingsViewModel(
                 when (event.switch.keyId) {
                     "switchNotificationSocket" -> {
                         toggleSocketSwitch(switch = event.switch)
+                    }
+                    "switchPersistUnifiedPushRegistration" -> {
+                        appPrefs.isUnifiedPushRegistrationPersisted = !event.switch.isChecked
+                        _uiState.update { createInitialState() }
                     }
                 }
             }

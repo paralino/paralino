@@ -1093,6 +1093,9 @@
     <string name="setting_notificationSocket_connectionType_periodic3_info">Notifikácie sa pravidelne obnovujú každých niekoľko hodín</string>
     <string name="setting_notificationSocket_connectionType_periodic3_tag">Spotreba batérie: Nízka</string>
     <string name="setting_notificationSocket_registration_error_message">Pripojenie sa nedalo potvrdiť, prosím skúste to znova!</string>
+    <string name="setting_notificationSocket_persistRegistration_title">Trvalý koncový bod</string>
+    <string name="setting_notificationSocket_persistRegistration_info_off">Registrácia a koncový bod UnifiedPush sa budú obnovovať každých niekoľko dní, ako odporúčajú distribútori.</string>
+    <string name="setting_notificationSocket_persistRegistration_info_on">Registrácia a koncový bod UnifiedPush sa nebudú meniť. Môže to byť užitočné, ak potrebujete usporiadať svoje odbery, ale ak registráciu váš distribútor UnifiedPush odstráni, budete ju musieť manuálne vytvoriť znova.</string>
     <string name="notifications_socketService_message_lastSync">Posledná aktualizácia: %s</string>
     <string name="licence_screen_title">Licenčný kľúč</string>
     <string name="licence_screen_info">Ak máte licenčný kľúč, zadajte ho sem, aby ste sa pripojili k prémiovému plánu so svojím účtom Paralino.</string>

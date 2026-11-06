@@ -57,7 +57,9 @@ class UnifiedPushManager(
             val savedDistributor = appPrefs.selectedUnifiedPushDistributor
             logg.tag("push_notifications").i("Refresh unifiedPush distributor, current: ${currentDistributor}, saved: $savedDistributor")
             if (currentDistributor == savedDistributor && !savedDistributor.isNullOrBlank()) {
-                if (appPrefs.unifiedPushRegistrationTime?.isOlderThan(2.days) != false) {
+                if (appPrefs.isUnifiedPushRegistrationPersisted) {
+                    logg.tag("push_notifications").i("Distributors match, registration is persisted, skip refresh")
+                } else if (appPrefs.unifiedPushRegistrationTime?.isOlderThan(2.days) != false) {
                     logg.tag("push_notifications").i("Distributors match, refresh registration")
                     registerApp(distributor = savedDistributor)
                 } else {

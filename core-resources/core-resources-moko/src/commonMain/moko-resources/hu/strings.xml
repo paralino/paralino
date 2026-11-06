@@ -1093,6 +1093,9 @@
     <string name="setting_notificationSocket_connectionType_periodic3_info">Az értesítések időszakosan frissülnek minden néhány órában.</string>
     <string name="setting_notificationSocket_connectionType_periodic3_tag">Akkumulátor Használat: Alacsony</string>
     <string name="setting_notificationSocket_registration_error_message">A kapcsolat nem megerősíthető, kérjük, próbálja újra!</string>
+    <string name="setting_notificationSocket_persistRegistration_title">Állandó végpont</string>
+    <string name="setting_notificationSocket_persistRegistration_info_off">Az UnifiedPush regisztráció és végpont néhány naponta megújul, ahogy a terjesztők javasolják.</string>
+    <string name="setting_notificationSocket_persistRegistration_info_on">Az UnifiedPush regisztráció és végpont nem változik. Ez hasznos lehet, ha rendszereznie kell a feliratkozásait, de ha az UnifiedPush terjesztő eltávolítja a regisztrációt, azt manuálisan újra létre kell hoznia.</string>
     <string name="notifications_socketService_message_lastSync">Utolsó frissítés: %s</string>
     <string name="licence_screen_title">Licenckulcs</string>
     <string name="licence_screen_info">Ha rendelkezik licenckulccsal, itt adhatja meg, hogy prémium tervet kapcsoljon a Paralino fiókjához.</string>

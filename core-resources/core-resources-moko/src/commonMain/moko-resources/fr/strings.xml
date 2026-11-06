@@ -1093,6 +1093,9 @@
     <string name="setting_notificationSocket_connectionType_periodic3_info">Les notifications sont actualisées périodiquement toutes les quelques heures.</string>
     <string name="setting_notificationSocket_connectionType_periodic3_tag">Utilisation de la batterie : Faible</string>
     <string name="setting_notificationSocket_registration_error_message">La connexion n\'a pas pu être confirmée, veuillez réessayer !</string>
+    <string name="setting_notificationSocket_persistRegistration_title">Point de terminaison permanent</string>
+    <string name="setting_notificationSocket_persistRegistration_info_off">L\'enregistrement et le point de terminaison UnifiedPush seront renouvelés tous les deux ou trois jours, comme le recommandent les distributeurs.</string>
+    <string name="setting_notificationSocket_persistRegistration_info_on">L\'enregistrement et le point de terminaison UnifiedPush ne changeront pas. Cela peut être utile si vous devez organiser vos abonnements, mais vous devrez recréer manuellement l\'enregistrement si votre distributeur UnifiedPush le supprime.</string>
     <string name="notifications_socketService_message_lastSync">Dernière mise à jour : %s</string>
     <string name="licence_screen_title">Clé de licence</string>
     <string name="licence_screen_info">Si vous avez une clé de licence, saisissez-la ici pour connecter un plan premium à votre compte Paralino.</string>

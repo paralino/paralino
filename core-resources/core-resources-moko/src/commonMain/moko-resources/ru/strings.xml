@@ -1093,6 +1093,9 @@
     <string name="setting_notificationSocket_connectionType_periodic3_info">Уведомления обновляются периодически каждые несколько часов.</string>
     <string name="setting_notificationSocket_connectionType_periodic3_tag">Использование батареи: низкое</string>
     <string name="setting_notificationSocket_registration_error_message">Подключение не удалось подтвердить, пожалуйста, попробуйте еще раз!</string>
+    <string name="setting_notificationSocket_persistRegistration_title">Постоянная конечная точка</string>
+    <string name="setting_notificationSocket_persistRegistration_info_off">Регистрация и конечная точка UnifiedPush будут обновляться каждые несколько дней, как рекомендуют дистрибьюторы.</string>
+    <string name="setting_notificationSocket_persistRegistration_info_on">Регистрация и конечная точка UnifiedPush не будут меняться. Это может быть полезно, если вам нужно упорядочить подписки, но вам придётся вручную создать регистрацию заново, если ваш дистрибьютор UnifiedPush удалит её.</string>
     <string name="notifications_socketService_message_lastSync">Последнее обновление: %s</string>
     <string name="licence_screen_title">Ключ лицензии</string>
     <string name="licence_screen_info">Если у вас есть ключ лицензии, введите его здесь, чтобы подключить премиум-план к вашей учетной записи Paralino.</string>

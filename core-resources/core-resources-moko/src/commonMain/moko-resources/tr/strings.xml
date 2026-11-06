@@ -1093,6 +1093,9 @@
     <string name="setting_notificationSocket_connectionType_periodic3_info">Bildirimler periyodik olarak her birkaç saatte bir yenilenmektedir.</string>
     <string name="setting_notificationSocket_connectionType_periodic3_tag">Pil Kullanımı: Düşük</string>
     <string name="setting_notificationSocket_registration_error_message">Bağlantı onaylanamadı, lütfen tekrar deneyin!</string>
+    <string name="setting_notificationSocket_persistRegistration_title">Kalıcı uç nokta</string>
+    <string name="setting_notificationSocket_persistRegistration_info_off">UnifiedPush kaydı ve uç noktası, dağıtıcıların önerdiği şekilde birkaç günde bir yenilenir.</string>
+    <string name="setting_notificationSocket_persistRegistration_info_on">UnifiedPush kaydı ve uç noktası değişmez. Aboneliklerinizi düzenlemeniz gerekiyorsa faydalı olabilir, ancak UnifiedPush dağıtıcınız kaydı kaldırırsa kaydı manuel olarak yeniden oluşturmanız gerekir.</string>
     <string name="notifications_socketService_message_lastSync">Son güncelleme: %s</string>
     <string name="licence_screen_title">Lisans anahtarı</string>
     <string name="licence_screen_info">Bir lisans anahtarınız varsa, burada girin ve Paralino hesabınızla premium planını bağlayın.</string>

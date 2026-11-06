@@ -1093,6 +1093,9 @@
     <string name="setting_notificationSocket_connectionType_periodic3_info">Varsler blir oppdatert periodisk hver noen timer.</string>
     <string name="setting_notificationSocket_connectionType_periodic3_tag">Batteribruk: Lav</string>
     <string name="setting_notificationSocket_registration_error_message">Tilkoblingen kunne ikke bekreftes, vennligst prøv igjen!</string>
+    <string name="setting_notificationSocket_persistRegistration_title">Permanent endepunkt</string>
+    <string name="setting_notificationSocket_persistRegistration_info_off">UnifiedPush-registrering og -endepunkt fornyes med noen dagers mellomrom, slik distributørene anbefaler.</string>
+    <string name="setting_notificationSocket_persistRegistration_info_on">UnifiedPush-registrering og -endepunkt endres ikke. Dette kan være nyttig hvis du trenger å organisere abonnementene dine, men du må opprette registreringen på nytt manuelt hvis UnifiedPush-distributøren din fjerner den.</string>
     <string name="notifications_socketService_message_lastSync">Siste oppdatering: %s</string>
     <string name="licence_screen_title">Lisensnøkkel</string>
     <string name="licence_screen_info">Hvis du har en lisensnøkkel, skriv den inn her for å knytte et premium-abonnement til din Paralino-konto.</string>

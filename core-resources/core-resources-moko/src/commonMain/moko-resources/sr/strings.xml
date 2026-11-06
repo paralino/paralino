@@ -1093,6 +1093,9 @@
     <string name="setting_notificationSocket_connectionType_periodic3_info">Обавештења се периодично освежавају сваког неколико сати</string>
     <string name="setting_notificationSocket_connectionType_periodic3_tag">Употреба батерије: Ниска</string>
     <string name="setting_notificationSocket_registration_error_message">Повезивање није могло бити потврђено, покушајте поново!</string>
+    <string name="setting_notificationSocket_persistRegistration_title">Трајна крајња тачка</string>
+    <string name="setting_notificationSocket_persistRegistration_info_off">UnifiedPush регистрација и крајња тачка обнављаће се на сваких неколико дана, како препоручују дистрибутери.</string>
+    <string name="setting_notificationSocket_persistRegistration_info_on">UnifiedPush регистрација и крајња тачка неће се мењати. Ово може бити корисно ако треба да организујете своје претплате, али ћете морати ручно поново да креирате регистрацију ако је ваш UnifiedPush дистрибутер уклони.</string>
     <string name="notifications_socketService_message_lastSync">Последње ажурирање: %s</string>
     <string name="licence_screen_title">Кључ за лиценцу</string>
     <string name="licence_screen_info">Ако имате кључ за лиценцу, унесите га овде да бисте повезали премиум план са вашим Paralino налогом.</string>

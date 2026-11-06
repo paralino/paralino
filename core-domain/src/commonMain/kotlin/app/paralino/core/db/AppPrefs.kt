@@ -133,6 +133,7 @@ class AppPrefs(
         const val keyUnifiedPushEndpointConfigUnsynced = "prefs.device.unifiedPushEndpointConfig.unsynced"
         const val keyUnifiedPushEndpointConfigSynced = "prefs.device.unifiedPushEndpointConfig.synced"
         const val keyUnifiedPushRegistrationTime = "prefs.device.unifiedPushRegistrationTime"
+        const val keyUnifiedPushPersistRegistration = "prefs.device.unifiedPushPersistRegistration"
         const val keyiOSLastLSEHandoffPingTime = "prefs.device.iOSLastLSEHandoffPingTime"
         const val keyiOSLastMainAppHeartbeatTime = "prefs.device.iOSLastMainAppHeartbeatTime"
     }
@@ -324,6 +325,12 @@ class AppPrefs(
             } else {
                 provider.userSettings.remove(keyUnifiedPushRegistrationTime)
             }
+        }
+
+    var isUnifiedPushRegistrationPersisted: Boolean
+        get() = provider.userSettings.getBoolean(keyUnifiedPushPersistRegistration, false)
+        set(value) {
+            provider.userSettings.putBoolean(keyUnifiedPushPersistRegistration, value)
         }
 
     var notificationPushProvider: PushProvider?
