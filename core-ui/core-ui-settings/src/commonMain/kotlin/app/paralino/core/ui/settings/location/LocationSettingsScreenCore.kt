@@ -22,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import app.paralino.core.resources.moko.*
 import app.paralino.core.presentation.settings.location.LocationSettingsScreenEvent
 import app.paralino.core.presentation.settings.location.LocationSettingsScreenUiEvent
@@ -81,6 +82,37 @@ fun LocationSettingsScreenCore(
         modifier = Modifier.fillMaxSize(),
         contentPadding = paddingValues
     ) {
+        this.stickyHeader(key = "performance") {
+            SettingsSectionHeader(
+                modifier = Modifier.padding(horizontal = 20.dp).fillMaxWidth(),
+                name = stringResource(MR.strings.setting_location_balanced_section_title)
+            )
+        }
+
+        this.item(key = "performance_items") {
+            Column(modifier = Modifier.padding(horizontal = 20.dp).fillMaxWidth().animateItem()) {
+                CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
+                    Text(
+                        modifier = Modifier.padding(bottom = 20.dp),
+                        text = stringResource(MR.strings.setting_location_balanced_section_info).annotatedBoldCompose(),
+                        style = MaterialTheme.typography.caption.copy(fontWeight = FontWeight.Medium),
+                        textAlign = TextAlign.Start
+                    )
+                }
+
+                GenericSettingsOptions(
+                    modifier = Modifier.fillMaxWidth(),
+                    items = uiState.balancedSettings.items,
+                    onOptionSelected = {
+                        vm.onEvent(
+                            LocationSettingsScreenUiEvent.ChangePerformance(it)
+                        )
+                    }
+                )
+                Spacer(modifier = Modifier.size(20.dp))
+            }
+        }
+
         this.stickyHeader(key = "when_in_use") {
             SettingsSectionHeader(
                 modifier = Modifier.padding(horizontal = 20.dp).fillMaxWidth(),
@@ -98,7 +130,7 @@ fun LocationSettingsScreenCore(
 
                 CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
                     Text(
-                        modifier = Modifier.padding(bottom = 10.dp, top = 20.dp),
+                        modifier = Modifier.padding(bottom = 20.dp, top = 20.dp),
                         text = stringResource(MR.strings.setting_location_highPerformance_duration_info).annotatedBoldCompose(),
                         style = MaterialTheme.typography.caption.copy(fontWeight = FontWeight.Medium),
                         textAlign = TextAlign.Start
@@ -120,22 +152,13 @@ fun LocationSettingsScreenCore(
 
         this.stickyHeader(key = "when_in_background") {
             SettingsSectionHeader(
-                modifier = Modifier.padding(horizontal = 20.dp).fillMaxWidth(),
-                name = stringResource(MR.strings.setting_location_balanced_section_title)
+                modifier = Modifier.padding(horizontal = 20.dp).fillMaxWidth().zIndex(1f),
+                name = stringResource(MR.strings.setting_location_background_section_title)
             )
         }
 
         this.item(key = "in_background_items") {
-            Column(modifier = Modifier.padding(horizontal = 20.dp).fillMaxWidth().animateItem()) {
-                CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-                    Text(
-                        modifier = Modifier.padding(bottom = 20.dp),
-                        text = stringResource(MR.strings.setting_location_balanced_section_info).annotatedBoldCompose(),
-                        style = MaterialTheme.typography.caption.copy(fontWeight = FontWeight.Medium),
-                        textAlign = TextAlign.Start
-                    )
-                }
-
+            Column(modifier = Modifier.padding(horizontal = 20.dp).fillMaxWidth().animateItem().zIndex(1f)) {
                 if (uiState.balancedSettings.showLocationIndicator != null) {
                     LargeSeekbarSwitch(
                         modifier = Modifier.fillMaxWidth().padding(bottom = 20.dp),
@@ -190,13 +213,33 @@ fun LocationSettingsScreenCore(
                         vm.onEvent(LocationSettingsScreenUiEvent.ToggleBalancedHighPerformance)
                     }
                 )
+            }
+        }
+
+        this.stickyHeader(key = "location_filtering") {
+            SettingsSectionHeader(
+                modifier = Modifier.padding(horizontal = 20.dp).fillMaxWidth(),
+                name = stringResource(MR.strings.setting_location_filtering_section_title)
+            )
+        }
+
+        this.item(key = "location_filtering_items") {
+            Column(modifier = Modifier.padding(horizontal = 20.dp).fillMaxWidth().animateItem()) {
+                CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
+                    Text(
+                        modifier = Modifier.padding(bottom = 20.dp),
+                        text = stringResource(MR.strings.setting_location_filtering_section_info).annotatedBoldCompose(),
+                        style = MaterialTheme.typography.caption.copy(fontWeight = FontWeight.Medium),
+                        textAlign = TextAlign.Start
+                    )
+                }
 
                 GenericSettingsOptions(
                     modifier = Modifier.fillMaxWidth(),
-                    items = uiState.balancedSettings.items,
+                    items = uiState.filteringSettings.items,
                     onOptionSelected = {
                         vm.onEvent(
-                            LocationSettingsScreenUiEvent.ChangePerformance(it)
+                            LocationSettingsScreenUiEvent.ChangeFiltering(it)
                         )
                     }
                 )
@@ -251,37 +294,6 @@ fun LocationSettingsScreenCore(
                     onOptionSelected = {
                         vm.onEvent(
                             LocationSettingsScreenUiEvent.ChangePerformance(it)
-                        )
-                    }
-                )
-                Spacer(modifier = Modifier.size(20.dp))
-            }
-        }
-
-        this.stickyHeader(key = "location_filtering") {
-            SettingsSectionHeader(
-                modifier = Modifier.padding(horizontal = 20.dp).fillMaxWidth(),
-                name = stringResource(MR.strings.setting_location_filtering_section_title)
-            )
-        }
-
-        this.item(key = "location_filtering_items") {
-            Column(modifier = Modifier.padding(horizontal = 20.dp).fillMaxWidth().animateItem()) {
-                CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-                    Text(
-                        modifier = Modifier.padding(bottom = 20.dp),
-                        text = stringResource(MR.strings.setting_location_filtering_section_info).annotatedBoldCompose(),
-                        style = MaterialTheme.typography.caption.copy(fontWeight = FontWeight.Medium),
-                        textAlign = TextAlign.Start
-                    )
-                }
-
-                GenericSettingsOptions(
-                    modifier = Modifier.fillMaxWidth(),
-                    items = uiState.filteringSettings.items,
-                    onOptionSelected = {
-                        vm.onEvent(
-                            LocationSettingsScreenUiEvent.ChangeFiltering(it)
                         )
                     }
                 )
