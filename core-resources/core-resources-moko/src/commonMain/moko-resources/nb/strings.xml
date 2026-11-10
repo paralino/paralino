@@ -294,7 +294,7 @@
     <string name="setting_status_locationMode_requested">Forespurt</string>
     <string name="setting_status_locationMode_boost">Test høy ytelse-modus</string>
     <string name="setting_status_locationMode_stopTest">Stopp test</string>
-    <string name="setting_status_locationMode_increaseTime">Øk tiden for **Når i bruk**</string>
+    <string name="setting_status_locationMode_increaseTime">Øk **Varighet i sanntid**</string>
     <string name="setting_status_locationMode_window">I løpet av de siste %s minuttene</string>
     <string name="setting_status_sharing_none">Plasseringsdeling er av</string>
     <string name="setting_status_sharing_off">%s · Av</string>

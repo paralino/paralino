@@ -294,7 +294,7 @@
     <string name="setting_status_locationMode_requested">Požadovaný</string>
     <string name="setting_status_locationMode_boost">Otestovat režim Vysoký výkon</string>
     <string name="setting_status_locationMode_stopTest">Zastavit test</string>
-    <string name="setting_status_locationMode_increaseTime">Prodloužit čas **Když je používáno**</string>
+    <string name="setting_status_locationMode_increaseTime">Prodloužit **Dobu v reálném čase**</string>
     <string name="setting_status_locationMode_window">Během posledních %s minut</string>
     <string name="setting_status_sharing_none">Sdílení polohy je vypnuté</string>
     <string name="setting_status_sharing_off">%s · Vypnuto</string>

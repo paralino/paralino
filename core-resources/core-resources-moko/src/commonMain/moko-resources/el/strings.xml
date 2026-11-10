@@ -294,7 +294,7 @@
     <string name="setting_status_locationMode_requested">Ζητήθηκε</string>
     <string name="setting_status_locationMode_boost">Δοκιμή λειτουργίας Υψηλής απόδοσης</string>
     <string name="setting_status_locationMode_stopTest">Διακοπή δοκιμής</string>
-    <string name="setting_status_locationMode_increaseTime">Αύξηση χρόνου **Όταν είναι σε Χρήση**</string>
+    <string name="setting_status_locationMode_increaseTime">Αύξηση **Διάρκειας πραγματικού χρόνου**</string>
     <string name="setting_status_locationMode_window">Μέσα στα τελευταία %s λεπτά</string>
     <string name="setting_status_sharing_none">Η κοινοποίηση τοποθεσίας είναι απενεργοποιημένη</string>
     <string name="setting_status_sharing_off">%s · Ανενεργό</string>

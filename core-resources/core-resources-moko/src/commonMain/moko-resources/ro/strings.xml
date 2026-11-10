@@ -294,7 +294,7 @@
     <string name="setting_status_locationMode_requested">Solicitat</string>
     <string name="setting_status_locationMode_boost">Testează modul de înaltă performanță</string>
     <string name="setting_status_locationMode_stopTest">Oprește testul</string>
-    <string name="setting_status_locationMode_increaseTime">Mărește timpul **Când este utilizat**</string>
+    <string name="setting_status_locationMode_increaseTime">Mărește **Durata în timp real**</string>
     <string name="setting_status_locationMode_window">În ultimele %s minute</string>
     <string name="setting_status_sharing_none">Partajarea locației este dezactivată</string>
     <string name="setting_status_sharing_off">%s · Dezactivat</string>

@@ -294,7 +294,7 @@
     <string name="setting_status_locationMode_requested">Запрошенный</string>
     <string name="setting_status_locationMode_boost">Тест режима высокой производительности</string>
     <string name="setting_status_locationMode_stopTest">Остановить тест</string>
-    <string name="setting_status_locationMode_increaseTime">Увеличить время **При использовании**</string>
+    <string name="setting_status_locationMode_increaseTime">Увеличить **Длительность режима реального времени**</string>
     <string name="setting_status_locationMode_window">За последние %s мин.</string>
     <string name="setting_status_sharing_none">Передача местоположения выключена</string>
     <string name="setting_status_sharing_off">%s · Выкл.</string>

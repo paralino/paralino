@@ -303,7 +303,7 @@
     <string name="setting_status_locationMode_requested">Requested</string>
     <string name="setting_status_locationMode_boost">Test High mode</string>
     <string name="setting_status_locationMode_stopTest">Stop test</string>
-    <string name="setting_status_locationMode_increaseTime">Increase **When in Use** time</string>
+    <string name="setting_status_locationMode_increaseTime">Increase **Real-time Duration**</string>
     <string name="setting_status_locationMode_window">Within the last %s minutes</string>
     <string name="setting_status_sharing_none">Location sharing is off</string>
     <string name="setting_status_sharing_off">%s · Off</string>

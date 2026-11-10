@@ -294,7 +294,7 @@
     <string name="setting_status_locationMode_requested">Sol·licitat</string>
     <string name="setting_status_locationMode_boost">Prova el mode Alt rendiment</string>
     <string name="setting_status_locationMode_stopTest">Atura la prova</string>
-    <string name="setting_status_locationMode_increaseTime">Augmenta el temps de **Quan s\'utilitza**</string>
+    <string name="setting_status_locationMode_increaseTime">Augmenta la **Durada en temps real**</string>
     <string name="setting_status_locationMode_window">En els últims %s minuts</string>
     <string name="setting_status_sharing_none">La compartició d\'ubicació està desactivada</string>
     <string name="setting_status_sharing_off">%s · Desactivat</string>

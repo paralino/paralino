@@ -294,7 +294,7 @@
     <string name="setting_status_locationMode_requested">Pyydetty</string>
     <string name="setting_status_locationMode_boost">Testaa korkean suorituskyvyn tilaa</string>
     <string name="setting_status_locationMode_stopTest">Lopeta testi</string>
-    <string name="setting_status_locationMode_increaseTime">Pidennä **Kun käytössä** -aikaa</string>
+    <string name="setting_status_locationMode_increaseTime">Pidennä **Reaaliaikatilan kestoa**</string>
     <string name="setting_status_locationMode_window">Viimeisten %s minuutin aikana</string>
     <string name="setting_status_sharing_none">Sijainnin jakaminen on pois päältä</string>
     <string name="setting_status_sharing_off">%s · Pois</string>

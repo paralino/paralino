@@ -294,7 +294,7 @@
     <string name="setting_status_locationMode_requested">İstenen</string>
     <string name="setting_status_locationMode_boost">Yüksek performans modunu test et</string>
     <string name="setting_status_locationMode_stopTest">Testi durdur</string>
-    <string name="setting_status_locationMode_increaseTime">**Kullanımda** süresini artır</string>
+    <string name="setting_status_locationMode_increaseTime">**Gerçek Zamanlı Süre** değerini artır</string>
     <string name="setting_status_locationMode_window">Son %s dakika içinde</string>
     <string name="setting_status_sharing_none">Konum paylaşımı kapalı</string>
     <string name="setting_status_sharing_off">%s · Kapalı</string>

@@ -294,7 +294,7 @@
     <string name="setting_status_locationMode_requested">Kért</string>
     <string name="setting_status_locationMode_boost">Nagy teljesítményű mód tesztelése</string>
     <string name="setting_status_locationMode_stopTest">Teszt leállítása</string>
-    <string name="setting_status_locationMode_increaseTime">**Használat közben** idő növelése</string>
+    <string name="setting_status_locationMode_increaseTime">**Valós idejű időtartam** növelése</string>
     <string name="setting_status_locationMode_window">Az elmúlt %s percben</string>
     <string name="setting_status_sharing_none">A helymegosztás ki van kapcsolva</string>
     <string name="setting_status_sharing_off">%s · Ki</string>

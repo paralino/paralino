@@ -294,7 +294,7 @@
     <string name="setting_status_locationMode_requested">Solicitado</string>
     <string name="setting_status_locationMode_boost">Probar modo Alto rendimiento</string>
     <string name="setting_status_locationMode_stopTest">Detener prueba</string>
-    <string name="setting_status_locationMode_increaseTime">Aumentar el tiempo de **Durante el uso**</string>
+    <string name="setting_status_locationMode_increaseTime">Aumentar la **Duración en tiempo real**</string>
     <string name="setting_status_locationMode_window">En los últimos %s minutos</string>
     <string name="setting_status_sharing_none">Compartir ubicación está desactivado</string>
     <string name="setting_status_sharing_off">%s · Desactivado</string>

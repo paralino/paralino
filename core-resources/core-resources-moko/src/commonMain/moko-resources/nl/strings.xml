@@ -294,7 +294,7 @@
     <string name="setting_status_locationMode_requested">Aangevraagd</string>
     <string name="setting_status_locationMode_boost">High performance-modus testen</string>
     <string name="setting_status_locationMode_stopTest">Test stoppen</string>
-    <string name="setting_status_locationMode_increaseTime">Tijd voor **Wanneer in gebruik** verhogen</string>
+    <string name="setting_status_locationMode_increaseTime">**Realtimeduur** verhogen</string>
     <string name="setting_status_locationMode_window">In de afgelopen %s minuten</string>
     <string name="setting_status_sharing_none">Locatie delen staat uit</string>
     <string name="setting_status_sharing_off">%s · Uit</string>

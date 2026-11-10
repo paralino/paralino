@@ -294,7 +294,7 @@
     <string name="setting_status_locationMode_requested">Angefordert</string>
     <string name="setting_status_locationMode_boost">Hochleistungsmodus testen</string>
     <string name="setting_status_locationMode_stopTest">Test beenden</string>
-    <string name="setting_status_locationMode_increaseTime">Zeit für **Während der Nutzung** erhöhen</string>
+    <string name="setting_status_locationMode_increaseTime">**Echtzeit-Dauer** erhöhen</string>
     <string name="setting_status_locationMode_window">Innerhalb der letzten %s Minuten</string>
     <string name="setting_status_sharing_none">Standortfreigabe ist aus</string>
     <string name="setting_status_sharing_off">%s · Aus</string>

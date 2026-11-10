@@ -294,7 +294,7 @@
     <string name="setting_status_locationMode_requested">Begärt</string>
     <string name="setting_status_locationMode_boost">Testa High performance-läge</string>
     <string name="setting_status_locationMode_stopTest">Stoppa test</string>
-    <string name="setting_status_locationMode_increaseTime">Öka tiden för **När den används**</string>
+    <string name="setting_status_locationMode_increaseTime">Öka **Varaktighet i realtid**</string>
     <string name="setting_status_locationMode_window">Inom de senaste %s minuterna</string>
     <string name="setting_status_sharing_none">Platsdelning är av</string>
     <string name="setting_status_sharing_off">%s · Av</string>

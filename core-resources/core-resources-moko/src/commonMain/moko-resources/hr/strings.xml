@@ -294,7 +294,7 @@
     <string name="setting_status_locationMode_requested">Zatraženo</string>
     <string name="setting_status_locationMode_boost">Testiraj način visokih performansi</string>
     <string name="setting_status_locationMode_stopTest">Zaustavi test</string>
-    <string name="setting_status_locationMode_increaseTime">Povećaj vrijeme **Tijekom upotrebe**</string>
+    <string name="setting_status_locationMode_increaseTime">Povećaj **Trajanje u stvarnom vremenu**</string>
     <string name="setting_status_locationMode_window">Unutar posljednjih %s minuta</string>
     <string name="setting_status_sharing_none">Dijeljenje lokacije je isključeno</string>
     <string name="setting_status_sharing_off">%s · Isključeno</string>

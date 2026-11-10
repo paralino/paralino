@@ -294,7 +294,7 @@
     <string name="setting_status_locationMode_requested">Запитаний</string>
     <string name="setting_status_locationMode_boost">Тест режиму високої продуктивності</string>
     <string name="setting_status_locationMode_stopTest">Зупинити тест</string>
-    <string name="setting_status_locationMode_increaseTime">Збільшити час **Коли використовується**</string>
+    <string name="setting_status_locationMode_increaseTime">Збільшити **Тривалість режиму реального часу**</string>
     <string name="setting_status_locationMode_window">За останні %s хв</string>
     <string name="setting_status_sharing_none">Поширення місцезнаходження вимкнено</string>
     <string name="setting_status_sharing_off">%s · Вимк.</string>
