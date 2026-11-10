@@ -375,6 +375,16 @@
     <string name="setting_location_history_level_1_info">More movement required for location updates</string>
     <string name="setting_location_history_level_2_info">Balanced location updates</string>
     <string name="setting_location_history_level_3_info">Frequent location updates</string>
+    <string name="setting_location_filtering_section_title">Location filtering</string>
+    <string name="setting_location_filtering_section_info">Some devices occasionally report very inaccurate locations, which can make your location jump around on the map and in your location history. Choose how strictly these inaccurate updates are filtered out.</string>
+    <string name="setting_location_filtering_level_1">Low</string>
+    <string name="setting_location_filtering_level_2">Balanced</string>
+    <string name="setting_location_filtering_level_3">High</string>
+    <string name="setting_location_filtering_level_4">Very High</string>
+    <string name="setting_location_filtering_level_1_info">Only very inaccurate updates are ignored. Location updates faster, but may jump more.</string>
+    <string name="setting_location_filtering_level_2_info">Inaccurate updates are briefly ignored while a more accurate location is available</string>
+    <string name="setting_location_filtering_level_3_info">Inaccurate updates are ignored for longer. Smoother location on the map and in history, but may react slower to changes.</string>
+    <string name="setting_location_filtering_level_4_info">Only the most accurate updates are kept for as long as possible. Cleanest location history, but movement may appear with a noticeable delay.</string>
     <string name="setting_location_batteryImpact_level_1">Battery Impact: Minimum</string>
     <string name="setting_location_batteryImpact_level_2">Battery Impact: Low</string>
     <string name="setting_location_batteryImpact_level_3">Battery Impact: Acceptable</string>

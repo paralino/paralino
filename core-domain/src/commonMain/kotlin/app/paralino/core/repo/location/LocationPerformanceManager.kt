@@ -45,7 +45,8 @@ class LocationPerformanceManager constructor(
                 )
             ),
             showLocationIndicator = appPrefs.locationSettingsShowIndicatorIOS,
-            pausesLocationAutomatically = appPrefs.locationSettingsAutoPauseIOS
+            pausesLocationAutomatically = appPrefs.locationSettingsAutoPauseIOS,
+            filtering = LocationFilteringType.fromKey(appPrefs.locationSettingsFilteringType)
         )
     )
     val locationPerformanceType: StateFlow<LocationPerformanceModel> = _locationPerformanceType
@@ -464,7 +465,8 @@ class LocationPerformanceManager constructor(
         val showLocationIndicator: Boolean = false,
         val pausesLocationAutomatically: Boolean = true,
         val balancedPerformanceSettings: LocationPerformanceSettingsBalanced,
-        val batterySaverPerformanceSettings: LocationPerformanceSettingsBatterySaver
+        val batterySaverPerformanceSettings: LocationPerformanceSettingsBatterySaver,
+        val filtering: LocationFilteringType = LocationFilteringType.default
     ) {
 
         constructor(
@@ -473,6 +475,7 @@ class LocationPerformanceManager constructor(
             batterySaverPerformanceSettings: LocationPerformanceSettingsBatterySaver,
             showLocationIndicator: Boolean,
             pausesLocationAutomatically: Boolean,
+            filtering: LocationFilteringType,
         ) : this(
             old = LocationPerformanceType.BALANCED,
             requested = if (isBoostedManually) LocationPerformanceType.MANUAL_BOOST else LocationPerformanceType.BALANCED,
@@ -480,7 +483,8 @@ class LocationPerformanceManager constructor(
             showLocationIndicator = showLocationIndicator,
             pausesLocationAutomatically = pausesLocationAutomatically,
             balancedPerformanceSettings = balancedPerformanceSettings,
-            batterySaverPerformanceSettings = batterySaverPerformanceSettings
+            batterySaverPerformanceSettings = batterySaverPerformanceSettings,
+            filtering = filtering
         )
 
         val isThrottlingVeryHighRequest get() = if (requested >= LocationPerformanceType.VERY_HIGH) {

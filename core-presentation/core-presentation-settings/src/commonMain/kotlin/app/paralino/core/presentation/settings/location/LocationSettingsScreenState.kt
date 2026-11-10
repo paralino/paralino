@@ -10,7 +10,12 @@ data class LocationSettingsScreenState(
     val batterySaverSettings: LocationSettingsBatterySaver,
     val balancedSettings: LocationSettingsBalanced,
     val historySettings: LocationSettingsHistory,
+    val filteringSettings: LocationSettingsFiltering,
     val alertDialog: MainAlertDialog?
+)
+
+data class LocationSettingsFiltering(
+    val items: List<GroupOptionItem>,
 )
 
 data class LocationSettingsHighPerformance(
@@ -66,6 +71,9 @@ sealed interface LocationSettingsScreenUiEvent {
     data object ToggleFollowDeviceLowPowerMode : LocationSettingsScreenUiEvent
 
     data class ChangePerformance(val option: GroupOptionItem) :
+        LocationSettingsScreenUiEvent
+
+    data class ChangeFiltering(val option: GroupOptionItem) :
         LocationSettingsScreenUiEvent
 
     data class DialogAction(val action: AlertDialogAction) : LocationSettingsScreenUiEvent

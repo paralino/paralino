@@ -258,6 +258,37 @@ fun LocationSettingsScreenCore(
             }
         }
 
+        this.stickyHeader(key = "location_filtering") {
+            SettingsSectionHeader(
+                modifier = Modifier.padding(horizontal = 20.dp).fillMaxWidth(),
+                name = stringResource(MR.strings.setting_location_filtering_section_title)
+            )
+        }
+
+        this.item(key = "location_filtering_items") {
+            Column(modifier = Modifier.padding(horizontal = 20.dp).fillMaxWidth().animateItem()) {
+                CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
+                    Text(
+                        modifier = Modifier.padding(bottom = 20.dp),
+                        text = stringResource(MR.strings.setting_location_filtering_section_info).annotatedBoldCompose(),
+                        style = MaterialTheme.typography.caption.copy(fontWeight = FontWeight.Medium),
+                        textAlign = TextAlign.Start
+                    )
+                }
+
+                GenericSettingsOptions(
+                    modifier = Modifier.fillMaxWidth(),
+                    items = uiState.filteringSettings.items,
+                    onOptionSelected = {
+                        vm.onEvent(
+                            LocationSettingsScreenUiEvent.ChangeFiltering(it)
+                        )
+                    }
+                )
+                Spacer(modifier = Modifier.size(20.dp))
+            }
+        }
+
         if (false) {
             this.stickyHeader(key = "location_history") {
                 SettingsSectionHeader(

@@ -113,6 +113,7 @@ class AppPrefs(
         const val keyDeviceTheme = "prefs.device.theme"
         const val keyDarkThemeStyle = "prefs.device.theme.darkStyle"
         const val keyLocationHistoryPerformance = "prefs.location.history.performance"
+        const val keyLocationFiltering = "prefs.location.filtering"
         const val keyEmailVerificationSkipTime = "prefs.user.emailVerification.skipTime"
         const val keyFirstLoginTime = "prefs.user.firstLoginTime"
         const val keyDetectedAppReadyTime = "prefs.user.appReadyTime"
@@ -491,6 +492,12 @@ class AppPrefs(
         get() = provider.userSettings.getStringOrNull(keyLocationHistoryPerformance).takeIf { !it.isNullOrBlank() }
         set(value) {
             provider.userSettings.putString(keyLocationHistoryPerformance, value ?: "")
+        }
+
+    var locationSettingsFilteringType: String?
+        get() = provider.userSettings.getStringOrNull(keyLocationFiltering).takeIf { !it.isNullOrBlank() }
+        set(value) {
+            provider.userSettings.putString(keyLocationFiltering, value ?: "")
         }
 
     var didHaveWelcomeOnboarding: Boolean

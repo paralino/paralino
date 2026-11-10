@@ -85,9 +85,11 @@ class LocationUploadEngine constructor(
         _pendingLocation.update { current ->
             val potentialUpdate = LocationUpdateDataFromDevice.getBetter(current, data)
             if (current != null && potentialUpdate != null) {
+                val performance = locationPerformanceManager.locationPerformanceType.value
                 current.takeMostRelevantLocation(
                     second = potentialUpdate,
-                    type = locationPerformanceManager.locationPerformanceType.value.balancedPerformanceSettings.config
+                    type = performance.balancedPerformanceSettings.config,
+                    filtering = performance.filtering
                 )
             } else {
                 potentialUpdate
