@@ -46,6 +46,7 @@ interface LogoutDao {
         clearAllPendingGroupJoinWelcomes()
         clearAllPendingKeyRefreshes()
         clearAllArchivedGroupDeviceKeys()
+        clearAllFalsePlaceAlertLocations()
     }
 
     @Query("DELETE FROM userEntity")
@@ -158,4 +159,7 @@ interface LogoutDao {
 
     @Query("DELETE FROM archivedGroupDeviceKeyEntity")
     suspend fun clearAllArchivedGroupDeviceKeys()
+
+    @Query("DELETE FROM falsePlaceAlertLocationEntity")
+    suspend fun clearAllFalsePlaceAlertLocations()
 }

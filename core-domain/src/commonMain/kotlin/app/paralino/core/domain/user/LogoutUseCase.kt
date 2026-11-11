@@ -14,6 +14,7 @@ import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.repo.base.AccessLogDataSource
 import app.paralino.core.repo.location.IGeofenceManager
 import app.paralino.core.repo.location.LocationSharingContractFilter
+import app.paralino.core.repo.places.FalsePlaceAlertMemory
 import app.paralino.core.repo.places.PlaceActivityDataSource
 import app.paralino.core.repo.user.IPushProviderManager
 import app.paralino.core.repo.user.UserRepository
@@ -35,7 +36,8 @@ class LogoutUseCase(
     private val accessLogs: AccessLogDataSource,
     private val appPrefs: AppPrefs,
     private val sharingContractFilter: LocationSharingContractFilter,
-    private val appMainDatabase: MainDatabaseHelper
+    private val appMainDatabase: MainDatabaseHelper,
+    private val falsePlaceAlertMemory: FalsePlaceAlertMemory,
 ) : LimitedExecution(scope = limitedExecutionParentManager) {
 
     private val executionKey = "logout_or_delete"
@@ -112,6 +114,7 @@ class LogoutUseCase(
         deviceApiProvider.logout()
         locationRepo.logout()
         placeActivityRepo.clearCache()
+        falsePlaceAlertMemory.clear()
         geofenceManager.deleteAllGeofences()
         accessLogs.clearAll()
         sharingContractFilter.clearFilter()

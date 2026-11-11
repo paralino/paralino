@@ -324,6 +324,22 @@ object MainDatabaseMigrations {
         }
     }
 
+    private val MIGRATION_29_30 = object : Migration(29, 30) {
+        override suspend fun migrate(connection: SQLiteConnection) {
+            connection.execSQL(
+                """
+                CREATE TABLE IF NOT EXISTS `falsePlaceAlertLocationEntity` (
+                    `placeId` TEXT NOT NULL,
+                    `locationsData` TEXT NOT NULL,
+                    `userKeyVersion` INTEGER NOT NULL,
+                    `updatedAtMillis` INTEGER NOT NULL,
+                    PRIMARY KEY(`placeId`)
+                )
+                """.trimIndent()
+            )
+        }
+    }
+
     val migrations: List<Migration> = listOf(
         MIGRATION_1_2,
         MIGRATION_2_3,
@@ -353,5 +369,6 @@ object MainDatabaseMigrations {
         MIGRATION_26_27,
         MIGRATION_27_28,
         MIGRATION_28_29,
+        MIGRATION_29_30,
     )
 }

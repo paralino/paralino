@@ -7,6 +7,7 @@ import app.paralino.core.logg
 import app.paralino.core.models.base.DeviceType
 import app.paralino.core.models.base.GroupOrSpaceId
 import app.paralino.core.models.data
+import app.paralino.core.models.location.LatLng
 import app.paralino.core.models.location.LocationDataModel
 import app.paralino.core.models.location.LocationPerformanceRequest
 import app.paralino.core.models.location.LocationPerformanceType
@@ -55,6 +56,7 @@ class PlacesActivityProcessor(
     private val oneTimeLocation: IOneTimeLocationProvider,
     private val refreshEverythingUseCase: RefreshEverythingUseCase,
     private val privacyZoneObfuscator: PrivacyZoneObfuscator,
+    private val falseAlertMemory: FalsePlaceAlertMemory,
 ) : IPlacesActivityProcessor() {
 
     override suspend fun processLocation(mappedLocations: List<MemberGroupId>) {
@@ -128,6 +130,21 @@ class PlacesActivityProcessor(
         val previousState = placeActivityRepo.getPlaceActivity(placeId = place.id)
 
 //      logg.tag("place_activity").d("Process place activity (enter: $isEnter - exit: $isExit - previous: ${previousState?.enter}) - ${place.id}")
+
+        // location from a known inaccurate spot must not change place state (no alert, no location boost)
+        val verdict = falseAlertMemory.processLocation(
+            placeId = place.id,
+            previousIsEnter = previousState?.isEnter,
+            movementIsEnter = when (movementType) {
+                PlaceActivityMovementType.ENTER -> true
+                PlaceActivityMovementType.EXIT -> false
+                PlaceActivityMovementType.UNKNOWN -> null
+            },
+            location = LatLng(lat = mappedLocation.lat, lng = mappedLocation.lng)
+        )
+        if (verdict == FalsePlaceAlertMemory.FixVerdict.IGNORE) {
+            return
+        }
 
         when (movementType) {
             PlaceActivityMovementType.ENTER -> {
