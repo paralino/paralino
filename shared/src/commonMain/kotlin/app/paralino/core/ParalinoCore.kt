@@ -310,7 +310,7 @@ val dataSourceModule = module {
     single { PersonalCodesRemoteSource(get(), get(), get(), get(), get(), get()) }
     single { CryptoKeyRemoteDataSource(get(), get()) }
     single { CryptoUserKeysRemoteSource(get(), get(), get()) }
-    single { PlaceActivityDataSource(get()) }
+    single { PlaceActivityDataSource(get(), get()) }
     single { FalsePlaceAlertLocationDataSource(get(), get(), get()) }
     single { FalsePlaceAlertMemory(get(), get()) }
 

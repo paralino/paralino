@@ -257,6 +257,21 @@ class FalsePlaceAlertMemory(
         )
     }
 
+    // drop false locations of places that don't exist anymore
+    suspend fun removeMissing(placeIds: Set<String>) {
+        mutex.withLock {
+            if (!ensureLoaded(nowUTC())) {
+                return@withLock
+            }
+            spots.keys.filter { it !in placeIds }.forEach { placeId ->
+                spots.remove(placeId)
+                triggers.remove(placeId)
+                streaks.remove(placeId)
+                persist(placeId = placeId, placeSpots = emptyList())
+            }
+        }
+    }
+
     suspend fun clear() {
         mutex.withLock {
             spots.clear()
