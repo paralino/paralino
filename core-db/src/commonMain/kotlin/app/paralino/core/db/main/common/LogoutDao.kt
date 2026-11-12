@@ -47,6 +47,7 @@ interface LogoutDao {
         clearAllPendingKeyRefreshes()
         clearAllArchivedGroupDeviceKeys()
         clearAllFalsePlaceAlertLocations()
+        clearAllWifiAnchors()
     }
 
     @Query("DELETE FROM userEntity")
@@ -162,4 +163,7 @@ interface LogoutDao {
 
     @Query("DELETE FROM falsePlaceAlertLocationEntity")
     suspend fun clearAllFalsePlaceAlertLocations()
+
+    @Query("DELETE FROM wifiAnchorEntity")
+    suspend fun clearAllWifiAnchors()
 }

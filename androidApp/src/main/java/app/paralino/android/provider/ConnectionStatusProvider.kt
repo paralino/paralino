@@ -12,6 +12,7 @@ import android.os.Build
 import android.telephony.TelephonyManager
 import androidx.core.content.ContextCompat
 import app.paralino.core.models.AppBuildConfig
+import app.paralino.core.provider.ConnectedWifi
 import app.paralino.core.provider.IConnectionStatusProvider
 import app.paralino.core.provider.NetworkType
 import app.paralino.core.repo.base.AppConfigRepository
@@ -99,6 +100,30 @@ class ConnectionStatusProvider constructor(
 
                 else -> null
             }
+        } catch (e: Exception) {
+            return null
+        }
+    }
+
+    override suspend fun getConnectedWifi(): ConnectedWifi? {
+        try {
+            if (ContextCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                return null
+            }
+            val cm = context.getSystemService(Application.CONNECTIVITY_SERVICE) as ConnectivityManager
+            val actNw = cm.getNetworkCapabilities(cm.activeNetwork ?: return null) ?: return null
+            if (!actNw.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)) {
+                return null
+            }
+            val wm = context.getSystemService(Application.WIFI_SERVICE) as WifiManager
+            val bssid = wm.connectionInfo.bssid
+            if (bssid == null || bssid == "02:00:00:00:00:00") {
+                return null
+            }
+            return ConnectedWifi(
+                bssid = bssid,
+                isMetered = !actNw.hasCapability(NetworkCapabilities.NET_CAPABILITY_NOT_METERED)
+            )
         } catch (e: Exception) {
             return null
         }

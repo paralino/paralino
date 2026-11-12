@@ -9,6 +9,7 @@ import Foundation
 import shared
 import Network
 import CoreTelephony
+import NetworkExtension
 
 class ConnectionStatusProvider: IConnectionStatusProvider, @unchecked Sendable {
     
@@ -16,6 +17,7 @@ class ConnectionStatusProvider: IConnectionStatusProvider, @unchecked Sendable {
     
     private var connectionActive = false
     private var mobileNetwork = false
+    private var wifiNetwork = false
     
     override init(appBuildConfig: AppBuildConfig) {
         super.init(appBuildConfig: appBuildConfig)
@@ -26,6 +28,7 @@ class ConnectionStatusProvider: IConnectionStatusProvider, @unchecked Sendable {
         monitor?.pathUpdateHandler = { [weak self] update in
             self?.connectionActive = update.status == .satisfied ? true : false
             self?.mobileNetwork = update.isExpensive ? true : false
+            self?.wifiNetwork = update.usesInterfaceType(.wifi)
             Task { [weak self] in
                 _ = try? await self?.doInitAndGetStatus(forceCheck: false)
             }
@@ -125,7 +128,19 @@ class ConnectionStatusProvider: IConnectionStatusProvider, @unchecked Sendable {
     override func getSignalStrength() async throws -> KotlinInt? {
         return nil
     }
-    
+
+    override func getConnectedWifi() async throws -> ConnectedWifi? {
+        guard super.appBuildConfig.appHost != AppHost.iosLocationExtension, wifiNetwork else {
+            return nil
+        }
+
+        guard let bssid = await NEHotspotNetwork.fetchCurrent()?.bssid, !bssid.isEmpty else {
+            return nil
+        }
+        // expensive wifi is usually a hotspot
+        return ConnectedWifi(bssid: bssid, isMetered: mobileNetwork)
+    }
+
     deinit {
         guard let monitor = monitor else { return }
         monitor.cancel()

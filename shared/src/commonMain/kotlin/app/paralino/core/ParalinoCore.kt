@@ -157,6 +157,8 @@ import app.paralino.core.repo.personal_code.PersonalCodesRemoteSource
 import app.paralino.core.repo.personal_code.PersonalCodesRepository
 import app.paralino.core.repo.places.PlaceActivityDataSource
 import app.paralino.core.repo.places.FalsePlaceAlertMemory
+import app.paralino.core.repo.places.WifiAnchorDataSource
+import app.paralino.core.repo.places.WifiAnchorMemory
 import app.paralino.core.repo.places.FalsePlaceAlertLocationDataSource
 import app.paralino.core.repo.places.PlaceActivityUploadEngine
 import app.paralino.core.repo.places.PlacesGetRemoteSource
@@ -313,6 +315,8 @@ val dataSourceModule = module {
     single { PlaceActivityDataSource(get(), get()) }
     single { FalsePlaceAlertLocationDataSource(get(), get(), get()) }
     single { FalsePlaceAlertMemory(get(), get()) }
+    single { WifiAnchorDataSource(get(), get(), get()) }
+    single { WifiAnchorMemory(get(), get()) }
 
     single { AccessLogDataSource(get(), get()) }
 }
@@ -348,7 +352,7 @@ val coreModule = module {
     single { NotificationSocketServiceManager(get(), get(), get()) }
 
     single { ExpiredSessionHandler(get(), get(), get()) }
-    single { LogoutUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+    single { LogoutUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { RegisterDeviceForSharingUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { RealtimeEventsProcessor(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { GroupCryptoKeyRotation(get(), get(), get(), get(), get(), get(), get(), get(), get()) }

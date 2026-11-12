@@ -54,6 +54,7 @@ class MainDatabaseHelper(
     val privacyZoneSharedLocationDao get() = roomDatabase.privacyZoneSharedLocationDao()
     val pendingGroupJoinWelcomeDao get() = roomDatabase.pendingGroupJoinWelcomeDao()
     val falsePlaceAlertLocationDao get() = roomDatabase.falsePlaceAlertLocationDao()
+    val wifiAnchorDao get() = roomDatabase.wifiAnchorDao()
 
     /**
      * Needed for flows that are collected for a long time (eager singleton state flows - stateIn ...)

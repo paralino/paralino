@@ -63,7 +63,14 @@ abstract class IConnectionStatusProvider(
     protected abstract suspend fun isNetworkAvailable(): Boolean
     protected abstract suspend fun getNetworkType(): NetworkType?
     abstract suspend fun getSignalStrength(): Int?
+    open suspend fun getConnectedWifi(): ConnectedWifi? = null
 }
+
+data class ConnectedWifi(
+    val bssid: String,
+    // usually hotspot
+    val isMetered: Boolean
+)
 
 private data class InternetCheckData(
     var checkCount: Int = 0,

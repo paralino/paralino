@@ -50,6 +50,8 @@ import app.paralino.core.db.main.location.ApproximateSharedLocationDao
 import app.paralino.core.db.main.location.ApproximateSharedLocationEntity
 import app.paralino.core.db.main.places.FalsePlaceAlertLocationDao
 import app.paralino.core.db.main.places.FalsePlaceAlertLocationEntity
+import app.paralino.core.db.main.places.WifiAnchorDao
+import app.paralino.core.db.main.places.WifiAnchorEntity
 import app.paralino.core.db.main.places.PendingPlaceEventsEntity
 import app.paralino.core.db.main.places.PlaceActivityDao
 import app.paralino.core.db.main.places.PlaceActivityEntity
@@ -111,8 +113,9 @@ import kotlinx.coroutines.IO
         PendingKeyRefreshEntity::class,
         ArchivedGroupDeviceKeyEntity::class,
         FalsePlaceAlertLocationEntity::class,
+        WifiAnchorEntity::class,
     ],
-    version = 30,
+    version = 31,
     exportSchema = true
 )
 @ConstructedBy(AppMainDatabaseConstructor::class)
@@ -139,6 +142,7 @@ abstract class AppMainDatabase : RoomDatabase() {
     abstract fun privacyZoneSharedLocationDao(): PrivacyZoneSharedLocationDao
     abstract fun pendingGroupJoinWelcomeDao(): PendingGroupJoinWelcomeDao
     abstract fun falsePlaceAlertLocationDao(): FalsePlaceAlertLocationDao
+    abstract fun wifiAnchorDao(): WifiAnchorDao
 
     companion object {
         fun create(builder: SqlDriverFactory): AppMainDatabase {
