@@ -134,11 +134,15 @@ class ConnectionStatusProvider: IConnectionStatusProvider, @unchecked Sendable {
             return nil
         }
 
-        guard let bssid = await NEHotspotNetwork.fetchCurrent()?.bssid, !bssid.isEmpty else {
+        guard let network = await NEHotspotNetwork.fetchCurrent(), !network.bssid.isEmpty else {
             return nil
         }
         // expensive wifi is usually a hotspot
-        return ConnectedWifi(bssid: bssid, isMetered: mobileNetwork)
+        return ConnectedWifi(
+            bssid: network.bssid,
+            ssid: network.ssid.isEmpty ? nil : network.ssid,
+            isMetered: mobileNetwork
+        )
     }
 
     deinit {

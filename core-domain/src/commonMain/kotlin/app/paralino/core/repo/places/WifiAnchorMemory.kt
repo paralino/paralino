@@ -60,6 +60,7 @@ class WifiAnchorMemory(
             val anchor = WifiAnchor(
                 id = existingWifi?.id ?: dataSource.newId(),
                 bssid = wifi.bssid,
+                ssid = wifi.ssid ?: existingWifi?.ssid,
                 samples = (existingWifi?.samples.orEmpty() + newSample).takeLast(20)
             )
             val expiry = (nowUTC() - 60.days).toEpochMilliseconds()

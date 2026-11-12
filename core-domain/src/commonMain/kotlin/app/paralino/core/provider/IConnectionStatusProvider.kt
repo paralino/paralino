@@ -68,6 +68,7 @@ abstract class IConnectionStatusProvider(
 
 data class ConnectedWifi(
     val bssid: String,
+    val ssid: String?,
     // usually hotspot
     val isMetered: Boolean
 )

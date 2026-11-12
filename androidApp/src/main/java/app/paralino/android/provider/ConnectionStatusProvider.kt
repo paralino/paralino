@@ -116,12 +116,17 @@ class ConnectionStatusProvider constructor(
                 return null
             }
             val wm = context.getSystemService(Application.WIFI_SERVICE) as WifiManager
-            val bssid = wm.connectionInfo.bssid
+            val info = wm.connectionInfo
+            val bssid = info.bssid
             if (bssid == null || bssid == "02:00:00:00:00:00") {
                 return null
             }
             return ConnectedWifi(
                 bssid = bssid,
+                ssid = info.ssid
+                    ?.takeIf { it != "<unknown ssid>" }
+                    ?.removeSurrounding("\"")
+                    ?.ifBlank { null },
                 isMetered = !actNw.hasCapability(NetworkCapabilities.NET_CAPABILITY_NOT_METERED)
             )
         } catch (e: Exception) {

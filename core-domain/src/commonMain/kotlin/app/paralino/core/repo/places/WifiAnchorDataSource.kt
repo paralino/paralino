@@ -59,6 +59,7 @@ class WifiAnchorDataSource(
         val id: String,
         val bssid: String,
         val samples: List<Sample>,
+        val ssid: String? = null,
     )
 
     @Serializable
