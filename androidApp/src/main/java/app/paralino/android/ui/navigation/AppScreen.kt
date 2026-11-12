@@ -128,6 +128,15 @@ sealed interface AppScreen : NavKey {
         data class PlaceSensitivity(val groupId: String, val placeId: String) : AppScreen
 
         @Serializable
+        data class PlaceImprovements(val groupId: String, val placeId: String) : AppScreen
+
+        @Serializable
+        data class FalseLocations(val groupId: String, val placeId: String) : AppScreen
+
+        @Serializable
+        data class WifiNetworks(val placeId: String?) : AppScreen
+
+        @Serializable
         data class LocationHistoryDelete(val groupId: String) : AppScreen
 
         @Serializable

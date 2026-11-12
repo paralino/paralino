@@ -85,9 +85,9 @@ fun PlaceDetailScreen(
                     )
                 )
             },
-            openPlaceSensitivityScreen = {
+            openPlaceImprovementsScreen = {
                 appState.navController.navigate(
-                    AppScreen.MainHome.PlaceSensitivity(
+                    AppScreen.MainHome.PlaceImprovements(
                         groupId = groupId,
                         placeId = placeId
                     )

@@ -85,7 +85,7 @@ fun RowScope.GroupStatusTagContent(
     }
 
     val tagTextColor = when (tagBackgroundColor) {
-        AppColors.highlightGold -> AppColors.darkBackground
+        AppColors.highlightGold -> AppColors.darkBackground.copy(alpha = 0.8f)
 
         else -> MaterialTheme.colors.contentColorFor(tagBackgroundColor)
             .takeOrElse { MaterialTheme.colors.onPrimary }

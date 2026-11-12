@@ -4,8 +4,11 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -15,11 +18,13 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ContentAlpha
+import androidx.compose.material.Icon
 import androidx.compose.material.LocalContentAlpha
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.clipToBounds
@@ -28,10 +33,12 @@ import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import app.paralino.core.presentation.settings.generic.GenericSettingListItem
 import app.paralino.core.presentation.settings.generic.GenericSettingsScreenStateContent
 import app.paralino.core.presentation.settings.generic.GenericSettingsScreenUiEvent
+import app.paralino.core.resources.CoreAppIcons
 import app.paralino.core.resources.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.CoreUiState
 import app.paralino.core.ui.components.AppButtonState
@@ -46,6 +53,8 @@ import app.paralino.core.ui.components.SettingsActionItem
 import app.paralino.core.ui.components.SettingsSectionHeader
 import app.paralino.core.ui.components.dialogs.LoadingDialog
 import app.paralino.core.ui.components.rememberSeekbarState
+import app.paralino.core.ui.groups.components.GroupMemberActionButton
+import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.utils.extensions.annotatedBoldCompose
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -122,7 +131,7 @@ fun GenericSettingsListScreen(
                     this.stickyHeader(key = item.keyId) {
                         SettingsSectionHeader(
                             modifier = Modifier
-                                .zIndex(0f)
+                                .zIndex(item.zIndex)
                                 .padding(horizontal = 20.dp)
                                 .fillMaxWidth()
                                 .animateItem(),
@@ -205,6 +214,19 @@ fun GenericSettingsListScreen(
                     }
                 }
 
+                is GenericSettingListItem.DeletableItem -> {
+                    this.item(key = item.keyId) {
+                        GenericSettingDeletableItem(
+                            modifier = Modifier
+                                .zIndex(index.toFloat())
+                                .animateItem()
+                                .padding(horizontal = 20.dp, vertical = 6.dp),
+                            item = item,
+                            onDelete = { onEvent(GenericSettingsScreenUiEvent.DeleteItem(item = item)) }
+                        )
+                    }
+                }
+
                 is GenericSettingListItem.EmptyState -> {
                     if (item.isVisible) {
                         this.item(key = item.keyId) {
@@ -236,6 +258,88 @@ fun GenericSettingsListScreen(
 
     if (state.isFullScreenLoading) {
         LoadingDialog(text = state.loadingText)
+    }
+}
+
+@Composable
+private fun GenericSettingDeletableItem(
+    modifier: Modifier = Modifier,
+    item: GenericSettingListItem.DeletableItem,
+    onDelete: () -> Unit,
+) {
+    Row(
+        modifier = modifier
+            .background(
+                color = MaterialTheme.colors.surface,
+                shape = RoundedCornerShape(16.dp)
+            )
+            .padding(horizontal = 12.dp, vertical = 10.dp)
+            .fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .weight(1f),
+            verticalArrangement = Arrangement.spacedBy(2.dp)
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                Icon(
+                    painter = item.icon.asPainterResource(),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(18.dp)
+                )
+                Text(
+                    text = item.title,
+                    style = MaterialTheme.typography.subtitle2.copy(fontSize = 18.sp),
+                )
+            }
+
+            CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
+                item.tag?.let {
+                    Text(
+                        text = it.annotatedBoldCompose(),
+                        style = MaterialTheme.typography.caption.copy(fontWeight = FontWeight.SemiBold),
+                        color = if (item.isTagActive) {
+                            MaterialTheme.colors.onPrimary
+                        } else {
+                            AppColors.darkBackground.copy(alpha = 0.8f)
+                        },
+                        modifier = Modifier
+                            .background(
+                                color = if (item.isTagActive) {
+                                    AppColors.accent
+                                } else {
+                                    AppColors.highlightGold
+                                },
+                                shape = MaterialTheme.shapes.medium
+                            )
+                            .padding(horizontal = 6.dp, vertical = 1.dp)
+                    )
+                }
+                item.description?.let {
+                    Text(
+                        text = it.annotatedBoldCompose(),
+                        style = MaterialTheme.typography.caption,
+                    )
+                }
+            }
+        }
+
+        GroupMemberActionButton(
+            startIcon = CoreAppIcons.Delete.asPainterResource(),
+            endIcon = null,
+            contentPadding = PaddingValues(6.dp),
+            text = "",
+            showText = false,
+            backgroundColor = AppColors.errorBackground,
+            contentColor = AppColors.redMain,
+            onClick = onDelete
+        )
     }
 }
 

@@ -731,6 +731,32 @@ interface MainAlertDialog {
         )
     }
 
+    data class ForgetLearnedLocationItem(
+        val itemId: String,
+        val title: String,
+        val message: String,
+    ) : MainAlertDialog {
+        override val key: String = "ForgetLearnedLocationItem"
+
+        override val dialogData: AlertDialogData = AlertDialogData(
+            id = key,
+            title = title,
+            message = message,
+            buttons = listOf(
+                AlertDialogButtonData(
+                    id = Buttons.buttonOk,
+                    text = stringResource(resource = MR.strings.place_improvements_forget_button),
+                    color = AlertDialogButtonData.destructiveColor,
+                    needsLongConfirmation = true
+                ),
+                AlertDialogButtonData(
+                    id = Buttons.buttonCancel,
+                    text = stringResource(resource = MR.strings.button_cancel)
+                ),
+            ),
+        )
+    }
+
     data class ServiceMaxLimit(
         val content: String,
         val limit: Int

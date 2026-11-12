@@ -69,7 +69,7 @@ fun PlaceDetailScreenCore(
     onNavigateBack: () -> Unit,
     openPlaceRawDataScreen: () -> Unit,
     openPlaceAlertsScreen: () -> Unit,
-    openPlaceSensitivityScreen: () -> Unit,
+    openPlaceImprovementsScreen: () -> Unit,
     openPlaceNameEditScreen: () -> Unit,
     openPlacePositionEditScreen: () -> Unit,
     mapContent: @Composable (PlaceDetailScreenState) -> Unit,
@@ -137,7 +137,7 @@ fun PlaceDetailScreenCore(
                 openPlacePositionEditScreen = openPlacePositionEditScreen,
                 openPlaceRawDataScreen = openPlaceRawDataScreen,
                 openPlaceAlertsScreen = openPlaceAlertsScreen,
-                openPlaceSensitivityScreen = openPlaceSensitivityScreen,
+                openPlaceImprovementsScreen = openPlaceImprovementsScreen,
                 onPlaceDelete = {
                     showDialog = MainAlertDialog.DeletePlace
                 },
@@ -164,7 +164,7 @@ private fun PlaceDetailScreen(
     userScrollEnabled: Boolean,
     openPlaceRawDataScreen: () -> Unit,
     openPlaceAlertsScreen: () -> Unit,
-    openPlaceSensitivityScreen: () -> Unit,
+    openPlaceImprovementsScreen: () -> Unit,
     openPlaceNameEditScreen: () -> Unit,
     openPlacePositionEditScreen: () -> Unit,
     onPlaceDelete: () -> Unit,
@@ -298,10 +298,10 @@ private fun PlaceDetailScreen(
                         openPlaceAlertsScreen()
                     }
                     SettingsActionItem(
-                        name = stringResource(MR.strings.place_sensitivity_screen_title),
-                        icon = CoreAppIcons.ShareLocation.asPainterResource(),
+                        name = stringResource(MR.strings.place_improvements_screen_title),
+                        icon = CoreAppIcons.AutoFixHigh.asPainterResource(),
                     ) {
-                        openPlaceSensitivityScreen()
+                        openPlaceImprovementsScreen()
                     }
                 }
 

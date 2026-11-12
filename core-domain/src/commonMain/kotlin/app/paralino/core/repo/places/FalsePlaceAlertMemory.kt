@@ -257,6 +257,27 @@ class FalsePlaceAlertMemory(
         )
     }
 
+    suspend fun falseLocations(placeId: String): List<FalsePlaceAlertLocationDataSource.FalsePlaceAlertLocation> =
+        mutex.withLock {
+            val now = nowUTC()
+            if (!ensureLoaded(now)) {
+                return@withLock emptyList()
+            }
+            activeSpots(placeId, now)
+        }
+
+    suspend fun forget(placeId: String, location: FalsePlaceAlertLocationDataSource.FalsePlaceAlertLocation) {
+        mutex.withLock {
+            val now = nowUTC()
+            if (!ensureLoaded(now)) {
+                return@withLock
+            }
+            val remaining = activeSpots(placeId, now).filter { it != location }
+            spots[placeId] = remaining
+            persist(placeId = placeId, placeSpots = remaining)
+        }
+    }
+
     // drop false locations of places that don't exist anymore
     suspend fun removeMissing(placeIds: Set<String>) {
         mutex.withLock {

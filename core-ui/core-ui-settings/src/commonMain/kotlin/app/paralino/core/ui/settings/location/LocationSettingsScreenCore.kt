@@ -1,6 +1,5 @@
 package app.paralino.core.ui.settings.location
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -23,33 +22,57 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
-import app.paralino.core.resources.moko.*
+import app.paralino.core.presentation.common.AlertDialogAction
 import app.paralino.core.presentation.settings.location.LocationSettingsScreenEvent
 import app.paralino.core.presentation.settings.location.LocationSettingsScreenUiEvent
 import app.paralino.core.presentation.settings.location.LocationSettingsViewModel
-import app.paralino.core.ui.CoreUiState
 import app.paralino.core.resources.CoreAppIcons
 import app.paralino.core.resources.CoreAppIcons.asPainterResource
+import app.paralino.core.resources.moko.MR
+import app.paralino.core.resources.moko.setting_location_background_section_title
+import app.paralino.core.resources.moko.setting_location_balanced_autoPause_description
+import app.paralino.core.resources.moko.setting_location_balanced_autoPause_title
+import app.paralino.core.resources.moko.setting_location_balanced_highAccuracy_description
+import app.paralino.core.resources.moko.setting_location_balanced_highAccuracy_title
+import app.paralino.core.resources.moko.setting_location_balanced_locationIndicator_description
+import app.paralino.core.resources.moko.setting_location_balanced_locationIndicator_title
+import app.paralino.core.resources.moko.setting_location_balanced_section_info
+import app.paralino.core.resources.moko.setting_location_balanced_section_title
+import app.paralino.core.resources.moko.setting_location_batterySaver_batteryLow_info
+import app.paralino.core.resources.moko.setting_location_batterySaver_lowPowerMode_description
+import app.paralino.core.resources.moko.setting_location_batterySaver_lowPowerMode_title
+import app.paralino.core.resources.moko.setting_location_batterySaver_section_info
+import app.paralino.core.resources.moko.setting_location_batterySaver_section_title
+import app.paralino.core.resources.moko.setting_location_filtering_section_info
+import app.paralino.core.resources.moko.setting_location_filtering_section_title
+import app.paralino.core.resources.moko.setting_location_highPerformance_duration_info
+import app.paralino.core.resources.moko.setting_location_highPerformance_section_info
+import app.paralino.core.resources.moko.setting_location_highPerformance_section_title
+import app.paralino.core.resources.moko.setting_location_history_section_info
+import app.paralino.core.resources.moko.setting_location_history_section_title
+import app.paralino.core.resources.moko.wifi_networks_screen_title
+import app.paralino.core.resources.moko.wifi_networks_settings_entry_info
+import app.paralino.core.ui.CoreUiState
+import app.paralino.core.ui.components.GenericSettingsOptions
 import app.paralino.core.ui.components.LargeSeekbarSwitch
 import app.paralino.core.ui.components.LargeSeekbarSwitchState
 import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.components.NoticeInfoChip
+import app.paralino.core.ui.components.SettingsActionItem
 import app.paralino.core.ui.components.SettingsSectionHeader
-import app.paralino.core.presentation.common.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.Show
 import app.paralino.core.ui.components.rememberSeekbarState
-import app.paralino.core.ui.components.GenericSettingsOptions
 import app.paralino.core.utils.extensions.annotatedBoldCompose
 import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.flow.collectLatest
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun LocationSettingsScreenCore(
     coreUiState: CoreUiState,
     vm: LocationSettingsViewModel,
     paddingValues: PaddingValues,
-    openPaywall: () -> Unit
+    openPaywall: () -> Unit,
+    openWifiNetworks: () -> Unit,
 ) {
     MessageDispatcherEffect(vm, coreUiState)
     val uiState by vm.uiState.collectAsState()
@@ -150,9 +173,47 @@ fun LocationSettingsScreenCore(
             }
         }
 
+        this.stickyHeader(key = "location_filtering") {
+            SettingsSectionHeader(
+                modifier = Modifier.padding(horizontal = 20.dp).fillMaxWidth(),
+                name = stringResource(MR.strings.setting_location_filtering_section_title)
+            )
+        }
+
+        this.item(key = "location_filtering_items") {
+            Column(modifier = Modifier.padding(horizontal = 20.dp).fillMaxWidth().animateItem()) {
+                CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
+                    Text(
+                        modifier = Modifier.padding(bottom = 20.dp),
+                        text = stringResource(MR.strings.setting_location_filtering_section_info).annotatedBoldCompose(),
+                        style = MaterialTheme.typography.caption.copy(fontWeight = FontWeight.Medium),
+                        textAlign = TextAlign.Start
+                    )
+                }
+
+                GenericSettingsOptions(
+                    modifier = Modifier.fillMaxWidth(),
+                    items = uiState.filteringSettings.items,
+                    onOptionSelected = {
+                        vm.onEvent(
+                            LocationSettingsScreenUiEvent.ChangeFiltering(it)
+                        )
+                    }
+                )
+                Spacer(modifier = Modifier.size(20.dp))
+                SettingsActionItem(
+                    name = stringResource(MR.strings.wifi_networks_screen_title),
+                    icon = CoreAppIcons.SignalWifi3.asPainterResource(),
+                    tag = stringResource(MR.strings.wifi_networks_settings_entry_info),
+                    onClick = openWifiNetworks
+                )
+                Spacer(modifier = Modifier.size(20.dp))
+            }
+        }
+
         this.stickyHeader(key = "when_in_background") {
             SettingsSectionHeader(
-                modifier = Modifier.padding(horizontal = 20.dp).fillMaxWidth().zIndex(1f),
+                modifier = Modifier.padding(horizontal = 20.dp).padding(bottom = 8.dp).fillMaxWidth().zIndex(1f),
                 name = stringResource(MR.strings.setting_location_background_section_title)
             )
         }
@@ -213,36 +274,7 @@ fun LocationSettingsScreenCore(
                         vm.onEvent(LocationSettingsScreenUiEvent.ToggleBalancedHighPerformance)
                     }
                 )
-            }
-        }
 
-        this.stickyHeader(key = "location_filtering") {
-            SettingsSectionHeader(
-                modifier = Modifier.padding(horizontal = 20.dp).fillMaxWidth(),
-                name = stringResource(MR.strings.setting_location_filtering_section_title)
-            )
-        }
-
-        this.item(key = "location_filtering_items") {
-            Column(modifier = Modifier.padding(horizontal = 20.dp).fillMaxWidth().animateItem()) {
-                CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-                    Text(
-                        modifier = Modifier.padding(bottom = 20.dp),
-                        text = stringResource(MR.strings.setting_location_filtering_section_info).annotatedBoldCompose(),
-                        style = MaterialTheme.typography.caption.copy(fontWeight = FontWeight.Medium),
-                        textAlign = TextAlign.Start
-                    )
-                }
-
-                GenericSettingsOptions(
-                    modifier = Modifier.fillMaxWidth(),
-                    items = uiState.filteringSettings.items,
-                    onOptionSelected = {
-                        vm.onEvent(
-                            LocationSettingsScreenUiEvent.ChangeFiltering(it)
-                        )
-                    }
-                )
                 Spacer(modifier = Modifier.size(20.dp))
             }
         }

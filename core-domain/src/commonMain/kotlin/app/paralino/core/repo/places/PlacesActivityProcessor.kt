@@ -64,7 +64,7 @@ class PlacesActivityProcessor(
 ) : IPlacesActivityProcessor() {
 
     override suspend fun processLocation(mappedLocations: List<MemberGroupId>) {
-        logg.v("place_activity", "Process new location in places")
+        logg.v("place_activity", "Process new locations ${mappedLocations.size} in places")
 
         placeActivityUploadEngine.syncPendingEventsInBackground()
 

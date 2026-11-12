@@ -1,6 +1,12 @@
 package app.paralino.core.ui
 
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.viewinterop.UIKitViewController
+import app.paralino.core.presentation.settings.generic.GenericSettingListItem
+import app.paralino.core.presentation.settings.generic.GenericSettingsDestination
+import platform.UIKit.UIViewController
 import androidx.compose.ui.uikit.OnFocusBehavior
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.ComposeUIViewController
@@ -365,13 +371,15 @@ object SettingsScreens {
     fun LocationSettingsScreenVC(
         vm: LocationSettingsViewModel,
         openPaywall: () -> Unit,
+        openWifiNetworks: () -> Unit,
     ) = ComposeUIViewController {
         RootScreenIOS {
             LocationSettingsScreenCore(
                 coreUiState = it,
                 vm = vm,
                 paddingValues = PaddingValues(bottom = 20.dp),
-                openPaywall = openPaywall
+                openPaywall = openPaywall,
+                openWifiNetworks = openWifiNetworks
             )
         }
     }
@@ -412,6 +420,8 @@ object SettingsScreens {
         askBackgroundAccessPermission: () -> Unit,
         applyAppTheme: (AppThemeType) -> Unit,
         applyDarkThemeStyle: (DarkThemeStyleType) -> Unit,
+        openScreen: (GenericSettingsDestination) -> Unit,
+        mapUIView: (GenericSettingListItem.Map) -> UIViewController,
     ) = ComposeUIViewController {
         RootScreenIOS {
             GenericSettingsScreenCore(
@@ -419,13 +429,19 @@ object SettingsScreens {
                 paddingValues = PaddingValues(),
                 vm = vm,
                 openPaywall = openPaywall,
+                mapContent = { item ->
+                    UIKitViewController(
+                        modifier = Modifier.fillMaxSize(),
+                        factory = { mapUIView(item) }
+                    )
+                },
                 // not available in iOS
-                mapContent = {},
                 openNotificationSocketChannelSettings = {},
                 askNotificationPermission = askNotificationPermission,
                 askBackgroundAccessPermission = askBackgroundAccessPermission,
                 applyAppTheme = applyAppTheme,
                 applyDarkThemeStyle = applyDarkThemeStyle,
+                openScreen = openScreen,
             )
         }
     }

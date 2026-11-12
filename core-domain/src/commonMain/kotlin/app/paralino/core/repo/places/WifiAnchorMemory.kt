@@ -79,7 +79,7 @@ class WifiAnchorMemory(
                 logg.tag("place_activity").w("Error saving wifi anchor: ${e.message}")
             }
             logg.tag("place_activity")
-                .d("Wifi anchor sample (${anchor.samples.size}, valid: ${wifiCenter(anchor) != null}) - ${wifi.bssid.takeLast(5)}")
+                .d("Wifi anchor sample (${anchor.samples.size}, valid: ${confidentWifiCenter(anchor) != null}) - ${wifi.bssid.takeLast(5)}")
         }
     }
 
@@ -133,6 +133,48 @@ class WifiAnchorMemory(
         }
     }
 
+    enum class WifiStatus {
+        ACTIVE, LEARNING, UNSTABLE
+    }
+
+    data class LearnedWifi(
+        val bssid: String,
+        val ssid: String?,
+        val status: WifiStatus,
+        val location: LatLng,
+        val samples: Int,
+        val lastSeenMillis: Long,
+    )
+
+    suspend fun allWifi(): List<LearnedWifi> = mutex.withLock {
+        getAnchors().orEmpty().map { it.toLearnedWifi() }
+    }
+
+    suspend fun wifiForPlace(placeCenter: LatLng, radiusMeters: Float): List<LearnedWifi> {
+        return allWifi().filter { distance(it.location, placeCenter) <= radiusMeters }
+    }
+
+    private fun WifiAnchor.toLearnedWifi() = LearnedWifi(
+        bssid = bssid,
+        ssid = ssid,
+        status = when {
+            confidentWifiCenter(this) != null -> WifiStatus.ACTIVE
+            isLearning(this) -> WifiStatus.LEARNING
+            else -> WifiStatus.UNSTABLE
+        },
+        location = median(this),
+        samples = samples.size,
+        lastSeenMillis = samples.last().timeMillis
+    )
+
+    suspend fun forget(bssids: Collection<String>) {
+        mutex.withLock {
+            val all = getAnchors() ?: return@withLock
+            all.filter { it.bssid in bssids }.forEach { dataSource.delete(id = it.id) }
+            anchors = all.filter { it.bssid !in bssids }
+        }
+    }
+
     private suspend fun isAnchorInPlace(
         wifi: ConnectedWifi?,
         placeCenter: LatLng,
@@ -142,24 +184,35 @@ class WifiAnchorMemory(
             return false
         }
         val anchor = getAnchors()?.firstOrNull { it.bssid == wifi.bssid } ?: return false
-        val center = wifiCenter(anchor) ?: return false
+        val center = confidentWifiCenter(anchor) ?: return false
         return distance(center, placeCenter) <= radiusMeters
     }
 
     // null if wifi location is not known well enough yet, or wifi moves around
-    private fun wifiCenter(anchor: WifiAnchor): LatLng? {
-        val samples = anchor.samples
-        if (samples.size < 5 || samples.last().timeMillis - samples.first().timeMillis < 1.hours.inWholeMilliseconds) {
+    private fun confidentWifiCenter(anchor: WifiAnchor): LatLng? {
+        if (isLearning(anchor)) {
             return null
         }
-        val center = LatLng(
-            lat = samples.map { it.lat }.sorted()[samples.size / 2],
-            lng = samples.map { it.lng }.sorted()[samples.size / 2]
-        )
+        val samples = anchor.samples
+        val center = median(anchor)
         val nearCenter = samples.count {
             distance(center, LatLng(lat = it.lat, lng = it.lng)) <= 100
         }
         return center.takeIf { nearCenter >= samples.size * 0.8 }
+    }
+
+    // not enough samples yet to know where the wifi is
+    private fun isLearning(anchor: WifiAnchor): Boolean {
+        val samples = anchor.samples
+        return samples.size < 5 || samples.last().timeMillis - samples.first().timeMillis < 1.hours.inWholeMilliseconds
+    }
+
+    private fun median(anchor: WifiAnchor): LatLng {
+        val samples = anchor.samples
+        return LatLng(
+            lat = samples.map { it.lat }.sorted()[samples.size / 2],
+            lng = samples.map { it.lng }.sorted()[samples.size / 2]
+        )
     }
 
     private suspend fun getAnchors(): List<WifiAnchor>? {

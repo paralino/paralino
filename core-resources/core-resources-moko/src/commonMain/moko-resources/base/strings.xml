@@ -948,6 +948,41 @@
     <string name="place_sensitivity_optionRefresh2_info">Gets an accurate location beforehand but may suppress or delay some alerts. Make sure you are connected to the Internet and the app can run in the background without restrictions.</string>
     <string name="place_sensitivity_optionRefresh3_title">After Alert Is Sent</string>
     <string name="place_sensitivity_optionRefresh3_info">An accurate location is requested as the final step to ensure you don’t miss any alerts, but it might cause extra or false alerts.</string>
+    <string name="place_improvements_screen_title">Location Improvements</string>
+    <string name="place_improvements_info">This device will try to learn how to filter out potentially false location alerts over time. Everything shown here is processed locally and stored only on this device.</string>
+    <string name="place_improvements_falseLocations_title">False Locations</string>
+    <string name="place_improvements_falseLocations_info">Here you can see potentially false locations where this device reported a place change. Frequent place changes near these locations are ignored for 12 hours.</string>
+    <string name="place_improvements_falseLocations_empty">No false locations detected recently.</string>
+    <string name="place_improvements_falseExit">False exit</string>
+    <string name="place_improvements_falseEnter">False enter</string>
+    <string name="place_improvements_away">%s away</string>
+    <string name="place_improvements_seenTimes">Seen %d times</string>
+    <string name="place_improvements_tag_filtering">Filtering</string>
+    <string name="place_improvements_tag_watching">Watching</string>
+    <string name="place_improvements_wifi_title">Wi-Fi Networks</string>
+    <string name="place_improvements_wifi_info">While this device is connected to one of these networks, locations that would otherwise be classified as place departure alerts are ignored.</string>
+    <string name="place_improvements_wifi_empty">No Wi-Fi networks learned for this place yet.</string>
+    <string name="place_improvements_wifi_hidden">Hidden network %s</string>
+    <string name="place_improvements_wifi_accessPoints">%d access points</string>
+    <string name="place_improvements_wifi_status_active">Active</string>
+    <string name="place_improvements_wifi_status_learning">Learning</string>
+    <string name="place_improvements_wifi_status_unstable">Not stable</string>
+    <string name="place_improvements_lastSeen">Last seen: %s</string>
+    <string name="place_improvements_forget_button">Forget</string>
+    <string name="place_improvements_forgetWifi_title">Forget Wi-Fi Network</string>
+    <string name="place_improvements_forgetWifi_message">This device will stop using %s for all places until it learns it again.</string>
+    <string name="place_improvements_forgetFalseLocation_title">Forget False Location</string>
+    <string name="place_improvements_forgetFalseLocation_message">Place changes near this location will be processed normally again.</string>
+    <string name="place_improvements_falseLocations_summary">%d detected recently</string>
+    <string name="place_improvements_falseLocations_summary_none">None detected recently</string>
+    <string name="place_improvements_wifi_summary_active">%s active</string>
+    <string name="place_improvements_wifi_summary_none">None learned yet</string>
+    <string name="wifi_networks_screen_title">Learned Wi-Fi Networks</string>
+    <string name="wifi_networks_info">Here you\'ll see Wi-Fi networks whose location this device has learned. While connected to one that is also inside a place, locations that say the device left that place are ignored.</string>
+    <string name="wifi_networks_empty">No Wi-Fi networks learned yet.</string>
+    <string name="wifi_networks_usedFor">Used for %s</string>
+    <string name="wifi_networks_notUsed">Not used for any place</string>
+    <string name="wifi_networks_settings_entry_info">Used to filter out locations while connected to Wi-Fi</string>
     <string name="place_notification_enter" note="Used to tell that someone (person) has arrived at certain place as in: User arrived at Home">%1$s arrived at %2$s</string>
     <string name="place_notification_exit" note="Used to tell that someone (person) has left some place as in: User left Home">%1$s left %2$s</string>
     <string name="place_notification_device_enter" note="Used to tell that device has arrived at certain place as in: Your device left Home">%1$s arrived at %2$s</string>

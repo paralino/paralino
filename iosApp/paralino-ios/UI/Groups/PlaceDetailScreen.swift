@@ -34,8 +34,8 @@ struct PlaceDetailScreen: View {
                     openPlaceAlertsScreen: {
                         path.append(.home(.placeAlertsSettings(groupId: appState.groupId, placeId: appState.placeId)))
                     },
-                    openPlaceSensitivityScreen: {
-                        path.append(.home(.placeSensitivitySettings(groupId: appState.groupId, placeId: appState.placeId)))
+                    openPlaceImprovementsScreen: {
+                        path.append(.home(.placeImprovements(groupId: appState.groupId, placeId: appState.placeId)))
                     },
                     openPlaceNameEditScreen: {
                         path.append(.home(.placeCreate(groupId: appState.groupId, placeId: appState.placeId, editStep: CreatePlaceScreenStep.nameAndImage, lat: nil, lng: nil)))

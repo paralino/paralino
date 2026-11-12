@@ -63,6 +63,9 @@ import app.paralino.android.ui.settings.profile.UserDevicesScreen
 import app.paralino.android.ui.share.SharingStartScreen
 import app.paralino.core.presentation.login.LoginScreenState
 import app.paralino.core.presentation.login.LoginScreenUiType
+import app.paralino.core.presentation.places.detail.FalseLocationsViewModel
+import app.paralino.core.presentation.places.detail.PlaceImprovementsViewModel
+import app.paralino.core.presentation.places.detail.WifiNetworksViewModel
 import app.paralino.core.presentation.places.detail.PlaceSensitivityViewModel
 import app.paralino.core.presentation.settings.generic.AppThemeViewModel
 import app.paralino.core.presentation.settings.generic.MeasurementSystemViewModel
@@ -203,6 +206,24 @@ fun EntryProviderScope<NavKey>.homeEntries(
         GenericSettingsScreen(
             appState = appState,
             vm = koinViewModel<PlaceSensitivityViewModel> { parametersOf(it.groupId, it.placeId) }
+        )
+    }
+    entry<AppScreen.MainHome.PlaceImprovements> {
+        GenericSettingsScreen(
+            appState = appState,
+            vm = koinViewModel<PlaceImprovementsViewModel> { parametersOf(it.groupId, it.placeId) }
+        )
+    }
+    entry<AppScreen.MainHome.FalseLocations> {
+        GenericSettingsScreen(
+            appState = appState,
+            vm = koinViewModel<FalseLocationsViewModel> { parametersOf(it.groupId, it.placeId) }
+        )
+    }
+    entry<AppScreen.MainHome.WifiNetworks> {
+        GenericSettingsScreen(
+            appState = appState,
+            vm = koinViewModel<WifiNetworksViewModel> { parametersOf(it.placeId) }
         )
     }
 }

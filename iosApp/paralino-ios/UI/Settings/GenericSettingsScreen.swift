@@ -13,6 +13,7 @@ struct GenericSettingsScreen: View {
     @EnvironmentObject var appDelegate: AppDelegate
     @Binding var path: [NavigationGraph]
     @StateObject var appState: GenericSettingsScreenState
+    @StateObject private var mapState = BaseMapObservableObject()
     
     var body: some View {
         ZStack {
@@ -38,6 +39,25 @@ struct GenericSettingsScreen: View {
                     },
                     applyDarkThemeStyle: { style in
                         AppThemeManager.applyDarkThemeStyle(style)
+                    },
+                    openScreen: { destination in
+                        switch destination {
+                        case let d as GenericSettingsDestinationFalseLocations:
+                            path.append(.home(.falseLocations(groupId: d.groupId, placeId: d.placeId)))
+                        case let d as GenericSettingsDestinationWifiNetworks:
+                            path.append(.home(.wifiNetworks(placeId: d.placeId)))
+                        case let d as GenericSettingsDestinationPlaceSensitivity:
+                            path.append(.home(.placeSensitivitySettings(groupId: d.groupId, placeId: d.placeId)))
+                        default:
+                            break
+                        }
+                    },
+                    mapUIView: { item in
+                        mapState.markers = item.markers.map { MapAnnotatedItem(marker: $0) }
+                        mapState.refocusMap(animate: false)
+                        let controller = MapComponentVC()
+                        controller.mapState = mapState
+                        return controller
                     }
                 )
             }

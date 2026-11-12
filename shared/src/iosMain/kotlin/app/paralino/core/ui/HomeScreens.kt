@@ -399,7 +399,7 @@ object HomeScreens {
         paddingValues: AppleScreenPaddingValues,
         openPlaceRawDataScreen: () -> Unit,
         openPlaceAlertsScreen: () -> Unit,
-        openPlaceSensitivityScreen: () -> Unit,
+        openPlaceImprovementsScreen: () -> Unit,
         openPlaceNameEditScreen: () -> Unit,
         openPlacePositionEditScreen: () -> Unit,
         onNavigateBack: () -> Unit,
@@ -419,7 +419,7 @@ object HomeScreens {
                 onNavigateBack = onNavigateBack,
                 openPlaceRawDataScreen = openPlaceRawDataScreen,
                 openPlaceAlertsScreen = openPlaceAlertsScreen,
-                openPlaceSensitivityScreen = openPlaceSensitivityScreen,
+                openPlaceImprovementsScreen = openPlaceImprovementsScreen,
                 openPlaceNameEditScreen = openPlaceNameEditScreen,
                 openPlacePositionEditScreen = openPlacePositionEditScreen,
                 mapContent = { state ->

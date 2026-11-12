@@ -92,6 +92,9 @@ import app.paralino.core.presentation.personal_space.settings.PersonalSpaceSetti
 import app.paralino.core.presentation.places.create.CreatePlaceScreenStep
 import app.paralino.core.presentation.places.create.CreatePlaceViewModel
 import app.paralino.core.presentation.places.detail.PlaceDetailViewModel
+import app.paralino.core.presentation.places.detail.FalseLocationsViewModel
+import app.paralino.core.presentation.places.detail.PlaceImprovementsViewModel
+import app.paralino.core.presentation.places.detail.WifiNetworksViewModel
 import app.paralino.core.presentation.places.detail.PlaceSensitivityViewModel
 import app.paralino.core.presentation.places.list.PlacesViewModel
 import app.paralino.core.presentation.privacyzones.create.CreatePrivacyZoneScreenStep
@@ -316,6 +319,9 @@ object KoinSetup {
         viewModel { PersonalSpaceViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
         viewModel { PersonalSpaceSettingsViewModel(get(), get()) }
         viewModel { (groupId: String, placeId: String) -> PlaceSensitivityViewModel(groupId = groupId, placeId = placeId, get(), get(), get(), get()) }
+        viewModel { (groupId: String, placeId: String) -> PlaceImprovementsViewModel(groupId = groupId, placeId = placeId, get(), get(), get()) }
+        viewModel { (groupId: String, placeId: String) -> FalseLocationsViewModel(groupId = groupId, placeId = placeId, get(), get(), get(), get(), get()) }
+        viewModel { (placeId: String?) -> WifiNetworksViewModel(placeId = placeId, get(), get(), get(), get()) }
         viewModel { AppSettingsViewModel(get(), get()) }
     }
 }

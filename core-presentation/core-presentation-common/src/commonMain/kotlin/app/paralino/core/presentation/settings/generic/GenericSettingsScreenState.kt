@@ -8,6 +8,7 @@ import app.paralino.core.models.settings.DarkThemeStyleType
 import app.paralino.core.models.settings.MapsSDKProvider
 import app.paralino.core.presentation.common.AlertDialogAction
 import app.paralino.core.presentation.common.MainAlertDialog
+import app.paralino.core.presentation.map.MapPinData
 import app.paralino.core.presentation.settings.SettingsActionItemType
 import app.paralino.core.utils.ConditionErrorType
 import org.jetbrains.compose.resources.DrawableResource
@@ -54,7 +55,8 @@ sealed interface GenericSettingListItem {
 
     data class StickyHeader(
         val content: String,
-        override val keyId: String = content
+        override val keyId: String = content,
+        val zIndex: Float = 0f
     ): GenericSettingListItem
 
     data class Subtitle(
@@ -116,6 +118,14 @@ sealed interface GenericSettingListItem {
         override val keyId: String = text
     ): GenericSettingListItem
 
+    data class DeletableItem(
+        override val keyId: String,
+        val title: String,
+        val icon: DrawableResource,
+        val tag: String?,
+        val isTagActive: Boolean,
+        val description: String?,
+    ): GenericSettingListItem
 
     data class Map(
         override val keyId: String,
@@ -125,6 +135,7 @@ sealed interface GenericSettingListItem {
         val centerLocation: LatLng,
         val zoomLevel: Float,
         val isVisible: Boolean,
+        val markers: List<MapPinData> = emptyList(),
     ): GenericSettingListItem
 }
 
@@ -148,6 +159,13 @@ sealed interface GenericSettingsScreenEvent {
     data object AskForBackgroundAccessPermission : GenericSettingsScreenEvent
     data class ApplyAppTheme(val theme: AppThemeType) : GenericSettingsScreenEvent
     data class ApplyDarkThemeStyle(val style: DarkThemeStyleType) : GenericSettingsScreenEvent
+    data class OpenScreen(val destination: GenericSettingsDestination) : GenericSettingsScreenEvent
+}
+
+sealed interface GenericSettingsDestination {
+    data class FalseLocations(val groupId: String, val placeId: String) : GenericSettingsDestination
+    data class WifiNetworks(val placeId: String?) : GenericSettingsDestination
+    data class PlaceSensitivity(val groupId: String, val placeId: String) : GenericSettingsDestination
 }
 
 sealed interface GenericSettingsScreenUiEvent {
@@ -155,6 +173,7 @@ sealed interface GenericSettingsScreenUiEvent {
     data class ConditionErrorItemClick(val item: GenericSettingListItem.ConditionError) : GenericSettingsScreenUiEvent
     data class SelectOptionItem(val groupOptions: GenericSettingListItem.GroupOptions, val option: GroupOptionItem) : GenericSettingsScreenUiEvent
     data class SelectActionItem(val item: GenericSettingListItem.SettingsActionItem) : GenericSettingsScreenUiEvent
+    data class DeleteItem(val item: GenericSettingListItem.DeletableItem) : GenericSettingsScreenUiEvent
     data class DialogAction(val action: AlertDialogAction) : GenericSettingsScreenUiEvent
     data object GlobalEmptyStateActionClick : GenericSettingsScreenUiEvent
     data class OnMapInteraction(val isTouchingMap: Boolean) : GenericSettingsScreenUiEvent

@@ -20,6 +20,9 @@ struct LocationSettingsScreen: View {
                     vm: appState.vm,
                     openPaywall: {
                         path.append(.settings(.paywall(groupId: nil, type: .upgradeDefault)))
+                    },
+                    openWifiNetworks: {
+                        path.append(.home(.wifiNetworks(placeId: nil)))
                     }
                 )
             }

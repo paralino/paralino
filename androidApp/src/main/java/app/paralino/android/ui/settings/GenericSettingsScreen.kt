@@ -21,6 +21,7 @@ import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.android.utils.extensions.applyAsNightMode
 import app.paralino.android.utils.extensions.openNotificationChannelSettings
 import app.paralino.core.presentation.settings.generic.BaseGenericSettingViewModel
+import app.paralino.core.presentation.settings.generic.GenericSettingsDestination
 import app.paralino.core.presentation.settings.generic.GenericSettingsScreenUiEvent
 import app.paralino.core.ui.components.DefaultToolbar
 import app.paralino.core.ui.components.ToolbarButtons
@@ -77,7 +78,7 @@ fun GenericSettingsScreen(
                     SimpleGenericMapComposable(
                         mapsSDKProvider = state.mapSDKProvider,
                         isSystemInDarkTheme = state.isDarkMode ?: isSystemInDarkTheme(),
-                        markers = emptyList(),
+                        markers = state.markers,
                         fallbackCenterLatLng = state.centerLocation,
                         zoomLevel = state.zoomLevel,
                         isSatelliteMode = false,
@@ -110,6 +111,23 @@ fun GenericSettingsScreen(
             applyAppTheme = { it.applyAsNightMode(context) },
             applyDarkThemeStyle = {
                 // AppTheme is observing this with app prefs
+            },
+            openScreen = { destination ->
+                appState.navController.navigate(
+                    when (destination) {
+                        is GenericSettingsDestination.FalseLocations -> AppScreen.MainHome.FalseLocations(
+                            groupId = destination.groupId,
+                            placeId = destination.placeId
+                        )
+                        is GenericSettingsDestination.WifiNetworks -> AppScreen.MainHome.WifiNetworks(
+                            placeId = destination.placeId
+                        )
+                        is GenericSettingsDestination.PlaceSensitivity -> AppScreen.MainHome.PlaceSensitivity(
+                            groupId = destination.groupId,
+                            placeId = destination.placeId
+                        )
+                    }
+                )
             }
         )
     }

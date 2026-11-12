@@ -35,6 +35,9 @@ fun LocationSettingsScreen(
             paddingValues = it,
             openPaywall = {
                 appState.navController.navigate(AppScreen.Common.BillingPaywall())
+            },
+            openWifiNetworks = {
+                appState.navController.navigate(AppScreen.MainHome.WifiNetworks(placeId = null))
             }
         )
     }
