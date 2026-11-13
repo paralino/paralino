@@ -13,6 +13,7 @@ import app.paralino.core.logg
 import app.paralino.core.models.base.GroupOrSpaceId
 import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.models.group.UserGroup
+import app.paralino.core.models.location.LatLng
 import app.paralino.core.models.location.LocationDataModel
 import app.paralino.core.models.location.LocationHistoryPointLocationModel
 import app.paralino.core.models.location.LocationHistoryPointModel
@@ -20,6 +21,8 @@ import app.paralino.core.models.location.LocationHistoryPointStatusModel
 import app.paralino.core.models.location.LocationSharingContract
 import app.paralino.core.models.location.LocationUpdateDataFromDevice
 import app.paralino.core.models.location.MemberGroupId
+import app.paralino.core.provider.IConnectionStatusProvider
+import app.paralino.core.repo.places.WifiAnchorMemory
 import app.paralino.core.utils.extensions.isLocationInaccurate
 import app.paralino.core.utils.extensions.roundToPrecision
 import app.paralino.core.utils.extensions.safeLet
@@ -36,6 +39,8 @@ class LocationPayloadProvider(
     private val cryptoCore: CryptoCore,
     private val approximateLocationObfuscator: ApproximateLocationObfuscator,
     private val privacyZoneObfuscator: PrivacyZoneObfuscator,
+    private val connectionStatus: IConnectionStatusProvider,
+    private val wifiAnchorMemory: WifiAnchorMemory,
 ) {
 
     private val mutex = Mutex()
@@ -71,7 +76,11 @@ class LocationPayloadProvider(
 
         when (result) {
             is LocationPayloadStatus.Success -> {
-                val status = memberDeviceStatusProvider.getStatus(groupId = groupId, contract = contract)
+                val status = memberDeviceStatusProvider.getStatus(
+                    groupId = groupId,
+                    contract = contract
+                )
+                var isLikelyInaccurate = false
                 val adjustedLocationData = safeLet(data, contract) { data, contract ->
                     val zoneResult = if (!groupId.isPersonalSpace) {
                         privacyZoneObfuscator.obfuscateIfInsideZone(
@@ -95,6 +104,14 @@ class LocationPayloadProvider(
                     }
 
                     val isInsidePrivacyZone = zoneResult != null
+                    isLikelyInaccurate = contract.saveToHistory &&
+                            !isInsidePrivacyZone &&
+                            approximateRadius == null &&
+                            wifiAnchorMemory.isFarFromWifi(
+                                wifi = connectionStatus.getConnectedWifi(),
+                                location = LatLng(lat = data.lat, lng = data.lng),
+                                accuracyMeters = data.adjustedHorizontalAccuracy
+                            )
                     val adjustedCoordinates = if (approximateRadius != null) {
                         // sharing approximate
                         if (zoneResult == null || zoneResult.uploadAccuracyMeters < approximateRadius) {
@@ -113,7 +130,10 @@ class LocationPayloadProvider(
                     }
 
                     val adjustedAccuracy = if (approximateRadius != null && zoneResult != null) {
-                        maxOf(approximateRadius.toFloat(), zoneResult.uploadAccuracyMeters.toFloat())
+                        maxOf(
+                            approximateRadius.toFloat(),
+                            zoneResult.uploadAccuracyMeters.toFloat()
+                        )
                     } else {
                         approximateRadius?.toFloat()
                             ?: zoneResult?.uploadAccuracyMeters?.toFloat()
@@ -127,8 +147,10 @@ class LocationPayloadProvider(
                     LocationDataModel(
                         timeUTC = data.timeUTC,
                         endTimeUTC = contract.endTimeUTC?.takeIf { contract.shareDeviceStatus },
-                        lat = (adjustedCoordinates?.location?.lat ?: zoneResult?.lat ?: data.lat).roundToPrecision(decimalPlaces = 6),
-                        lng = (adjustedCoordinates?.location?.lng ?: zoneResult?.lng ?: data.lng).roundToPrecision(decimalPlaces = 6),
+                        lat = (adjustedCoordinates?.location?.lat ?: zoneResult?.lat ?: data.lat)
+                            .roundToPrecision(decimalPlaces = 6),
+                        lng = (adjustedCoordinates?.location?.lng ?: zoneResult?.lng ?: data.lng)
+                            .roundToPrecision(decimalPlaces = 6),
                         accuracy = adjustedAccuracy.roundToPrecision(decimalPlaces = 0),
                         speed = data.speed?.takeIf {
                             contract.shareSpeed && it != 0f && !isApproximate
@@ -163,7 +185,8 @@ class LocationPayloadProvider(
                                 // that is already more than enough
                                 acc = adjustedLocationData.accuracy.roundToPrecision(decimalPlaces = -1),
                                 spd = adjustedLocationData.speed?.roundToPrecision(decimalPlaces = 1),
-                                alt = adjustedLocationData.altitude?.roundToPrecision(decimalPlaces = -1)
+                                alt = adjustedLocationData.altitude?.roundToPrecision(decimalPlaces = -1),
+                                ina = isLikelyInaccurate.takeIf { it }
                             ),
                             status = LocationHistoryPointStatusModel(
                                 tA = status.timeUTC,
@@ -189,6 +212,7 @@ class LocationPayloadProvider(
                     )
                 )
             }
+
             else -> return result
         }
     }

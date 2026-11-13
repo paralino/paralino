@@ -175,17 +175,32 @@ class WifiAnchorMemory(
         }
     }
 
+    suspend fun isFarFromWifi(
+        wifi: ConnectedWifi?,
+        location: LatLng,
+        accuracyMeters: Float
+    ): Boolean {
+        return mutex.withLock {
+            val center = confidentLocation(wifi) ?: return@withLock false
+            distance(center, location) > 300 + accuracyMeters
+        }
+    }
+
     private suspend fun isAnchorInPlace(
         wifi: ConnectedWifi?,
         placeCenter: LatLng,
         radiusMeters: Float
     ): Boolean {
-        if (wifi == null) {
-            return false
-        }
-        val anchor = getAnchors()?.firstOrNull { it.bssid == wifi.bssid } ?: return false
-        val center = confidentWifiCenter(anchor) ?: return false
+        val center = confidentLocation(wifi) ?: return false
         return distance(center, placeCenter) <= radiusMeters
+    }
+
+    private suspend fun confidentLocation(wifi: ConnectedWifi?): LatLng? {
+        if (wifi == null) {
+            return null
+        }
+        val anchor = getAnchors()?.firstOrNull { it.bssid == wifi.bssid } ?: return null
+        return confidentWifiCenter(anchor)
     }
 
     // null if wifi location is not known well enough yet, or wifi moves around

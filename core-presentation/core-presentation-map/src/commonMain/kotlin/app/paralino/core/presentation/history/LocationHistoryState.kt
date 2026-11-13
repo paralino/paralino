@@ -142,7 +142,7 @@ data class LocationHistoryScreenState(
     }
 
     private fun LocationHistoryPointState.Point.matchesAccuracyFilter(): Boolean {
-        return showInaccurateLocations || !accuracy.isLocationInaccurate()
+        return showInaccurateLocations || (!accuracy.isLocationInaccurate() && !isLikelyInaccurate)
     }
 
     val activeDevices: List<UserActiveLocationDeviceState> = devices.map { device ->

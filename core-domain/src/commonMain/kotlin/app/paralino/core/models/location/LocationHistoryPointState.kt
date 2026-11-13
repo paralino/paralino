@@ -48,5 +48,6 @@ sealed interface LocationHistoryPointState {
         override val lat: Double? = point.loc?.lat
         override val lng: Double? = point.loc?.lng
         override val accuracy: Float? = point.loc?.acc
+        val isLikelyInaccurate: Boolean = point.loc?.isLikelyInaccurate == true
     }
 }

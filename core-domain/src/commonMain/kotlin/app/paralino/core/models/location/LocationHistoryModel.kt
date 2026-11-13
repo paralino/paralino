@@ -72,6 +72,7 @@ data class LocationHistoryPointModel(
         }
 
         return locationValid
+                && location.isLikelyInaccurate == this.loc.isLikelyInaccurate
                 && accuracyValid
                 && speedValid
                 && elevationValid
@@ -112,7 +113,10 @@ data class LocationHistoryPointLocationModel(
     val acc: Float = 0f,
     val spd: Float? = null,
     val alt: Float? = null,
+    val ina: Boolean? = null,
 ) {
+    @Transient
+    val isLikelyInaccurate: Boolean = ina == true
     @Transient
     val startTime: String = tA
     @Transient
