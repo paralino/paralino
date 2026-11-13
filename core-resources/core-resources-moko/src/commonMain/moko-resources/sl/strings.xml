@@ -1175,7 +1175,7 @@
     <string name="setting_mapInteractions_collapsed_title">Strnjeno</string>
     <string name="setting_mapInteractions_collapsed_info">Elementi za upravljanje zemljevida se strnejo ali skrijejo, da povečajo razpoložljivi prostor za zemljevid.</string>
     <string name="group_members_status_distanceFromMe">%s stran od mene</string>
-    <string name="history_map_options_show_inaccurate">Netočne lokacije</string>
+    <string name="history_map_options_show_inaccurate">Prikaži vse</string>
     <string name="groups_sharing_setting_realtimeUpdates_title">Posodobitve lokacije v realnem času</string>
     <string name="groups_sharing_setting_realtimeUpdates_description_on">Dovolite drugim, da s te naprave **neprekinjeno** prejemajo posodobitve lokacije v realnem času. Če vas nekdo na zemljevidu opazuje dlje časa, lahko to porabi več baterije.</string>
     <string name="groups_sharing_setting_realtimeUpdates_description_off">Drugi vas lahko še vedno poiščejo z ročnim osveževanjem vaše lokacije, vendar bodo v vseh drugih primerih posodobitve lokacije brez podpore v realnem času omejene.</string>

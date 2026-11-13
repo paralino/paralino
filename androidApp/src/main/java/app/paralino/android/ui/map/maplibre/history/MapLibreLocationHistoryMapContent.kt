@@ -42,7 +42,6 @@ import app.paralino.core.presentation.history.LocationHistoryScreenUiState
 import app.paralino.core.presentation.history.LocationHistoryUiEvent
 import app.paralino.core.presentation.map.MapPinData
 import app.paralino.core.ui.theme.AppColors
-import app.paralino.core.utils.extensions.isLocationInaccurate
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -62,13 +61,13 @@ import org.maplibre.compose.expressions.dsl.not
 import org.maplibre.compose.expressions.dsl.step
 import org.maplibre.compose.expressions.value.LineCap
 import org.maplibre.compose.expressions.value.LineJoin
+import org.maplibre.compose.interaction.ClickResult
 import org.maplibre.compose.layers.LineLayer
 import org.maplibre.compose.layers.SymbolLayer
 import org.maplibre.compose.map.MapState
 import org.maplibre.compose.sources.GeoJsonData
 import org.maplibre.compose.sources.GeoJsonOptions
 import org.maplibre.compose.sources.rememberGeoJsonSource
-import org.maplibre.compose.interaction.ClickResult
 import org.maplibre.spatialk.geojson.Feature
 import org.maplibre.spatialk.geojson.FeatureCollection
 import org.maplibre.spatialk.geojson.LineString
@@ -424,7 +423,7 @@ private fun HistoryPins(
                                     "isClustered" to JsonPrimitive(point is LocationHistoryPointState.Cluster),
                                     "isInaccurate" to JsonPrimitive(
                                         (point as? LocationHistoryPointState.Point)
-                                            ?.accuracy?.isLocationInaccurate()
+                                            ?.isInaccurate
                                             ?: false
                                     ),
                                 )

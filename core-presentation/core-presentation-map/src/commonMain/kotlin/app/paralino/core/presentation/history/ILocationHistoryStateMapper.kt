@@ -140,7 +140,23 @@ class ILocationHistoryStateMapper(
             rangeEnd = endDate
         )
 
+        val points = processedLocations.flatMap {
+            when (it) {
+                is LocationHistoryPointState.Cluster -> it.points
+                is LocationHistoryPointState.Point -> listOf(it)
+            }
+        }
+        val inaccurateCount = points.count { it.isInaccurate }
+
         _uiState.update { currentState ->
+            val inaccurateLocationsMode = when {
+                inaccurateCount == 0 -> LocationHistoryInaccurateLocationsViewMode.HIDDEN
+                inaccurateCount == points.size -> LocationHistoryInaccurateLocationsViewMode.HIDDEN
+                currentState.inaccurateLocationsMode == LocationHistoryInaccurateLocationsViewMode.ON ||
+                        currentState.inaccurateLocationsMode == LocationHistoryInaccurateLocationsViewMode.OFF -> currentState.inaccurateLocationsMode
+                else -> LocationHistoryInaccurateLocationsViewMode.DEFAULT_OFF
+            }
+
             val newState = currentState.copy(
                 preselectedDeviceId = null,
                 groupName = groupName,
@@ -151,6 +167,7 @@ class ILocationHistoryStateMapper(
                 isLoadingLocations = false,
                 isLoadingData = false,
                 locations = processedLocations,
+                inaccurateLocationsMode = inaccurateLocationsMode,
                 devices = devices,
                 stats = null,
                 planConfig = planConfig

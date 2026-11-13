@@ -1175,7 +1175,7 @@
     <string name="setting_mapInteractions_collapsed_title">Свернуть</string>
     <string name="setting_mapInteractions_collapsed_info">Элементы управления картой сворачиваются или скрываются, чтобы максимально расширить пространство для карты.</string>
     <string name="group_members_status_distanceFromMe">%s от меня</string>
-    <string name="history_map_options_show_inaccurate">Неточные местоположения</string>
+    <string name="history_map_options_show_inaccurate">Показать все</string>
     <string name="groups_sharing_setting_realtimeUpdates_title">Обновления местоположения в реальном времени</string>
     <string name="groups_sharing_setting_realtimeUpdates_description_on">Разрешите другим **непрерывно** получать обновления местоположения в реальном времени с этого устройства. Если кто-то долго наблюдает за вами на карте, это может увеличить расход заряда батареи.</string>
     <string name="groups_sharing_setting_realtimeUpdates_description_off">Другие по-прежнему смогут определить ваше местоположение, вручную обновив данные о вашем местоположении, но во всех остальных случаях обновления местоположения будут ограничены без поддержки в реальном времени.</string>

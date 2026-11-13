@@ -1175,7 +1175,7 @@
     <string name="setting_mapInteractions_collapsed_title">Colapsados</string>
     <string name="setting_mapInteractions_collapsed_info">Os controlos do mapa colapsam ou ocultam-se para maximizar o espaço do mapa.</string>
     <string name="group_members_status_distanceFromMe">%s de distância</string>
-    <string name="history_map_options_show_inaccurate">Localizações imprecisas</string>
+    <string name="history_map_options_show_inaccurate">Mostrar tudo</string>
     <string name="groups_sharing_setting_realtimeUpdates_title">Atualizações de localização em tempo real</string>
     <string name="groups_sharing_setting_realtimeUpdates_description_on">Permita que outras pessoas recebam **continuamente** atualizações de localização em tempo real deste dispositivo. Se alguém estiver a observá-lo no mapa durante muito tempo, isto poderá consumir mais bateria.</string>
     <string name="groups_sharing_setting_realtimeUpdates_description_off">Outras pessoas ainda podem localizá-lo atualizando manualmente a sua localização, mas, em todos os outros casos, as atualizações de localização serão limitadas sem suporte em tempo real.</string>

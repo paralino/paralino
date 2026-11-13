@@ -1175,7 +1175,7 @@
     <string name="setting_mapInteractions_collapsed_title">Összecsukott</string>
     <string name="setting_mapInteractions_collapsed_info">A térkép vezérlőelemei összecsukódnak vagy elrejtődnek, így maximalizálják a térkép megjelenítésére szolgáló területet.</string>
     <string name="group_members_status_distanceFromMe">%s távol</string>
-    <string name="history_map_options_show_inaccurate">Pontatlan helyek</string>
+    <string name="history_map_options_show_inaccurate">Összes megjelenítése</string>
     <string name="groups_sharing_setting_realtimeUpdates_title">Valós idejű helyfrissítések</string>
     <string name="groups_sharing_setting_realtimeUpdates_description_on">Engedélyezze másoknak, hogy erről az eszközről **folyamatosan** valós idejű helyfrissítéseket kapjanak. Ha valaki hosszabb ideig figyeli Önt a térképen, ez több akkumulátort használhat.</string>
     <string name="groups_sharing_setting_realtimeUpdates_description_off">Mások továbbra is megtalálhatják Önt a helyzetének kézi frissítésével, de minden más esetben a helyfrissítések valós idejű támogatás nélkül korlátozottak lesznek.</string>

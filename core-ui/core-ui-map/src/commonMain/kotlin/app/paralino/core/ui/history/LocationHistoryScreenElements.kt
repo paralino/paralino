@@ -36,7 +36,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.dropShadow
 import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.layout.onGloballyPositioned
@@ -45,6 +44,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import app.paralino.core.resources.moko.*
 import app.paralino.core.presentation.history.LocationHistoryDataViewType
+import app.paralino.core.presentation.history.LocationHistoryInaccurateLocationsViewMode
 import app.paralino.core.presentation.history.LocationHistoryScreenFocusType
 import app.paralino.core.presentation.history.LocationHistoryScreenUiState
 import app.paralino.core.presentation.history.LocationHistoryUiEvent
@@ -84,14 +84,6 @@ fun LocationHistoryMapCardUi(
                     .padding(bottom = 8.dp),
                 horizontalAlignment = Alignment.End
             ) {
-                HistoryMapOptionChip(
-                    modifier = Modifier.padding(top = 4.dp),
-                    selected = uiState.showInaccurateLocations,
-                    name = stringResource(MR.strings.history_map_options_show_inaccurate),
-                    icon = CoreAppIcons.NotListedLocation.asPainterResource(),
-                    onClick = { onEvent(LocationHistoryUiEvent.ToggleShowInaccurateLocation) }
-                )
-
                 HistoryMapOptionChip(
                     modifier = Modifier.padding(top = 4.dp),
                     selected = uiState.clusteringPointsMode.isClusteringOn,
@@ -136,6 +128,16 @@ fun LocationHistoryMapCardUi(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.End
         ) {
+
+            AnimatedVisibility(uiState.inaccurateLocationsMode != LocationHistoryInaccurateLocationsViewMode.HIDDEN) {
+                HistoryMapOptionChip(
+                    modifier = Modifier.padding(end = 8.dp),
+                    selected = uiState.inaccurateLocationsMode.showInaccurate,
+                    name = stringResource(MR.strings.history_map_options_show_inaccurate),
+                    icon = CoreAppIcons.NotListedLocation.asPainterResource(),
+                    onClick = { onEvent(LocationHistoryUiEvent.ToggleShowInaccurateLocation) }
+                )
+            }
 
             MapCardSmallActionIcon(
                 modifier = Modifier.padding(end = 8.dp),
@@ -317,7 +319,13 @@ private fun HistoryMapOptionChip(
     DataInfoChip(
         modifier = modifier
             .clickable(onClick = onClick)
-            .shadow(elevation = 4.dp, RoundedCornerShape(50)),
+            .dropShadow(
+                shape = RoundedCornerShape(50),
+                shadow = Shadow(
+                    radius = 12.dp,
+                    color = MaterialTheme.colors.onBackground.copy(alpha = 0.2f),
+                )
+            ),
         backgroundColor = backgroundColor,
         shape = RoundedCornerShape(50),
         imageOrIcon = {

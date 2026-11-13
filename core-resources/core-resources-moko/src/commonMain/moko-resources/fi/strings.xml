@@ -1175,7 +1175,7 @@
     <string name="setting_mapInteractions_collapsed_title">Piilotettu</string>
     <string name="setting_mapInteractions_collapsed_info">Kartan ohjaimet supistetaan tai piilotetaan, jotta kartalle jää enemmän tilaa.</string>
     <string name="group_members_status_distanceFromMe">%s päässä</string>
-    <string name="history_map_options_show_inaccurate">Epäluotettavat sijainnit</string>
+    <string name="history_map_options_show_inaccurate">Näytä kaikki</string>
     <string name="groups_sharing_setting_realtimeUpdates_title">Reaaliaikaiset sijaintipäivitykset</string>
     <string name="groups_sharing_setting_realtimeUpdates_description_on">Salli muiden saada tästä laitteesta **jatkuvasti** reaaliaikaisia sijaintipäivityksiä. Jos joku seuraa sinua kartalla pitkään, tämä voi kuluttaa enemmän akkua.</string>
     <string name="groups_sharing_setting_realtimeUpdates_description_off">Muut voivat edelleen paikantaa sinut päivittämällä sijaintisi manuaalisesti, mutta kaikissa muissa tapauksissa sijaintipäivitykset ovat rajoitettuja ilman reaaliaikaista tukea.</string>

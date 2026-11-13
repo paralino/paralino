@@ -1175,7 +1175,7 @@
     <string name="setting_mapInteractions_collapsed_title">Hopfälld</string>
     <string name="setting_mapInteractions_collapsed_info">Kartkontrollerna kollapsar eller döljs för att frigöra mer utrymme åt kartan.</string>
     <string name="group_members_status_distanceFromMe">%s från mig</string>
-    <string name="history_map_options_show_inaccurate">Felaktiga platser</string>
+    <string name="history_map_options_show_inaccurate">Visa alla</string>
     <string name="groups_sharing_setting_realtimeUpdates_title">Platsuppdateringar i realtid</string>
     <string name="groups_sharing_setting_realtimeUpdates_description_on">Tillåt andra att **kontinuerligt** få platsuppdateringar i realtid från den här enheten. Om någon följer er på kartan under en längre tid kan detta använda mer batteri.</string>
     <string name="groups_sharing_setting_realtimeUpdates_description_off">Andra kan fortfarande hitta er genom att manuellt uppdatera er plats, men i alla andra fall kommer platsuppdateringar att vara begränsade utan stöd för realtid.</string>

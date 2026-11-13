@@ -44,7 +44,6 @@ import app.paralino.core.presentation.history.LocationHistoryUiEvent
 import app.paralino.core.presentation.map.MapPinData
 import app.paralino.core.ui.map.HistoryMapIcon
 import app.paralino.core.ui.theme.AppColors
-import app.paralino.core.utils.extensions.isLocationInaccurate
 import com.google.android.gms.maps.model.JointType
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.RoundCap
@@ -429,7 +428,7 @@ private fun ClusteredHistoryPins(
                 anchor = it.getAnchor()
             )
             HistoryMapIcon(
-                isAccurate = !it.item.accuracy.isLocationInaccurate(),
+                isAccurate = (it.item as? LocationHistoryPointState.Point)?.isInaccurate != true,
                 isClustered = it.item is LocationHistoryPointState.Cluster
             )
         }

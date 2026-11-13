@@ -637,7 +637,15 @@ class LocationHistoryViewModelController(
 
             LocationHistoryUiEvent.ToggleShowInaccurateLocation -> {
                 _uiState.update {
-                    val newState = it.copy(showInaccurateLocations = !it.showInaccurateLocations)
+                    val newState = it.copy(
+                        inaccurateLocationsMode = when (it.inaccurateLocationsMode) {
+                            LocationHistoryInaccurateLocationsViewMode.DEFAULT_ON,
+                            LocationHistoryInaccurateLocationsViewMode.ON -> LocationHistoryInaccurateLocationsViewMode.OFF
+                            LocationHistoryInaccurateLocationsViewMode.DEFAULT_OFF,
+                            LocationHistoryInaccurateLocationsViewMode.OFF -> LocationHistoryInaccurateLocationsViewMode.ON
+                            LocationHistoryInaccurateLocationsViewMode.HIDDEN -> LocationHistoryInaccurateLocationsViewMode.HIDDEN
+                        }
+                    )
                     newState.copy(
                         stats = LocationHistoryStats.calculateStats(
                             state = newState,

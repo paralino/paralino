@@ -1175,7 +1175,7 @@
     <string name="setting_mapInteractions_collapsed_title">Zbalené</string>
     <string name="setting_mapInteractions_collapsed_info">Ovládacie prvky mapy sa zbalia alebo skryjú, aby sa maximalizoval priestor pre mapu.</string>
     <string name="group_members_status_distanceFromMe">%s od mene</string>
-    <string name="history_map_options_show_inaccurate">Nepravilne lokacije</string>
+    <string name="history_map_options_show_inaccurate">Zobraziť všetko</string>
     <string name="groups_sharing_setting_realtimeUpdates_title">Aktualizácie polohy v reálnom čase</string>
     <string name="groups_sharing_setting_realtimeUpdates_description_on">Povoľte ostatným, aby z tohto zariadenia **nepretržite** získavali aktualizácie polohy v reálnom čase. Ak vás niekto sleduje na mape dlhší čas, môže to spotrebovať viac batérie.</string>
     <string name="groups_sharing_setting_realtimeUpdates_description_off">Ostatní vás stále môžu nájsť manuálnym obnovením vašej polohy, no vo všetkých ostatných prípadoch budú aktualizácie polohy bez podpory v reálnom čase obmedzené.</string>

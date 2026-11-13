@@ -6,7 +6,6 @@ import app.paralino.android.ui.map.google.rememberComposeBitmapDescriptor
 import app.paralino.core.models.location.LocationHistoryPointState
 import app.paralino.core.ui.map.HistoryMapIcon
 import app.paralino.core.ui.map.StartStopHistoryMapIcon
-import app.paralino.core.utils.extensions.isLocationInaccurate
 import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.clustering.ClusterItem
@@ -33,7 +32,7 @@ fun GoogleMapHistoryMapPin(
         },
         infoWindowAnchor = Offset(0.5f, 0f),
         icon = mapMarkerIcon(
-            isAccurate = !state.accuracy.isLocationInaccurate(),
+            isAccurate = (state as? LocationHistoryPointState.Point)?.isInaccurate != true,
             isClustered = state is LocationHistoryPointState.Cluster
         ),
         zIndex = zIndex,

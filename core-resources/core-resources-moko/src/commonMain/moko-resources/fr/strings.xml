@@ -1175,7 +1175,7 @@
     <string name="setting_mapInteractions_collapsed_title">Repliés</string>
     <string name="setting_mapInteractions_collapsed_info">Les contrôles de la carte se replient ou se masquent pour maximiser l\'espace consacré à la carte.</string>
     <string name="group_members_status_distanceFromMe">%s à partir de moi</string>
-    <string name="history_map_options_show_inaccurate">Emplacements imprécis</string>
+    <string name="history_map_options_show_inaccurate">Afficher tout</string>
     <string name="groups_sharing_setting_realtimeUpdates_title">Mises à jour de la localisation en temps réel</string>
     <string name="groups_sharing_setting_realtimeUpdates_description_on">Autorisez les autres à obtenir **en continu** des mises à jour de localisation en temps réel depuis cet appareil. Si quelqu’un vous suit sur la carte pendant une longue période, cela peut consommer davantage de batterie.</string>
     <string name="groups_sharing_setting_realtimeUpdates_description_off">Les autres peuvent toujours vous localiser en actualisant manuellement votre position, mais dans tous les autres cas, les mises à jour de localisation seront limitées sans la prise en charge en temps réel.</string>

@@ -315,7 +315,7 @@ fun LocationHistoryDetailCard(
                                         SpeedAndElevationData(point = point)
 
                                         AnimatedVisibility(
-                                            visible = point is LocationHistoryPointState.Point && (point.point.loc?.acc.isLocationInaccurate() || point.isLikelyInaccurate)
+                                            visible = point is LocationHistoryPointState.Point && point.isInaccurate
                                         ) {
                                             GroupStatusTag(status = GroupStatusTagType.INACTIVE_NOT_ACCURATE)
                                         }

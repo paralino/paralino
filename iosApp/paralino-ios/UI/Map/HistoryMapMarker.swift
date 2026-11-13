@@ -84,7 +84,7 @@ class HistoryMapMarkerData: MKPointAnnotation, ObservableObject, Identifiable {
     }
     
     var isInaccurate: Bool {
-        NumberExtKt.isLocationInaccurate(data.accuracy)
+        (data as? LocationHistoryPointStatePoint)?.isInaccurate ?? false
     }
     
     init(id: String, point: LocationHistoryPointState) {

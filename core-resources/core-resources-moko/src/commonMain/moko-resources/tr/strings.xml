@@ -1175,7 +1175,7 @@
     <string name="setting_mapInteractions_collapsed_title">Daraltılmış</string>
     <string name="setting_mapInteractions_collapsed_info">Harita kontrolleri harita alanını en üst düzeye çıkarmak için daraltılır veya gizlenir.</string>
     <string name="group_members_status_distanceFromMe">%s uzakta</string>
-    <string name="history_map_options_show_inaccurate">Yanlış konumlar</string>
+    <string name="history_map_options_show_inaccurate">Hepsini Göster</string>
     <string name="groups_sharing_setting_realtimeUpdates_title">Gerçek zamanlı konum güncellemeleri</string>
     <string name="groups_sharing_setting_realtimeUpdates_description_on">Başkalarının bu cihazdan **sürekli** gerçek zamanlı konum güncellemeleri almasına izin verin. Birisi sizi haritada uzun süre izliyorsa, bu daha fazla pil tüketebilir.</string>
     <string name="groups_sharing_setting_realtimeUpdates_description_off">Diğer kişiler konumunuzu manuel olarak yenileyerek yine de sizi bulabilir, ancak gerçek zamanlı destek olmadan diğer tüm durumlarda konum güncellemeleri sınırlandırılacaktır.</string>

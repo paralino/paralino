@@ -1175,7 +1175,7 @@
     <string name="setting_mapInteractions_collapsed_title">Συμπτυγμένα</string>
     <string name="setting_mapInteractions_collapsed_info">Τα στοιχεία ελέγχου του χάρτη συμπτύσσονται ή αποκρύπτονται για να μεγιστοποιηθεί ο χώρος του χάρτη.</string>
     <string name="group_members_status_distanceFromMe">%s μακριά</string>
-    <string name="history_map_options_show_inaccurate">Ανακριβείς τοποθεσίες</string>
+    <string name="history_map_options_show_inaccurate">Εμφάνιση όλων</string>
     <string name="groups_sharing_setting_realtimeUpdates_title">Ενημερώσεις τοποθεσίας σε πραγματικό χρόνο</string>
     <string name="groups_sharing_setting_realtimeUpdates_description_on">Επιτρέψτε σε άλλους να λαμβάνουν **συνεχώς** ενημερώσεις τοποθεσίας σε πραγματικό χρόνο από αυτήν τη συσκευή. Εάν κάποιος σας παρακολουθεί στον χάρτη για μεγάλο χρονικό διάστημα, αυτό ενδέχεται να καταναλώσει περισσότερη μπαταρία.</string>
     <string name="groups_sharing_setting_realtimeUpdates_description_off">Οι άλλοι μπορούν ακόμη να εντοπίσουν τη θέση σας με μη αυτόματη ανανέωση της τοποθεσίας σας, αλλά σε όλες τις άλλες περιπτώσεις οι ενημερώσεις τοποθεσίας θα είναι περιορισμένες χωρίς υποστήριξη σε πραγματικό χρόνο.</string>

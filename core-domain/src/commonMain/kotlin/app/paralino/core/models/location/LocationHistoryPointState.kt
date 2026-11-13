@@ -2,6 +2,7 @@ package app.paralino.core.models.location
 
 import app.paralino.core.provider.NetworkSignalStrength
 import app.paralino.core.provider.NetworkType
+import app.paralino.core.utils.extensions.isLocationInaccurate
 
 sealed interface LocationHistoryPointState {
     val pointId: String
@@ -49,5 +50,6 @@ sealed interface LocationHistoryPointState {
         override val lng: Double? = point.loc?.lng
         override val accuracy: Float? = point.loc?.acc
         val isLikelyInaccurate: Boolean = point.loc?.isLikelyInaccurate == true
+        val isInaccurate: Boolean = accuracy.isLocationInaccurate() || isLikelyInaccurate
     }
 }

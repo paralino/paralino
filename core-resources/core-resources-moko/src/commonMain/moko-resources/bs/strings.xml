@@ -1175,7 +1175,7 @@
     <string name="setting_mapInteractions_collapsed_title">Sklopljeno</string>
     <string name="setting_mapInteractions_collapsed_info">Kontrole mape se sklapaju ili skrivaju kako bi se maksimalno iskoristio prostor mape.</string>
     <string name="group_members_status_distanceFromMe">%s od mene</string>
-    <string name="history_map_options_show_inaccurate">Netačne lokacije</string>
+    <string name="history_map_options_show_inaccurate">Prikaži sve</string>
     <string name="groups_sharing_setting_realtimeUpdates_title">Ažuriranja lokacije u stvarnom vremenu</string>
     <string name="groups_sharing_setting_realtimeUpdates_description_on">Dozvolite drugima da **kontinuirano** primaju ažuriranja lokacije u stvarnom vremenu s ovog uređaja. Ako vas neko dugo prati na mapi, ovo može trošiti više baterije.</string>
     <string name="groups_sharing_setting_realtimeUpdates_description_off">Drugi vas i dalje mogu pronaći ručnim osvježavanjem vaše lokacije, ali u svim ostalim slučajevima ažuriranja lokacije bit će ograničena bez podrške za stvarno vrijeme.</string>
