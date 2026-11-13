@@ -919,6 +919,7 @@
     <string name="place_improvements_wifi_empty">Pre toto miesto zatiaľ neboli naučené žiadne siete Wi-Fi.</string>
     <string name="place_improvements_wifi_hidden">Skrytá sieť %s</string>
     <string name="place_improvements_wifi_accessPoints">Prístupové body: %d</string>
+    <string name="place_improvements_wifi_confidence">Spoľahlivosť: %s</string>
     <string name="place_improvements_wifi_status_active">Aktívna</string>
     <string name="place_improvements_wifi_status_learning">Učí sa</string>
     <string name="place_improvements_wifi_status_unstable">Nestabilná</string>

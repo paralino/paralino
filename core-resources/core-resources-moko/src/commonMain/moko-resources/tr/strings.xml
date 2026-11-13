@@ -919,6 +919,7 @@
     <string name="place_improvements_wifi_empty">Bu yer için henüz Wi-Fi ağı öğrenilmedi.</string>
     <string name="place_improvements_wifi_hidden">Gizli ağ %s</string>
     <string name="place_improvements_wifi_accessPoints">%d erişim noktası</string>
+    <string name="place_improvements_wifi_confidence">Güvenilirlik: %s</string>
     <string name="place_improvements_wifi_status_active">Etkin</string>
     <string name="place_improvements_wifi_status_learning">Öğreniliyor</string>
     <string name="place_improvements_wifi_status_unstable">Kararsız</string>

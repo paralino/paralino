@@ -919,6 +919,7 @@
     <string name="place_improvements_wifi_empty">Для этого места ещё не изучено ни одной сети Wi-Fi.</string>
     <string name="place_improvements_wifi_hidden">Скрытая сеть %s</string>
     <string name="place_improvements_wifi_accessPoints">Точек доступа: %d</string>
+    <string name="place_improvements_wifi_confidence">Надёжность: %s</string>
     <string name="place_improvements_wifi_status_active">Активна</string>
     <string name="place_improvements_wifi_status_learning">Изучается</string>
     <string name="place_improvements_wifi_status_unstable">Нестабильна</string>

@@ -964,6 +964,7 @@
     <string name="place_improvements_wifi_empty">No Wi-Fi networks learned for this place yet.</string>
     <string name="place_improvements_wifi_hidden">Hidden network %s</string>
     <string name="place_improvements_wifi_accessPoints">%d access points</string>
+    <string name="place_improvements_wifi_confidence">Confidence: %s</string>
     <string name="place_improvements_wifi_status_active">Active</string>
     <string name="place_improvements_wifi_status_learning">Learning</string>
     <string name="place_improvements_wifi_status_unstable">Not stable</string>

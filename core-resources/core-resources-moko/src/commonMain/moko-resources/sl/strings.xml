@@ -919,6 +919,7 @@
     <string name="place_improvements_wifi_empty">Za ta kraj še ni naučenih omrežij Wi-Fi.</string>
     <string name="place_improvements_wifi_hidden">Skrito omrežje %s</string>
     <string name="place_improvements_wifi_accessPoints">%d dostopnih točk</string>
+    <string name="place_improvements_wifi_confidence">Zanesljivost: %s</string>
     <string name="place_improvements_wifi_status_active">Aktivno</string>
     <string name="place_improvements_wifi_status_learning">Učenje</string>
     <string name="place_improvements_wifi_status_unstable">Nestabilno</string>

@@ -919,6 +919,7 @@
     <string name="place_improvements_wifi_empty">Nenhuma rede Wi-Fi aprendida para este lugar ainda.</string>
     <string name="place_improvements_wifi_hidden">Rede oculta %s</string>
     <string name="place_improvements_wifi_accessPoints">%d pontos de acesso</string>
+    <string name="place_improvements_wifi_confidence">Confiança: %s</string>
     <string name="place_improvements_wifi_status_active">Ativa</string>
     <string name="place_improvements_wifi_status_learning">Aprendendo</string>
     <string name="place_improvements_wifi_status_unstable">Instável</string>

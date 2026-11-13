@@ -919,6 +919,7 @@
     <string name="place_improvements_wifi_empty">Encara no s\'han après xarxes Wi-Fi per a aquest lloc.</string>
     <string name="place_improvements_wifi_hidden">Xarxa oculta %s</string>
     <string name="place_improvements_wifi_accessPoints">%d punts d\'accés</string>
+    <string name="place_improvements_wifi_confidence">Fiabilitat: %s</string>
     <string name="place_improvements_wifi_status_active">Activa</string>
     <string name="place_improvements_wifi_status_learning">Aprenent</string>
     <string name="place_improvements_wifi_status_unstable">No estable</string>

@@ -919,6 +919,7 @@
     <string name="place_improvements_wifi_empty">Încă nu au fost învățate rețele Wi-Fi pentru acest loc.</string>
     <string name="place_improvements_wifi_hidden">Rețea ascunsă %s</string>
     <string name="place_improvements_wifi_accessPoints">%d puncte de acces</string>
+    <string name="place_improvements_wifi_confidence">Încredere: %s</string>
     <string name="place_improvements_wifi_status_active">Activă</string>
     <string name="place_improvements_wifi_status_learning">În învățare</string>
     <string name="place_improvements_wifi_status_unstable">Instabilă</string>

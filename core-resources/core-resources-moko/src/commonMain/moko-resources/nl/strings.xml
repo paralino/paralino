@@ -919,6 +919,7 @@
     <string name="place_improvements_wifi_empty">Nog geen wifi-netwerken geleerd voor deze plaats.</string>
     <string name="place_improvements_wifi_hidden">Verborgen netwerk %s</string>
     <string name="place_improvements_wifi_accessPoints">%d toegangspunten</string>
+    <string name="place_improvements_wifi_confidence">Betrouwbaarheid: %s</string>
     <string name="place_improvements_wifi_status_active">Actief</string>
     <string name="place_improvements_wifi_status_learning">Wordt geleerd</string>
     <string name="place_improvements_wifi_status_unstable">Niet stabiel</string>

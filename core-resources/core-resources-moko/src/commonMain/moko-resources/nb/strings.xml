@@ -919,6 +919,7 @@
     <string name="place_improvements_wifi_empty">Ingen Wi-Fi-nettverk er lært for dette stedet ennå.</string>
     <string name="place_improvements_wifi_hidden">Skjult nettverk %s</string>
     <string name="place_improvements_wifi_accessPoints">%d tilgangspunkter</string>
+    <string name="place_improvements_wifi_confidence">Sikkerhet: %s</string>
     <string name="place_improvements_wifi_status_active">Aktiv</string>
     <string name="place_improvements_wifi_status_learning">Lærer</string>
     <string name="place_improvements_wifi_status_unstable">Ikke stabil</string>

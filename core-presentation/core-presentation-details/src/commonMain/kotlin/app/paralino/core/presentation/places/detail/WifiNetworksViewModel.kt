@@ -21,6 +21,7 @@ import app.paralino.core.resources.moko.place_improvements_forgetWifi_title
 import app.paralino.core.resources.moko.place_improvements_info
 import app.paralino.core.resources.moko.place_improvements_lastSeen
 import app.paralino.core.resources.moko.place_improvements_wifi_accessPoints
+import app.paralino.core.resources.moko.place_improvements_wifi_confidence
 import app.paralino.core.resources.moko.place_improvements_wifi_empty
 import app.paralino.core.resources.moko.place_improvements_wifi_hidden
 import app.paralino.core.resources.moko.place_improvements_wifi_info
@@ -41,6 +42,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+import kotlin.math.roundToInt
 import kotlin.time.Instant
 
 class WifiNetworksViewModel(
@@ -192,6 +194,9 @@ class WifiNetworksViewModel(
             isTagActive = WifiAnchorMemory.WifiStatus.ACTIVE in statuses,
             description = listOfNotNull(
                 usedFor,
+                MR.strings.place_improvements_wifi_confidence.localizedString(
+                    "${(entry.accessPoints.maxOf { it.confidence } * 100).roundToInt()}%"
+                ),
                 if (entry.accessPoints.size > 1) {
                     MR.strings.place_improvements_wifi_accessPoints.localizedString(entry.accessPoints.size)
                 } else {

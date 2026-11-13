@@ -919,6 +919,7 @@
     <string name="place_improvements_wifi_empty">Tälle paikalle ei ole vielä opittu Wi-Fi-verkkoja.</string>
     <string name="place_improvements_wifi_hidden">Piilotettu verkko %s</string>
     <string name="place_improvements_wifi_accessPoints">%d tukiasemaa</string>
+    <string name="place_improvements_wifi_confidence">Luotettavuus: %s</string>
     <string name="place_improvements_wifi_status_active">Aktiivinen</string>
     <string name="place_improvements_wifi_status_learning">Opitaan</string>
     <string name="place_improvements_wifi_status_unstable">Epävakaa</string>

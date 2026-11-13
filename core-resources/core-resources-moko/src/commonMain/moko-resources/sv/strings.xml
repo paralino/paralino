@@ -919,6 +919,7 @@
     <string name="place_improvements_wifi_empty">Inga Wi-Fi-nätverk har lärts in för den här platsen ännu.</string>
     <string name="place_improvements_wifi_hidden">Dolt nätverk %s</string>
     <string name="place_improvements_wifi_accessPoints">%d åtkomstpunkter</string>
+    <string name="place_improvements_wifi_confidence">Säkerhet: %s</string>
     <string name="place_improvements_wifi_status_active">Aktivt</string>
     <string name="place_improvements_wifi_status_learning">Lär sig</string>
     <string name="place_improvements_wifi_status_unstable">Inte stabilt</string>

@@ -919,6 +919,7 @@
     <string name="place_improvements_wifi_empty">Ehhez a helyhez még nincs megtanult Wi-Fi hálózat.</string>
     <string name="place_improvements_wifi_hidden">Rejtett hálózat %s</string>
     <string name="place_improvements_wifi_accessPoints">%d hozzáférési pont</string>
+    <string name="place_improvements_wifi_confidence">Megbízhatóság: %s</string>
     <string name="place_improvements_wifi_status_active">Aktív</string>
     <string name="place_improvements_wifi_status_learning">Tanulás alatt</string>
     <string name="place_improvements_wifi_status_unstable">Nem stabil</string>

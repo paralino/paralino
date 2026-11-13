@@ -141,6 +141,7 @@ class WifiAnchorMemory(
         val bssid: String,
         val ssid: String?,
         val status: WifiStatus,
+        val confidence: Float,
         val location: LatLng,
         val samples: Int,
         val lastSeenMillis: Long,
@@ -162,6 +163,7 @@ class WifiAnchorMemory(
             isLearning(this) -> WifiStatus.LEARNING
             else -> WifiStatus.UNSTABLE
         },
+        confidence = confidence(this),
         location = median(this),
         samples = samples.size,
         lastSeenMillis = samples.last().timeMillis
@@ -208,12 +210,16 @@ class WifiAnchorMemory(
         if (isLearning(anchor)) {
             return null
         }
+        return median(anchor).takeIf { confidence(anchor) >= 0.7f }
+    }
+
+    private fun confidence(anchor: WifiAnchor): Float {
         val samples = anchor.samples
         val center = median(anchor)
         val nearCenter = samples.count {
             distance(center, LatLng(lat = it.lat, lng = it.lng)) <= 100
         }
-        return center.takeIf { nearCenter >= samples.size * 0.7 }
+        return nearCenter.toFloat() / samples.size
     }
 
     // not enough samples yet to know where the wifi is

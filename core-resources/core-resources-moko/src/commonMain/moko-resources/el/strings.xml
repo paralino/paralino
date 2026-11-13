@@ -919,6 +919,7 @@
     <string name="place_improvements_wifi_empty">Δεν έχουν μάθει ακόμη δίκτυα Wi-Fi για αυτό το μέρος.</string>
     <string name="place_improvements_wifi_hidden">Κρυφό δίκτυο %s</string>
     <string name="place_improvements_wifi_accessPoints">%d σημεία πρόσβασης</string>
+    <string name="place_improvements_wifi_confidence">Βεβαιότητα: %s</string>
     <string name="place_improvements_wifi_status_active">Ενεργό</string>
     <string name="place_improvements_wifi_status_learning">Εκμάθηση</string>
     <string name="place_improvements_wifi_status_unstable">Μη σταθερό</string>
