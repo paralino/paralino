@@ -13,7 +13,6 @@ import app.paralino.core.logg
 import app.paralino.core.models.base.GroupOrSpaceId
 import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.models.group.UserGroup
-import app.paralino.core.models.location.LatLng
 import app.paralino.core.models.location.LocationDataModel
 import app.paralino.core.models.location.LocationHistoryPointLocationModel
 import app.paralino.core.models.location.LocationHistoryPointModel
@@ -21,8 +20,6 @@ import app.paralino.core.models.location.LocationHistoryPointStatusModel
 import app.paralino.core.models.location.LocationSharingContract
 import app.paralino.core.models.location.LocationUpdateDataFromDevice
 import app.paralino.core.models.location.MemberGroupId
-import app.paralino.core.provider.IConnectionStatusProvider
-import app.paralino.core.repo.places.WifiAnchorMemory
 import app.paralino.core.utils.extensions.isLocationInaccurate
 import app.paralino.core.utils.extensions.roundToPrecision
 import app.paralino.core.utils.extensions.safeLet
@@ -39,8 +36,6 @@ class LocationPayloadProvider(
     private val cryptoCore: CryptoCore,
     private val approximateLocationObfuscator: ApproximateLocationObfuscator,
     private val privacyZoneObfuscator: PrivacyZoneObfuscator,
-    private val connectionStatus: IConnectionStatusProvider,
-    private val wifiAnchorMemory: WifiAnchorMemory,
 ) {
 
     private val mutex = Mutex()
@@ -104,14 +99,9 @@ class LocationPayloadProvider(
                     }
 
                     val isInsidePrivacyZone = zoneResult != null
-                    isLikelyInaccurate = contract.saveToHistory &&
-                            !isInsidePrivacyZone &&
+                    isLikelyInaccurate = !isInsidePrivacyZone &&
                             approximateRadius == null &&
-                            wifiAnchorMemory.isFarFromWifi(
-                                wifi = connectionStatus.getConnectedWifi(),
-                                location = LatLng(lat = data.lat, lng = data.lng),
-                                accuracyMeters = data.adjustedHorizontalAccuracy
-                            )
+                            data.isLikelyInaccurate == true
                     val adjustedCoordinates = if (approximateRadius != null) {
                         // sharing approximate
                         if (zoneResult == null || zoneResult.uploadAccuracyMeters < approximateRadius) {

@@ -73,10 +73,6 @@ class PlacesActivityProcessor(
         }
 
         val wifi = connectionStatus.getConnectedWifi()
-        mappedLocations
-            .mapNotNull { it.locationData }
-            .firstOrNull { !it.isApproximate && !it.isInPrivacyZone && !it.isMasked }
-            ?.let { wifiAnchorMemory.processLocation(wifi = wifi, location = it) }
 
         local.getAllPlacesForGroupsOnce(groupIds = mappedLocations.map { it.groupId })
             .filter { shouldProcessPlaceForLocation(it) }

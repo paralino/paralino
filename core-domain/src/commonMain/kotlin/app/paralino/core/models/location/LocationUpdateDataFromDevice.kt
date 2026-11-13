@@ -18,7 +18,8 @@ data class LocationUpdateDataFromDevice(
     val timeUTC: String?,
     val speed: Float?,
     val altitude: Float?,
-    val provider: LocationProviderType?
+    val provider: LocationProviderType?,
+    val isLikelyInaccurate: Boolean?,
 ) {
 
     val timeUTCInstant: Instant? = timeUTC?.fromUTCtoInstant()

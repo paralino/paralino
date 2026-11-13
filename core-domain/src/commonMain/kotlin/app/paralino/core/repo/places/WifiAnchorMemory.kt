@@ -2,7 +2,7 @@ package app.paralino.core.repo.places
 
 import app.paralino.core.logg
 import app.paralino.core.models.location.LatLng
-import app.paralino.core.models.location.LocationDataModel
+import app.paralino.core.models.location.LocationUpdateDataFromDevice
 import app.paralino.core.provider.ConnectedWifi
 import app.paralino.core.repo.location.IGeofenceManager
 import app.paralino.core.repo.places.WifiAnchorDataSource.Sample
@@ -28,7 +28,7 @@ class WifiAnchorMemory(
 
     suspend fun processLocation(
         wifi: ConnectedWifi?,
-        location: LocationDataModel
+        location: LocationUpdateDataFromDevice
     ) {
         mutex.withLock {
             // metered is usually a hotspot, it can move with the device
@@ -36,7 +36,7 @@ class WifiAnchorMemory(
                 return@withLock
             }
 
-            if (location.accuracy > 50) {
+            if (location.adjustedHorizontalAccuracy > 50) {
                 return@withLock
             }
 

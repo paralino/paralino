@@ -183,7 +183,8 @@ class LocationInitHandler constructor(
                 .toString(),
             speed = if (this.hasSpeed()) this.speed else null,
             altitude = if (this.hasAltitude()) this.altitude.toFloat() else null,
-            provider = LocationProviderType.fromFullKey(key = this.provider)
+            provider = LocationProviderType.fromFullKey(key = this.provider),
+            isLikelyInaccurate = null
         )
     }
 }

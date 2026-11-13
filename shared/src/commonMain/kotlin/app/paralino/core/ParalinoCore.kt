@@ -1,5 +1,6 @@
 package app.paralino.core
 
+import app.paralino.core.domain.location.engine.LocationFilterProcessor
 import app.paralino.core.app_rating.AppRatingManager
 import app.paralino.core.crypto.AlphabetType
 import app.paralino.core.crypto.CryptoCore
@@ -383,7 +384,8 @@ val coreModule = module {
 
     single { PersonalCodesRepository(get(), get(), get(), get(), get(), get(), get()) }
     single { UserRepository(get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
-    single { LocationUploadEngine(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+    single { LocationUploadEngine(get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+    single { LocationFilterProcessor(get(), get(), get(), get()) }
     single { LocationSaveEventProcessingEngine(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { LocationUploadEventProcessingEngine(get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { LocationSharingContractFilter() }
@@ -406,7 +408,7 @@ val coreModule = module {
     single { NetworkQualityMonitor() }
     single { AppAccountStateMonitor(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { MemberDeviceStatusProvider(get(), get(), get(), get()) }
-    single { LocationPayloadProvider(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+    single { LocationPayloadProvider(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { MemberDeviceStatusProcessor(get(), get(), get(), get(), get(), get(), get()) }
     single { RevokeDeviceActiveStatusUseCase(get(), get(), get(), get(), get()) }
     single { UserCryptoKeyRefreshUseCase(get(), get(), get(), get()) }

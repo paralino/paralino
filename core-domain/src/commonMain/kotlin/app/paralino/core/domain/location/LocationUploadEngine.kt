@@ -11,6 +11,7 @@ import app.paralino.core.provider.IOneTimeLocationProvider
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.NoValidContractsException
 import app.paralino.core.repo.location.LocationPerformanceManager
+import app.paralino.core.domain.location.engine.LocationFilterProcessor
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -33,6 +34,7 @@ class LocationUploadEngine constructor(
     private val oneTimeLocationProvider: IOneTimeLocationProvider,
     private val locationSaveProcessing: LocationSaveEventProcessingEngine,
     private val locationUploadProcessing: LocationUploadEventProcessingEngine,
+    private val locationFilterProcessing: LocationFilterProcessor,
 ) {
 
     private var locationStatusMonitoringJob: Job? = null
@@ -49,6 +51,7 @@ class LocationUploadEngine constructor(
     }
 
     fun startLocationUploadEngine() {
+        locationFilterProcessing.stop()
         locationSaveProcessing.stop()
         locationUploadProcessing.stop()
         locationStatusMonitoringJob?.cancel()
@@ -57,7 +60,12 @@ class LocationUploadEngine constructor(
             .onEach { sharingActive ->
                 if (sharingActive) {
                     // resetting pending location from any cached value
+                    _currentLocation.value = null
                     _pendingLocation.value = null
+                    locationFilterProcessing.start(
+                        currentLocationFlow = _currentLocation,
+                        pendingLocationFlow = _pendingLocation
+                    )
                     locationSaveProcessing.start(
                         pendingLocationFlow = _pendingLocation
                     )
@@ -66,6 +74,7 @@ class LocationUploadEngine constructor(
                         pendingLocationFlow = _pendingLocation
                     )
                 } else {
+                    locationFilterProcessing.stop()
                     locationSaveProcessing.stop()
                     locationUploadProcessing.stop()
                 }
@@ -82,19 +91,6 @@ class LocationUploadEngine constructor(
         }
 
         _currentLocation.update { data }
-        _pendingLocation.update { current ->
-            val potentialUpdate = LocationUpdateDataFromDevice.getBetter(current, data)
-            if (current != null && potentialUpdate != null) {
-                val performance = locationPerformanceManager.locationPerformanceType.value
-                current.takeMostRelevantLocation(
-                    second = potentialUpdate,
-                    type = performance.balancedPerformanceSettings.config,
-                    filtering = performance.filtering
-                )
-            } else {
-                potentialUpdate
-            }
-        }
 
         locationPerformanceManager.checkPerformanceResetState()
         locationSharingManager.refreshAllContracts()
@@ -109,7 +105,7 @@ class LocationUploadEngine constructor(
                         timeoutMillis = 3.seconds.inWholeMilliseconds,
                         type = LocationPerformanceType.BATTERY_SAVER
                     )
-                )
+                )?.let { locationFilterProcessing.filter(it) }
             } else {
                 null
             },
@@ -119,6 +115,7 @@ class LocationUploadEngine constructor(
     }
 
     fun logout() {
+        locationFilterProcessing.stop()
         locationUploadProcessing.stop()
         locationSaveProcessing.stop()
         _pendingLocation.update { null }
