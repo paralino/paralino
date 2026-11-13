@@ -213,7 +213,7 @@ class WifiAnchorMemory(
         val nearCenter = samples.count {
             distance(center, LatLng(lat = it.lat, lng = it.lng)) <= 100
         }
-        return center.takeIf { nearCenter >= samples.size * 0.8 }
+        return center.takeIf { nearCenter >= samples.size * 0.7 }
     }
 
     // not enough samples yet to know where the wifi is
