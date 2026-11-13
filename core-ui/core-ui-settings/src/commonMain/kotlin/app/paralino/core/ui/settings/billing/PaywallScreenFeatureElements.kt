@@ -357,7 +357,8 @@ private fun MemberItem(
                 signalStrength = NetworkSignalStrength.POOR,
                 visibility = MemberLocationVisibilityType.VISIBLE_ALWAYS,
                 distanceFromMeText = null,
-                atPlace = null
+                atPlace = null,
+                isLikelyInaccurate = false
             )
         )
     }
@@ -485,7 +486,8 @@ private fun MemberItemWithLocations(
                 signalStrength = NetworkSignalStrength.POOR,
                 visibility = MemberLocationVisibilityType.VISIBLE_ALWAYS,
                 distanceFromMeText = MR.strings.group_members_status_distanceFromMe.localizedString("250m"),
-                atPlace = null
+                atPlace = null,
+                isLikelyInaccurate = false
             ),
             GroupMemberItemLocationState(
                 locationId = "",
@@ -520,7 +522,8 @@ private fun MemberItemWithLocations(
                 signalStrength = NetworkSignalStrength.GREAT,
                 visibility = MemberLocationVisibilityType.VISIBLE_ALWAYS,
                 distanceFromMeText = null,
-                atPlace = MR.strings.places_notification_demo_home.localizedString()
+                atPlace = MR.strings.places_notification_demo_home.localizedString(),
+                isLikelyInaccurate = false
             )
         )
     }

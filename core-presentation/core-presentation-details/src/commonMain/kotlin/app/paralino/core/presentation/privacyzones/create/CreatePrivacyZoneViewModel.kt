@@ -517,7 +517,8 @@ class CreatePrivacyZoneViewModel(
                 signalStrength = NetworkSignalStrength.GOOD,
                 visibility = MemberLocationVisibilityType.VISIBLE_ALWAYS,
                 distanceFromMeText = null,
-                atPlace = null
+                atPlace = null,
+                isLikelyInaccurate = false
             ),
             deviceId = "",
             actions = MemberActionsState(),

@@ -75,7 +75,6 @@ class LocationPayloadProvider(
                     groupId = groupId,
                     contract = contract
                 )
-                var isLikelyInaccurate = false
                 val adjustedLocationData = safeLet(data, contract) { data, contract ->
                     val zoneResult = if (!groupId.isPersonalSpace) {
                         privacyZoneObfuscator.obfuscateIfInsideZone(
@@ -99,7 +98,7 @@ class LocationPayloadProvider(
                     }
 
                     val isInsidePrivacyZone = zoneResult != null
-                    isLikelyInaccurate = !isInsidePrivacyZone &&
+                    val isLikelyInaccurate = !isInsidePrivacyZone &&
                             approximateRadius == null &&
                             data.isLikelyInaccurate == true
                     val adjustedCoordinates = if (approximateRadius != null) {
@@ -155,7 +154,8 @@ class LocationPayloadProvider(
                             zoneResult.message
                         } else {
                             null
-                        }
+                        },
+                        isLikelyInaccurate = isLikelyInaccurate
                     )
                 }
 
@@ -176,7 +176,7 @@ class LocationPayloadProvider(
                                 acc = adjustedLocationData.accuracy.roundToPrecision(decimalPlaces = -1),
                                 spd = adjustedLocationData.speed?.roundToPrecision(decimalPlaces = 1),
                                 alt = adjustedLocationData.altitude?.roundToPrecision(decimalPlaces = -1),
-                                ina = isLikelyInaccurate.takeIf { it }
+                                ina = adjustedLocationData.isLikelyInaccurate?.takeIf { it }
                             ),
                             status = LocationHistoryPointStatusModel(
                                 tA = status.timeUTC,

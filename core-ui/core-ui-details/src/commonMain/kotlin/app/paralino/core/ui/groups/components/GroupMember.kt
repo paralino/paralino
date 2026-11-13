@@ -146,7 +146,8 @@ val dummyLocations = listOf(
         signalStrength = NetworkSignalStrength.GOOD,
         visibility = MemberLocationVisibilityType.VISIBLE_ALWAYS,
         distanceFromMeText = null,
-        atPlace = "Home"
+        atPlace = "Home",
+        isLikelyInaccurate = false
     ),
     GroupMemberItemLocationState(
         locationId = "",
@@ -174,7 +175,8 @@ val dummyLocations = listOf(
         signalStrength = NetworkSignalStrength.GOOD,
         visibility = MemberLocationVisibilityType.VISIBLE_ONCE,
         distanceFromMeText = "230m away",
-        atPlace = "Home"
+        atPlace = "Home",
+        isLikelyInaccurate = false
     ),
     GroupMemberItemLocationState(
         locationId = "",
@@ -202,6 +204,7 @@ val dummyLocations = listOf(
         signalStrength = NetworkSignalStrength.GOOD,
         visibility = MemberLocationVisibilityType.HIDDEN,
         distanceFromMeText = null,
-        atPlace = null
+        atPlace = null,
+        isLikelyInaccurate = false
     )
 )

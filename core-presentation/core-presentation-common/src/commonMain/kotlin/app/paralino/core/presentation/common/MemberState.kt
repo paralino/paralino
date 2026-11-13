@@ -183,6 +183,7 @@ data class GroupMemberItemLocationState constructor(
     val visibility: MemberLocationVisibilityType,
     val distanceFromMeText: String?,
     val atPlace: String?,
+    val isLikelyInaccurate: Boolean,
 ) {
     val keyId = locationId
     constructor(
@@ -228,6 +229,7 @@ data class GroupMemberItemLocationState constructor(
         visibility = visibility,
         distanceFromMeText = null,
         atPlace = null,
+        isLikelyInaccurate = memberLocation.locationData.data?.isLikelyInaccurate == true,
     )
 
     val visibleBatteryLevel: Int? = when(visibility) {
