@@ -16,7 +16,6 @@ data class LocationHistoryPointModel(
     val id: String = "",
     val loc: LocationHistoryPointLocationModel?,
     val status: LocationHistoryPointStatusModel
-
 ) {
     @Transient
     val dayKey = status.startTime.isoToLocalDateTime()?.date?.toString()
@@ -133,6 +132,7 @@ data class LocationHistoryPointStatusModel(
     val chr: Int? = null,
     val net: String? = null,
     val sig: Int? = null,
+    val cnt: Int? = null
 ) {
     @Transient
     val startTime: String = tA

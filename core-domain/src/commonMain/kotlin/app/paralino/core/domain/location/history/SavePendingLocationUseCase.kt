@@ -153,6 +153,7 @@ class SavePendingLocationUseCase(
                             ),
                             status = lastEntryPoint.status.copy(
                                 tB = entry.locationHistory.status.tA,
+                                cnt = lastEntryPoint.status.cnt?.plus(1) ?: 2
                             )
                         )
                     } else {

@@ -408,6 +408,21 @@ fun LocationHistoryDetailCard(
                                         verticalAlignment = Alignment.CenterVertically
                                     ) {
                                         BatteryAndNetworkData(point = selectedPoint)
+
+                                        val updateCount = selectedPoint.point.status.cnt ?: 0
+                                        if (updateCount >= 2 && !isCollapsed) {
+                                            Icon(
+                                                painter = CoreAppIcons.LocationOn.asPainterResource(),
+                                                contentDescription = null,
+                                                modifier = Modifier
+                                                    .padding(end = 2.dp)
+                                                    .size(18.dp)
+                                            )
+                                            Text(
+                                                text = "$updateCount",
+                                                style = MaterialTheme.typography.overline.copy(letterSpacing = 0.1.sp)
+                                            )
+                                        }
                                     }
                                 }
 
