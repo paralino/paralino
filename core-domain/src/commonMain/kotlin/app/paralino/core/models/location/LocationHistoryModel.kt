@@ -50,15 +50,9 @@ data class LocationHistoryPointModel(
         
         val accuracyValid = location.acc in this.loc.acc.minus(adaptiveAccuracyThreshold)..this.loc.acc.plus(adaptiveAccuracyThreshold)
 
-        val speedValid = if (location.spd != null && this.loc.spd != null) {
-            location.spd in this.loc.spd.minus(mode.speedThresholdMs)..this.loc.spd.plus(mode.speedThresholdMs)
-        } else if (location.spd == null && this.loc.spd == null) {
-            // if both null, then nothing changed
-            true
-        } else {
-            // here only one of them is null, something changed
-            false
-        }
+        val newSpd = location.spd ?: 0f
+        val oldSpd = this.loc.spd ?: 0f
+        val speedValid = newSpd in oldSpd.minus(mode.speedThresholdMs)..oldSpd.plus(mode.speedThresholdMs)
 
         val elevationValid = if (location.alt != null && this.loc.alt != null) {
             location.alt in this.loc.alt.minus(mode.elevationThreshold)..this.loc.alt.plus(mode.elevationThreshold)
