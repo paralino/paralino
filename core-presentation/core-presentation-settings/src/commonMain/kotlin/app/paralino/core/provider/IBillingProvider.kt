@@ -26,12 +26,16 @@ interface IBillingProvider {
         val fullProductId: String,
         val productPlanId: String,
         val billingPeriod: PlanBillingPeriod,
+        val fullPriceData: SubscriptionPlanPeriodFullPriceData,
+        val trialDurationDays: Int?
+    )
+
+    data class SubscriptionPlanPeriodFullPriceData(
         val price: Long,
         val formattedPricePerMemberPerMonth: String?,
         val formattedPrice: String,
         val referencePerYearPrice: Long?,
         val referencePerYearFormattedPrice: String?,
-        val referencePerMonthFormattedPrice: String?,
-        val trialDurationDays: Int?
+        val referencePerMonthFormattedPrice: String?
     )
 }

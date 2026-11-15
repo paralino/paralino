@@ -147,12 +147,14 @@ class BillingProviderIOS: IBillingProvider {
                             fullProductId: product.productIdentifier,
                             productPlanId: product.productIdentifier,
                             billingPeriod: billingPeriod,
-                            price: price,
-                            formattedPricePerMemberPerMonth: pricePerMember,
-                            formattedPrice: formattedPrice ?? product.localizedPriceString,
-                            referencePerYearPrice: KotlinLong(longLong: product.pricePerYear?.int64Value ?? 0),
-                            referencePerYearFormattedPrice: product.localizedPricePerYear,
-                            referencePerMonthFormattedPrice: product.localizedPricePerMonth,
+                            fullPriceData: IBillingProviderSubscriptionPlanPeriodFullPriceData(
+                                price: price,
+                                formattedPricePerMemberPerMonth: pricePerMember,
+                                formattedPrice: formattedPrice ?? product.localizedPriceString,
+                                referencePerYearPrice: KotlinLong(longLong: product.pricePerYear?.int64Value ?? 0),
+                                referencePerYearFormattedPrice: product.localizedPricePerYear,
+                                referencePerMonthFormattedPrice: product.localizedPricePerMonth,
+                            ),
                             trialDurationDays: trialDurationDays
                         )
                         

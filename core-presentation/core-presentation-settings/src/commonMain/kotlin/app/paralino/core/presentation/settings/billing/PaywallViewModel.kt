@@ -385,7 +385,7 @@ class PaywallViewModel(
         val availableProducts = billingConfig
             ?.plans
             ?.filter { it.planConfig.isActive }
-            ?.sortedBy { it.periods.minByOrNull { it.price }?.price }
+            ?.sortedBy { it.periods.minByOrNull { it.fullPriceData.price }?.fullPriceData?.price }
             ?: emptyList()
 
         val isFreePlanSelected = isPlanSelected(
@@ -419,7 +419,7 @@ class PaywallViewModel(
                 .map { period ->
                     val fullYearlyPrice = product.periods
                         .filter { it.billingPeriod == PlanBillingPeriod.MONTHLY }
-                        .maxBy { it.referencePerYearPrice ?: it.price }
+                        .maxBy { it.fullPriceData.referencePerYearPrice ?: it.fullPriceData.price }
                         .takeIf { period.billingPeriod == PlanBillingPeriod.ANNUALLY }
 
                     PlanBillingPeriodState(
@@ -437,14 +437,14 @@ class PaywallViewModel(
                             plans = plans,
                             currentState = currentState
                         ),
-                        price = period.formattedPrice,
-                        pricePerMonth = period.referencePerMonthFormattedPrice
+                        price = period.fullPriceData.formattedPrice,
+                        pricePerMonth = period.fullPriceData.referencePerMonthFormattedPrice
                             .takeIf { period.billingPeriod == PlanBillingPeriod.ANNUALLY }
                             ?.let { MR.strings.paywall_price_per_month.localizedString(it) },
-                        pricePerMember = period.formattedPricePerMemberPerMonth,
-                        discountPercent = fullYearlyPrice?.referencePerYearPrice
+                        pricePerMember = period.fullPriceData.formattedPricePerMemberPerMonth,
+                        discountPercent = fullYearlyPrice?.fullPriceData?.referencePerYearPrice
                             ?.takeIf { period.billingPeriod == PlanBillingPeriod.ANNUALLY }
-                            ?.let { (1f - (period.price.toFloat() / it)) * 100 }
+                            ?.let { (1f - (period.fullPriceData.price.toFloat() / it)) * 100 }
                             ?.toInt()
                             // using even numbers to display discount
                             // will even out discounts across plans and still be capped below actual discount
