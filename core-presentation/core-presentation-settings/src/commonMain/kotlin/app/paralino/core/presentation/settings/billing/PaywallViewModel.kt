@@ -416,21 +416,14 @@ class PaywallViewModel(
                 config = config
             )
             val billingPeriods = product.periods
-                .groupBy { it.billingPeriod }
-                .mapNotNull { periods ->
-                    val period = periods.value.first()
-
+                .map { period ->
                     val fullYearlyPrice = product.periods
                         .filter { it.billingPeriod == PlanBillingPeriod.MONTHLY }
                         .maxBy { it.referencePerYearPrice ?: it.price }
                         .takeIf { period.billingPeriod == PlanBillingPeriod.ANNUALLY }
 
-                    val highestPrice = periods.value.maxBy { it.price }
-                        .takeIf { periods.value.size > 1 }
-                    val lowestPrice = periods.value.minBy { it.price }
-
                     PlanBillingPeriodState(
-                        productPlanId = lowestPrice.productPlanId,
+                        productPlanId = period.productPlanId,
                         name = when (period.billingPeriod) {
                             PlanBillingPeriod.WEEKLY -> MR.strings.plan_period_weekly_name.localizedString()
                             PlanBillingPeriod.MONTHLY -> MR.strings.plan_period_monthly_name.localizedString()
@@ -444,31 +437,21 @@ class PaywallViewModel(
                             plans = plans,
                             currentState = currentState
                         ),
-                        price = lowestPrice.formattedPrice,
-                        pricePerMonth = lowestPrice.referencePerMonthFormattedPrice
+                        price = period.formattedPrice,
+                        pricePerMonth = period.referencePerMonthFormattedPrice
                             .takeIf { period.billingPeriod == PlanBillingPeriod.ANNUALLY }
                             ?.let { MR.strings.paywall_price_per_month.localizedString(it) },
-                        pricePerMember = lowestPrice.formattedPricePerMemberPerMonth,
-                        discountedPrice = listOfNotNull(
-                            fullYearlyPrice?.referencePerYearFormattedPrice
-                        )
-                            .distinct()
-                            .takeIf { it.isNotEmpty() }
-                            ?.joinToString("\n"), // { it.filterNot { it == ' ' } },
-                        discountPercent = listOfNotNull(
-                            fullYearlyPrice?.referencePerYearPrice,
-                            highestPrice?.price
-                        )
-                            .maxOrNull()
+                        pricePerMember = period.formattedPricePerMemberPerMonth,
+                        discountPercent = fullYearlyPrice?.referencePerYearPrice
                             ?.takeIf { period.billingPeriod == PlanBillingPeriod.ANNUALLY }
-                            ?.let { (1f - (lowestPrice.price.toFloat() / it)) * 100 }
+                            ?.let { (1f - (period.price.toFloat() / it)) * 100 }
                             ?.toInt()
                             // using even numbers to display discount
                             // will even out discounts across plans and still be capped below actual discount
                             ?.let { it - (it % 2) }
                             ?.let { "$it%" },
-                        isPromoDiscount = highestPrice != null,
-                        trialDurationDays = lowestPrice.trialDurationDays,
+                        isPromoDiscount = false,
+                        trialDurationDays = period.trialDurationDays,
                         isNativePlatformCurrentBillingPeriod = currentHighestPlan
                             ?.takeIf { it.config.planTypeEnum == planConfig.planTypeEnum }
                             ?.takeIf { plan ->
@@ -489,7 +472,7 @@ class PaywallViewModel(
                 name = planConfig.adjustedPlanName,
                 config = planConfig,
                 isCurrentPlan = plans.highestValidPlanConfig.planTypeEnum == planConfig.planTypeEnum,
-                hasSpecialOffer = billingPeriods.any { it.isPromoDiscount },
+                hasSpecialOffer = false,
                 isSelected = isPlanSelected,
                 isExpanded = !sourceType.shouldPreselectPlan,
                 billingPeriods = billingPeriods

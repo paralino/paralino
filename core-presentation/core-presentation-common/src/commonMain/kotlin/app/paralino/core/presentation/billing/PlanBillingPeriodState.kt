@@ -10,7 +10,6 @@ data class PlanBillingPeriodState(
     val price: String,
     val pricePerMonth: String?,
     val pricePerMember: String?,
-    val discountedPrice: String?,
     val discountPercent: String?,
     val isPromoDiscount: Boolean,
     val trialDurationDays: Int?,
