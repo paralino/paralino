@@ -162,7 +162,7 @@ private fun PaywallBottomCard(
         ) {
             val periodPlan = selectedPlan
             AnimatedVisibility(
-                periodPlan != null && state.canShowPlanPeriodSelector && state.screenStep == PaywallScreenStep.PAYWALL
+                periodPlan != null && state.canShowBottomPlanPeriodSelector
             ) {
                 if (periodPlan != null) {
                     CompositionLocalProvider(LocalContentColor provides contentColor) {
@@ -211,7 +211,7 @@ private fun PaywallBottomCard(
             }
 
             AnimatedVisibility(
-                !state.showExternalPricingInfo && periodPlan != null && state.canShowPlanPeriodSelector && state.screenStep == PaywallScreenStep.PAYWALL
+                !state.showExternalPricingInfo && periodPlan != null && state.canShowBottomPlanPeriodSelector
             ) {
                 Divider(
                     modifier = Modifier.fillMaxWidth().padding(horizontal = 14.dp, vertical = 12.dp),

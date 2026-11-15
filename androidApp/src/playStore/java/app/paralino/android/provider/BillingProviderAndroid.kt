@@ -182,7 +182,8 @@ class BillingProviderAndroid(
         return IBillingProvider.SubscriptionProviderData(
             plans = products.values.toList(),
             billingConfig = remoteBillingConfig,
-            canCloseOnboardingPaywall = (offerings.current?.metadata?.get("canCloseOnboardingPaywall") as? Boolean) ?: true
+            canCloseOnboardingPaywall = (offerings.current?.metadata?.get("canCloseOnboardingPaywall") as? Boolean) ?: true,
+            billingSelectorPosition = offerings.current?.metadata?.get("billingSelectorPosition") as? String
         )
     }
 

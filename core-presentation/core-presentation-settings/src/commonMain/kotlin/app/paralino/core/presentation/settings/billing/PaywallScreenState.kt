@@ -31,6 +31,7 @@ data class PaywallScreenState(
     val plans: List<PlanInfoState>,
     val canShowMoreInfo: Boolean,
     val canCloseScreen: Boolean,
+    val isBillingSelectorOnTop: Boolean,
     val isLoading: Boolean,
     val isPurchaseButtonLoading: Boolean,
     val alertDialog: MainAlertDialog?,
@@ -67,7 +68,9 @@ data class PaywallScreenState(
     }
 
     val canShowAdditionalPlanSelector: Boolean = !screenType.isOnboarding && isPlatformBillingSupported
-    val canShowPlanPeriodSelector: Boolean = isPlatformBillingSupported && selectedPlan != null && !isLoading
+    val canShowPlanPeriodSelector: Boolean = isPlatformBillingSupported && selectedPlan != null && !isLoading && screenStep == PaywallScreenStep.PAYWALL
+    val canShowTopPlanPeriodSelector: Boolean = canShowPlanPeriodSelector && isBillingSelectorOnTop
+    val canShowBottomPlanPeriodSelector: Boolean = canShowPlanPeriodSelector && !isBillingSelectorOnTop
     val showExternalPricingInfo: Boolean = !isPlatformBillingSupported && screenStep == PaywallScreenStep.PAYWALL && !isLoading
 
     val continueButtonType: PaywallContinueButtonType = when (screenStep) {

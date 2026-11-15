@@ -42,7 +42,8 @@ class BillingProviderAndroid(
         return IBillingProvider.SubscriptionProviderData(
             plans = products,
             billingConfig = remoteBillingConfig,
-            canCloseOnboardingPaywall = true
+            canCloseOnboardingPaywall = true,
+            billingSelectorPosition = null
         )
     }
 

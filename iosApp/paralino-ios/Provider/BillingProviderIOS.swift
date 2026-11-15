@@ -179,7 +179,8 @@ class BillingProviderIOS: IBillingProvider {
         return IBillingProviderSubscriptionProviderData(
             plans: Array(products.values),
             billingConfig: billingConfig,
-            canCloseOnboardingPaywall: offerings.current?.getMetadataValue(for: "canCloseOnboardingPaywall", default: true) ?? true
+            canCloseOnboardingPaywall: offerings.current?.getMetadataValue(for: "canCloseOnboardingPaywall", default: true) ?? true,
+            billingSelectorPosition: offerings.current?.metadata["billingSelectorPosition"] as? String
         )
     }
 

@@ -548,6 +548,7 @@ class PaywallViewModel(
             } else {
                 true
             },
+            isBillingSelectorOnTop = billingConfig?.billingSelectorPosition == "top",
             isLoading = currentState?.isLoading ?: true,
             alertDialog = currentState?.alertDialog,
             appFlavor = appConfig.appFlavor,

@@ -12,7 +12,8 @@ interface IBillingProvider {
     data class SubscriptionProviderData(
         val plans: List<SubscriptionPlanData>,
         val billingConfig: BillingConfigData?,
-        val canCloseOnboardingPaywall: Boolean
+        val canCloseOnboardingPaywall: Boolean,
+        val billingSelectorPosition: String?
     )
 
     data class SubscriptionPlanData(
