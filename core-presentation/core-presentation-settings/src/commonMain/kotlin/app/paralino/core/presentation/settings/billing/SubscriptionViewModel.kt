@@ -235,7 +235,6 @@ class SubscriptionViewModel(
                     name = currentPlan.adjustedPlanName,
                     config = currentPlan,
                     isCurrentPlan = true,
-                    hasSpecialOffer = false,
                     isSelected = true,
                     isExpanded = true,
                     billingPeriods = emptyList()

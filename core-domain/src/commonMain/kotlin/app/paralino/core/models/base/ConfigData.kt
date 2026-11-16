@@ -105,6 +105,7 @@ data class BillingConfigData(
 @Serializable
 data class SubscriptionOfferDialogContent(
     val requiresTrial: Boolean,
+    val requiresOffer: Boolean,
     val emoji: String?,
     val i18nTitle: Map<String, String>?,
     val i18nMessage: Map<String, String>?
@@ -118,6 +119,8 @@ data class SubscriptionInfoNotice(
 
 @Serializable
 data class SubscriptionInfoNoticeValue(
+    val requiresTrial: Boolean,
+    val requiresOffer: Boolean,
     val plans: List<String>,
     val periods: List<String>,
 )

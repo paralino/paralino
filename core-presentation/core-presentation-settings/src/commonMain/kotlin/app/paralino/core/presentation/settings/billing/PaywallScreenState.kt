@@ -154,13 +154,13 @@ data class PaywallScreenState(
 
     val subscriptionNoticeForCurrentPlan: String? = selectedPlan?.let { plan ->
         plan.selectedBillingPeriod?.let {
-            noticeForPlan(planType = plan.config.planTypeEnum, period = it.billingPeriod)
+            noticeForPlan(planType = plan.config.planTypeEnum, period = it)
         }
     }
 
     private fun noticeForPlan(
         planType: PlanType,
-        period: PlanBillingPeriod
+        period: PlanBillingPeriodState
     ): String? {
         val language = try {
             Locale.current.language
@@ -169,7 +169,10 @@ data class PaywallScreenState(
         }
         return subscriptionNotice.firstOrNull {
             it.keys.firstOrNull {
-                it.plans.contains(planType.key) && it.periods.contains(period.key)
+                val planMatch = it.plans.contains(planType.key) && it.periods.contains(period.billingPeriod.key)
+                val trialMatch = if (it.requiresTrial) period.trialDurationDays?.let { it > 0 } ?: false else true
+                val offerMatch = if (it.requiresOffer) period.introOffer != null else true
+                planMatch && trialMatch && offerMatch
             } != null
         }?.i18nMessage?.let {
             it.get(language) ?: it.get("en")

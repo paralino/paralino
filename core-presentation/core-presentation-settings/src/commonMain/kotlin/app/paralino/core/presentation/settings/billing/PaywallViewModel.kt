@@ -400,7 +400,6 @@ class PaywallViewModel(
             name = freePlanConfig.adjustedPlanName,
             config = freePlanConfig,
             isCurrentPlan = false,
-            hasSpecialOffer = false,
             isSelected = isFreePlanSelected,
             isExpanded = false,
             billingPeriods = emptyList()
@@ -480,7 +479,6 @@ class PaywallViewModel(
                 name = planConfig.adjustedPlanName,
                 config = planConfig,
                 isCurrentPlan = plans.highestValidPlanConfig.planTypeEnum == planConfig.planTypeEnum,
-                hasSpecialOffer = false,
                 isSelected = isPlanSelected,
                 isExpanded = !sourceType.shouldPreselectPlan,
                 billingPeriods = billingPeriods
@@ -556,13 +554,13 @@ class PaywallViewModel(
             locationHistoryStepMessage = locationHistoryMessage,
             subscriptionNotice = billingConfig?.billingConfig?.subscriptionNotice ?: emptyList(),
             subscriptionOfferDialog = billingConfig?.billingConfig?.dialogOffer?.takeIf {
-                if (it.requiresTrial) {
-                    uiPlans.firstOrNull { it.isSelected }?.selectedBillingPeriod?.trialDurationDays?.let {
-                        it > 0
-                    } ?: false
-                } else {
-                    true
-                }
+                val planHasTrial = uiPlans.firstOrNull { it.isSelected }?.selectedBillingPeriod?.trialDurationDays?.let {
+                    it > 0
+                } ?: false
+                val planHasOffer = uiPlans.firstOrNull { it.isSelected }?.selectedBillingPeriod?.introOffer != null
+                val trialMatch = if (it.requiresTrial) planHasTrial else true
+                val offerMatch = if (it.requiresOffer) planHasOffer else true
+                trialMatch && offerMatch
             }?.let {
                 MainAlertDialog.SubscriptionOfferDialog(dialogOffer = it)
             },

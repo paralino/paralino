@@ -8,7 +8,6 @@ data class PlanInfoState(
     val name: String,
     val config: PlanConfig,
     val isCurrentPlan: Boolean,
-    val hasSpecialOffer: Boolean,
     val isSelected: Boolean,
     val isExpanded: Boolean,
     val billingPeriods: List<PlanBillingPeriodState>
@@ -17,9 +16,5 @@ data class PlanInfoState(
     val selectedBillingPeriod: PlanBillingPeriodState? =
         billingPeriods.firstOrNull { it.isSelected }
 
-    val displayedName: String = if (hasSpecialOffer) {
-        "🎁$name"
-    } else {
-        name
-    }
+    val displayedName: String = name
 }
