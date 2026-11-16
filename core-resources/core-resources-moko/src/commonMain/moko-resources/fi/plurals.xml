@@ -56,4 +56,12 @@
         <item quantity="one">%d laite</item>
         <item quantity="other">%d laitetta</item>
     </plurals>
+    <plurals name="paywall_intro_offer_first_months">
+        <item quantity="one">ensimmäiseltä %d kuukaudelta</item>
+        <item quantity="other">ensimmäiseltä %d kuukaudelta</item>
+    </plurals>
+    <plurals name="paywall_intro_offer_first_years">
+        <item quantity="one">ensimmäiseltä %d vuodelta</item>
+        <item quantity="other">ensimmäiseltä %d vuodelta</item>
+    </plurals>
 </resources>

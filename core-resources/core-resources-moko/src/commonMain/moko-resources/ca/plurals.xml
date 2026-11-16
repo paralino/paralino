@@ -56,4 +56,12 @@
         <item quantity="one">%d dispositiu</item>
         <item quantity="other">%d dispositius</item>
     </plurals>
+    <plurals name="paywall_intro_offer_first_months">
+        <item quantity="one">el primer %d mes</item>
+        <item quantity="other">els primers %d mesos</item>
+    </plurals>
+    <plurals name="paywall_intro_offer_first_years">
+        <item quantity="one">el primer %d any</item>
+        <item quantity="other">els primers %d anys</item>
+    </plurals>
 </resources>

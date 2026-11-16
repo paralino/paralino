@@ -56,4 +56,12 @@
         <item quantity="one">%d συσκευή</item>
         <item quantity="other">%d συσκευές</item>
     </plurals>
+    <plurals name="paywall_intro_offer_first_months">
+        <item quantity="one">τον πρώτο %d μήνα</item>
+        <item quantity="other">τους πρώτους %d μήνες</item>
+    </plurals>
+    <plurals name="paywall_intro_offer_first_years">
+        <item quantity="one">τον πρώτο %d χρόνο</item>
+        <item quantity="other">τα πρώτα %d χρόνια</item>
+    </plurals>
 </resources>

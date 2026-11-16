@@ -56,4 +56,12 @@
         <item quantity="one">%d Gerät</item>
         <item quantity="other">%d Geräte</item>
     </plurals>
+    <plurals name="paywall_intro_offer_first_months">
+        <item quantity="one">den ersten %d Monat</item>
+        <item quantity="other">die ersten %d Monate</item>
+    </plurals>
+    <plurals name="paywall_intro_offer_first_years">
+        <item quantity="one">das erste %d Jahr</item>
+        <item quantity="other">die ersten %d Jahre</item>
+    </plurals>
 </resources>

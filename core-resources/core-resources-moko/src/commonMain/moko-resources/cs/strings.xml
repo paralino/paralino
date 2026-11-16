@@ -502,6 +502,8 @@
     <string name="paywall_active_planBillingPeriod_label">Aktivní</string>
     <string name="paywall_plan_label">Plán: %1$s</string>
     <string name="paywall_free_trial_notice_billingPeriod">**%1$s** dní zkušební verze zdarma</string>
+    <string name="paywall_intro_offer">Jen **%1$s** na %2$s</string>
+    <string name="paywall_intro_offer_first_month">první měsíc</string>
     <string name="paywall_billing_unit_month">/měsíc</string>
     <string name="paywall_billing_unit_year">/rok</string>
     <string name="paywall_summary_history_unlimited">Neomezená historie</string>

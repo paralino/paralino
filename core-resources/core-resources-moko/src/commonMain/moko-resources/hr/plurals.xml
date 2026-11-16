@@ -70,4 +70,14 @@
         <item quantity="few">%d uređaja</item>
         <item quantity="other">%d uređaja</item>
     </plurals>
+    <plurals name="paywall_intro_offer_first_months">
+        <item quantity="one">prvi %d mjesec</item>
+        <item quantity="few">prva %d mjeseca</item>
+        <item quantity="other">prvih %d mjeseci</item>
+    </plurals>
+    <plurals name="paywall_intro_offer_first_years">
+        <item quantity="one">prvu %d godinu</item>
+        <item quantity="few">prve %d godine</item>
+        <item quantity="other">prvih %d godina</item>
+    </plurals>
 </resources>

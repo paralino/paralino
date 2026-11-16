@@ -70,4 +70,14 @@
         <item quantity="many">%d appareils</item>
         <item quantity="other">%d appareils</item>
     </plurals>
+    <plurals name="paywall_intro_offer_first_months">
+        <item quantity="one">le premier %d mois</item>
+        <item quantity="many">les %d premiers mois</item>
+        <item quantity="other">les %d premiers mois</item>
+    </plurals>
+    <plurals name="paywall_intro_offer_first_years">
+        <item quantity="one">la première %d année</item>
+        <item quantity="many">les %d premières années</item>
+        <item quantity="other">les %d premières années</item>
+    </plurals>
 </resources>

@@ -502,6 +502,8 @@
     <string name="paywall_active_planBillingPeriod_label">Aktiivinen</string>
     <string name="paywall_plan_label">Suunnitelma: %1$s</string>
     <string name="paywall_free_trial_notice_billingPeriod">**%1$s** päivän ilmainen kokeilu</string>
+    <string name="paywall_intro_offer">Vain **%1$s** %2$s</string>
+    <string name="paywall_intro_offer_first_month">ensimmäiseltä kuukaudelta</string>
     <string name="paywall_billing_unit_month">/kuukausi</string>
     <string name="paywall_billing_unit_year">/vuosi</string>
     <string name="paywall_summary_history_unlimited">Rajoittamaton historia</string>

@@ -502,6 +502,8 @@
     <string name="paywall_active_planBillingPeriod_label">Actif</string>
     <string name="paywall_plan_label">Plan : %1$s</string>
     <string name="paywall_free_trial_notice_billingPeriod">**%1$s** jours d\'essai gratuit</string>
+    <string name="paywall_intro_offer">Seulement **%1$s** pour %2$s</string>
+    <string name="paywall_intro_offer_first_month">le premier mois</string>
     <string name="paywall_billing_unit_month">/mois</string>
     <string name="paywall_billing_unit_year">/an</string>
     <string name="paywall_summary_history_unlimited">Historique illimité</string>

@@ -84,4 +84,16 @@
         <item quantity="few">%d naprave</item>
         <item quantity="other">%d naprav</item>
     </plurals>
+    <plurals name="paywall_intro_offer_first_months">
+        <item quantity="one">prvi %d mesec</item>
+        <item quantity="two">prva %d meseca</item>
+        <item quantity="few">prve %d mesece</item>
+        <item quantity="other">prvih %d mesecev</item>
+    </plurals>
+    <plurals name="paywall_intro_offer_first_years">
+        <item quantity="one">prvo %d leto</item>
+        <item quantity="two">prvi %d leti</item>
+        <item quantity="few">prva %d leta</item>
+        <item quantity="other">prvih %d let</item>
+    </plurals>
 </resources>

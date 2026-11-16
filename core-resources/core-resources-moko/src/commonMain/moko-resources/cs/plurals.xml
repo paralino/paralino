@@ -70,4 +70,14 @@
         <item quantity="few">%d zařízení</item>
         <item quantity="other">%d zařízení</item>
     </plurals>
+    <plurals name="paywall_intro_offer_first_months">
+        <item quantity="one">první %d měsíc</item>
+        <item quantity="few">první %d měsíce</item>
+        <item quantity="other">prvních %d měsíců</item>
+    </plurals>
+    <plurals name="paywall_intro_offer_first_years">
+        <item quantity="one">první %d rok</item>
+        <item quantity="few">první %d roky</item>
+        <item quantity="other">prvních %d let</item>
+    </plurals>
 </resources>

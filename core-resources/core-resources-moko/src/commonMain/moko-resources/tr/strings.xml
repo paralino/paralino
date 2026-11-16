@@ -502,6 +502,8 @@
     <string name="paywall_active_planBillingPeriod_label">Aktif</string>
     <string name="paywall_plan_label">Plan: %1$s</string>
     <string name="paywall_free_trial_notice_billingPeriod">**%1$s** gün ücretsiz deneme</string>
+    <string name="paywall_intro_offer">Yalnızca **%1$s** – %2$s</string>
+    <string name="paywall_intro_offer_first_month">ilk ay</string>
     <string name="paywall_billing_unit_month">/ay</string>
     <string name="paywall_billing_unit_year">/yıl</string>
     <string name="paywall_summary_history_unlimited">Sınırsız geçmiş</string>

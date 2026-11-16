@@ -502,6 +502,8 @@
     <string name="paywall_active_planBillingPeriod_label">Aktív</string>
     <string name="paywall_plan_label">Terv: %1$s</string>
     <string name="paywall_free_trial_notice_billingPeriod">**%1$s** napos ingyenes próba</string>
+    <string name="paywall_intro_offer">Csak **%1$s** %2$s</string>
+    <string name="paywall_intro_offer_first_month">az első hónapra</string>
     <string name="paywall_billing_unit_month">/hónap</string>
     <string name="paywall_billing_unit_year">/év</string>
     <string name="paywall_summary_history_unlimited">Korlátlan előzmények</string>

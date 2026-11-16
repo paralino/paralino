@@ -502,6 +502,8 @@
     <string name="paywall_active_planBillingPeriod_label">Aktivan</string>
     <string name="paywall_plan_label">Plan: %1$s</string>
     <string name="paywall_free_trial_notice_billingPeriod">**%1$s** dana besplatnog razdoblja</string>
+    <string name="paywall_intro_offer">Samo **%1$s** za %2$s</string>
+    <string name="paywall_intro_offer_first_month">prvi mjesec</string>
     <string name="paywall_billing_unit_month">/mjesec</string>
     <string name="paywall_billing_unit_year">/godina</string>
     <string name="paywall_summary_history_unlimited">Neograničena povijest</string>

@@ -502,6 +502,8 @@
     <string name="paywall_active_planBillingPeriod_label">Ενεργό</string>
     <string name="paywall_plan_label">Σχέδιο: %1$s</string>
     <string name="paywall_free_trial_notice_billingPeriod">**%1$s** ημέρες δωρεάν δοκιμή</string>
+    <string name="paywall_intro_offer">Μόνο **%1$s** για %2$s</string>
+    <string name="paywall_intro_offer_first_month">τον πρώτο μήνα</string>
     <string name="paywall_billing_unit_month">/μήνα</string>
     <string name="paywall_billing_unit_year">/έτος</string>
     <string name="paywall_summary_history_unlimited">Απεριόριστο ιστορικό</string>
