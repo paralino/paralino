@@ -23,6 +23,7 @@ class BillingProviderIOS: IBillingProvider {
 
     private var offerings = CurrentValueSubject<Offerings?, Never>(nil)
     private var currentUserPlan = CurrentValueSubject<CurrentPlanConfig?, Never>(nil)
+    private var promotionalOffers: [String: PromotionalOffer] = [:]
     
     private func packageFor(subscriptionOptionId: String) -> Package? {
         return offerings.value?.current?.availablePackages.first(where: { package in
@@ -92,6 +93,7 @@ class BillingProviderIOS: IBillingProvider {
     private func loadAndGetProducts() async throws -> IBillingProviderSubscriptionProviderData {
         let offerings = try await Purchases.shared.offerings()
         self.offerings.value = offerings
+        promotionalOffers = [:]
         var products: [String: IBillingProviderSubscriptionPlanData] = [:]
         let billingConfig = try? await remoteConfigRepo.getBillingConfigFromRemote()
 
@@ -128,11 +130,32 @@ class BillingProviderIOS: IBillingProvider {
                     default: formattedPrice = product.localizedPriceString
                     }
                     
-                    let trialDurationDays: KotlinInt?
-                    if await Purchases.shared.checkTrialOrIntroDiscountEligibility(product: product).isEligible {
-                        trialDurationDays = product.introductoryDiscount?.subscriptionPeriod.valueInDays
-                    } else {
-                        trialDurationDays = nil
+                    let introDiscount = await Purchases.shared.checkTrialOrIntroDiscountEligibility(product: product).isEligible
+                        ? product.introductoryDiscount
+                        : nil
+
+                    let trialDurationDays: KotlinInt? = introDiscount?.paymentMode == .freeTrial
+                        ? introDiscount?.subscriptionPeriod.valueInDays
+                        : nil
+
+                    // "intro offer" is for new users, "promo offer" for existing
+                    var offerDiscount = introDiscount?.isPaidMonthsOffer == true ? introDiscount : nil
+                    if introDiscount == nil {
+                        let promotionalOffer = await Purchases.shared.eligiblePromotionalOffers(forProduct: product)
+                            .first { $0.discount.isPaidMonthsOffer }
+                        promotionalOffers[product.productIdentifier] = promotionalOffer
+                        offerDiscount = promotionalOffer?.discount
+                    }
+
+                    var introOfferData: IBillingProviderSubscriptionPlanPeriodIntroOfferData? = nil
+                    if let discount = offerDiscount,
+                       let months = discount.subscriptionPeriod.valueInMonths {
+                        introOfferData = IBillingProviderSubscriptionPlanPeriodIntroOfferData(
+                            formattedPrice: discount.localizedPriceString,
+                            durationMonths: Int32(months * discount.numberOfPeriods),
+                            recurringPeriodMonths: discount.paymentMode == .payAsYouGo ? KotlinInt(int: Int32(months)) : nil,
+                            formattedSavings: product.formattedSavings(for: discount, offerMonths: months * discount.numberOfPeriods)
+                        )
                     }
                     
                     let planConfig = try await remoteConfigRepo.getConfigOnce().plans.first { config in
@@ -155,6 +178,7 @@ class BillingProviderIOS: IBillingProvider {
                                 referencePerYearFormattedPrice: product.localizedPricePerYear,
                                 referencePerMonthFormattedPrice: product.localizedPricePerMonth,
                             ),
+                            introOfferData: introOfferData,
                             trialDurationDays: trialDurationDays
                         )
                         
@@ -198,7 +222,11 @@ class BillingProviderIOS: IBillingProvider {
         let presentedOffering: Package = package
 
         do {
-            let result = try await Purchases.shared.purchase(package: presentedOffering)
+            let result = if let promotionalOffer = promotionalOffers[package.storeProduct.productIdentifier] {
+                try await Purchases.shared.purchase(package: presentedOffering, promotionalOffer: promotionalOffer)
+            } else {
+                try await Purchases.shared.purchase(package: presentedOffering)
+            }
             if result.userCancelled {
                 let sharedError = PurchaseErrorException(
                     errorCode: Int32(ErrorCode.purchaseCancelledError.errorCode),
@@ -259,12 +287,36 @@ private extension StoreProduct {
         return formatter.string(from: price as NSDecimalNumber)
     }
 
+    func formattedSavings(for discount: StoreProductDiscount, offerMonths: Int) -> String? {
+        guard let periodMonths = subscriptionPeriod?.valueInMonths,
+              let formatter = priceFormatter
+        else {
+            return nil
+        }
+
+        let offerPrice = discount.paymentMode == .payAsYouGo
+            ? discount.price * Decimal(discount.numberOfPeriods)
+            : discount.price
+        var savings = price * Decimal(offerMonths) / Decimal(periodMonths) - offerPrice
+        var roundedSavings = Decimal()
+        NSDecimalRound(&roundedSavings, &savings, formatter.maximumFractionDigits, .down)
+        guard roundedSavings > 0 else { return nil }
+
+        return formatter.string(from: roundedSavings as NSDecimalNumber)
+    }
+
 }
 
 final class PurchaseError : Swift.Error, @unchecked Sendable {
     public let sharedError: PurchaseErrorException
     init(sharedError: PurchaseErrorException) {
         self.sharedError = sharedError
+    }
+}
+
+private extension StoreProductDiscount {
+    var isPaidMonthsOffer: Bool {
+        (paymentMode == .payUpFront || paymentMode == .payAsYouGo) && subscriptionPeriod.valueInMonths != nil
     }
 }
 
@@ -280,6 +332,17 @@ extension SubscriptionPeriod {
         case .year:
             return KotlinInt(int: Int32(value * 365))
         @unknown default:
+            return nil
+        }
+    }
+
+    var valueInMonths: Int? {
+        switch unit {
+        case .month:
+            return value
+        case .year:
+            return value * 12
+        default:
             return nil
         }
     }

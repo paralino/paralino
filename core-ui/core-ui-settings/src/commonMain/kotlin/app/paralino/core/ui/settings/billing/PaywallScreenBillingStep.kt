@@ -160,22 +160,7 @@ private fun ColumnScope.PaywallScreenBillingStep(
     )
 
     val selectedPlan = state.selectedPlan
-    Spacer(modifier = Modifier.size(16.dp))
-
-    AnimatedVisibility(selectedPlan != null && state.canShowTopPlanPeriodSelector) {
-        if (selectedPlan != null) {
-            BillingPeriodOptionsSelector(
-                modifier = Modifier
-                    .padding(horizontal = 20.dp)
-                    .padding(bottom = 16.dp),
-                selectedPlan = selectedPlan,
-                showTrialInfo = !state.hasActivePlanOnAnotherPlatform,
-                onPeriodSelected = {
-                    onEvent(PaywallScreenUiEvent.SelectBillingPeriod(planType = selectedPlan.type, period = it))
-                }
-            )
-        }
-    }
+    Spacer(modifier = Modifier.size(12.dp))
 
     AnimatedVisibility(
         modifier = Modifier.align(Alignment.CenterHorizontally),
@@ -195,6 +180,21 @@ private fun ColumnScope.PaywallScreenBillingStep(
                 )
             }
         )
+    }
+
+    AnimatedVisibility(selectedPlan != null && state.canShowTopPlanPeriodSelector) {
+        if (selectedPlan != null) {
+            BillingPeriodOptionsSelector(
+                modifier = Modifier
+                    .padding(horizontal = 20.dp)
+                    .padding(bottom = 16.dp),
+                selectedPlan = selectedPlan,
+                showTrialInfo = !state.hasActivePlanOnAnotherPlatform,
+                onPeriodSelected = {
+                    onEvent(PaywallScreenUiEvent.SelectBillingPeriod(planType = selectedPlan.type, period = it))
+                }
+            )
+        }
     }
 
     var benefitsMode by remember { mutableStateOf(PlanFeatureTableMode.SUMMARY) }

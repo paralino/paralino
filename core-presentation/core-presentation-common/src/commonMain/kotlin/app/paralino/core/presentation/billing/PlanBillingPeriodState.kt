@@ -10,8 +10,15 @@ data class PlanBillingPeriodState(
     val price: String,
     val pricePerMonth: String?,
     val pricePerMember: String?,
-    val discountPercent: String?,
-    val isPromoDiscount: Boolean,
+    val discount: String?,
     val trialDurationDays: Int?,
+    val introOffer: IntroOfferState?,
     val isNativePlatformCurrentBillingPeriod: Boolean
+)
+
+data class IntroOfferState(
+    val price: String,
+    val durationMonths: Int,
+    // null for single payment
+    val recurringPeriodMonths: Int?
 )

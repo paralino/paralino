@@ -25,6 +25,7 @@ import app.paralino.core.models.user.UserPlans
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.presentation.billing.BillingScreenSourceType
 import app.paralino.core.presentation.billing.FeatureTableItemValue
+import app.paralino.core.presentation.billing.IntroOfferState
 import app.paralino.core.presentation.billing.PlanBillingPeriodState
 import app.paralino.core.presentation.billing.PlanInfoState
 import app.paralino.core.presentation.common.AppSnackbarData
@@ -442,16 +443,23 @@ class PaywallViewModel(
                             .takeIf { period.billingPeriod == PlanBillingPeriod.ANNUALLY }
                             ?.let { MR.strings.paywall_price_per_month.localizedString(it) },
                         pricePerMember = period.fullPriceData.formattedPricePerMemberPerMonth,
-                        discountPercent = fullYearlyPrice?.fullPriceData?.referencePerYearPrice
-                            ?.takeIf { period.billingPeriod == PlanBillingPeriod.ANNUALLY }
-                            ?.let { (1f - (period.fullPriceData.price.toFloat() / it)) * 100 }
-                            ?.toInt()
-                            // using even numbers to display discount
-                            // will even out discounts across plans and still be capped below actual discount
-                            ?.let { it - (it % 2) }
-                            ?.let { "$it%" },
-                        isPromoDiscount = false,
+                        discount = period.introOfferData?.formattedSavings
+                            ?: fullYearlyPrice?.fullPriceData?.referencePerYearPrice
+                                ?.takeIf { period.billingPeriod == PlanBillingPeriod.ANNUALLY }
+                                ?.let { (1f - (period.fullPriceData.price.toFloat() / it)) * 100 }
+                                ?.toInt()
+                                // using even numbers to display discount
+                                // will even out discounts across plans and still be capped below actual discount
+                                ?.let { it - (it % 2) }
+                                ?.let { "$it%" },
                         trialDurationDays = period.trialDurationDays,
+                        introOffer = period.introOfferData?.let {
+                            IntroOfferState(
+                                price = it.formattedPrice,
+                                durationMonths = it.durationMonths,
+                                recurringPeriodMonths = it.recurringPeriodMonths
+                            )
+                        },
                         isNativePlatformCurrentBillingPeriod = currentHighestPlan
                             ?.takeIf { it.config.planTypeEnum == planConfig.planTypeEnum }
                             ?.takeIf { plan ->

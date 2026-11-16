@@ -27,6 +27,7 @@ interface IBillingProvider {
         val productPlanId: String,
         val billingPeriod: PlanBillingPeriod,
         val fullPriceData: SubscriptionPlanPeriodFullPriceData,
+        val introOfferData: SubscriptionPlanPeriodIntroOfferData?,
         val trialDurationDays: Int?
     )
 
@@ -37,5 +38,13 @@ interface IBillingProvider {
         val referencePerYearPrice: Long?,
         val referencePerYearFormattedPrice: String?,
         val referencePerMonthFormattedPrice: String?
+    )
+
+    data class SubscriptionPlanPeriodIntroOfferData(
+        val formattedPrice: String,
+        val durationMonths: Int,
+        // null for single payment
+        val recurringPeriodMonths: Int?,
+        val formattedSavings: String?
     )
 }
