@@ -1,7 +1,7 @@
 package app.paralino.core.presentation.privacyzones.create
 
 import androidx.compose.ui.text.input.TextFieldValue
-import app.paralino.core.MR
+import app.paralino.core.resources.moko.*
 import app.paralino.core.domain.group.PlaceAddressSearchUseCase
 import app.paralino.core.domain.location.GetMemberWithLocationsUseCase
 import app.paralino.core.domain.location.LocationCacheRepository
@@ -517,7 +517,8 @@ class CreatePrivacyZoneViewModel(
                 signalStrength = NetworkSignalStrength.GOOD,
                 visibility = MemberLocationVisibilityType.VISIBLE_ALWAYS,
                 distanceFromMeText = null,
-                atPlace = null
+                atPlace = null,
+                isLikelyInaccurate = false
             ),
             deviceId = "",
             actions = MemberActionsState(),

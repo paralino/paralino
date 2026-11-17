@@ -1,7 +1,7 @@
 package app.paralino.core.presentation.settings.billing
 
 import androidx.compose.ui.text.AnnotatedString
-import app.paralino.core.MR
+import app.paralino.core.resources.moko.*
 import app.paralino.core.app_rating.AppRatingManager
 import app.paralino.core.app_rating.AppRatingSource
 import app.paralino.core.db.AppPrefs
@@ -25,6 +25,7 @@ import app.paralino.core.models.user.UserPlans
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.presentation.billing.BillingScreenSourceType
 import app.paralino.core.presentation.billing.FeatureTableItemValue
+import app.paralino.core.presentation.billing.IntroOfferState
 import app.paralino.core.presentation.billing.PlanBillingPeriodState
 import app.paralino.core.presentation.billing.PlanInfoState
 import app.paralino.core.presentation.common.AppSnackbarData
@@ -385,7 +386,7 @@ class PaywallViewModel(
         val availableProducts = billingConfig
             ?.plans
             ?.filter { it.planConfig.isActive }
-            ?.sortedBy { it.periods.minByOrNull { it.price }?.price }
+            ?.sortedBy { it.periods.minByOrNull { it.fullPriceData.price }?.fullPriceData?.price }
             ?: emptyList()
 
         val isFreePlanSelected = isPlanSelected(
@@ -399,7 +400,6 @@ class PaywallViewModel(
             name = freePlanConfig.adjustedPlanName,
             config = freePlanConfig,
             isCurrentPlan = false,
-            hasSpecialOffer = false,
             isSelected = isFreePlanSelected,
             isExpanded = false,
             billingPeriods = emptyList()
@@ -416,21 +416,14 @@ class PaywallViewModel(
                 config = config
             )
             val billingPeriods = product.periods
-                .groupBy { it.billingPeriod }
-                .mapNotNull { periods ->
-                    val period = periods.value.first()
-
+                .map { period ->
                     val fullYearlyPrice = product.periods
                         .filter { it.billingPeriod == PlanBillingPeriod.MONTHLY }
-                        .maxBy { it.referencePerYearPrice ?: it.price }
+                        .maxBy { it.fullPriceData.referencePerYearPrice ?: it.fullPriceData.price }
                         .takeIf { period.billingPeriod == PlanBillingPeriod.ANNUALLY }
 
-                    val highestPrice = periods.value.maxBy { it.price }
-                        .takeIf { periods.value.size > 1 }
-                    val lowestPrice = periods.value.minBy { it.price }
-
                     PlanBillingPeriodState(
-                        productPlanId = lowestPrice.productPlanId,
+                        productPlanId = period.productPlanId,
                         name = when (period.billingPeriod) {
                             PlanBillingPeriod.WEEKLY -> MR.strings.plan_period_weekly_name.localizedString()
                             PlanBillingPeriod.MONTHLY -> MR.strings.plan_period_monthly_name.localizedString()
@@ -444,31 +437,28 @@ class PaywallViewModel(
                             plans = plans,
                             currentState = currentState
                         ),
-                        price = lowestPrice.formattedPrice,
-                        pricePerMonth = lowestPrice.referencePerMonthFormattedPrice
+                        price = period.fullPriceData.formattedPrice,
+                        pricePerMonth = period.fullPriceData.referencePerMonthFormattedPrice
                             .takeIf { period.billingPeriod == PlanBillingPeriod.ANNUALLY }
                             ?.let { MR.strings.paywall_price_per_month.localizedString(it) },
-                        pricePerMember = lowestPrice.formattedPricePerMemberPerMonth,
-                        discountedPrice = listOfNotNull(
-                            fullYearlyPrice?.referencePerYearFormattedPrice
-                        )
-                            .distinct()
-                            .takeIf { it.isNotEmpty() }
-                            ?.joinToString("\n"), // { it.filterNot { it == ' ' } },
-                        discountPercent = listOfNotNull(
-                            fullYearlyPrice?.referencePerYearPrice,
-                            highestPrice?.price
-                        )
-                            .maxOrNull()
-                            ?.takeIf { period.billingPeriod == PlanBillingPeriod.ANNUALLY }
-                            ?.let { (1f - (lowestPrice.price.toFloat() / it)) * 100 }
-                            ?.toInt()
-                            // using even numbers to display discount
-                            // will even out discounts across plans and still be capped below actual discount
-                            ?.let { it - (it % 2) }
-                            ?.let { "$it%" },
-                        isPromoDiscount = highestPrice != null,
-                        trialDurationDays = lowestPrice.trialDurationDays,
+                        pricePerMember = period.fullPriceData.formattedPricePerMemberPerMonth,
+                        discount = period.introOfferData?.formattedSavings
+                            ?: fullYearlyPrice?.fullPriceData?.referencePerYearPrice
+                                ?.takeIf { period.billingPeriod == PlanBillingPeriod.ANNUALLY }
+                                ?.let { (1f - (period.fullPriceData.price.toFloat() / it)) * 100 }
+                                ?.toInt()
+                                // using even numbers to display discount
+                                // will even out discounts across plans and still be capped below actual discount
+                                ?.let { it - (it % 2) }
+                                ?.let { "$it%" },
+                        trialDurationDays = period.trialDurationDays,
+                        introOffer = period.introOfferData?.let {
+                            IntroOfferState(
+                                price = it.formattedPrice,
+                                durationMonths = it.durationMonths,
+                                recurringPeriodMonths = it.recurringPeriodMonths
+                            )
+                        },
                         isNativePlatformCurrentBillingPeriod = currentHighestPlan
                             ?.takeIf { it.config.planTypeEnum == planConfig.planTypeEnum }
                             ?.takeIf { plan ->
@@ -489,7 +479,6 @@ class PaywallViewModel(
                 name = planConfig.adjustedPlanName,
                 config = planConfig,
                 isCurrentPlan = plans.highestValidPlanConfig.planTypeEnum == planConfig.planTypeEnum,
-                hasSpecialOffer = billingPeriods.any { it.isPromoDiscount },
                 isSelected = isPlanSelected,
                 isExpanded = !sourceType.shouldPreselectPlan,
                 billingPeriods = billingPeriods
@@ -548,6 +537,7 @@ class PaywallViewModel(
             } else {
                 true
             },
+            isBillingSelectorOnTop = billingConfig?.billingSelectorPosition == "top",
             isLoading = currentState?.isLoading ?: true,
             alertDialog = currentState?.alertDialog,
             appFlavor = appConfig.appFlavor,
@@ -564,13 +554,13 @@ class PaywallViewModel(
             locationHistoryStepMessage = locationHistoryMessage,
             subscriptionNotice = billingConfig?.billingConfig?.subscriptionNotice ?: emptyList(),
             subscriptionOfferDialog = billingConfig?.billingConfig?.dialogOffer?.takeIf {
-                if (it.requiresTrial) {
-                    uiPlans.firstOrNull { it.isSelected }?.selectedBillingPeriod?.trialDurationDays?.let {
-                        it > 0
-                    } ?: false
-                } else {
-                    true
-                }
+                val planHasTrial = uiPlans.firstOrNull { it.isSelected }?.selectedBillingPeriod?.trialDurationDays?.let {
+                    it > 0
+                } ?: false
+                val planHasOffer = uiPlans.firstOrNull { it.isSelected }?.selectedBillingPeriod?.introOffer != null
+                val trialMatch = if (it.requiresTrial) planHasTrial else true
+                val offerMatch = if (it.requiresOffer) planHasOffer else true
+                trialMatch && offerMatch
             }?.let {
                 MainAlertDialog.SubscriptionOfferDialog(dialogOffer = it)
             },

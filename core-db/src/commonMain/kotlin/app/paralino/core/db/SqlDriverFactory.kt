@@ -1,6 +1,6 @@
 package app.paralino.core.db
 
-import androidx.room.RoomDatabase
+import androidx.room3.RoomDatabase
 import app.paralino.core.db.logs.AppLogsDatabase
 import app.paralino.core.db.main.AppMainDatabase
 

@@ -2,44 +2,44 @@
 compileSdk = "37"
 minSdk = "29"
 targetSdk = "37"
-androidGradlePlugin = "9.3.2"
-kotlin = "2.3.20"
-composeBom = "2026.08.00"
-composeMultiplatform = "1.12.0"
+androidGradlePlugin = "9.5.0"
+kotlin = "2.4.21"
+composeBom = "2026.09.00"
+composeMultiplatform = "1.12.2"
 koin-bom = "4.2.2"
 junit = "4.+"
 androidxTestExt = "1.3.0"
 espressoCore = "3.7.0"
 kotlinxCoroutinesCore = "1.11.0"
 kotlinxDatetime = "0.8.0"
-kotlinxSerializationJson = "1.11.0"
+kotlinxSerializationJson = "1.12.0"
 material = "1.14.0"
 appcompat = "1.8.0"
 legacySupport = "1.0.0"
 multiplatformSettings = "1.3.0"
 preferenceKtx = "1.2.1"
 securityCryptoKtx = "1.1.0-alpha06"
-work = "2.11.2"
+work = "2.12.0"
 lifecycle = "2.11.0"
 lifecycleExtensions = "2.2.0"
 activityCompose = "1.13.0"
 constraintlayoutCompose = "1.1.2"
-navigationCompose = "2.10.0"
-accompanist = "0.34.0"
-aboutLibraries = "14.2.1"
-sentry = "8.54.0"
+navigation3 = "1.2.0"
+accompanist = "0.37.3"
+aboutLibraries = "15.3.0"
+sentry = "8.62.0"
 playServicesLocation = "21.4.0"
-mapsGoogleCompose = "8.6.0"
-mapsMapLibreCompose = "0.15.0"
+mapsGoogleCompose = "9.0.1"
+mapsMapLibreCompose = "0.20.0"
 firebaseMessaging = "24.1.2"
 nanoid = "2.0.1"
-mokoResources = "0.26.4"
-okhttp = "5.5.0"
-ktor = "3.5.2"
-revenuecat-android = "10.19.1"
-androidx-room = "2.8.4"
-sqlite = "2.6.2"
-ksp = "2.3.9"
+mokoResources = "0.27.1"
+okhttp = "5.5.1"
+ktor = "3.6.0"
+revenuecat-android = "11.0.1"
+androidx-room3 = "3.0.3"
+sqlite = "2.7.1"
+ksp = "2.3.12"
 googlePlayReview = "2.0.2"
 unifiedPushConnector = "3.3.5"
 
@@ -68,7 +68,9 @@ lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtim
 lifecycle-extensions = { group = "androidx.lifecycle", name = "lifecycle-extensions", version.ref = "lifecycleExtensions" }
 activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
 constraintlayout-compose = { group = "androidx.constraintlayout", name = "constraintlayout-compose", version.ref = "constraintlayoutCompose" }
-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
+navigation3-runtime = { group = "androidx.navigation3", name = "navigation3-runtime", version.ref = "navigation3" }
+navigation3-ui = { group = "androidx.navigation3", name = "navigation3-ui", version.ref = "navigation3" }
+lifecycle-viewmodel-navigation3 = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-navigation3", version.ref = "lifecycle" }
 
 jetbrains-compose-components-resources = { module = "org.jetbrains.compose.components:components-resources", version.ref = "composeMultiplatform" }
 jetbrains-compose-foundation = { module = "org.jetbrains.compose.foundation:foundation", version.ref = "composeMultiplatform" }
@@ -84,7 +86,6 @@ compose-ui = { group = "androidx.compose.ui", name = "ui" }
 compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
 compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
 accompanist-permissions = { group = "com.google.accompanist", name = "accompanist-permissions", version.ref = "accompanist" }
-accompanist-systemuicontroller = { group = "com.google.accompanist", name = "accompanist-systemuicontroller", version.ref = "accompanist" }
 aboutLibraries-core = { module = "com.mikepenz:aboutlibraries-core", version.ref = "aboutLibraries" }
 aboutLibraries-compose-core = { module = "com.mikepenz:aboutlibraries-compose-core", version.ref = "aboutLibraries" }
 aboutLibraries-compose-m2 = { module = "com.mikepenz:aboutlibraries-compose", version.ref = "aboutLibraries" }
@@ -100,7 +101,6 @@ koin-bom = { module = "io.insert-koin:koin-bom", version.ref = "koin-bom" }
 koin-core = { module = "io.insert-koin:koin-core" }
 koin-android = { module = "io.insert-koin:koin-android" }
 koin-compose = { module = "io.insert-koin:koin-androidx-compose" }
-koin-navigation = { module = "io.insert-koin:koin-androidx-compose-navigation" }
 okhttp-bom = { group = "com.squareup.okhttp3", name = "okhttp-bom", version.ref = "okhttp" }
 okhttp = { group = "com.squareup.okhttp3", name = "okhttp" }
 logging-interceptor = { group = "com.squareup.okhttp3", name = "logging-interceptor" }
@@ -113,8 +113,8 @@ network-ktor-serialization = { module = "io.ktor:ktor-serialization-kotlinx-json
 network-ktor-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
 
 revenuecat-android = { module = "com.revenuecat.purchases:purchases", version.ref = "revenuecat-android" }
-androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "androidx-room" }
-androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "androidx-room" }
+androidx-room3-compiler = { group = "androidx.room3", name = "room3-compiler", version.ref = "androidx-room3" }
+androidx-room3-runtime = { group = "androidx.room3", name = "room3-runtime", version.ref = "androidx-room3" }
 sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sqlite" }
 play-review = { module = "com.google.android.play:review-ktx", version.ref = "googlePlayReview" }
 
@@ -131,4 +131,4 @@ compose-multiplatform = { id = "org.jetbrains.compose", version.ref = "composeMu
 aboutlibraries = { id = "com.mikepenz.aboutlibraries.plugin", version.ref = "aboutLibraries" }
 moko-resources = { id = "dev.icerock.mobile.multiplatform-resources", version.ref = "mokoResources" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
-androidx-room = { id = "androidx.room", version.ref = "androidx-room" }
+androidx-room3 = { id = "androidx.room3", version.ref = "androidx-room3" }

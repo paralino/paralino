@@ -1,6 +1,6 @@
 package app.paralino.core.models.base
 
-import app.paralino.core.MR
+import app.paralino.core.resources.moko.*
 import app.paralino.core.provider.localizedString
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient

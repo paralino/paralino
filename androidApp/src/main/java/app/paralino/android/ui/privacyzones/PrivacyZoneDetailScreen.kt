@@ -55,7 +55,7 @@ fun PrivacyZoneDetailScreen(
             onNavigateBack = { appState.navController.popBackStack() },
             openPrivacyZoneRawDataScreen = {
                 appState.navController.navigate(
-                    AppScreen.MainHome.RawDataScreen.route(
+                    AppScreen.Common.RawDataScreen(
                         RawPresentationDataType.GroupPrivacyZonePresentation(
                             privacyZoneId = zoneId
                         )
@@ -64,7 +64,7 @@ fun PrivacyZoneDetailScreen(
             },
             openPrivacyZoneNameEditScreen = {
                 appState.navController.navigate(
-                    AppScreen.MainHome.PrivacyZoneCreate.route(
+                    AppScreen.MainHome.PrivacyZoneCreate(
                         groupId = groupId,
                         zoneId = zoneId,
                         editStep = CreatePrivacyZoneScreenStep.NAME_SUGGESTION
@@ -73,7 +73,7 @@ fun PrivacyZoneDetailScreen(
             },
             openPrivacyZonePositionEditScreen = {
                 appState.navController.navigate(
-                    AppScreen.MainHome.PrivacyZoneCreate.route(
+                    AppScreen.MainHome.PrivacyZoneCreate(
                         groupId = groupId,
                         zoneId = zoneId,
                         editStep = CreatePrivacyZoneScreenStep.ADDRESS
@@ -82,7 +82,7 @@ fun PrivacyZoneDetailScreen(
             },
             openPrivacyZoneSettingsEditScreen = {
                 appState.navController.navigate(
-                    AppScreen.MainHome.PrivacyZoneCreate.route(
+                    AppScreen.MainHome.PrivacyZoneCreate(
                         groupId = groupId,
                         zoneId = zoneId,
                         editStep = CreatePrivacyZoneScreenStep.SETTINGS

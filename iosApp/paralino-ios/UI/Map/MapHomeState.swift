@@ -12,7 +12,8 @@ import SwiftUI
 
 class MapHomeState : BaseMapObservableObject {
     
-    let vm: MapHomeViewModel
+    // Read by the nonisolated deinit to clean up the view model.
+    nonisolated(unsafe) let vm: MapHomeViewModel
     
     @Published var uiState: MapHomeScreenState = MapHomeScreenState.Empty(
         groupsEmptyState: nil,
@@ -117,7 +118,8 @@ class MapHomeState : BaseMapObservableObject {
                 if state.focusType is LocationHistoryScreenFocusTypeOVERVIEW {
                     if let region = self?.getFocusRegion(state.selectedLocations) {
                         let areLocationsChanged: Bool = previousState?.selectedLocations.map({ $0.pointId }) != state.selectedLocations.map({ $0.pointId })
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                        Task { [weak self] in
+                            try? await Task.sleep(nanoseconds: 300 * 1_000_000)
                             self?.focusCamera(
                                 rect: region,
                                 animate: true,

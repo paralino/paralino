@@ -19,7 +19,7 @@ fun VerifyEmailScreen(
         appState = appState,
         vm = vm,
         openChangeEmail = {
-            appState.navController.navigate(AppScreen.LoggedOut.ChangeEmail.routeSignature)
+            appState.navController.navigate(AppScreen.LoggedOut.ChangeEmail)
         }
     )
 }

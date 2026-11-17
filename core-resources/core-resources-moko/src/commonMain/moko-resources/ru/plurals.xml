@@ -70,4 +70,14 @@
         <item quantity="few">%d устройства</item>
         <item quantity="other">%d устройств</item>
     </plurals>
+    <plurals name="paywall_intro_offer_first_months">
+        <item quantity="one">первый %d месяц</item>
+        <item quantity="few">первые %d месяца</item>
+        <item quantity="other">первые %d месяцев</item>
+    </plurals>
+    <plurals name="paywall_intro_offer_first_years">
+        <item quantity="one">первый %d год</item>
+        <item quantity="few">первые %d года</item>
+        <item quantity="other">первые %d лет</item>
+    </plurals>
 </resources>

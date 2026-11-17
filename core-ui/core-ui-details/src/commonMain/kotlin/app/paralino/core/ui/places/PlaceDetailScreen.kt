@@ -36,7 +36,7 @@ import androidx.compose.ui.draw.dropShadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.unit.dp
-import app.paralino.core.MR
+import app.paralino.core.resources.moko.*
 import app.paralino.core.models.Payload
 import app.paralino.core.models.PlaceZoneExpirationStatus
 import app.paralino.core.models.PlaceZoneType
@@ -69,7 +69,7 @@ fun PlaceDetailScreenCore(
     onNavigateBack: () -> Unit,
     openPlaceRawDataScreen: () -> Unit,
     openPlaceAlertsScreen: () -> Unit,
-    openPlaceSensitivityScreen: () -> Unit,
+    openPlaceImprovementsScreen: () -> Unit,
     openPlaceNameEditScreen: () -> Unit,
     openPlacePositionEditScreen: () -> Unit,
     mapContent: @Composable (PlaceDetailScreenState) -> Unit,
@@ -137,7 +137,7 @@ fun PlaceDetailScreenCore(
                 openPlacePositionEditScreen = openPlacePositionEditScreen,
                 openPlaceRawDataScreen = openPlaceRawDataScreen,
                 openPlaceAlertsScreen = openPlaceAlertsScreen,
-                openPlaceSensitivityScreen = openPlaceSensitivityScreen,
+                openPlaceImprovementsScreen = openPlaceImprovementsScreen,
                 onPlaceDelete = {
                     showDialog = MainAlertDialog.DeletePlace
                 },
@@ -164,7 +164,7 @@ private fun PlaceDetailScreen(
     userScrollEnabled: Boolean,
     openPlaceRawDataScreen: () -> Unit,
     openPlaceAlertsScreen: () -> Unit,
-    openPlaceSensitivityScreen: () -> Unit,
+    openPlaceImprovementsScreen: () -> Unit,
     openPlaceNameEditScreen: () -> Unit,
     openPlacePositionEditScreen: () -> Unit,
     onPlaceDelete: () -> Unit,
@@ -298,10 +298,10 @@ private fun PlaceDetailScreen(
                         openPlaceAlertsScreen()
                     }
                     SettingsActionItem(
-                        name = stringResource(MR.strings.place_sensitivity_screen_title),
-                        icon = CoreAppIcons.ShareLocation.asPainterResource(),
+                        name = stringResource(MR.strings.place_improvements_screen_title),
+                        icon = CoreAppIcons.AutoFixHigh.asPainterResource(),
                     ) {
-                        openPlaceSensitivityScreen()
+                        openPlaceImprovementsScreen()
                     }
                 }
 

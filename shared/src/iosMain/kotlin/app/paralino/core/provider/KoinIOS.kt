@@ -75,6 +75,9 @@ import app.paralino.core.presentation.places.create.CreatePlaceScreenStep
 import app.paralino.core.presentation.places.create.CreatePlaceViewModel
 import app.paralino.core.presentation.places.detail.PlaceDetailViewModel
 import app.paralino.core.presentation.places.detail.PlaceSensitivityViewModel
+import app.paralino.core.presentation.places.detail.PlaceImprovementsViewModel
+import app.paralino.core.presentation.places.detail.FalseLocationsViewModel
+import app.paralino.core.presentation.places.detail.WifiNetworksViewModel
 import app.paralino.core.presentation.places.list.PlacesViewModel
 import app.paralino.core.presentation.privacyzones.create.CreatePrivacyZoneScreenStep
 import app.paralino.core.presentation.privacyzones.create.CreatePrivacyZoneViewModel
@@ -207,7 +210,7 @@ object KoinIOS {
                     single { appUpdateManager() } bind IAppUpdateManager::class
                     single { appRatingPresenter() } bind IAppRatingPresenter::class
                     single { oneTimeLocationProvider(get(), get()) }
-                    single { LocationRepositoryWrapper(get(), get(), get(), get(), get()) }
+                    single { LocationRepositoryWrapper(get(), get(), get(), get(), get(), get()) }
                     single { IOSNSEPlaceCreatedNotificationProcessor(get(), get(), get(), get()) }
                     single { IOSNSEPrivacyZoneCreatedNotificationProcessor(get(), get(), get(), get()) }
                     single { IOSNSEPushNotificationHandler(get(), get(), get(), get()) }
@@ -220,7 +223,7 @@ object KoinIOS {
                             single { PersonalDeviceCryptoKeyRotation(get(), get(), get(), get(), get(), get(), get(), get()) } bind IPersonalDeviceCryptoKeyRotation::class
                             single { ReRegisterDeviceUseCase(get(), get()) } bind IReRegisterDeviceUseCase::class
                             single { LocationRequestAutoUpgradeUseCase(get(), get(), get(), get(), get()) } bind ILocationRequestAutoUpgradeUseCase::class
-                            single { PlacesActivityProcessor(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) } bind IPlacesActivityProcessor::class
+                            single { PlacesActivityProcessor(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) } bind IPlacesActivityProcessor::class
                             single { LocationHistoryUploadEngine(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) } bind ILocationHistoryUploadEngine::class
                             single { BatteryAlertUploadEngine(get(), get(), get(), get(), get()) } bind IBatteryAlertUploadEngine::class
                         }
@@ -395,6 +398,9 @@ object KoinIOS {
             factory { PersonalSpaceViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
             factory { PersonalSpaceSettingsViewModel(get(), get()) }
             factory { (groupId: String, placeId: String) -> PlaceSensitivityViewModel(groupId = groupId, placeId = placeId, get(), get(), get(), get()) }
+            factory { (groupId: String, placeId: String) -> PlaceImprovementsViewModel(groupId = groupId, placeId = placeId, get(), get(), get()) }
+            factory { (groupId: String, placeId: String) -> FalseLocationsViewModel(groupId = groupId, placeId = placeId, get(), get(), get(), get(), get()) }
+            factory { params -> WifiNetworksViewModel(placeId = params.getOrNull<String>(), get(), get(), get(), get()) }
             factory { AppSettingsViewModel(get(), get()) }
             factory { LicenceCodeViewModel(get(), get()) }
         }
@@ -511,6 +517,9 @@ object KoinIOS {
         val personalSpaceVM get() = get<PersonalSpaceViewModel>()
         val personalSpaceSettingsVM get() = get<PersonalSpaceSettingsViewModel>()
         fun placeSensitivityVM(groupId: String, placeId: String) = get<PlaceSensitivityViewModel>() { parametersOf(groupId, placeId) }
+        fun placeImprovementsVM(groupId: String, placeId: String) = get<PlaceImprovementsViewModel>() { parametersOf(groupId, placeId) }
+        fun falseLocationsVM(groupId: String, placeId: String) = get<FalseLocationsViewModel>() { parametersOf(groupId, placeId) }
+        fun wifiNetworksVM(placeId: String?) = get<WifiNetworksViewModel>() { parametersOf(placeId) }
         val appSettingsVM get() = get<AppSettingsViewModel>()
         val licenceCodeVM get() = get<LicenceCodeViewModel>()
     }

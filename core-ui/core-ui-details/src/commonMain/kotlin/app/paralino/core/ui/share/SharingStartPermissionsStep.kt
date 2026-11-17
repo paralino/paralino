@@ -37,7 +37,7 @@ import androidx.compose.ui.layout.LookaheadScope
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import app.paralino.core.MR
+import app.paralino.core.resources.moko.*
 import app.paralino.core.presentation.common.endActionTextRes
 import app.paralino.core.presentation.common.nameRes
 import app.paralino.core.presentation.common.resolvedNameRes

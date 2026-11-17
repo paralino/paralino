@@ -1,6 +1,6 @@
 package app.paralino.core.presentation.history
 
-import app.paralino.core.MR
+import app.paralino.core.resources.moko.*
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.location.history.DeleteLocationHistoryEntryUseCase
 import app.paralino.core.domain.location.history.GetLocationHistoryUseCase
@@ -637,7 +637,15 @@ class LocationHistoryViewModelController(
 
             LocationHistoryUiEvent.ToggleShowInaccurateLocation -> {
                 _uiState.update {
-                    val newState = it.copy(showInaccurateLocations = !it.showInaccurateLocations)
+                    val newState = it.copy(
+                        inaccurateLocationsMode = when (it.inaccurateLocationsMode) {
+                            LocationHistoryInaccurateLocationsViewMode.DEFAULT_ON,
+                            LocationHistoryInaccurateLocationsViewMode.ON -> LocationHistoryInaccurateLocationsViewMode.OFF
+                            LocationHistoryInaccurateLocationsViewMode.DEFAULT_OFF,
+                            LocationHistoryInaccurateLocationsViewMode.OFF -> LocationHistoryInaccurateLocationsViewMode.ON
+                            LocationHistoryInaccurateLocationsViewMode.HIDDEN -> LocationHistoryInaccurateLocationsViewMode.HIDDEN
+                        }
+                    )
                     newState.copy(
                         stats = LocationHistoryStats.calculateStats(
                             state = newState,

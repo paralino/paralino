@@ -9,7 +9,7 @@ import Foundation
 import shared
 import UIKit
 
-public class PushSetupProvider: IPushProviderManager {
+public class PushSetupProvider: IPushProviderManager, @unchecked Sendable {
     
     lazy var userDataUpdate: UpdateUserDataUseCase = { KoinIOS.Instances.shared.userDataUpdate }()
     lazy var pushHandler: PushNotificationHandler = { KoinIOS.Instances.shared.pushNotificationsHandler }()
@@ -21,13 +21,11 @@ public class PushSetupProvider: IPushProviderManager {
     }
     
     public func syncPushNotifications() {
-        DispatchQueue.main.async { [weak self] in
-            Task {
-                do {
-                    try await self?.pushHandler.checkForPushNotifications()
-                } catch let error {
-                    Logr.v(tag: "push_sync", message: "error syncing push notifications: \(error)")
-                }
+        Task { [weak self] in
+            do {
+                try await self?.pushHandler.checkForPushNotifications()
+            } catch let error {
+                Logr.v(tag: "push_sync", message: "error syncing push notifications: \(error)")
             }
         }
     }
@@ -39,20 +37,18 @@ public class PushSetupProvider: IPushProviderManager {
     }
     
     public func syncPushTokenImpl() {
-        DispatchQueue.main.async { [weak self] in
-            Task {
-                do {
-                    let response = try await self?.userDataUpdate.registerPushTokenIfNeeded()
-                    let payload = PayloadSwift<KotlinUnit>(data: response)
-                    switch payload {
-                    case .loading: Logr.v(tag: "push_sync", message: "Push token not synced")
-                    case .success: Logr.v(tag: "push_sync", message: "Push token synced")
-                    case .error(error: let error):
-                        Logr.v(tag: "push_sync", message: "error syncing push token: \(error)")
-                    }
-                } catch let error {
+        Task { [weak self] in
+            do {
+                let response = try await self?.userDataUpdate.registerPushTokenIfNeeded()
+                let payload = PayloadSwift<KotlinUnit>(data: response)
+                switch payload {
+                case .loading: Logr.v(tag: "push_sync", message: "Push token not synced")
+                case .success: Logr.v(tag: "push_sync", message: "Push token synced")
+                case .error(error: let error):
                     Logr.v(tag: "push_sync", message: "error syncing push token: \(error)")
                 }
+            } catch let error {
+                Logr.v(tag: "push_sync", message: "error syncing push token: \(error)")
             }
         }
     }

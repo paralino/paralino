@@ -71,7 +71,10 @@ class LocationPayloadProvider(
 
         when (result) {
             is LocationPayloadStatus.Success -> {
-                val status = memberDeviceStatusProvider.getStatus(groupId = groupId, contract = contract)
+                val status = memberDeviceStatusProvider.getStatus(
+                    groupId = groupId,
+                    contract = contract
+                )
                 val adjustedLocationData = safeLet(data, contract) { data, contract ->
                     val zoneResult = if (!groupId.isPersonalSpace) {
                         privacyZoneObfuscator.obfuscateIfInsideZone(
@@ -95,6 +98,9 @@ class LocationPayloadProvider(
                     }
 
                     val isInsidePrivacyZone = zoneResult != null
+                    val isLikelyInaccurate = !isInsidePrivacyZone &&
+                            approximateRadius == null &&
+                            data.isLikelyInaccurate == true
                     val adjustedCoordinates = if (approximateRadius != null) {
                         // sharing approximate
                         if (zoneResult == null || zoneResult.uploadAccuracyMeters < approximateRadius) {
@@ -113,7 +119,10 @@ class LocationPayloadProvider(
                     }
 
                     val adjustedAccuracy = if (approximateRadius != null && zoneResult != null) {
-                        maxOf(approximateRadius.toFloat(), zoneResult.uploadAccuracyMeters.toFloat())
+                        maxOf(
+                            approximateRadius.toFloat(),
+                            zoneResult.uploadAccuracyMeters.toFloat()
+                        )
                     } else {
                         approximateRadius?.toFloat()
                             ?: zoneResult?.uploadAccuracyMeters?.toFloat()
@@ -127,8 +136,10 @@ class LocationPayloadProvider(
                     LocationDataModel(
                         timeUTC = data.timeUTC,
                         endTimeUTC = contract.endTimeUTC?.takeIf { contract.shareDeviceStatus },
-                        lat = (adjustedCoordinates?.location?.lat ?: zoneResult?.lat ?: data.lat).roundToPrecision(decimalPlaces = 6),
-                        lng = (adjustedCoordinates?.location?.lng ?: zoneResult?.lng ?: data.lng).roundToPrecision(decimalPlaces = 6),
+                        lat = (adjustedCoordinates?.location?.lat ?: zoneResult?.lat ?: data.lat)
+                            .roundToPrecision(decimalPlaces = 6),
+                        lng = (adjustedCoordinates?.location?.lng ?: zoneResult?.lng ?: data.lng)
+                            .roundToPrecision(decimalPlaces = 6),
                         accuracy = adjustedAccuracy.roundToPrecision(decimalPlaces = 0),
                         speed = data.speed?.takeIf {
                             contract.shareSpeed && it != 0f && !isApproximate
@@ -143,7 +154,8 @@ class LocationPayloadProvider(
                             zoneResult.message
                         } else {
                             null
-                        }
+                        },
+                        isLikelyInaccurate = isLikelyInaccurate
                     )
                 }
 
@@ -163,7 +175,8 @@ class LocationPayloadProvider(
                                 // that is already more than enough
                                 acc = adjustedLocationData.accuracy.roundToPrecision(decimalPlaces = -1),
                                 spd = adjustedLocationData.speed?.roundToPrecision(decimalPlaces = 1),
-                                alt = adjustedLocationData.altitude?.roundToPrecision(decimalPlaces = -1)
+                                alt = adjustedLocationData.altitude?.roundToPrecision(decimalPlaces = -1),
+                                ina = adjustedLocationData.isLikelyInaccurate?.takeIf { it }
                             ),
                             status = LocationHistoryPointStatusModel(
                                 tA = status.timeUTC,
@@ -189,6 +202,7 @@ class LocationPayloadProvider(
                     )
                 )
             }
+
             else -> return result
         }
     }

@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import app.paralino.core.models.settings.AppThemeType
 import app.paralino.core.models.settings.DarkThemeStyleType
 import app.paralino.core.presentation.settings.generic.BaseGenericSettingViewModel
+import app.paralino.core.presentation.settings.generic.GenericSettingsDestination
 import app.paralino.core.presentation.settings.generic.GenericSettingListItem
 import app.paralino.core.presentation.settings.generic.GenericSettingsScreenEvent
 import app.paralino.core.presentation.settings.generic.GenericSettingsScreenStateContent
@@ -42,6 +43,7 @@ fun GenericSettingsScreenCore(
     askBackgroundAccessPermission: () -> Unit,
     applyAppTheme: (AppThemeType) -> Unit,
     applyDarkThemeStyle: (DarkThemeStyleType) -> Unit,
+    openScreen: (GenericSettingsDestination) -> Unit,
 ) {
     MessageDispatcherEffect(vm, coreUiState)
     val uiState by vm.uiState.collectAsState()
@@ -55,6 +57,7 @@ fun GenericSettingsScreenCore(
                 GenericSettingsScreenEvent.AskForBackgroundAccessPermission -> askBackgroundAccessPermission()
                 is GenericSettingsScreenEvent.ApplyAppTheme -> applyAppTheme(event.theme)
                 is GenericSettingsScreenEvent.ApplyDarkThemeStyle -> applyDarkThemeStyle(event.style)
+                is GenericSettingsScreenEvent.OpenScreen -> openScreen(event.destination)
                 null -> {
                     /* do nothing */
                 }

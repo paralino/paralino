@@ -1,6 +1,6 @@
 package app.paralino.core.models.places
 
-import app.paralino.core.MR
+import app.paralino.core.resources.moko.*
 
 enum class PlaceSensitivityLocationRefreshType(val key: String) {
     NONE("none"),

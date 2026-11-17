@@ -12,7 +12,8 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
 class PlaceActivityDataSource(
-    private val database: MainDatabaseHelper
+    private val database: MainDatabaseHelper,
+    private val falseAlertMemory: FalsePlaceAlertMemory,
 ) {
 
     private val _placeActivityCache = MutableStateFlow(mapOf<String, PlaceActivityState>())
@@ -97,6 +98,7 @@ class PlaceActivityDataSource(
             }
             database.placeActivityDao.clearMissingForGroups(placeIds = places.map { it.place.id })
         }
+        removeMissingFalseLocations()
     }
 
     suspend fun recreatePlacesForGroup(
@@ -116,6 +118,7 @@ class PlaceActivityDataSource(
             }
             database.placeActivityDao.clearMissing(groupId = groupId.id, placeIds = places.map { it.place.id })
         }
+        removeMissingFalseLocations()
     }
 
     suspend fun clearForGroup(groupId: GroupOrSpaceId) {
@@ -130,6 +133,15 @@ class PlaceActivityDataSource(
             newState
         }
         database.placeActivityDao.deleteForGroup(groupId = groupId.id)
+        removeMissingFalseLocations()
+    }
+
+    private suspend fun removeMissingFalseLocations() {
+        try {
+            falseAlertMemory.removeMissing(placeIds = database.groupRelatedDao.getAllPlacesOnce().map { it.id }.toSet())
+        } catch (e: Exception) {
+            // ignore - false locations expire on their own
+        }
     }
 
     suspend fun clearCache() {

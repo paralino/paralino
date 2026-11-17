@@ -1,6 +1,6 @@
 package app.paralino.core.presentation.places.list
 
-import app.paralino.core.MR
+import app.paralino.core.resources.moko.*
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.notifications.IGroupActivityNotificationPresenter
 import app.paralino.core.domain.notifications.IPushNotificationPresenter

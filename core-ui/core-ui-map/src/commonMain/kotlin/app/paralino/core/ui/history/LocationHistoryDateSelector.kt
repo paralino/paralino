@@ -50,7 +50,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import app.paralino.core.MR
+import app.paralino.core.resources.moko.*
 import app.paralino.core.presentation.history.LocationHistoryDateSelectionAction
 import app.paralino.core.presentation.history.LocationHistoryDateSelectorState
 import app.paralino.core.presentation.history.LocationHistoryDayState

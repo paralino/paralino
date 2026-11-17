@@ -12,7 +12,8 @@ interface IBillingProvider {
     data class SubscriptionProviderData(
         val plans: List<SubscriptionPlanData>,
         val billingConfig: BillingConfigData?,
-        val canCloseOnboardingPaywall: Boolean
+        val canCloseOnboardingPaywall: Boolean,
+        val billingSelectorPosition: String?
     )
 
     data class SubscriptionPlanData(
@@ -25,12 +26,25 @@ interface IBillingProvider {
         val fullProductId: String,
         val productPlanId: String,
         val billingPeriod: PlanBillingPeriod,
+        val fullPriceData: SubscriptionPlanPeriodFullPriceData,
+        val introOfferData: SubscriptionPlanPeriodIntroOfferData?,
+        val trialDurationDays: Int?
+    )
+
+    data class SubscriptionPlanPeriodFullPriceData(
         val price: Long,
         val formattedPricePerMemberPerMonth: String?,
         val formattedPrice: String,
         val referencePerYearPrice: Long?,
         val referencePerYearFormattedPrice: String?,
-        val referencePerMonthFormattedPrice: String?,
-        val trialDurationDays: Int?
+        val referencePerMonthFormattedPrice: String?
+    )
+
+    data class SubscriptionPlanPeriodIntroOfferData(
+        val formattedPrice: String,
+        val durationMonths: Int,
+        // null for single payment
+        val recurringPeriodMonths: Int?,
+        val formattedSavings: String?
     )
 }

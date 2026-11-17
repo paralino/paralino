@@ -34,7 +34,6 @@
 		254EFF7A2CB545AB00818618 /* paralino_apple_core.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 257DCAD32CB4407700402562 /* paralino_apple_core.framework */; };
 		2556E2472ACFFC7500A1BACE /* NotificationPermissionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2556E2462ACFFC7500A1BACE /* NotificationPermissionHandler.swift */; };
 		2558D4B32F96A6EF0027A529 /* Appwrite in Frameworks */ = {isa = PBXBuildFile; productRef = 2558D4B22F96A6EF0027A529 /* Appwrite */; };
-		2558D4B62F96AFCB0027A529 /* AsyncHTTPClient in Frameworks */ = {isa = PBXBuildFile; productRef = 2558D4B52F96AFCB0027A529 /* AsyncHTTPClient */; };
 		25592FB02D11E370003EECCB /* AppRatingPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25592FAF2D11E370003EECCB /* AppRatingPresenter.swift */; };
 		25592FB22D11EAA7003EECCB /* WelcomeOnboardingScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25592FB12D11EAA0003EECCB /* WelcomeOnboardingScreen.swift */; };
 		255B0CA12E203D95001426C3 /* HistoryMapMarker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 255B0CA02E203D95001426C3 /* HistoryMapMarker.swift */; };
@@ -433,7 +432,6 @@
 				257B6E0B2CB5717B004F5438 /* Atomics in Frameworks */,
 				2558D4B32F96A6EF0027A529 /* Appwrite in Frameworks */,
 				257DCAE62CB441BB00402562 /* Sodium in Frameworks */,
-				2558D4B62F96AFCB0027A529 /* AsyncHTTPClient in Frameworks */,
 				254729E62CB5967000172F55 /* Sentry in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -822,7 +820,6 @@
 				254729E52CB5967000172F55 /* Sentry */,
 				250BB6A92CB9391800CCAB64 /* Appwrite */,
 				2558D4B22F96A6EF0027A529 /* Appwrite */,
-				2558D4B52F96AFCB0027A529 /* AsyncHTTPClient */,
 			);
 			productName = "paralino-apple-core";
 			productReference = 257DCAD32CB4407700402562 /* paralino_apple_core.framework */;
@@ -922,7 +919,6 @@
 				257B6E092CB5717B004F5438 /* XCRemoteSwiftPackageReference "swift-atomics" */,
 				2508BC132CD50FEE007919B8 /* XCRemoteSwiftPackageReference "purchases-ios-spm" */,
 				2558D4B12F96A6EF0027A529 /* XCLocalSwiftPackageReference "appwrite-apple" */,
-				2558D4B42F96AFCB0027A529 /* XCLocalSwiftPackageReference "async-http-client" */,
 			);
 			productRefGroup = 25C03A6529CCE77100646364 /* Products */;
 			projectDirPath = "";
@@ -1349,8 +1345,9 @@
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = 1;
 				forceLogToSystem = true;
 				internalTesting = true;
@@ -1391,8 +1388,9 @@
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = 1;
 				forceLogToSystem = false;
 				internalTesting = false;
@@ -1421,7 +1419,7 @@
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = "1,2,7";
 				XROS_DEPLOYMENT_TARGET = 26.2;
 			};
@@ -1448,7 +1446,7 @@
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = "1,2,7";
 				XROS_DEPLOYMENT_TARGET = 26.2;
 			};
@@ -1492,8 +1490,9 @@
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = 1;
 				forceLogToSystem = true;
 				internalTesting = true;
@@ -1537,8 +1536,9 @@
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = 1;
 				forceLogToSystem = false;
 				internalTesting = false;
@@ -1593,10 +1593,11 @@
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_INSTALL_OBJC_HEADER = NO;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = 1;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
@@ -1650,9 +1651,10 @@
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_INSTALL_OBJC_HEADER = NO;
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = 1;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
@@ -1698,6 +1700,7 @@
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = x86_64;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -1761,6 +1764,7 @@
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = x86_64;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -1787,7 +1791,7 @@
 				CODE_SIGN_ENTITLEMENTS = "paralino-ios/paralino-iosDebug.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 86;
+				CURRENT_PROJECT_VERSION = 88;
 				DEVELOPMENT_ASSET_PATHS = "\"paralino-ios/Preview Content\"";
 				DEVELOPMENT_TEAM = "$(TEAM_ID)";
 				ENABLE_PREVIEWS = YES;
@@ -1815,7 +1819,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.6.0;
+				MARKETING_VERSION = 2.7.0;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-lsqlite3",
@@ -1827,8 +1831,9 @@
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = 1;
 				forceLogToSystem = true;
 				internalTesting = true;
@@ -1843,7 +1848,7 @@
 				CODE_SIGN_ENTITLEMENTS = "paralino-ios/paralino-ios.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 86;
+				CURRENT_PROJECT_VERSION = 88;
 				DEVELOPMENT_ASSET_PATHS = "\"paralino-ios/Preview Content\"";
 				DEVELOPMENT_TEAM = "$(TEAM_ID)";
 				ENABLE_PREVIEWS = YES;
@@ -1871,7 +1876,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.6.0;
+				MARKETING_VERSION = 2.7.0;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-lsqlite3",
@@ -1883,8 +1888,9 @@
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = 1;
 				forceLogToSystem = false;
 				internalTesting = false;
@@ -1955,10 +1961,6 @@
 			isa = XCLocalSwiftPackageReference;
 			relativePath = "appwrite-apple";
 		};
-		2558D4B42F96AFCB0027A529 /* XCLocalSwiftPackageReference "async-http-client" */ = {
-			isa = XCLocalSwiftPackageReference;
-			relativePath = "async-http-client";
-		};
 /* End XCLocalSwiftPackageReference section */
 
 /* Begin XCRemoteSwiftPackageReference section */
@@ -1975,7 +1977,7 @@
 			repositoryURL = "https://github.com/RevenueCat/purchases-ios-spm.git";
 			requirement = {
 				kind = exactVersion;
-				version = 5.79.0;
+				version = 5.101.0;
 			};
 		};
 		25129FEB2BBDE6B800D1A5AE /* XCRemoteSwiftPackageReference "sentry-cocoa" */ = {
@@ -1983,7 +1985,7 @@
 			repositoryURL = "https://github.com/getsentry/sentry-cocoa.git";
 			requirement = {
 				kind = exactVersion;
-				version = 9.24.0;
+				version = 9.32.0;
 			};
 			traits = (
 			);
@@ -2001,7 +2003,7 @@
 			repositoryURL = "https://github.com/apple/swift-atomics.git";
 			requirement = {
 				kind = exactVersion;
-				version = 1.3.0;
+				version = 1.3.1;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
@@ -2019,10 +2021,6 @@
 		2558D4B22F96A6EF0027A529 /* Appwrite */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = Appwrite;
-		};
-		2558D4B52F96AFCB0027A529 /* AsyncHTTPClient */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = AsyncHTTPClient;
 		};
 		257B6E0A2CB5717B004F5438 /* Atomics */ = {
 			isa = XCSwiftPackageProductDependency;

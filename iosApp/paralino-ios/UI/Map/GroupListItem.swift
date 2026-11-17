@@ -155,16 +155,3 @@ struct GroupListItem: View {
     }
 }
 
-// Helper to use different shapes
-struct AnyShape: Shape {
-    private let path: (CGRect) -> Path
-    
-    init<S: Shape>(_ shape: S) {
-        self.path = shape.path(in:)
-    }
-    
-    func path(in rect: CGRect) -> Path {
-        return path(rect)
-    }
-}
-

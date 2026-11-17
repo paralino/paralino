@@ -47,7 +47,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import app.paralino.core.MR
+import app.paralino.core.resources.moko.*
 import app.paralino.core.presentation.billing.FeatureTableItemHighlightMode
 import app.paralino.core.presentation.billing.FeatureTableItemState
 import app.paralino.core.presentation.billing.FeatureTableItemValue

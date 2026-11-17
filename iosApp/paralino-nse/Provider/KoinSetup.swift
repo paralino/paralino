@@ -46,7 +46,7 @@ class KoinSetup {
         }
         func startDirectPurchase(url: String) async throws {}
         func configure() async throws -> IBillingProviderSubscriptionProviderData {
-            return IBillingProviderSubscriptionProviderData(plans: [], billingConfig: nil, canCloseOnboardingPaywall: true)
+            return IBillingProviderSubscriptionProviderData(plans: [], billingConfig: nil, canCloseOnboardingPaywall: true, billingSelectorPosition: nil)
         }
     }
     

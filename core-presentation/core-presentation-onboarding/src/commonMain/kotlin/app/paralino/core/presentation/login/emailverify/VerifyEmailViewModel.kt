@@ -1,6 +1,6 @@
 package app.paralino.core.presentation.login.emailverify
 
-import app.paralino.core.MR
+import app.paralino.core.resources.moko.*
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.user.AppAccountStateMonitor
 import app.paralino.core.domain.user.LogoutUseCase

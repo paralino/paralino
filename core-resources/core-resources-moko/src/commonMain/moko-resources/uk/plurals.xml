@@ -70,4 +70,14 @@
         <item quantity="few">%d пристрої</item>
         <item quantity="other">%d пристроїв</item>
     </plurals>
+    <plurals name="paywall_intro_offer_first_months">
+        <item quantity="one">перший %d місяць</item>
+        <item quantity="few">перші %d місяці</item>
+        <item quantity="other">перші %d місяців</item>
+    </plurals>
+    <plurals name="paywall_intro_offer_first_years">
+        <item quantity="one">перший %d рік</item>
+        <item quantity="few">перші %d роки</item>
+        <item quantity="other">перші %d років</item>
+    </plurals>
 </resources>

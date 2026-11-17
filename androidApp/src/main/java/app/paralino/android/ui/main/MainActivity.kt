@@ -15,27 +15,35 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
+import androidx.compose.material.ScaffoldState
+import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.navigation.compose.NavHost
 import app.paralino.android.app_rating.AppRatingPresenter
+import androidx.navigation3.runtime.entryProvider
+import androidx.navigation3.ui.NavDisplay
 import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.android.ui.navigation.MainNavHost
-import app.paralino.android.ui.navigation.loggedOutGraph
-import app.paralino.core.MR
+import app.paralino.android.ui.navigation.loggedOutEntries
+import app.paralino.android.ui.navigation.rememberAppEntryDecorators
+import app.paralino.core.resources.moko.*
 import app.paralino.core.app_update.AppUpdateStatus
 import app.paralino.core.domain.user.AppAccountState
 import app.paralino.core.logg
 import app.paralino.core.models.Resource
 import app.paralino.core.presentation.main.MainActivityUiEvent
 import app.paralino.core.presentation.main.MainViewModel
+import app.paralino.core.ui.CoreUiState
 import app.paralino.core.ui.components.AppSnackbar
 import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.presentation.common.AlertDialogAction
@@ -94,9 +102,10 @@ fun RootApp(
     onAppClose: () -> Unit
 ) {
     AppTheme {
-        val appState = rememberAppState()
+        val scaffoldState = rememberScaffoldState()
+        val uiScope = rememberCoroutineScope()
 
-        MessageDispatcherEffect(vm, appState)
+        MessageDispatcherEffect(vm, remember(scaffoldState, uiScope) { CoreUiState(scaffoldState, uiScope) })
 
         val uiState by vm.uiState.collectAsState()
 
@@ -111,7 +120,7 @@ fun RootApp(
                 when (val finalState = state.data) {
                     is AppAccountState.ACCOUNT_RESET -> {
                         AppStartScreen(
-                            appState = appState,
+                            scaffoldState = scaffoldState,
                             start = AppScreen.LoggedOut.AccountRecovery,
                             pendingDeeplink = null,
                             onDeeplinkComplete = { vm.setDeeplink(null) }
@@ -120,7 +129,7 @@ fun RootApp(
 
                     is AppAccountState.NO_PROFILE -> {
                         AppStartScreen(
-                            appState = appState,
+                            scaffoldState = scaffoldState,
                             start = AppScreen.LoggedOut.ProfileSetup,
                             pendingDeeplink = null,
                             onDeeplinkComplete = { vm.setDeeplink(null) }
@@ -129,7 +138,7 @@ fun RootApp(
 
                     is AppAccountState.EMAIL_VERIFICATION -> {
                         AppStartScreen(
-                            appState = appState,
+                            scaffoldState = scaffoldState,
                             start = AppScreen.LoggedOut.EmailVerification,
                             pendingDeeplink = null,
                             onDeeplinkComplete = { vm.setDeeplink(null) }
@@ -138,7 +147,7 @@ fun RootApp(
 
                     is AppAccountState.KEY_EXPIRED -> {
                         AppStartScreen(
-                            appState = appState,
+                            scaffoldState = scaffoldState,
                             start = AppScreen.LoggedOut.PasswordConfirmation,
                             pendingDeeplink = null,
                             onDeeplinkComplete = { vm.setDeeplink(null) }
@@ -147,9 +156,9 @@ fun RootApp(
 
                     is AppAccountState.NO_USER -> {
                         AppStartScreen(
-                            appState = appState,
+                            scaffoldState = scaffoldState,
                             start = if (finalState.canRecoverGuest) {
-                                AppScreen.LoggedOut.Login
+                                AppScreen.LoggedOut.Login()
                             } else {
                                 AppScreen.LoggedOut.Welcome
                             },
@@ -169,7 +178,7 @@ fun RootApp(
 
                     is AppAccountState.USER_READY -> {
                         MainAppScreen(
-                            appState = appState,
+                            scaffoldState = scaffoldState,
                             pendingDeeplink = uiState.pendingDeeplinkType,
                             onAppClose = onAppClose,
                             onDeeplinkComplete = { vm.setDeeplink(null) }
@@ -217,17 +226,19 @@ fun RootApp(
 
 @Composable
 fun AppStartScreen(
-    appState: MainAppState,
+    scaffoldState: ScaffoldState,
     start: AppScreen,
     pendingDeeplink: DeeplinkType?,
     onDeeplinkComplete: () -> Unit,
 ) {
+    // new back stack when start screen changes
+    val appState = key(start) { rememberAppState(startScreen = start, scaffoldState = scaffoldState) }
     LaunchedEffect(pendingDeeplink) {
         delay(500)
         when (pendingDeeplink) {
             is DeeplinkType.PasswordReset -> {
                 appState.navController.navigate(
-                    AppScreen.LoggedOut.PasswordReset.route(deeplink = pendingDeeplink)
+                    AppScreen.LoggedOut.PasswordReset(deeplink = pendingDeeplink)
                 )
                 onDeeplinkComplete()
             }
@@ -246,30 +257,31 @@ fun AppStartScreen(
                 )
             }
         ) { innerPadding ->
-            NavHost(
+            NavDisplay(
                 modifier = Modifier.padding(innerPadding),
-                navController = appState.navController.navController,
-                startDestination = AppScreen.LoggedOut.routeSignature
-            ) {
-                loggedOutGraph(appState, start = start)
-            }
+                backStack = appState.navController.backStack,
+                onBack = { appState.navController.popBackStack() },
+                entryDecorators = rememberAppEntryDecorators(),
+                entryProvider = entryProvider { loggedOutEntries(appState) }
+            )
         }
     }
 }
 
 @Composable
 fun MainAppScreen(
-    appState: MainAppState,
+    scaffoldState: ScaffoldState,
     pendingDeeplink: DeeplinkType?,
     onDeeplinkComplete: () -> Unit,
     onAppClose: () -> Unit
 ) {
+    val appState = rememberAppState(startScreen = AppScreen.MainHome.MainMap(), scaffoldState = scaffoldState)
     LaunchedEffect(pendingDeeplink) {
         delay(500)
         when (pendingDeeplink) {
             is DeeplinkType.ParalinoID -> {
                 appState.navController.navigate(
-                    AppScreen.MainHome.GroupMemberAdd.route(
+                    AppScreen.MainHome.GroupMemberAdd(
                         groupId = null,
                         code = pendingDeeplink.paralinoID,
                         isOnboarding = false
@@ -281,7 +293,7 @@ fun MainAppScreen(
             is DeeplinkType.PaywallScreen -> {
                 logg.w("billing", "Open billing deeplink -> type: ${pendingDeeplink.type} - action: ${pendingDeeplink.action}")
                 appState.navController.navigate(
-                    AppScreen.MainHome.BillingPaywall.route(
+                    AppScreen.Common.BillingPaywall(
                         groupId = null,
                         type = BillingScreenSourceType.NORMAL
                     )
@@ -291,7 +303,7 @@ fun MainAppScreen(
 
             is DeeplinkType.PushNotificationServiceScreen -> {
                 appState.navController.navigate(
-                    AppScreen.Settings.NotificationSocket.routeSignature
+                    AppScreen.Settings.NotificationSocket
                 )
                 onDeeplinkComplete()
             }

@@ -95,6 +95,27 @@ struct MapRootScreen: View {
                                         vm: KoinIOS.ViewModels.shared.placeSensitivityVM(groupId: groupId, placeId: placeId)
                                     )
                                 )
+                            case .placeImprovements(groupId: let groupId, placeId: let placeId):
+                                GenericSettingsScreen(
+                                    path: $mainAppState.userReadyGraph,
+                                    appState: GenericSettingsScreenState(
+                                        vm: KoinIOS.ViewModels.shared.placeImprovementsVM(groupId: groupId, placeId: placeId)
+                                    )
+                                )
+                            case .falseLocations(groupId: let groupId, placeId: let placeId):
+                                GenericSettingsScreen(
+                                    path: $mainAppState.userReadyGraph,
+                                    appState: GenericSettingsScreenState(
+                                        vm: KoinIOS.ViewModels.shared.falseLocationsVM(groupId: groupId, placeId: placeId)
+                                    )
+                                )
+                            case .wifiNetworks(placeId: let placeId):
+                                GenericSettingsScreen(
+                                    path: $mainAppState.userReadyGraph,
+                                    appState: GenericSettingsScreenState(
+                                        vm: KoinIOS.ViewModels.shared.wifiNetworksVM(placeId: placeId)
+                                    )
+                                )
                             case .placeCreate(groupId: let groupId, placeId: let placeId, editStep: let editStep, lat: let lat, lng: let lng):
                                 PlaceCreateScreen(
                                     path: $mainAppState.userReadyGraph,

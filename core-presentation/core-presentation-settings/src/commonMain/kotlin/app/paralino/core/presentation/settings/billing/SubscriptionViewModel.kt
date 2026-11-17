@@ -1,6 +1,6 @@
 package app.paralino.core.presentation.settings.billing
 
-import app.paralino.core.MR
+import app.paralino.core.resources.moko.*
 import app.paralino.core.domain.user.GetDirectCheckoutWebPortalUseCase
 import app.paralino.core.logg
 import app.paralino.core.models.AppFlavor
@@ -235,7 +235,6 @@ class SubscriptionViewModel(
                     name = currentPlan.adjustedPlanName,
                     config = currentPlan,
                     isCurrentPlan = true,
-                    hasSpecialOffer = false,
                     isSelected = true,
                     isExpanded = true,
                     billingPeriods = emptyList()

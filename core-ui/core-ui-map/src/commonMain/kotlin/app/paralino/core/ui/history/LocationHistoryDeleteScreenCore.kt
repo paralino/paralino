@@ -44,7 +44,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import app.paralino.core.MR
+import app.paralino.core.resources.moko.*
 import app.paralino.core.models.base.DeviceType
 import app.paralino.core.presentation.history.LocationHistoryDeleteDateState
 import app.paralino.core.presentation.history.LocationHistoryDeleteScreenEvent

@@ -13,7 +13,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
-import app.paralino.core.MR
+import app.paralino.core.resources.moko.*
 import app.paralino.core.presentation.common.BottomSheetPickerType
 import app.paralino.core.presentation.settings.editprofile.EditProfileScreenEvent
 import app.paralino.core.presentation.settings.editprofile.EditProfileScreenState

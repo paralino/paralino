@@ -8,6 +8,7 @@
 import SwiftUI
 import shared
 
+@MainActor
 enum AppThemeManager {
     
     /// Overrides the interface style of all app windows, so SwiftUI, UIKit and

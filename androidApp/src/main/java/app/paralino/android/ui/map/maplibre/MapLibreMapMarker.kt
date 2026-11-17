@@ -18,6 +18,7 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.applyCanvas
+import androidx.core.graphics.createBitmap
 import app.paralino.core.models.location.LatLng
 import app.paralino.core.presentation.map.MapMarkerStyle
 import app.paralino.core.presentation.map.MapPinData
@@ -26,52 +27,23 @@ import app.paralino.core.ui.components.MapMarkerContent
 import app.paralino.core.ui.theme.AppColors
 import org.maplibre.compose.expressions.dsl.const
 import org.maplibre.compose.expressions.dsl.image
-import org.maplibre.compose.expressions.dsl.nil
 import org.maplibre.compose.expressions.value.LineCap
 import org.maplibre.compose.expressions.value.SymbolAnchor
+import org.maplibre.compose.interaction.ClickResult
 import org.maplibre.compose.layers.FillLayer
 import org.maplibre.compose.layers.LineLayer
 import org.maplibre.compose.layers.SymbolLayer
 import org.maplibre.compose.sources.GeoJsonData
-import org.maplibre.compose.sources.GeoJsonOptions
-import org.maplibre.compose.sources.GeoJsonSource
-import org.maplibre.compose.sources.Source
+import org.maplibre.compose.sources.VectorSource
 import org.maplibre.compose.sources.rememberGeoJsonSource
-import org.maplibre.compose.util.ClickResult
-import org.maplibre.spatialk.geojson.Point
 import org.maplibre.spatialk.geojson.Polygon
 import org.maplibre.spatialk.geojson.Position
-import androidx.core.graphics.createBitmap
 
 
 @Composable
 fun MapLibreMarkerComposable(
     state: MapPinData,
-    lat: Double,
-    lng: Double,
-    canTapOnMarker: Boolean,
-    zIndex: Float,
-    onClick: (MapPinData) -> Unit
-) {
-    MapLibreMarkerComposable(
-        state = state,
-        source = GeoJsonSource(
-            id = state.markerId,
-            data = GeoJsonData.Features(
-                Point(longitude = lng, latitude = lat)
-            ),
-            options = GeoJsonOptions()
-        ),
-        canTapOnMarker = canTapOnMarker,
-        zIndex = zIndex,
-        onClick = onClick
-    )
-}
-
-@Composable
-fun MapLibreMarkerComposable(
-    state: MapPinData,
-    source: Source,
+    source: VectorSource,
     canTapOnMarker: Boolean,
     zIndex: Float,
     onClick: (MapPinData) -> Unit
@@ -121,8 +93,7 @@ fun MapLibreMapCircle(
 
     val circleSource = circlePolygon?.let {
         rememberGeoJsonSource(
-            data = GeoJsonData.Features(it),
-            options = GeoJsonOptions()
+            data = GeoJsonData.Features(it)
         )
     }
 
@@ -173,8 +144,8 @@ fun MapLibreMapCircle(
     }
 
     val strokeDash = when (pinType) {
-        MapPinType.MEMBER -> nil()
-        MapPinType.PLACE -> nil()
+        MapPinType.MEMBER -> null
+        MapPinType.PLACE -> null
         MapPinType.PRIVACY_ZONE -> const(listOf(2.5f, 1.5f))
     }
 

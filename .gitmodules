@@ -7,6 +7,3 @@
 [submodule "iosApp/appwrite-apple"]
 	path = iosApp/appwrite-apple
 	url = ../appwrite-apple.git
-[submodule "iosApp/async-http-client"]
-	path = iosApp/async-http-client
-	url = ../async-http-client.git

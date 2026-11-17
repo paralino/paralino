@@ -1,5 +1,6 @@
 package app.paralino.core.models.location
 
+import app.paralino.core.repo.location.LocationFilteringType
 import app.paralino.core.repo.location.LocationPerformanceSettingsType
 import app.paralino.core.utils.extensions.fromUTCtoInstant
 import app.paralino.core.utils.extensions.nowUTC
@@ -17,7 +18,8 @@ data class LocationUpdateDataFromDevice(
     val timeUTC: String?,
     val speed: Float?,
     val altitude: Float?,
-    val provider: LocationProviderType?
+    val provider: LocationProviderType?,
+    val isLikelyInaccurate: Boolean?,
 ) {
 
     val timeUTCInstant: Instant? = timeUTC?.fromUTCtoInstant()
@@ -42,7 +44,8 @@ data class LocationUpdateDataFromDevice(
 
     fun takeMostRelevantLocation(
         second: LocationUpdateDataFromDevice,
-        type: LocationPerformanceSettingsType.Balanced
+        type: LocationPerformanceSettingsType.Balanced,
+        filtering: LocationFilteringType
     ): LocationUpdateDataFromDevice {
         val firstTime = timeUTCInstant
         val secondTime = second.timeUTCInstant
@@ -95,8 +98,12 @@ data class LocationUpdateDataFromDevice(
         // Some devices (mostly GPS only on Android) mix accurate fixes with very inaccurate ones
         // every few seconds, which makes location jump back and forth on the map
         // Degraded update is dropped unless nothing better comes in for a while
-        val isDegraded = second.adjustedHorizontalAccuracy > max(adjustedHorizontalAccuracy * 2, adjustedHorizontalAccuracy + 30f)
-        if (isDegraded && timeDifference <= timeThreshold * 2) {
+        val degradedAccuracyLimit = max(
+            adjustedHorizontalAccuracy * filtering.degradedAccuracyRatio,
+            adjustedHorizontalAccuracy + filtering.degradedAccuracyMarginMeters
+        )
+        val isDegraded = second.adjustedHorizontalAccuracy > degradedAccuracyLimit
+        if (isDegraded && timeDifference <= timeThreshold * filtering.degradedHoldMultiplier) {
             return this
         }
 

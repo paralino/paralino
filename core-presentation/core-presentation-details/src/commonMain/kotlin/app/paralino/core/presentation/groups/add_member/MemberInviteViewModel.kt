@@ -1,6 +1,6 @@
 package app.paralino.core.presentation.groups.add_member
 
-import app.paralino.core.MR
+import app.paralino.core.resources.moko.*
 import app.paralino.core.domain.group.GroupMemberAddUseCase
 import app.paralino.core.domain.user.PremiumStatusLimitState
 import app.paralino.core.domain.user.PremiumStatusManager

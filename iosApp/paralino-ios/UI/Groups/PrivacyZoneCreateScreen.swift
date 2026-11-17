@@ -61,7 +61,8 @@ struct PrivacyZoneCreateScreen: View {
 
 class CreatePrivacyZoneState: BaseMapObservableObject {
 
-    let vm: CreatePrivacyZoneViewModel
+    // Read by the nonisolated deinit to clean up the view model.
+    nonisolated(unsafe) let vm: CreatePrivacyZoneViewModel
     @Published var screenTitle: String = ""
 
     init(groupId: String, zoneId: String?, editStep: CreatePrivacyZoneScreenStep?, lat: Double? = nil, lng: Double? = nil) {

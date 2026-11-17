@@ -2,7 +2,7 @@ package app.paralino.core.presentation.common
 
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.graphics.Color
-import app.paralino.core.MR
+import app.paralino.core.resources.moko.*
 import app.paralino.core.models.base.GroupOrSpaceId
 import app.paralino.core.models.base.SubscriptionOfferDialogContent
 import app.paralino.core.models.location.UserDeviceModel
@@ -720,6 +720,32 @@ interface MainAlertDialog {
                 AlertDialogButtonData(
                     id = Buttons.buttonOk,
                     text = stringResource(resource = MR.strings.button_delete),
+                    color = AlertDialogButtonData.destructiveColor,
+                    needsLongConfirmation = true
+                ),
+                AlertDialogButtonData(
+                    id = Buttons.buttonCancel,
+                    text = stringResource(resource = MR.strings.button_cancel)
+                ),
+            ),
+        )
+    }
+
+    data class ForgetLearnedLocationItem(
+        val itemId: String,
+        val title: String,
+        val message: String,
+    ) : MainAlertDialog {
+        override val key: String = "ForgetLearnedLocationItem"
+
+        override val dialogData: AlertDialogData = AlertDialogData(
+            id = key,
+            title = title,
+            message = message,
+            buttons = listOf(
+                AlertDialogButtonData(
+                    id = Buttons.buttonOk,
+                    text = stringResource(resource = MR.strings.place_improvements_forget_button),
                     color = AlertDialogButtonData.destructiveColor,
                     needsLongConfirmation = true
                 ),

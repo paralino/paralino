@@ -8,8 +8,10 @@
 import Foundation
 import shared
 
+@MainActor
 class LoginScreenObject: ObservableObject {
-    let vm: LoginViewModel
+    // Read by the nonisolated deinit to clean up the view model.
+    nonisolated(unsafe) let vm: LoginViewModel
     @Published
     var uiState: ResourceSwift<LoginScreenState> = .notInitialized
     

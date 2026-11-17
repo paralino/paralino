@@ -1,6 +1,6 @@
 package app.paralino.core.presentation.settings.billing.licence
 
-import app.paralino.core.MR
+import app.paralino.core.resources.moko.*
 import app.paralino.core.domain.user.BillingRefreshMonitor
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.presentation.common.AppSnackbarData

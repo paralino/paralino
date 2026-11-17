@@ -34,8 +34,8 @@ struct PlaceDetailScreen: View {
                     openPlaceAlertsScreen: {
                         path.append(.home(.placeAlertsSettings(groupId: appState.groupId, placeId: appState.placeId)))
                     },
-                    openPlaceSensitivityScreen: {
-                        path.append(.home(.placeSensitivitySettings(groupId: appState.groupId, placeId: appState.placeId)))
+                    openPlaceImprovementsScreen: {
+                        path.append(.home(.placeImprovements(groupId: appState.groupId, placeId: appState.placeId)))
                     },
                     openPlaceNameEditScreen: {
                         path.append(.home(.placeCreate(groupId: appState.groupId, placeId: appState.placeId, editStep: CreatePlaceScreenStep.nameAndImage, lat: nil, lng: nil)))
@@ -69,7 +69,8 @@ class PlaceDetailState: BaseMapObservableObject {
     
     let groupId: String
     let placeId: String
-    let vm: PlaceDetailViewModel
+    // Read by the nonisolated deinit to clean up the view model.
+    nonisolated(unsafe) let vm: PlaceDetailViewModel
     
     init(groupId: String, placeId: String) {
         self.groupId = groupId

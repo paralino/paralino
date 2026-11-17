@@ -64,7 +64,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import app.paralino.core.MR
+import app.paralino.core.resources.moko.*
 import app.paralino.core.presentation.common.MemberActionType
 import app.paralino.core.presentation.history.LocationHistoryDataViewType
 import app.paralino.core.models.location.LocationHistoryPointState
@@ -315,7 +315,7 @@ fun LocationHistoryDetailCard(
                                         SpeedAndElevationData(point = point)
 
                                         AnimatedVisibility(
-                                            visible = point is LocationHistoryPointState.Point && point.point.loc?.acc.isLocationInaccurate()
+                                            visible = point is LocationHistoryPointState.Point && point.isInaccurate
                                         ) {
                                             GroupStatusTag(status = GroupStatusTagType.INACTIVE_NOT_ACCURATE)
                                         }
@@ -408,6 +408,21 @@ fun LocationHistoryDetailCard(
                                         verticalAlignment = Alignment.CenterVertically
                                     ) {
                                         BatteryAndNetworkData(point = selectedPoint)
+
+                                        val updateCount = selectedPoint.point.status.cnt ?: 0
+                                        if (updateCount >= 2 && !isCollapsed) {
+                                            Icon(
+                                                painter = CoreAppIcons.LocationOn.asPainterResource(),
+                                                contentDescription = null,
+                                                modifier = Modifier
+                                                    .padding(end = 2.dp)
+                                                    .size(18.dp)
+                                            )
+                                            Text(
+                                                text = "$updateCount",
+                                                style = MaterialTheme.typography.overline.copy(letterSpacing = 0.1.sp)
+                                            )
+                                        }
                                     }
                                 }
 

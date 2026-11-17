@@ -21,6 +21,7 @@ class RealtimeApi: IRealtimeApiIOS {
         channels: [String],
         onResult: @escaping (RealtimeResponse<NSDictionary>) -> Void
     ) async throws -> Payload<RealtimeSubscriptionCallbackIOS> {
+        nonisolated(unsafe) let onResult = onResult
         return await remoteModule.execute { module in
             let subscription = try await module.realtime.subscribe(
                 channels: Set(channels.map { $0 }),
@@ -44,16 +45,14 @@ class RealtimeApi: IRealtimeApiIOS {
     }
 
     private func closeSubscription(subscription: RealtimeSubscription) {
-        DispatchQueue.main.async {
-            Task {
-                do {
-                    try await subscription.close()
-                } catch let error {
-                    Logr.w(
-                        tag: "realtime_events",
-                        message: "Error closing channel: \(error.localizedDescription)"
-                    )
-                }
+        Task {
+            do {
+                try await subscription.close()
+            } catch let error {
+                Logr.w(
+                    tag: "realtime_events",
+                    message: "Error closing channel: \(error.localizedDescription)"
+                )
             }
         }
     }

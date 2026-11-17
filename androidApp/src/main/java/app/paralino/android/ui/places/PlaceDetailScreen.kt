@@ -70,7 +70,7 @@ fun PlaceDetailScreen(
             },
             openPlaceRawDataScreen = {
                 appState.navController.navigate(
-                    AppScreen.MainHome.RawDataScreen.route(
+                    AppScreen.Common.RawDataScreen(
                         RawPresentationDataType.GroupPlacePresentation(
                             placeId = placeId
                         )
@@ -79,15 +79,15 @@ fun PlaceDetailScreen(
             },
             openPlaceAlertsScreen = {
                 appState.navController.navigate(
-                    AppScreen.MainHome.PlaceAlerts.route(
+                    AppScreen.MainHome.PlaceAlerts(
                         groupId = groupId,
                         placeId = placeId
                     )
                 )
             },
-            openPlaceSensitivityScreen = {
+            openPlaceImprovementsScreen = {
                 appState.navController.navigate(
-                    AppScreen.MainHome.PlaceSensitivity.route(
+                    AppScreen.MainHome.PlaceImprovements(
                         groupId = groupId,
                         placeId = placeId
                     )
@@ -95,7 +95,7 @@ fun PlaceDetailScreen(
             },
             openPlaceNameEditScreen = {
                 appState.navController.navigate(
-                    AppScreen.MainHome.PlaceCreate.route(
+                    AppScreen.MainHome.PlaceCreate(
                         groupId = groupId,
                         placeId = placeId,
                         editStep = CreatePlaceScreenStep.NAME_AND_IMAGE
@@ -104,7 +104,7 @@ fun PlaceDetailScreen(
             },
             openPlacePositionEditScreen = {
                 appState.navController.navigate(
-                    AppScreen.MainHome.PlaceCreate.route(
+                    AppScreen.MainHome.PlaceCreate(
                         groupId = groupId,
                         placeId = placeId,
                         editStep = CreatePlaceScreenStep.ADDRESS

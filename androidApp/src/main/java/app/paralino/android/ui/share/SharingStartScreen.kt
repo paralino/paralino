@@ -17,7 +17,7 @@ import app.paralino.android.ui.groups.GroupPickerAction
 import app.paralino.android.ui.groups.rememberGroupBottomSheetPickerState
 import app.paralino.android.ui.main.MainAppState
 import app.paralino.android.ui.navigation.AppScreen
-import app.paralino.core.MR
+import app.paralino.core.resources.moko.*
 import app.paralino.core.presentation.share.SharingStartViewModel
 import app.paralino.core.ui.components.DefaultToolbar
 import app.paralino.core.ui.components.ToolbarButtons
@@ -70,7 +70,7 @@ fun SharingStartScreen(
     ) {
         if (vm.shouldProceedToPaywall) {
             appState.navController.navigate(
-                AppScreen.MainHome.BillingPaywall.route(
+                AppScreen.Common.BillingPaywall(
                     groupId = vm.currentGroupId,
                     type = when (isCreateOnboarding) {
                         true -> {
@@ -82,26 +82,20 @@ fun SharingStartScreen(
                         }
                         false -> BillingScreenSourceType.UPGRADE_DEFAULT
                     }
-                )
-            ) {
-                this.popUpTo(route = AppScreen.MainHome.MainMap.routeSignature) {
-                    this.inclusive = false
-                }
-            }
+                ),
+                popUpTo = AppScreen.MainHome.MainMap::class
+            )
         } else if(isCreateOnboarding) {
             if (vm.isPersonalSpace) {
                 appState.navController.popBackStack(
-                    route = AppScreen.MainHome.MainMap.routeSignature,
+                    popUpTo = AppScreen.MainHome.MainMap::class,
                     inclusive = false
                 )
             } else {
                 appState.navController.navigate(
-                    AppScreen.MainHome.GroupDetails.route(groupId = vm.currentGroupId!!)
-                ) {
-                    this.popUpTo(route = AppScreen.MainHome.MainMap.routeSignature) {
-                        this.inclusive = false
-                    }
-                }
+                    AppScreen.MainHome.GroupDetails(groupId = vm.currentGroupId!!),
+                    popUpTo = AppScreen.MainHome.MainMap::class
+                )
             }
         } else {
             appState.navController.popBackStack()
@@ -152,7 +146,7 @@ fun SharingStartScreen(
             },
             askPushNotificationService = { pushServiceHandler.askPushNotificationService() },
             openSubscriptions = {
-                appState.navController.navigate(AppScreen.MainHome.BillingPaywall.route())
+                appState.navController.navigate(AppScreen.Common.BillingPaywall())
             }
         )
     }

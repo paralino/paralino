@@ -1,6 +1,6 @@
 package app.paralino.core.models.settings
 
-import app.paralino.core.MR
+import app.paralino.core.resources.moko.*
 import dev.icerock.moko.resources.StringResource
 
 sealed interface MapsSDKProvider {

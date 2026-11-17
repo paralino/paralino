@@ -24,14 +24,18 @@ import com.revenuecat.purchases.awaitCustomerInfo
 import com.revenuecat.purchases.awaitOfferings
 import com.revenuecat.purchases.awaitPurchase
 import com.revenuecat.purchases.awaitRestore
-import com.revenuecat.purchases.models.GoogleReplacementMode
 import com.revenuecat.purchases.models.GoogleSubscriptionOption
+import com.revenuecat.purchases.models.OfferPaymentMode
 import com.revenuecat.purchases.models.Period
 import com.revenuecat.purchases.models.Period.Unit
 import com.revenuecat.purchases.models.Price
+import com.revenuecat.purchases.models.PricingPhase
+import com.revenuecat.purchases.models.StoreReplacementMode
 import com.revenuecat.purchases.models.googleProduct
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import java.math.BigDecimal
+import java.math.RoundingMode
 import java.text.NumberFormat
 import java.util.Currency
 import java.util.Locale
@@ -48,13 +52,13 @@ class BillingProviderAndroid(
     override val isExternalProvider: Boolean = false
 
     private fun packageFor(subscriptionOptionId: String): Package? {
-        return offerings.value?.current?.availablePackages?.firstOrNull {
+        return offerings.value?.defaultOffering?.availablePackages?.firstOrNull {
             it.product.defaultOption?.id == subscriptionOptionId
         }
     }
 
     private fun packageFor(basePlanId: String, productId: String): Package? {
-        return offerings.value?.current?.availablePackages?.firstOrNull {
+        return offerings.value?.defaultOffering?.availablePackages?.firstOrNull {
             (it.product.googleProduct!!.defaultOption as? GoogleSubscriptionOption)?.let {
                 it.basePlanId == basePlanId && it.productId == productId
             } ?: false
@@ -126,7 +130,7 @@ class BillingProviderAndroid(
         this.offerings.value = offerings
         val products = mutableMapOf<String, IBillingProvider.SubscriptionPlanData>()
         val remoteBillingConfig = remoteConfigRepo.getBillingConfigFromRemote()
-        offerings.current?.let { offering ->
+        offerings.defaultOffering?.let { offering ->
             offering.availablePackages.forEach { data ->
 
                 val planConfig = remoteConfigRepo.getConfigOnce().plans.firstOrNull {
@@ -148,17 +152,39 @@ class BillingProviderAndroid(
                                 fullProductId = data.product.id,
                                 productPlanId = subscriptionOption.id,
                                 billingPeriod = billingPeriod,
-                                price = subscriptionOption.fullPricePhase?.price?.amountMicros ?: 0,
-                                formattedPrice = subscriptionOption.fullPricePhase?.price?.formatted ?: "",
-                                referencePerYearPrice = subscriptionOption.fullPricePhase
-                                    ?.pricePerYear(Locale.getDefault())?.amountMicros ?: 0,
-                                referencePerYearFormattedPrice = subscriptionOption.fullPricePhase
-                                    ?.pricePerYear()?.formatted ?: "",
-                                formattedPricePerMemberPerMonth = subscriptionOption.fullPricePhase
-                                    ?.pricePerMonth()
-                                    ?.pricePerPeriod(planConfig.membersLimit.toDouble())?.formatted,
-                                referencePerMonthFormattedPrice = subscriptionOption.fullPricePhase
-                                    ?.pricePerMonth()?.formatted,
+                                fullPriceData = IBillingProvider.SubscriptionPlanPeriodFullPriceData(
+                                    price = subscriptionOption.fullPricePhase?.price?.amountMicros
+                                        ?: 0,
+                                    formattedPrice = subscriptionOption.fullPricePhase?.price?.formatted
+                                        ?: "",
+                                    referencePerYearPrice = subscriptionOption.fullPricePhase
+                                        ?.pricePerYear(Locale.getDefault())?.amountMicros ?: 0,
+                                    referencePerYearFormattedPrice = subscriptionOption.fullPricePhase
+                                        ?.pricePerYear()?.formatted ?: "",
+                                    formattedPricePerMemberPerMonth = subscriptionOption.fullPricePhase
+                                        ?.pricePerMonth()
+                                        ?.pricePerPeriod(planConfig.membersLimit.toDouble())?.formatted,
+                                    referencePerMonthFormattedPrice = subscriptionOption.fullPricePhase
+                                        ?.pricePerMonth()?.formatted,
+                                ),
+                                introOfferData = subscriptionOption.introPhase?.let { phase ->
+                                    val months = phase.billingPeriod.wholeMonths ?: return@let null
+                                    val isRecurring = phase.offerPaymentMode == OfferPaymentMode.DISCOUNTED_RECURRING_PAYMENT
+                                    val cycles = when (phase.offerPaymentMode) {
+                                        OfferPaymentMode.SINGLE_PAYMENT -> 1
+                                        OfferPaymentMode.DISCOUNTED_RECURRING_PAYMENT -> phase.billingCycleCount ?: 1
+                                        else -> return@let null
+                                    }
+                                    IBillingProvider.SubscriptionPlanPeriodIntroOfferData(
+                                        formattedPrice = phase.price.formatted,
+                                        durationMonths = months * cycles,
+                                        recurringPeriodMonths = months.takeIf { isRecurring },
+                                        formattedSavings = subscriptionOption.fullPricePhase?.formattedSavings(
+                                            offerMicros = phase.price.amountMicros * cycles,
+                                            offerMonths = months * cycles
+                                        )
+                                    )
+                                },
                                 trialDurationDays = subscriptionOption.freePhase?.billingPeriod?.valueInDaysInt
                             )
                         } else {
@@ -182,7 +208,8 @@ class BillingProviderAndroid(
         return IBillingProvider.SubscriptionProviderData(
             plans = products.values.toList(),
             billingConfig = remoteBillingConfig,
-            canCloseOnboardingPaywall = (offerings.current?.metadata?.get("canCloseOnboardingPaywall") as? Boolean) ?: true
+            canCloseOnboardingPaywall = (offerings.defaultOffering?.metadata?.get("canCloseOnboardingPaywall") as? Boolean) ?: true,
+            billingSelectorPosition = (offerings.defaultOffering?.metadata?.get("billingSelectorPosition") as? String)
         )
     }
 
@@ -211,15 +238,15 @@ class BillingProviderAndroid(
                             // upgrading
                             if (oldPackageInfo.first.entitlementInfo.periodType == PeriodType.TRIAL) {
                                 it.oldProductId(oldPackageInfo.second.product.id)
-                                    .googleReplacementMode(GoogleReplacementMode.WITHOUT_PRORATION)
+                                    .replacementMode(StoreReplacementMode.WITHOUT_PRORATION)
                             } else {
                                 it.oldProductId(oldPackageInfo.second.product.id)
-                                    .googleReplacementMode(GoogleReplacementMode.CHARGE_PRORATED_PRICE)
+                                    .replacementMode(StoreReplacementMode.CHARGE_PRORATED_PRICE)
                             }
                         } else if (planType.order < oldPackageInfo.first.config.planTypeEnum.order) {
                             // downgrading
                             it.oldProductId(oldPackageInfo.second.product.id)
-                                .googleReplacementMode(GoogleReplacementMode.WITH_TIME_PRORATION)
+                                .replacementMode(StoreReplacementMode.WITH_TIME_PRORATION)
                         } else {
                             // same plan
                             it.oldProductId(oldPackageInfo.second.product.id)
@@ -272,6 +299,27 @@ class BillingProviderAndroid(
             Unit.UNKNOWN -> null
         }
 
+    private val Period.wholeMonths: Int?
+        get() = when (unit) {
+            Unit.MONTH -> value
+            Unit.YEAR -> value * 12
+            else -> null
+        }
+
+    private fun PricingPhase.formattedSavings(offerMicros: Long, offerMonths: Int): String? {
+        val periodMonths = billingPeriod.wholeMonths ?: return null
+        val savingsMicros = price.amountMicros * offerMonths / periodMonths - offerMicros
+        if (savingsMicros <= 0) return null
+
+        val currency = Currency.getInstance(price.currencyCode)
+        val digits = currency.defaultFractionDigits.coerceAtLeast(0)
+        val numberFormat = NumberFormat.getCurrencyInstance(Locale.getDefault())
+        numberFormat.currency = currency
+        numberFormat.maximumFractionDigits = digits
+        numberFormat.minimumFractionDigits = digits
+        return numberFormat.format(BigDecimal.valueOf(savingsMicros, 6).setScale(digits, RoundingMode.FLOOR))
+    }
+
     private val MICRO_MULTIPLIER = 1_000_000.0
     private fun Price.pricePerPeriod(units: Double, locale: Locale = Locale.getDefault()): Price {
         val numberFormat = NumberFormat.getCurrencyInstance(locale)
@@ -282,6 +330,8 @@ class BillingProviderAndroid(
 
         return Price(formatted, (value).toLong(), currencyCode)
     }
+
+    private val Offerings.defaultOffering get() = this.current
 
 
     private data class CurrentPlanConfig(

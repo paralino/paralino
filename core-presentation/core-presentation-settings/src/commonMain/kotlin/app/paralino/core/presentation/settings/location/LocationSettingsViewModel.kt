@@ -1,6 +1,6 @@
 package app.paralino.core.presentation.settings.location
 
-import app.paralino.core.MR
+import app.paralino.core.resources.moko.*
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.user.PremiumStatusManager
 import app.paralino.core.models.base.DeviceType
@@ -13,6 +13,7 @@ import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.base.AppConfigRepository
 import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.group.UserGroupLocalDataSource
+import app.paralino.core.repo.location.LocationFilteringType
 import app.paralino.core.repo.location.LocationPerformanceManager
 import app.paralino.core.repo.location.LocationPerformanceSettingsType
 import app.paralino.core.repo.user.UserRepository
@@ -54,6 +55,7 @@ class LocationSettingsViewModel(
             is LocationSettingsScreenUiEvent.ToggleBalancedHighPerformance -> toggleBalancedHighPerformance()
             is LocationSettingsScreenUiEvent.ToggleFollowDeviceLowPowerMode -> toggleFollowLowPowerMode()
             is LocationSettingsScreenUiEvent.ChangePerformance -> changeLocationPerformance(event)
+            is LocationSettingsScreenUiEvent.ChangeFiltering -> changeLocationFiltering(event)
             LocationSettingsScreenUiEvent.ToggleBalancedAutoPause -> toggleIOSAutoPause()
             LocationSettingsScreenUiEvent.ToggleBalancedShowIndicator -> toggleIOSLocationIndicator()
 
@@ -171,8 +173,57 @@ class LocationSettingsViewModel(
                     )
                 }
             ),
+            filteringSettings = LocationSettingsFiltering(
+                items = LocationFilteringType.entries.map { level ->
+                    GroupOptionItem(
+                        key = level,
+                        id = level.key,
+                        isPremiumFeatureEnabled = true,
+                        title = getFilteringTitle(level),
+                        description = getFilteringDescription(level),
+                        tag = null,
+                        isTagWarning = false,
+                        isSelected = level == LocationFilteringType.fromKey(appPrefs.locationSettingsFilteringType)
+                    )
+                }
+            ),
             alertDialog = null
         )
+    }
+
+    private fun changeLocationFiltering(event: LocationSettingsScreenUiEvent.ChangeFiltering) {
+        val type = event.option.key as? LocationFilteringType ?: return
+        appPrefs.locationSettingsFilteringType = type.key
+        _uiState.update {
+            it.copy(
+                filteringSettings = it.filteringSettings.copy(
+                    items = it.filteringSettings.items.map { item ->
+                        item.copy(isSelected = item.id == type.key)
+                    }
+                )
+            )
+        }
+        locationPerformanceManager.updateLocationSettings {
+            it.copy(filtering = type)
+        }
+    }
+
+    private fun getFilteringTitle(level: LocationFilteringType): String {
+        return when (level) {
+            LocationFilteringType.Low -> MR.strings.setting_location_filtering_level_1.localizedString()
+            LocationFilteringType.Balanced -> MR.strings.setting_location_filtering_level_2.localizedString()
+            LocationFilteringType.High -> MR.strings.setting_location_filtering_level_3.localizedString()
+            LocationFilteringType.VeryHigh -> MR.strings.setting_location_filtering_level_4.localizedString()
+        }
+    }
+
+    private fun getFilteringDescription(level: LocationFilteringType): String {
+        return when (level) {
+            LocationFilteringType.Low -> MR.strings.setting_location_filtering_level_1_info.localizedString()
+            LocationFilteringType.Balanced -> MR.strings.setting_location_filtering_level_2_info.localizedString()
+            LocationFilteringType.High -> MR.strings.setting_location_filtering_level_3_info.localizedString()
+            LocationFilteringType.VeryHigh -> MR.strings.setting_location_filtering_level_4_info.localizedString()
+        }
     }
 
     private fun toggleIOSLocationIndicator() {

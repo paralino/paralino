@@ -1,6 +1,6 @@
 package app.paralino.core.db.main.user
 
-import androidx.room.*
+import androidx.room3.*
 import kotlinx.coroutines.flow.Flow
 
 @Dao

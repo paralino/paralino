@@ -33,7 +33,8 @@ data class LocationDataModel constructor(
     val isMasked: Boolean = false,
     val isApproximate: Boolean = false,
     val isInPrivacyZone: Boolean = false,
-    val privacyZoneMessage: String? = null
+    val privacyZoneMessage: String? = null,
+    val isLikelyInaccurate: Boolean? = null,
 ) {
     val shouldShowApproximateCircle get() = accuracy > 5f
     val isAccurateForPinType get() = accuracy < 50f

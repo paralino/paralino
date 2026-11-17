@@ -56,4 +56,12 @@
         <item quantity="one">%d eszköz</item>
         <item quantity="other">%d eszköz</item>
     </plurals>
+    <plurals name="paywall_intro_offer_first_months">
+        <item quantity="one">az első %d hónapra</item>
+        <item quantity="other">az első %d hónapra</item>
+    </plurals>
+    <plurals name="paywall_intro_offer_first_years">
+        <item quantity="one">az első %d évre</item>
+        <item quantity="other">az első %d évre</item>
+    </plurals>
 </resources>

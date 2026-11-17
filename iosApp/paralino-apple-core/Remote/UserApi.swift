@@ -105,8 +105,10 @@ class UserApi: IUserApiIOS {
     }
     
     func updateUserData(data: [String : Any]) async throws -> Payload<UserMeRaw> {
+        // Prefs come from Kotlin and are not mutated after this call.
+        nonisolated(unsafe) let prefs = data
         return await remoteModule.executeUserApi { module in
-            try await module.account.updatePrefs(prefs: data).parseUser()
+            try await module.account.updatePrefs(prefs: prefs).parseUser()
         }
     }
     

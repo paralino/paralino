@@ -17,18 +17,6 @@ class DocumentsApi: IDocumentApiIOS {
         self.remoteModule = remoteModule
     }
     
-    func createDocument(databaseType: BackendDatabaseType, collectionId: String, docId: String?, data: Any) async throws -> Payload<NSDictionary> {
-        return await remoteModule.execute { module in
-            let result = try await module.tablesDB.createRow(
-                databaseId: databaseType.id,
-                tableId: collectionId,
-                rowId: docId ?? module.appConfig.resourceIds.uniqueIdPlaceholder,
-                data: data
-            ).parseRow()
-            return NSDictionary(dictionary: result)
-        }
-    }
-    
     func deleteDocument(databaseType: BackendDatabaseType, collectionId: String, documentId: String) async throws -> Payload<KotlinUnit> {
         await remoteModule.execute { module in
             let _ = try await module.tablesDB.deleteRow(
@@ -87,13 +75,15 @@ class DocumentsApi: IDocumentApiIOS {
         }
     }
     
-    func updateDocument(databaseType: BackendDatabaseType, collectionId: String, docId: String, data: Any) async throws -> Payload<NSDictionary> {
+    func updateDocument(databaseType: BackendDatabaseType, collectionId: String, docId: String, data: [String: Any]) async throws -> Payload<NSDictionary> {
+        // Data comes from Kotlin and is not mutated after this call.
+        nonisolated(unsafe) let rowData: Any? = data
         return await remoteModule.execute { module in
             let result = try await module.tablesDB.updateRow(
                 databaseId: databaseType.id,
                 tableId: collectionId,
                 rowId: docId,
-                data: data
+                data: rowData
             ).parseRow()
             return NSDictionary(dictionary: result)
         }

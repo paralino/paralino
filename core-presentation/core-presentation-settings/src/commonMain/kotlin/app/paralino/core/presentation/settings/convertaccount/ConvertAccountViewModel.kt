@@ -1,6 +1,6 @@
 package app.paralino.core.presentation.settings.convertaccount
 
-import app.paralino.core.MR
+import app.paralino.core.resources.moko.*
 import app.paralino.core.domain.user.ChangeCredentialsStep
 import app.paralino.core.domain.user.ConvertAccountUseCase
 import app.paralino.core.models.Payload

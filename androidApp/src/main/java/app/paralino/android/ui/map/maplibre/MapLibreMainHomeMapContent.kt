@@ -15,7 +15,6 @@ import app.paralino.core.presentation.map.MapHomeScreenUiEvent
 import app.paralino.core.presentation.map.MapPinData
 import app.paralino.core.presentation.map.MapPinType
 import org.maplibre.compose.sources.GeoJsonData
-import org.maplibre.compose.sources.GeoJsonOptions
 import org.maplibre.compose.sources.rememberGeoJsonSource
 import org.maplibre.spatialk.geojson.Point
 
@@ -110,8 +109,7 @@ private fun MapHomeMarkerComposable(
             GeoJsonData.Features(
                 Point(longitude = lngValue, latitude = latValue)
             )
-        },
-        options = remember { GeoJsonOptions() }
+        }
     )
 
     if (model.shouldShowApproximateCircle) {

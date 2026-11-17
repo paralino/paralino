@@ -25,7 +25,7 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.unit.dp
-import app.paralino.core.MR
+import app.paralino.core.resources.moko.*
 import app.paralino.core.models.CryptoResource
 import app.paralino.core.models.base.DeviceType
 import app.paralino.core.models.base.ImageModel
@@ -337,6 +337,7 @@ private fun createDummyLocationState(
         signalStrength = signalStrength,
         visibility = MemberLocationVisibilityType.VISIBLE_ALWAYS,
         distanceFromMeText = null,
-        atPlace = null
+        atPlace = null,
+        isLikelyInaccurate = false
     )
 }

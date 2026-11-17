@@ -9,7 +9,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import app.paralino.android.ui.main.MainAppState
 import app.paralino.android.ui.navigation.AppScreen
-import app.paralino.core.MR
+import app.paralino.core.resources.moko.*
 import app.paralino.core.models.settings.RawPresentationDataType
 import app.paralino.core.presentation.groups.settings.GroupSettingsViewModel
 import app.paralino.core.ui.components.DefaultToolbar
@@ -40,29 +40,26 @@ fun GroupSettingsScreen(
             appState = appState,
             vm = vm,
             openEditGroup = {
-                appState.navController.navigate(AppScreen.MainHome.GroupCreate.route(vm.groupId))
+                appState.navController.navigate(AppScreen.MainHome.GroupCreate(vm.groupId))
             },
             openBatteryNotificationsSettings = {
                 appState.navController.navigate(
-                    AppScreen.MainHome.BatteryNotificationSettings.route(groupId = vm.groupId)
+                    AppScreen.MainHome.BatteryNotificationSettings(groupId = vm.groupId)
                 )
             },
             onGroupDeleted = {
-                appState.navController.navigate(AppScreen.MainHome.MainMap.route()) {
-                    popUpTo(AppScreen.MainHome.MainMap.routeSignature) { inclusive = true }
-                    this.launchSingleTop = true
-                }
+                appState.navController.navigate(AppScreen.MainHome.MainMap(), popUpTo = AppScreen.MainHome.MainMap::class, inclusive = true)
             },
             openRawDataScreen = {
                 appState.navController.navigate(
-                    AppScreen.MainHome.RawDataScreen.route(
+                    AppScreen.Common.RawDataScreen(
                         RawPresentationDataType.GroupPresentation(vm.groupId)
                     )
                 )
             },
             openLocationHistorySettings = {
                 appState.navController.navigate(
-                    AppScreen.MainHome.LocationHistoryDelete.route(groupId = vm.groupId)
+                    AppScreen.MainHome.LocationHistoryDelete(groupId = vm.groupId)
                 )
             }
         )

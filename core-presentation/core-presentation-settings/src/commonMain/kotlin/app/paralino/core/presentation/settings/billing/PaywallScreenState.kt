@@ -2,7 +2,7 @@ package app.paralino.core.presentation.settings.billing
 
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.intl.Locale
-import app.paralino.core.MR
+import app.paralino.core.resources.moko.*
 import app.paralino.core.models.AppFlavor
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.base.PlanBillingPeriod
@@ -31,6 +31,7 @@ data class PaywallScreenState(
     val plans: List<PlanInfoState>,
     val canShowMoreInfo: Boolean,
     val canCloseScreen: Boolean,
+    val isBillingSelectorOnTop: Boolean,
     val isLoading: Boolean,
     val isPurchaseButtonLoading: Boolean,
     val alertDialog: MainAlertDialog?,
@@ -67,7 +68,9 @@ data class PaywallScreenState(
     }
 
     val canShowAdditionalPlanSelector: Boolean = !screenType.isOnboarding && isPlatformBillingSupported
-    val canShowPlanPeriodSelector: Boolean = isPlatformBillingSupported && selectedPlan != null && !isLoading
+    val canShowPlanPeriodSelector: Boolean = isPlatformBillingSupported && selectedPlan != null && !isLoading && screenStep == PaywallScreenStep.PAYWALL
+    val canShowTopPlanPeriodSelector: Boolean = canShowPlanPeriodSelector && isBillingSelectorOnTop
+    val canShowBottomPlanPeriodSelector: Boolean = canShowPlanPeriodSelector && !isBillingSelectorOnTop
     val showExternalPricingInfo: Boolean = !isPlatformBillingSupported && screenStep == PaywallScreenStep.PAYWALL && !isLoading
 
     val continueButtonType: PaywallContinueButtonType = when (screenStep) {
@@ -151,13 +154,13 @@ data class PaywallScreenState(
 
     val subscriptionNoticeForCurrentPlan: String? = selectedPlan?.let { plan ->
         plan.selectedBillingPeriod?.let {
-            noticeForPlan(planType = plan.config.planTypeEnum, period = it.billingPeriod)
+            noticeForPlan(planType = plan.config.planTypeEnum, period = it)
         }
     }
 
     private fun noticeForPlan(
         planType: PlanType,
-        period: PlanBillingPeriod
+        period: PlanBillingPeriodState
     ): String? {
         val language = try {
             Locale.current.language
@@ -166,7 +169,10 @@ data class PaywallScreenState(
         }
         return subscriptionNotice.firstOrNull {
             it.keys.firstOrNull {
-                it.plans.contains(planType.key) && it.periods.contains(period.key)
+                val planMatch = it.plans.contains(planType.key) && it.periods.contains(period.billingPeriod.key)
+                val trialMatch = if (it.requiresTrial) period.trialDurationDays?.let { it > 0 } ?: false else true
+                val offerMatch = if (it.requiresOffer) period.introOffer != null else true
+                planMatch && trialMatch && offerMatch
             } != null
         }?.i18nMessage?.let {
             it.get(language) ?: it.get("en")

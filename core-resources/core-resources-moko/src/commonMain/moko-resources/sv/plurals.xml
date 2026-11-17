@@ -56,4 +56,12 @@
         <item quantity="one">%d enhet</item>
         <item quantity="other">%d enheter</item>
     </plurals>
+    <plurals name="paywall_intro_offer_first_months">
+        <item quantity="one">den första %d månaden</item>
+        <item quantity="other">de första %d månaderna</item>
+    </plurals>
+    <plurals name="paywall_intro_offer_first_years">
+        <item quantity="one">det första %d året</item>
+        <item quantity="other">de första %d åren</item>
+    </plurals>
 </resources>

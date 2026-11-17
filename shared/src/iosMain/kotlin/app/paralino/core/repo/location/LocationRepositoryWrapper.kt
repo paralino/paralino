@@ -7,6 +7,7 @@ import app.paralino.core.logg
 import app.paralino.core.models.Payload
 import app.paralino.core.models.base.BackendDatabaseType
 import app.paralino.core.models.base.BackendResourceIDs
+import app.paralino.core.models.location.LocationPerformanceType
 import app.paralino.core.models.location.LocationUpdateDataFromDevice
 import app.paralino.core.models.raw.PushNotificationRaw
 import app.paralino.core.provider.CoroutineScopeProvider
@@ -20,6 +21,7 @@ import kotlin.native.runtime.NativeRuntimeApi
 class LocationRepositoryWrapper(
     private val locationRepo: LocationUploadEngine,
     private val locationSharingManager: LocationSharingManager,
+    private val locationPerformanceManager: LocationPerformanceManager,
     private val docApi: IDocumentsApi,
     private val scopeProvider: CoroutineScopeProvider,
     private val databaseHelper: MainDatabaseHelper
@@ -38,6 +40,11 @@ class LocationRepositoryWrapper(
 
         scopeProvider.userSessionIOScope.launch {
             try {
+                locationPerformanceManager.locationBoostRequested(
+                    performanceType = LocationPerformanceType.VERY_HIGH,
+                    groupId = null,
+                    from = "iOS LSE"
+                )
                 locationRepo.updateDeviceStatusOnly(tryToFetchCachedLocation = false)
             } catch (e: Exception) { }
         }

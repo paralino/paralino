@@ -30,7 +30,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import app.paralino.core.MR
+import app.paralino.core.resources.moko.*
 import app.paralino.core.presentation.billing.BillingScreenSourceType
 import app.paralino.core.presentation.common.AlertDialogAction
 import app.paralino.core.presentation.common.BottomSheetPickerType

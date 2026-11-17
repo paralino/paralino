@@ -7,6 +7,7 @@ import app.paralino.core.logg
 import app.paralino.core.models.base.DeviceType
 import app.paralino.core.models.base.GroupOrSpaceId
 import app.paralino.core.models.data
+import app.paralino.core.models.location.LatLng
 import app.paralino.core.models.location.LocationDataModel
 import app.paralino.core.models.location.LocationPerformanceRequest
 import app.paralino.core.models.location.LocationPerformanceType
@@ -17,6 +18,8 @@ import app.paralino.core.models.places.GroupPlaceGeofenceData
 import app.paralino.core.models.places.PlaceActivityState
 import app.paralino.core.models.places.PlaceSensitivityDelayType
 import app.paralino.core.models.places.PlaceSensitivityLocationRefreshType
+import app.paralino.core.provider.ConnectedWifi
+import app.paralino.core.provider.IConnectionStatusProvider
 import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.provider.IOneTimeLocationProvider
 import app.paralino.core.provider.current
@@ -55,16 +58,21 @@ class PlacesActivityProcessor(
     private val oneTimeLocation: IOneTimeLocationProvider,
     private val refreshEverythingUseCase: RefreshEverythingUseCase,
     private val privacyZoneObfuscator: PrivacyZoneObfuscator,
+    private val falseAlertMemory: FalsePlaceAlertMemory,
+    private val wifiAnchorMemory: WifiAnchorMemory,
+    private val connectionStatus: IConnectionStatusProvider,
 ) : IPlacesActivityProcessor() {
 
     override suspend fun processLocation(mappedLocations: List<MemberGroupId>) {
-        logg.v("place_activity", "Process new location in places")
+        logg.v("place_activity", "Process new locations ${mappedLocations.size} in places")
 
         placeActivityUploadEngine.syncPendingEventsInBackground()
 
         if (mappedLocations.isEmpty()) {
             return
         }
+
+        val wifi = connectionStatus.getConnectedWifi()
 
         local.getAllPlacesForGroupsOnce(groupIds = mappedLocations.map { it.groupId })
             .filter { shouldProcessPlaceForLocation(it) }
@@ -76,7 +84,8 @@ class PlacesActivityProcessor(
                 if (locationForGroup != null) {
                     processLocationForPlace(
                         place = place,
-                        mappedLocation = locationForGroup
+                        mappedLocation = locationForGroup,
+                        wifi = wifi
                     )
                 }
             }
@@ -114,7 +123,8 @@ class PlacesActivityProcessor(
 
     private suspend fun processLocationForPlace(
         place: GroupPlace,
-        mappedLocation: LocationDataModel
+        mappedLocation: LocationDataModel,
+        wifi: ConnectedWifi?
     ) {
         val placeData = place.data.data ?: return
 
@@ -128,6 +138,34 @@ class PlacesActivityProcessor(
         val previousState = placeActivityRepo.getPlaceActivity(placeId = place.id)
 
 //      logg.tag("place_activity").d("Process place activity (enter: $isEnter - exit: $isExit - previous: ${previousState?.enter}) - ${place.id}")
+
+        if (movementType == PlaceActivityMovementType.ENTER) {
+            wifiAnchorMemory.resetExit(placeId = place.id)
+        } else if (movementType == PlaceActivityMovementType.EXIT && previousState?.isEnter == true &&
+            wifiAnchorMemory.shouldIgnoreExit(
+                placeId = place.id,
+                wifi = wifi,
+                placeCenter = LatLng(lat = placeData.lat, lng = placeData.lng),
+                radiusMeters = placeData.radiusMeters.toFloat()
+            )
+        ) {
+            return
+        }
+
+        // location from a known inaccurate spot must not change place state (no alert, no location boost)
+        val verdict = falseAlertMemory.processLocation(
+            placeId = place.id,
+            previousIsEnter = previousState?.isEnter,
+            movementIsEnter = when (movementType) {
+                PlaceActivityMovementType.ENTER -> true
+                PlaceActivityMovementType.EXIT -> false
+                PlaceActivityMovementType.UNKNOWN -> null
+            },
+            location = LatLng(lat = mappedLocation.lat, lng = mappedLocation.lng)
+        )
+        if (verdict == FalsePlaceAlertMemory.FixVerdict.IGNORE) {
+            return
+        }
 
         when (movementType) {
             PlaceActivityMovementType.ENTER -> {
@@ -234,6 +272,8 @@ class PlacesActivityProcessor(
                             groupId = groupId,
                             from = "place exit geofence"
                         )
+                    } else if (isOnPlaceWifi(place)) {
+                        logg.i("place_activity_geofence", "Ignore geofence exit - on place wifi - $placeId")
                     } else {
                         startPlaceNotifySchedule(
                             placeId = placeId,
@@ -249,6 +289,15 @@ class PlacesActivityProcessor(
 
             refreshEverythingUseCase.refreshEverythingFallback()
         }
+    }
+
+    private suspend fun isOnPlaceWifi(place: GroupPlace): Boolean {
+        val placeData = place.data.data ?: return false
+        return wifiAnchorMemory.isOnPlaceWifi(
+            wifi = connectionStatus.getConnectedWifi(),
+            placeCenter = LatLng(lat = placeData.lat, lng = placeData.lng),
+            radiusMeters = placeData.radiusMeters.toFloat()
+        )
     }
 
     private suspend fun startPlaceNotifySchedule(

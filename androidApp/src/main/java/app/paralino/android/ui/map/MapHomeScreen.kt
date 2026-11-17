@@ -206,11 +206,11 @@ private fun MapHomeContent(
                     }
 
                     GroupPickerAction.JoinGroup -> {
-                        appState.navController.navigate(AppScreen.Settings.PersonalCodes.routeSignature)
+                        appState.navController.navigate(AppScreen.Settings.PersonalCodes)
                     }
 
                     GroupPickerAction.OpenSubscriptions -> {
-                        appState.navController.navigate(AppScreen.MainHome.BillingPaywall.route())
+                        appState.navController.navigate(AppScreen.Common.BillingPaywall())
                     }
 
                     GroupPickerAction.Close -> {}
@@ -314,9 +314,18 @@ internal fun HomeScreenMapWithElements(
                         )
                     }
 
+                val horizontalPadding = when (uiState.androidMapSDKProvider) {
+                    is MapsSDKProvider.MAPLIBRE -> 8.dp
+                    MapsSDKProvider.GOOGLE,
+                    MapsSDKProvider.NONE,
+                    null -> 4.dp
+                }
+
                 PaddingValues(
                     top = topPadding,
-                    bottom = bottomPadding
+                    bottom = bottomPadding,
+                    start = horizontalPadding,
+                    end = horizontalPadding
                 )
             }
         }

@@ -1,8 +1,8 @@
 package app.paralino.core.db.main.common
 
-import androidx.room.Dao
-import androidx.room.Query
-import androidx.room.Transaction
+import androidx.room3.Dao
+import androidx.room3.Query
+import androidx.room3.Transaction
 
 @Dao
 interface LogoutDao {
@@ -46,6 +46,8 @@ interface LogoutDao {
         clearAllPendingGroupJoinWelcomes()
         clearAllPendingKeyRefreshes()
         clearAllArchivedGroupDeviceKeys()
+        clearAllFalsePlaceAlertLocations()
+        clearAllWifiAnchors()
     }
 
     @Query("DELETE FROM userEntity")
@@ -158,4 +160,10 @@ interface LogoutDao {
 
     @Query("DELETE FROM archivedGroupDeviceKeyEntity")
     suspend fun clearAllArchivedGroupDeviceKeys()
+
+    @Query("DELETE FROM falsePlaceAlertLocationEntity")
+    suspend fun clearAllFalsePlaceAlertLocations()
+
+    @Query("DELETE FROM wifiAnchorEntity")
+    suspend fun clearAllWifiAnchors()
 }

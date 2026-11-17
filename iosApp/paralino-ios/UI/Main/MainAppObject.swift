@@ -9,14 +9,18 @@ import Foundation
 import shared
 import SwiftUI
 
+// Main view model collects on Dispatchers.Main, so its callbacks run on the main actor.
+@MainActor
 class MainAppObject: ObservableObject {
     
-    let vm: MainViewModel
+    // Read by the nonisolated deinit to clean up the view model.
+    nonisolated(unsafe) let vm: MainViewModel
     
     @Published var uiState: MainActivityState = MainActivityState.companion.doNewInstance() {
         didSet {
             accountState = ResourceSwift(data: uiState.userState)
-            DispatchQueue.main.asyncAfter(deadline: .now() + 3) { [weak self] in
+            Task { [weak self] in
+                try? await Task.sleep(nanoseconds: 3 * 1_000_000_000)
                 guard let self else { return }
                 if let sessionExpiredDialog = self.uiState.sessionExpiredDialog {
                     self.sessionExpiredDialog = AlertDialogData(coreData: sessionExpiredDialog)
@@ -36,7 +40,7 @@ class MainAppObject: ObservableObject {
     @Published var emailVerificationGraph: [EmailVerificationGraph] = []
     @Published var userReadyGraph: [NavigationGraph] = []
     
-    @State private var deeplinkTask: Task<Void, Never>?
+    private var deeplinkTask: Task<Void, Never>?
     
     init() {
         vm = KoinIOS.ViewModels.shared.mainVM
@@ -52,32 +56,26 @@ class MainAppObject: ObservableObject {
         if accountState.data is AppAccountState.USER_READY,
             let actualDeeplink = deeplink as? DeeplinkType.ParalinoID {
             deeplinkTask?.cancel()
-            DispatchQueue.main.async { [weak self] in
-                self?.deeplinkTask = Task { [weak self] in
-                    try? await Task.sleep(nanoseconds: 500 * 1_000_000)
-                    self?.userReadyGraph.append(.home(.memberInvite(groupId: nil, code: actualDeeplink.paralinoID, isOnboarding: false)))
-                    self?.vm.setDeeplink(deeplinkType: nil)
-                }
+            deeplinkTask = Task { [weak self] in
+                try? await Task.sleep(nanoseconds: 500 * 1_000_000)
+                self?.userReadyGraph.append(.home(.memberInvite(groupId: nil, code: actualDeeplink.paralinoID, isOnboarding: false)))
+                self?.vm.setDeeplink(deeplinkType: nil)
             }
         } else if accountState.data is AppAccountState.USER_READY,
                   let _ = deeplink as? DeeplinkType.PaywallScreen {
             deeplinkTask?.cancel()
-            DispatchQueue.main.async { [weak self] in
-                self?.deeplinkTask = Task { [weak self] in
-                    try? await Task.sleep(nanoseconds: 500 * 1_000_000)
-                    self?.userReadyGraph.append(.settings(.paywall(groupId: nil, type: BillingScreenSourceType.normal)))
-                    self?.vm.setDeeplink(deeplinkType: nil)
-                }
+            deeplinkTask = Task { [weak self] in
+                try? await Task.sleep(nanoseconds: 500 * 1_000_000)
+                self?.userReadyGraph.append(.settings(.paywall(groupId: nil, type: BillingScreenSourceType.normal)))
+                self?.vm.setDeeplink(deeplinkType: nil)
             }
         } else if accountState.data is AppAccountState.NO_USER,
                   let actualDeeplink = deeplink as? DeeplinkType.PasswordReset {
             deeplinkTask?.cancel()
-            DispatchQueue.main.async { [weak self] in
-                self?.deeplinkTask = Task { [weak self] in
-                    try? await Task.sleep(nanoseconds: 500 * 1_000_000)
-                    self?.appStartGraph = [.passwordReset(deeplink: actualDeeplink)]
-                    self?.vm.setDeeplink(deeplinkType: nil)
-                }
+            deeplinkTask = Task { [weak self] in
+                try? await Task.sleep(nanoseconds: 500 * 1_000_000)
+                self?.appStartGraph = [.passwordReset(deeplink: actualDeeplink)]
+                self?.vm.setDeeplink(deeplinkType: nil)
             }
         }
         

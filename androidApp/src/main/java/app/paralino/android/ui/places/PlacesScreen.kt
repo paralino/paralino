@@ -19,7 +19,7 @@ import app.paralino.android.notification.rememberNotificationsPermissionHandler
 import app.paralino.android.ui.main.MainAppState
 import app.paralino.android.ui.map.SimpleGenericMapComposable
 import app.paralino.android.ui.navigation.AppScreen
-import app.paralino.core.MR
+import app.paralino.core.resources.moko.*
 import app.paralino.core.models.PlaceZoneExpirationStatus
 import app.paralino.core.models.PlaceZoneType
 import app.paralino.core.models.base.ImageModel
@@ -79,7 +79,7 @@ fun PlacesScreen(
             },
             addNewPlace = {
                 appState.navController.navigate(
-                    AppScreen.MainHome.PlaceCreate.route(
+                    AppScreen.MainHome.PlaceCreate(
                         groupId = groupId,
                         placeId = null,
                         editStep = null
@@ -88,7 +88,7 @@ fun PlacesScreen(
             },
             onSkipOnboarding = {
                 appState.navController.navigate(
-                    AppScreen.MainHome.SharingStart.route(
+                    AppScreen.MainHome.SharingStart(
                         groupId = groupId,
                         presentation = if (isOnboarding) {
                             SharingStartPresentationType.GROUP_CREATE_ONBOARDING
@@ -100,14 +100,14 @@ fun PlacesScreen(
             },
             openPlaceDetails = { place ->
                 appState.navController.navigate(
-                    AppScreen.MainHome.PlaceDetail.route(
+                    AppScreen.MainHome.PlaceDetail(
                         groupId = place.groupOrSpaceId.id,
                         placeId = place.id
                     )
                 )
             },
             openPaywall = {
-                appState.navController.navigate(AppScreen.MainHome.BillingPaywall.route())
+                appState.navController.navigate(AppScreen.Common.BillingPaywall())
             },
             mapContent = { state ->
                 SimpleGenericMapComposable(

@@ -11,7 +11,7 @@ import android.text.style.TypefaceSpan
 import android.view.View
 import androidx.annotation.StringRes
 import androidx.compose.ui.graphics.toArgb
-import app.paralino.core.MR
+import app.paralino.core.resources.moko.*
 import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.utils.extensions.splitRanges
 

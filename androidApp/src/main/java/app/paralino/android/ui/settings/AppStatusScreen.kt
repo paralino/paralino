@@ -10,7 +10,7 @@ import app.paralino.android.notification.rememberPushNotificationServicePermissi
 import app.paralino.android.tracking.rememberLocationPermissionHandler
 import app.paralino.android.ui.main.MainAppState
 import app.paralino.android.ui.navigation.AppScreen
-import app.paralino.core.MR
+import app.paralino.core.resources.moko.*
 import app.paralino.core.presentation.settings.status.AppStatusViewModel
 import app.paralino.core.ui.components.DefaultToolbar
 import app.paralino.core.ui.components.ToolbarButtons
@@ -63,10 +63,10 @@ fun AppStatusScreen(
             },
             askPushNotificationService = { pushServiceHandler.askPushNotificationService() },
             openLocationSettings = {
-                appState.navController.navigate(AppScreen.Settings.LocationSettings.routeSignature)
+                appState.navController.navigate(AppScreen.Settings.LocationSettings)
             },
             openDebugLogs = {
-                appState.navController.navigate(AppScreen.Settings.AppStatusDebug.routeSignature)
+                appState.navController.navigate(AppScreen.Settings.AppStatusDebug)
             }
         )
     }

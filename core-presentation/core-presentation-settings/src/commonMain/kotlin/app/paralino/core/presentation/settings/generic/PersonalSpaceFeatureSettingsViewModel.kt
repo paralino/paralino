@@ -1,7 +1,7 @@
 package app.paralino.core.presentation.settings.generic
 
 import androidx.compose.ui.unit.dp
-import app.paralino.core.MR
+import app.paralino.core.resources.moko.*
 import app.paralino.core.domain.user.PersonalSpaceFeatureUseCase
 import app.paralino.core.presentation.common.MainAlertDialog
 import app.paralino.core.provider.localizedString

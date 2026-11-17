@@ -23,7 +23,8 @@ extension CLLocation {
             timeUTC: timeUTC,
             speed: speed,
             altitude: altitude,
-            provider: nil
+            provider: nil,
+            isLikelyInaccurate: nil
         )
     }
 }

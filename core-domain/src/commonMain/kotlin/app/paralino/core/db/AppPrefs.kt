@@ -113,6 +113,7 @@ class AppPrefs(
         const val keyDeviceTheme = "prefs.device.theme"
         const val keyDarkThemeStyle = "prefs.device.theme.darkStyle"
         const val keyLocationHistoryPerformance = "prefs.location.history.performance"
+        const val keyLocationFiltering = "prefs.location.filtering"
         const val keyEmailVerificationSkipTime = "prefs.user.emailVerification.skipTime"
         const val keyFirstLoginTime = "prefs.user.firstLoginTime"
         const val keyDetectedAppReadyTime = "prefs.user.appReadyTime"
@@ -132,6 +133,8 @@ class AppPrefs(
         const val keySelectedPushProvider = "prefs.device.pushProvider"
         const val keyUnifiedPushEndpointConfigUnsynced = "prefs.device.unifiedPushEndpointConfig.unsynced"
         const val keyUnifiedPushEndpointConfigSynced = "prefs.device.unifiedPushEndpointConfig.synced"
+        const val keyUnifiedPushRegistrationTime = "prefs.device.unifiedPushRegistrationTime"
+        const val keyUnifiedPushPersistRegistration = "prefs.device.unifiedPushPersistRegistration"
         const val keyiOSLastLSEHandoffPingTime = "prefs.device.iOSLastLSEHandoffPingTime"
         const val keyiOSLastMainAppHeartbeatTime = "prefs.device.iOSLastMainAppHeartbeatTime"
     }
@@ -315,6 +318,22 @@ class AppPrefs(
             }
         }
 
+    var unifiedPushRegistrationTime: Instant?
+        get() = provider.userSettings.getString(keyUnifiedPushRegistrationTime, "").isoWithOffsetToInstant()
+        set(value) {
+            if (value != null) {
+                provider.userSettings.putString(keyUnifiedPushRegistrationTime, value.toString())
+            } else {
+                provider.userSettings.remove(keyUnifiedPushRegistrationTime)
+            }
+        }
+
+    var isUnifiedPushRegistrationPersisted: Boolean
+        get() = provider.userSettings.getBoolean(keyUnifiedPushPersistRegistration, false)
+        set(value) {
+            provider.userSettings.putBoolean(keyUnifiedPushPersistRegistration, value)
+        }
+
     var notificationPushProvider: PushProvider?
         get() = provider.userSettings.getStringOrNull(keySelectedPushProvider)?.let {
             PushProvider.fromKey(key = it)
@@ -473,6 +492,12 @@ class AppPrefs(
         get() = provider.userSettings.getStringOrNull(keyLocationHistoryPerformance).takeIf { !it.isNullOrBlank() }
         set(value) {
             provider.userSettings.putString(keyLocationHistoryPerformance, value ?: "")
+        }
+
+    var locationSettingsFilteringType: String?
+        get() = provider.userSettings.getStringOrNull(keyLocationFiltering).takeIf { !it.isNullOrBlank() }
+        set(value) {
+            provider.userSettings.putString(keyLocationFiltering, value ?: "")
         }
 
     var didHaveWelcomeOnboarding: Boolean

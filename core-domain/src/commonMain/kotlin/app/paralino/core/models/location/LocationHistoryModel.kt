@@ -16,7 +16,6 @@ data class LocationHistoryPointModel(
     val id: String = "",
     val loc: LocationHistoryPointLocationModel?,
     val status: LocationHistoryPointStatusModel
-
 ) {
     @Transient
     val dayKey = status.startTime.isoToLocalDateTime()?.date?.toString()
@@ -51,15 +50,9 @@ data class LocationHistoryPointModel(
         
         val accuracyValid = location.acc in this.loc.acc.minus(adaptiveAccuracyThreshold)..this.loc.acc.plus(adaptiveAccuracyThreshold)
 
-        val speedValid = if (location.spd != null && this.loc.spd != null) {
-            location.spd in this.loc.spd.minus(mode.speedThresholdMs)..this.loc.spd.plus(mode.speedThresholdMs)
-        } else if (location.spd == null && this.loc.spd == null) {
-            // if both null, then nothing changed
-            true
-        } else {
-            // here only one of them is null, something changed
-            false
-        }
+        val newSpd = location.spd ?: 0f
+        val oldSpd = this.loc.spd ?: 0f
+        val speedValid = newSpd in oldSpd.minus(mode.speedThresholdMs)..oldSpd.plus(mode.speedThresholdMs)
 
         val elevationValid = if (location.alt != null && this.loc.alt != null) {
             location.alt in this.loc.alt.minus(mode.elevationThreshold)..this.loc.alt.plus(mode.elevationThreshold)
@@ -72,6 +65,7 @@ data class LocationHistoryPointModel(
         }
 
         return locationValid
+                && location.isLikelyInaccurate == this.loc.isLikelyInaccurate
                 && accuracyValid
                 && speedValid
                 && elevationValid
@@ -112,7 +106,10 @@ data class LocationHistoryPointLocationModel(
     val acc: Float = 0f,
     val spd: Float? = null,
     val alt: Float? = null,
+    val ina: Boolean? = null,
 ) {
+    @Transient
+    val isLikelyInaccurate: Boolean = ina == true
     @Transient
     val startTime: String = tA
     @Transient
@@ -129,6 +126,7 @@ data class LocationHistoryPointStatusModel(
     val chr: Int? = null,
     val net: String? = null,
     val sig: Int? = null,
+    val cnt: Int? = null
 ) {
     @Transient
     val startTime: String = tA

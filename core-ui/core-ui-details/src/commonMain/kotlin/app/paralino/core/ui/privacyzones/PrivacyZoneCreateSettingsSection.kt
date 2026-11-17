@@ -11,7 +11,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.unit.dp
-import app.paralino.core.MR
+import app.paralino.core.resources.moko.*
 import app.paralino.core.presentation.privacyzones.create.CreatePrivacyZoneScreenState
 import app.paralino.core.presentation.privacyzones.create.CreatePrivacyZoneScreenUiEvent
 import app.paralino.core.resources.CoreAppIcons

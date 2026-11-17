@@ -1,7 +1,7 @@
 package app.paralino.core.presentation.onboarding
 
 import androidx.compose.runtime.Composable
-import app.paralino.core.MR
+import app.paralino.core.resources.moko.*
 import app.paralino.core.models.base.ImageModel
 import dev.icerock.moko.resources.StringResource
 import dev.icerock.moko.resources.compose.stringResource

@@ -5,16 +5,15 @@ import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.navigation.NavHostController
-import androidx.navigation.NavOptions
-import androidx.navigation.NavOptionsBuilder
-import androidx.navigation.compose.rememberNavController
+import androidx.navigation3.runtime.NavBackStack
+import androidx.navigation3.runtime.NavKey
+import androidx.navigation3.runtime.rememberNavBackStack
+import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.core.ui.CoreUiState
 import app.paralino.core.utils.extensions.isOlderThan
 import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.update
+import kotlin.reflect.KClass
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Instant
 
@@ -24,70 +23,83 @@ class MainAppState(
     val navController: NavControllerWrapper,
 ): CoreUiState(scaffoldState, uiScope)
 
+
 @Composable
 fun rememberAppState(
+    startScreen: AppScreen,
     scaffoldState: ScaffoldState = rememberScaffoldState(),
     uiScope: CoroutineScope = rememberCoroutineScope(),
-    navController: NavControllerWrapper = rememberNavControllerWrapper()
-) = remember(scaffoldState, navController) {
-    MainAppState(
-        scaffoldState = scaffoldState,
-        uiScope = uiScope,
-        navController = navController
-    )
+): MainAppState {
+    val backStack = rememberNavBackStack(startScreen)
+    return remember(scaffoldState, uiScope, backStack) {
+        MainAppState(
+            scaffoldState = scaffoldState,
+            uiScope = uiScope,
+            navController = NavControllerWrapper(backStack)
+        )
+    }
 }
 
-@Composable
-fun rememberNavControllerWrapper(): NavControllerWrapper {
-    val navController = rememberNavController()
-    return remember(navController) { NavControllerWrapper(navController) }
-}
 
 class NavControllerWrapper(
-    val navController: NavHostController
+    val backStack: NavBackStack<NavKey>
 ) {
-    private val currentRoute = MutableStateFlow<Pair<String, Instant>?>(null)
+    private var lastNavigation: Pair<AppScreen, Instant>? = null
 
-    fun navigate(route: String) {
-        navigateSafeAction(
-            key = route,
-            action = { navController.navigate(route = route) }
-        )
+    fun navigate(screen: AppScreen) {
+        navigateSafeAction(screen) { push(screen) }
     }
 
-    fun navigate(route: String, builder: NavOptionsBuilder.() -> Unit) {
-        navigateSafeAction(
-            key = route,
-            action = { navController.navigate(route = route, builder = builder) }
-        )
-    }
-
-    fun navigate(route: String, navOptions: NavOptions?) {
-        navigateSafeAction(
-            key = route,
-            action = { navController.navigate(route = route, navOptions = navOptions) }
-        )
-    }
-
-    private fun navigateSafeAction(key: String, action: () -> Unit) {
-        if (currentRoute.value?.first == key) {
-            if (currentRoute.value?.second?.isOlderThan(500.milliseconds) == false) {
-                // we ignore navigation here because fast tapping on the same route
+    fun navigate(
+        screen: AppScreen,
+        popUpTo: KClass<out AppScreen>,
+        inclusive: Boolean = false
+    ) {
+        navigateSafeAction(screen) {
+            val index = backStack.indexOfLast { popUpTo.isInstance(it) }
+            if (index == -1) {
+                push(screen)
             } else {
-                currentRoute.update { key to nowUTC() }
-                action()
+                val keepCount = if (inclusive) index else index + 1
+                // add first, so back stack is never empty
+                backStack.add(screen)
+                repeat(backStack.size - 1 - keepCount) { backStack.removeAt(keepCount) }
             }
-        } else {
-            currentRoute.update { key to nowUTC() }
-            action()
         }
     }
 
-    fun popBackStack(route: String, inclusive: Boolean) {
-        navController.popBackStack(route = route, inclusive = inclusive)
+    private fun navigateSafeAction(
+        screen: AppScreen,
+        action: () -> Unit
+    ) {
+        val last = lastNavigation
+        if (last?.first == screen && !last.second.isOlderThan(500.milliseconds)) {
+            // we ignore navigation here because fast tapping on the same screen
+            return
+        }
+        lastNavigation = screen to nowUTC()
+        action()
+    }
+
+    private fun push(screen: AppScreen) {
+        // same screen twice on top would clash in nav display
+        if (backStack.lastOrNull() != screen) {
+            backStack.add(screen)
+        }
     }
 
     fun popBackStack() {
-        navController.popBackStack()
+        if (backStack.size > 1) {
+            backStack.removeAt(backStack.lastIndex)
+        }
+    }
+
+    fun popBackStack(popUpTo: KClass<out AppScreen>, inclusive: Boolean) {
+        val index = backStack.indexOfLast { popUpTo.isInstance(it) }
+        if (index == -1) return
+        val keepCount = (if (inclusive) index else index + 1).coerceAtLeast(1)
+        while (backStack.size > keepCount) {
+            backStack.removeAt(backStack.lastIndex)
+        }
     }
 }

@@ -70,4 +70,14 @@
         <item quantity="few">%d dispozitive</item>
         <item quantity="other">%d de dispozitive</item>
     </plurals>
+    <plurals name="paywall_intro_offer_first_months">
+        <item quantity="one">prima %d lună</item>
+        <item quantity="few">primele %d luni</item>
+        <item quantity="other">primele %d de luni</item>
+    </plurals>
+    <plurals name="paywall_intro_offer_first_years">
+        <item quantity="one">primul %d an</item>
+        <item quantity="few">primii %d ani</item>
+        <item quantity="other">primii %d de ani</item>
+    </plurals>
 </resources>

@@ -1,6 +1,6 @@
 package app.paralino.core.presentation.common
 
-import app.paralino.core.MR
+import app.paralino.core.resources.moko.*
 import app.paralino.core.models.location.LocationUpdateDataFromDevice
 import app.paralino.core.provider.DistanceType
 import app.paralino.core.provider.FormattingFractionsMode

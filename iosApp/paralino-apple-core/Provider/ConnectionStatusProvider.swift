@@ -9,13 +9,15 @@ import Foundation
 import shared
 import Network
 import CoreTelephony
+import NetworkExtension
 
-class ConnectionStatusProvider: IConnectionStatusProvider {
+class ConnectionStatusProvider: IConnectionStatusProvider, @unchecked Sendable {
     
     private var monitor: NWPathMonitor? = nil
     
     private var connectionActive = false
     private var mobileNetwork = false
+    private var wifiNetwork = false
     
     override init(appBuildConfig: AppBuildConfig) {
         super.init(appBuildConfig: appBuildConfig)
@@ -26,10 +28,9 @@ class ConnectionStatusProvider: IConnectionStatusProvider {
         monitor?.pathUpdateHandler = { [weak self] update in
             self?.connectionActive = update.status == .satisfied ? true : false
             self?.mobileNetwork = update.isExpensive ? true : false
-            DispatchQueue.main.async { [weak self] in
-                Task {
-                    try? await self?.doInitAndGetStatus(forceCheck: false)
-                }
+            self?.wifiNetwork = update.usesInterfaceType(.wifi)
+            Task { [weak self] in
+                _ = try? await self?.doInitAndGetStatus(forceCheck: false)
             }
         }
         
@@ -127,7 +128,28 @@ class ConnectionStatusProvider: IConnectionStatusProvider {
     override func getSignalStrength() async throws -> KotlinInt? {
         return nil
     }
-    
+
+    override func getConnectedWifi() async throws -> ConnectedWifi? {
+        guard super.appBuildConfig.appHost != AppHost.iosLocationExtension, wifiNetwork else {
+            return nil
+        }
+
+        guard let network = await NEHotspotNetwork.fetchCurrent() else {
+            return nil
+        }
+       
+        guard !network.bssid.isEmpty else {
+            return nil
+        }
+        
+        // expensive wifi is usually a hotspot
+        return ConnectedWifi(
+            bssid: network.bssid,
+            ssid: network.ssid.isEmpty ? nil : network.ssid,
+            isMetered: mobileNetwork
+        )
+    }
+
     deinit {
         guard let monitor = monitor else { return }
         monitor.cancel()

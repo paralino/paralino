@@ -92,6 +92,9 @@ import app.paralino.core.presentation.personal_space.settings.PersonalSpaceSetti
 import app.paralino.core.presentation.places.create.CreatePlaceScreenStep
 import app.paralino.core.presentation.places.create.CreatePlaceViewModel
 import app.paralino.core.presentation.places.detail.PlaceDetailViewModel
+import app.paralino.core.presentation.places.detail.FalseLocationsViewModel
+import app.paralino.core.presentation.places.detail.PlaceImprovementsViewModel
+import app.paralino.core.presentation.places.detail.WifiNetworksViewModel
 import app.paralino.core.presentation.places.detail.PlaceSensitivityViewModel
 import app.paralino.core.presentation.places.list.PlacesViewModel
 import app.paralino.core.presentation.privacyzones.create.CreatePrivacyZoneScreenStep
@@ -211,7 +214,7 @@ object KoinSetup {
         single { PersonalDeviceCryptoKeyRotation(get(), get(), get(), get(), get(), get(), get(), get()) } bind IPersonalDeviceCryptoKeyRotation::class
         single { ReRegisterDeviceUseCase(get(), get()) } bind IReRegisterDeviceUseCase::class
         single { LocationRequestAutoUpgradeUseCase(get(), get(), get(), get(), get()) } bind ILocationRequestAutoUpgradeUseCase::class
-        single { PlacesActivityProcessor(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) } bind IPlacesActivityProcessor::class
+        single { PlacesActivityProcessor(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) } bind IPlacesActivityProcessor::class
         single { LocationHistoryUploadEngine(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) } bind ILocationHistoryUploadEngine::class
         single { BatteryAlertUploadEngine(get(), get(), get(), get(), get()) } bind IBatteryAlertUploadEngine::class
 
@@ -316,6 +319,9 @@ object KoinSetup {
         viewModel { PersonalSpaceViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
         viewModel { PersonalSpaceSettingsViewModel(get(), get()) }
         viewModel { (groupId: String, placeId: String) -> PlaceSensitivityViewModel(groupId = groupId, placeId = placeId, get(), get(), get(), get()) }
+        viewModel { (groupId: String, placeId: String) -> PlaceImprovementsViewModel(groupId = groupId, placeId = placeId, get(), get(), get()) }
+        viewModel { (groupId: String, placeId: String) -> FalseLocationsViewModel(groupId = groupId, placeId = placeId, get(), get(), get(), get(), get()) }
+        viewModel { (placeId: String?) -> WifiNetworksViewModel(placeId = placeId, get(), get(), get(), get()) }
         viewModel { AppSettingsViewModel(get(), get()) }
     }
 }

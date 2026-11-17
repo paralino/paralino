@@ -7,7 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import app.paralino.android.ui.main.MainAppState
 import app.paralino.android.ui.navigation.AppScreen
-import app.paralino.core.MR
+import app.paralino.core.resources.moko.*
 import app.paralino.core.models.group.UserGroup
 import app.paralino.core.presentation.personal_space.settings.PersonalSpaceSettingsViewModel
 import app.paralino.core.models.settings.RawPresentationDataType
@@ -37,7 +37,7 @@ fun PersonalSpaceSettingsScreen(
             vm = vm,
             openRawDataScreen = {
                 appState.navController.navigate(
-                    AppScreen.MainHome.RawDataScreen.route(
+                    AppScreen.Common.RawDataScreen(
                         RawPresentationDataType.PersonalSpacePresentation
                     )
                 )
@@ -45,19 +45,16 @@ fun PersonalSpaceSettingsScreen(
             openBatteryNotificationsSettings = {
                 // Reuse group battery notifications with personal space group id
                 appState.navController.navigate(
-                    AppScreen.MainHome.BatteryNotificationSettings.route(UserGroup.groupPersonalDevicesId)
+                    AppScreen.MainHome.BatteryNotificationSettings(UserGroup.groupPersonalDevicesId)
                 )
             },
             openLocationHistorySettings = {
                 appState.navController.navigate(
-                    AppScreen.MainHome.LocationHistoryDelete.route(groupId = UserGroup.groupPersonalDevicesId)
+                    AppScreen.MainHome.LocationHistoryDelete(groupId = UserGroup.groupPersonalDevicesId)
                 )
             },
             openMap = {
-                appState.navController.navigate(AppScreen.MainHome.MainMap.route(null)) {
-                    popUpTo(AppScreen.MainHome.MainMap.routeSignature) { inclusive = true }
-                    this.launchSingleTop = true
-                }
+                appState.navController.navigate(AppScreen.MainHome.MainMap(), popUpTo = AppScreen.MainHome.MainMap::class, inclusive = true)
             }
         )
     }

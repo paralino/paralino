@@ -37,9 +37,11 @@ struct LoginScreen: View {
     }
 }
 
+@MainActor
 class LoginState: ObservableObject {
     
-    let vm: LoginViewModel
+    // Read by the nonisolated deinit to clean up the view model.
+    nonisolated(unsafe) let vm: LoginViewModel
     @Published var canNavigateBack: Bool = true
     
     init (screenUiType: LoginScreenUiType) {

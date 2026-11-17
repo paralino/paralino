@@ -137,11 +137,13 @@ struct SharingStartScreen: View {
     }
 }
 
+@MainActor
 class SharingStartState: ObservableObject {
     
     let initialGroupId: String?
     let presentation: SharingStartPresentationType
-    let vm: SharingStartViewModel
+    // Read by the nonisolated deinit to clean up the view model.
+    nonisolated(unsafe) let vm: SharingStartViewModel
     
     var currentGroupId: String? {
         return vm.currentGroupId

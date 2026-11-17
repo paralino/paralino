@@ -1,7 +1,7 @@
 package app.paralino.core.models.settings
 
 import androidx.compose.ui.unit.Dp
-import app.paralino.core.MR
+import app.paralino.core.resources.moko.*
 
 enum class MapInteractionsType(val key: String) {
     DEVICE_DEFAULT("device_default"),

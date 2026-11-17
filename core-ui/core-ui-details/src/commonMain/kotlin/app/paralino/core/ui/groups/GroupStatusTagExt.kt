@@ -66,8 +66,7 @@ fun GroupMemberItemState.toStatusTagType(expanded: Boolean): GroupStatusTagType?
                     }
                 }
 
-                singleVisibleLocation?.accuracyMeters != null &&
-                    singleVisibleLocation.accuracyMeters.isLocationInaccurate() -> {
+                singleVisibleLocation != null && singleVisibleLocation.accuracyMeters.isLocationInaccurate() -> {
                     when (tagType) {
                         GroupStatusTagType.SHARING_ACTIVE,
                         GroupStatusTagType.SHARING_ACTIVE_NO_LOCATION,

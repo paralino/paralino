@@ -1,7 +1,7 @@
 package app.paralino.core.presentation.places.create
 
 import androidx.compose.ui.text.input.TextFieldValue
-import app.paralino.core.MR
+import app.paralino.core.resources.moko.*
 import app.paralino.core.domain.group.PlaceAddressSearchUseCase
 import app.paralino.core.domain.location.LocationCacheRepository
 import app.paralino.core.domain.user.PremiumStatusLimitState

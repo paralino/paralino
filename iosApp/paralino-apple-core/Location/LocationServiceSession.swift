@@ -11,7 +11,7 @@
 import CoreLocation
 import Foundation
 
-public final class LocationServiceSession {
+public final class LocationServiceSession: @unchecked Sendable {
     
     public static let shared = LocationServiceSession()
     private var session: AnyObject?

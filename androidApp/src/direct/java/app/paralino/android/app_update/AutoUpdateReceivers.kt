@@ -16,7 +16,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.content.IntentCompat
 import app.paralino.android.R
 import app.paralino.android.ui.main.MainActivity
-import app.paralino.core.MR
+import app.paralino.core.resources.moko.*
 import app.paralino.core.logg
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject

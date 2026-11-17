@@ -206,8 +206,8 @@ android {
     productFlavors {
         create("playStore") {
             dimension = "version"
-            versionCode = 105
-            versionName = "2.6.0"
+            versionCode = 107
+            versionName = "2.7.0"
 
             val userProps = loadUserProperties(rootProject.rootDir)
             buildConfigField("String", "revenueCatApiKey", userProps?.getProperty("revenueCatApiKey") ?: "null")
@@ -215,8 +215,8 @@ android {
         }
         create("direct") {
             dimension = "version"
-            versionCode = 105
-            versionName = "2.6.0"
+            versionCode = 107
+            versionName = "2.7.0"
             isDefault = true
 
             buildConfigField("String", "revenueCatApiKey", "null")
@@ -238,6 +238,10 @@ android {
         viewBinding = true
         compose = true
         buildConfig = true
+    }
+    // required for AGP 9.5+ Compose Preview
+    testOptions {
+        unitTests.isIncludeAndroidResources = true
     }
     packaging {
         resources.excludes += "/META-INF/{AL2.0,LGPL2.1}"
@@ -299,7 +303,9 @@ dependencies {
 
     // region compose
     implementation(libs.constraintlayout.compose)
-    implementation(libs.navigation.compose)
+    implementation(libs.navigation3.runtime)
+    implementation(libs.navigation3.ui)
+    implementation(libs.lifecycle.viewmodel.navigation3)
 
     implementation(platform(libs.compose.bom))
     implementation(libs.compose.foundation)
@@ -311,7 +317,6 @@ dependencies {
     implementation(libs.compose.ui.tooling.preview)
 
     implementation(libs.accompanist.permissions)
-    implementation(libs.accompanist.systemuicontroller)
     // endregion
 
     // region di
@@ -319,7 +324,6 @@ dependencies {
     implementation(libs.koin.core)
     implementation(libs.koin.android)
     implementation(libs.koin.compose)
-    implementation(libs.koin.navigation)
     // endregion
 
     // region utils

@@ -4,6 +4,7 @@ import app.paralino.core.models.location.LocationHistoryPointId
 import app.paralino.core.utils.BaseRemoteModule
 import kotlinx.serialization.Serializable
 
+@Serializable
 sealed class RawPresentationDataType() {
     val key
         get() = when (this) {
@@ -37,11 +38,22 @@ sealed class RawPresentationDataType() {
         }
     }
 
-    object UserPresentation : RawPresentationDataType()
-    object PersonalSpacePresentation : RawPresentationDataType()
+    @Serializable
+    data object UserPresentation : RawPresentationDataType()
+
+    @Serializable
+    data object PersonalSpacePresentation : RawPresentationDataType()
+
+    @Serializable
     data class GroupPresentation(val groupId: String) : RawPresentationDataType()
+
+    @Serializable
     data class GroupMemberPresentation(val memberId: String) : RawPresentationDataType()
+
+    @Serializable
     data class GroupPlacePresentation(val placeId: String) : RawPresentationDataType()
+
+    @Serializable
     data class GroupPrivacyZonePresentation(val privacyZoneId: String) : RawPresentationDataType()
 
     @Serializable

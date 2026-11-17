@@ -56,4 +56,12 @@
         <item quantity="one">%d apparaat</item>
         <item quantity="other">%d apparaten</item>
     </plurals>
+    <plurals name="paywall_intro_offer_first_months">
+        <item quantity="one">de eerste %d maand</item>
+        <item quantity="other">de eerste %d maanden</item>
+    </plurals>
+    <plurals name="paywall_intro_offer_first_years">
+        <item quantity="one">het eerste %d jaar</item>
+        <item quantity="other">de eerste %d jaar</item>
+    </plurals>
 </resources>

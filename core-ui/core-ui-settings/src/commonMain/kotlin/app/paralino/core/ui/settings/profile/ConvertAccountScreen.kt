@@ -33,7 +33,7 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import app.paralino.core.MR
+import app.paralino.core.resources.moko.*
 import app.paralino.core.domain.user.ChangeCredentialsStep
 import app.paralino.core.models.settings.FormValidation
 import app.paralino.core.presentation.settings.convertaccount.ConvertAccountScreenEvent

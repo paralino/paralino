@@ -1,4 +1,4 @@
-package app.paralino.core
+package app.paralino.core.resources.moko
 
 object MR {
     val strings = MokoResources.strings

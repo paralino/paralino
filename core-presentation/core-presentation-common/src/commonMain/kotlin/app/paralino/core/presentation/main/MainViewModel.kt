@@ -1,6 +1,6 @@
 package app.paralino.core.presentation.main
 
-import app.paralino.core.MR
+import app.paralino.core.resources.moko.*
 import app.paralino.core.app_update.IAppUpdateManager
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.user.AppAccountState

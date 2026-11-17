@@ -8,7 +8,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
 import app.paralino.android.ui.main.MainAppState
 import app.paralino.android.ui.navigation.AppScreen
-import app.paralino.core.MR
+import app.paralino.core.resources.moko.*
 import app.paralino.core.models.base.BackendResourceIDs
 import app.paralino.core.presentation.settings.billing.SubscriptionViewModel
 import app.paralino.core.ui.components.DefaultToolbar
@@ -44,10 +44,10 @@ fun SubscriptionScreen(
                 uriHandler.openUri(BackendResourceIDs.subscriptionUrlGooglePlay)
             },
             openPaywall = {
-                appState.navController.navigate(AppScreen.Settings.BillingPaywall.route(type = BillingScreenSourceType.NORMAL))
+                appState.navController.navigate(AppScreen.Common.BillingPaywall(type = BillingScreenSourceType.NORMAL))
             },
             openLicenceScreen = {
-                appState.navController.navigate(AppScreen.Settings.LicenceCode.routeSignature)
+                appState.navController.navigate(AppScreen.Settings.LicenceCode)
             }
         )
     }

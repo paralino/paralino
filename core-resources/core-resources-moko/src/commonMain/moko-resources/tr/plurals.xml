@@ -56,4 +56,12 @@
         <item quantity="one">%d cihaz</item>
         <item quantity="other">%d cihaz</item>
     </plurals>
+    <plurals name="paywall_intro_offer_first_months">
+        <item quantity="one">ilk %d ay</item>
+        <item quantity="other">ilk %d ay</item>
+    </plurals>
+    <plurals name="paywall_intro_offer_first_years">
+        <item quantity="one">ilk %d yıl</item>
+        <item quantity="other">ilk %d yıl</item>
+    </plurals>
 </resources>
