@@ -64,4 +64,12 @@
         <item quantity="one">first %d year</item>
         <item quantity="other">first %d years</item>
     </plurals>
+    <plurals name="plan_period_every_months">
+        <item quantity="one">Every %d month</item>
+        <item quantity="other">Every %d months</item>
+    </plurals>
+    <plurals name="plan_period_every_years">
+        <item quantity="one">Every %d year</item>
+        <item quantity="other">Every %d years</item>
+    </plurals>
 </resources>
