@@ -128,7 +128,7 @@ fun PaywallScreen(
         }
     )
 
-    BackHandler (enabled = type.isOnboarding) {
+    BackHandler (enabled = type.isOnboarding || type == BillingScreenSourceType.UPGRADE_BILLING_PROMO) {
         // block back for onboarding
     }
 }
