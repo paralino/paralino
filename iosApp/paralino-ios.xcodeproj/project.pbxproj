@@ -1791,7 +1791,7 @@
 				CODE_SIGN_ENTITLEMENTS = "paralino-ios/paralino-iosDebug.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 88;
+				CURRENT_PROJECT_VERSION = 89;
 				DEVELOPMENT_ASSET_PATHS = "\"paralino-ios/Preview Content\"";
 				DEVELOPMENT_TEAM = "$(TEAM_ID)";
 				ENABLE_PREVIEWS = YES;
@@ -1819,7 +1819,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.7.0;
+				MARKETING_VERSION = 2.7.1;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-lsqlite3",
@@ -1848,7 +1848,7 @@
 				CODE_SIGN_ENTITLEMENTS = "paralino-ios/paralino-ios.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 88;
+				CURRENT_PROJECT_VERSION = 89;
 				DEVELOPMENT_ASSET_PATHS = "\"paralino-ios/Preview Content\"";
 				DEVELOPMENT_TEAM = "$(TEAM_ID)";
 				ENABLE_PREVIEWS = YES;
@@ -1876,7 +1876,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.7.0;
+				MARKETING_VERSION = 2.7.1;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-lsqlite3",
