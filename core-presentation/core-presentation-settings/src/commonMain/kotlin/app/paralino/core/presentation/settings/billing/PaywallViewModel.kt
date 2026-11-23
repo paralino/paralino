@@ -554,9 +554,9 @@ class PaywallViewModel(
             locationHistoryStepMessage = locationHistoryMessage,
             subscriptionNotice = billingConfig?.billingConfig?.subscriptionNotice ?: emptyList(),
             subscriptionOfferDialog = billingConfig?.billingConfig?.dialogOffer?.takeIf {
-                val planHasTrial = uiPlans.firstOrNull { it.isSelected }?.selectedBillingPeriod?.trialDurationDays?.let {
-                    it > 0
-                } ?: false
+                val planHasTrial = uiPlans.firstOrNull { it.isSelected }
+                    ?.selectedBillingPeriod?.trialDurationDays?.let { it > 0 }
+                    ?: false
                 val planHasOffer = uiPlans.firstOrNull { it.isSelected }?.selectedBillingPeriod?.introOffer != null
                 val trialMatch = if (it.requiresTrial) planHasTrial else true
                 val offerMatch = if (it.requiresOffer) planHasOffer else true
