@@ -154,14 +154,6 @@ private fun ColumnScope.PaywallScreenBillingStep(
         Spacer(modifier = Modifier.size(16.dp))
     }
 
-    PlanTypePickerTabs(
-        state = state,
-        onEvent = onEvent
-    )
-
-    val selectedPlan = state.selectedPlan
-    Spacer(modifier = Modifier.size(12.dp))
-
     AnimatedVisibility(
         modifier = Modifier.align(Alignment.CenterHorizontally),
         visible = !state.hasActivePlanOnAnotherPlatform && state.subscriptionNoticeForCurrentPlan != null
@@ -181,6 +173,14 @@ private fun ColumnScope.PaywallScreenBillingStep(
             }
         )
     }
+
+    PlanTypePickerTabs(
+        state = state,
+        onEvent = onEvent
+    )
+
+    val selectedPlan = state.selectedPlan
+    Spacer(modifier = Modifier.size(12.dp))
 
     AnimatedVisibility(selectedPlan != null && state.canShowTopPlanPeriodSelector) {
         if (selectedPlan != null) {

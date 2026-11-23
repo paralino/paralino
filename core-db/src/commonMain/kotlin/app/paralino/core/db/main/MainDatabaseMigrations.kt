@@ -356,6 +356,12 @@ object MainDatabaseMigrations {
         }
     }
 
+    private val MIGRATION_31_32 = object : Migration(31, 32) {
+        override suspend fun migrate(connection: SQLiteConnection) {
+            connection.execSQL("ALTER TABLE subscriptionPlanEntity ADD COLUMN billingPeriodMultiplier INTEGER DEFAULT NULL")
+        }
+    }
+
     val migrations: List<Migration> = listOf(
         MIGRATION_1_2,
         MIGRATION_2_3,
@@ -387,5 +393,6 @@ object MainDatabaseMigrations {
         MIGRATION_28_29,
         MIGRATION_29_30,
         MIGRATION_30_31,
+        MIGRATION_31_32,
     )
 }

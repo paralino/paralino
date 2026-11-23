@@ -145,12 +145,16 @@ class SubscriptionViewModel(
                 null -> false
             },
             planName = planConfig.adjustedPlanName,
-            billingPeriod = when (plan?.plan?.billingPeriod) {
-                PlanBillingPeriod.WEEKLY -> MR.strings.plan_period_weekly_name.localizedString()
-                PlanBillingPeriod.MONTHLY -> MR.strings.plan_period_monthly_name.localizedString()
-                PlanBillingPeriod.ANNUALLY -> MR.strings.plan_period_annually_name.localizedString()
-                PlanBillingPeriod.ONETIME -> "∅"
-                else -> null
+            billingPeriod = plan?.plan?.let { userPlan ->
+                val multiplier = userPlan.billingPeriodMultiplier ?: 1
+                when (userPlan.billingPeriod) {
+                    PlanBillingPeriod.WEEKLY -> MR.strings.plan_period_weekly_name.localizedString()
+                    PlanBillingPeriod.MONTHLY if multiplier > 1 -> MR.plurals.plan_period_every_months.localizedString(multiplier, multiplier)
+                    PlanBillingPeriod.MONTHLY -> MR.strings.plan_period_monthly_name.localizedString()
+                    PlanBillingPeriod.ANNUALLY if multiplier > 1 -> MR.plurals.plan_period_every_years.localizedString(multiplier, multiplier)
+                    PlanBillingPeriod.ANNUALLY -> MR.strings.plan_period_annually_name.localizedString()
+                    PlanBillingPeriod.ONETIME -> "∅"
+                }
             },
             nextRenewal = if (plan?.plan?.cancelledAt == null && plan?.plan?.billingPeriod?.isRenewalBased == true) {
                 plan.plan.expiresAt?.let { expiresAt ->

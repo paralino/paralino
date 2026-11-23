@@ -83,14 +83,14 @@ internal fun BillingPeriodOptionsSelector(
                     },
                     monthlyEquivalent = state.pricePerMonth,
                     isSelected = state.isSelected,
-                    isCurrent = state.isNativePlatformCurrentBillingPeriod,
+                    isCurrent = state.isNativePlatformCurrentlyActiveBillingPeriod,
                     onClick = { onPeriodSelected(state.billingPeriod) }
                 )
             }
         }
 
         AnimatedVisibility(
-            visible = selectedPlan.selectedBillingPeriod?.pricePerMember != null && selectedPlan.selectedBillingPeriod?.isNativePlatformCurrentBillingPeriod == false
+            visible = selectedPlan.selectedBillingPeriod?.pricePerMember != null && selectedPlan.selectedBillingPeriod?.isNativePlatformCurrentlyActiveBillingPeriod == false
         ) {
             Text(
                 modifier = Modifier.fillMaxWidth().padding(top = 8.dp),

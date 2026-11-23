@@ -86,6 +86,7 @@ enum class ServerFunction constructor(
 
     CREATE_WEB_CHECKOUT_SESSION(method = "POST", path = "/billing/web_checkout"),
     WEB_CHECKOUT_PORTAL_GET(method = "GET", path = "/billing/web_portal"),
+    BILLING_CONFIG(method = "GET", path = "/billing/config"),
 
     TEST_API(method = "POST", path = "/api-test", functionId = "api"),
     TEST_PING(method = "POST", path = "/api-test", functionId = "ping"),
@@ -93,7 +94,6 @@ enum class ServerFunction constructor(
     TEST_HISTORY_UPLOAD(method = "POST", path = "/api-test", functionId = "history-upload"),
 
     CONFIG(method = "GET", path = "/config", functionId = AppBuildConfig.instance.apiServerConfig.publicServerUrl, useSdk = false),
-    BILLING_CONFIG(method = "GET", path = "/billing-config", functionId = AppBuildConfig.instance.apiServerConfig.publicServerUrl, useSdk = false),
     LOGIN(method = "POST", path = "/login", functionId = AppBuildConfig.instance.apiServerConfig.publicServerUrl, useSdk = false)
     ;
 

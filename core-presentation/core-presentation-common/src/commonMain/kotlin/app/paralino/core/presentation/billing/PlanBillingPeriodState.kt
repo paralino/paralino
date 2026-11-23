@@ -13,7 +13,7 @@ data class PlanBillingPeriodState(
     val discount: String?,
     val trialDurationDays: Int?,
     val introOffer: IntroOfferState?,
-    val isNativePlatformCurrentBillingPeriod: Boolean
+    val isNativePlatformCurrentlyActiveBillingPeriod: Boolean
 )
 
 data class IntroOfferState(

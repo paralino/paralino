@@ -115,7 +115,7 @@ import kotlinx.coroutines.IO
         FalsePlaceAlertLocationEntity::class,
         WifiAnchorEntity::class,
     ],
-    version = 31,
+    version = 32,
     exportSchema = true
 )
 @ConstructedBy(AppMainDatabaseConstructor::class)

@@ -11,6 +11,7 @@ data class UserPlanRaw constructor(
     val id: String,
     val planType: String,
     val billingPeriod: PlanBillingPeriod,
+    val billingPeriodMultiplier: Int?,
     val groupId: String?,
     val ownerUserId: String?,
     val expiresAt: Instant?,
@@ -29,6 +30,7 @@ data class UserPlanRaw constructor(
                 billingPeriod = (map["billingPeriod"] as String).let {
                     PlanBillingPeriod.fromKey(it) ?: PlanBillingPeriod.ONETIME
                 },
+                billingPeriodMultiplier = (map["billingPeriodMultiplier"] as? Number)?.toInt(),
                 expiresAt = (map["expiresAt"] as? String)?.isoWithOffsetToInstant(),
                 cancelledAt = (map["cancelledAt"] as? String)?.isoWithOffsetToInstant(),
                 updatedAt = (map["\$updatedAt"] as? String)?.isoWithOffsetToInstant(),

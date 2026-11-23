@@ -153,25 +153,27 @@ data class PaywallScreenState(
     val featureSummaryForSelectedPlan: FeatureTableSummary? = featureTableForSelectedPlan?.summary?.firstOrNull()
 
     val subscriptionNoticeForCurrentPlan: String? = selectedPlan?.let { plan ->
-        plan.selectedBillingPeriod?.let {
-            noticeForPlan(planType = plan.config.planTypeEnum, period = it)
+        if (plan.selectedBillingPeriod != null || !isPlatformBillingSupported) {
+            noticeForPlan(planType = plan.config.planTypeEnum, period = plan.selectedBillingPeriod)
+        } else {
+            null
         }
     }
 
     private fun noticeForPlan(
         planType: PlanType,
-        period: PlanBillingPeriodState
+        period: PlanBillingPeriodState?
     ): String? {
         val language = try {
             Locale.current.language
         } catch (e: Exception) {
             "en"
         }
-        return subscriptionNotice.firstOrNull {
-            it.keys.firstOrNull {
-                val planMatch = it.plans.contains(planType.key) && it.periods.contains(period.billingPeriod.key)
-                val trialMatch = if (it.requiresTrial) period.trialDurationDays?.let { it > 0 } ?: false else true
-                val offerMatch = if (it.requiresOffer) period.introOffer != null else true
+        return subscriptionNotice.firstOrNull { notice ->
+            notice.keys.firstOrNull { noticeKey ->
+                val planMatch = noticeKey.plans.contains(planType.key) && (period?.let { noticeKey.periods.contains(it.billingPeriod.key) } ?: true)
+                val trialMatch = if (noticeKey.requiresTrial) period?.trialDurationDays?.let { it > 0 } ?: false else true
+                val offerMatch = if (noticeKey.requiresOffer) period?.introOffer != null else true
                 planMatch && trialMatch && offerMatch
             } != null
         }?.i18nMessage?.let {

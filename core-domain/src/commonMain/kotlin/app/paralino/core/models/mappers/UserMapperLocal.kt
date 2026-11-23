@@ -83,6 +83,7 @@ class UserMapperLocal constructor(
             ownerUserId = model.ownerUserId,
             planType = model.planType,
             billingPeriod = model.billingPeriod.key,
+            billingPeriodMultiplier = model.billingPeriodMultiplier,
             expiresAt = model.expiresAt?.toString(),
             cancelledAt = model.cancelledAt?.toString(),
             updatedAt = model.updatedAt?.toString(),
@@ -99,6 +100,7 @@ class UserMapperLocal constructor(
             planType = model.planType,
             billingPeriod = PlanBillingPeriod.fromKey(model.billingPeriod)
                 ?: PlanBillingPeriod.ONETIME,
+            billingPeriodMultiplier = model.billingPeriodMultiplier,
             expiresAt = model.expiresAt?.isoWithOffsetToInstant(),
             cancelledAt = model.cancelledAt?.isoWithOffsetToInstant(),
             updatedAt = model.updatedAt?.isoWithOffsetToInstant(),
