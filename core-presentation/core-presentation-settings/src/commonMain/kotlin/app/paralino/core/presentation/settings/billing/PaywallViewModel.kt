@@ -459,7 +459,7 @@ class PaywallViewModel(
                                 recurringPeriodMonths = it.recurringPeriodMonths
                             )
                         },
-                        isNativePlatformCurrentBillingPeriod = currentHighestPlan
+                        isNativePlatformCurrentlyActiveBillingPeriod = currentHighestPlan
                             ?.takeIf { it.config.planTypeEnum == planConfig.planTypeEnum }
                             ?.takeIf { plan ->
                                 when (plan.plan.provider) {
@@ -468,6 +468,9 @@ class PaywallViewModel(
                                     PlanProvider.WEB_POLAR -> appConfig.appFlavor == AppFlavor.ANDROID_DIRECT
                                     PlanProvider.PARALINO -> false
                                 }
+                            }
+                            ?.takeIf { plan ->
+                                plan.plan.cancelledAt == null
                             }
                             ?.plan?.billingPeriod == period.billingPeriod
                     )
@@ -746,7 +749,7 @@ class PaywallViewModel(
             val selectedBillingPeriod = selectedPlan.selectedBillingPeriod
             if (selectedBillingPeriod == null) {
                 messageDispatcher.showSnackbar(text = MR.strings.paywall_select_plan_label.localizedString())
-            } else if (selectedBillingPeriod.isNativePlatformCurrentBillingPeriod) {
+            } else if (selectedBillingPeriod.isNativePlatformCurrentlyActiveBillingPeriod) {
                 _eventChannel.trySend(PaywallScreenEvent.OpenNativeBillingStorePage)
             } else {
                 _uiState.update { it.copy(isPurchaseButtonLoading = true) }
